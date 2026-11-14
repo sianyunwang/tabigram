@@ -67,8 +67,15 @@
     .brand-row {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
       margin-bottom: 12px;
+    }
+
+    .brand-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .brand-logo {
@@ -99,7 +106,7 @@
     .top-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 7px;
       margin-bottom: 10px;
     }
 
@@ -110,7 +117,7 @@
       font-family: var(--sans);
       font-size: 13px;
       font-weight: 700;
-      padding: 7px 14px;
+      padding: 7px 13px;
       border-radius: 999px;
       cursor: pointer;
       display: inline-flex;
@@ -129,6 +136,12 @@
       background: var(--accent-soft);
       color: var(--accent);
       border-color: #E8C5BD;
+    }
+
+    .pill-btn.travel-mode-on {
+      background: #DCFCE7;
+      color: #166534;
+      border-color: #86EFAC;
     }
 
     /* Trip Tabs */
@@ -233,6 +246,7 @@
       border: 1px solid var(--border);
       font-size: 13px;
       font-weight: 700;
+      transition: background 0.2s ease;
     }
 
     .solar-meta {
@@ -242,7 +256,7 @@
       font-family: var(--mono);
       font-size: 11px;
       color: var(--sub);
-      margin-bottom: 7px;
+      margin-bottom: 9px;
       flex-wrap: wrap;
       gap: 4px;
     }
@@ -265,26 +279,38 @@
 
     .solar-track {
       position: relative;
-      height: 11px;
+      height: 12px;
       border-radius: 999px;
       background: linear-gradient(90deg, #1E293B 0%, #3B82F6 25%, #F59E0B 50%, #EA580C 75%, #1E293B 100%);
       overflow: visible;
-      margin-top: 4px;
+      margin-top: 6px;
+      margin-bottom: 4px;
     }
 
-    /* Orange Dot: Scheduled Itinerary Time */
-    .solar-thumb-trip {
+    /* Numbered Orange Dots: All Scheduled Activities on that Day (1, 2, 3...) */
+    .solar-thumb-item {
       position: absolute;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 15px;
-      height: 15px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
-      background: #FFFFFF;
-      border: 3.5px solid var(--accent);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.28);
+      background: var(--accent);
+      color: #FFFFFF;
+      border: 2px solid #FFFFFF;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       z-index: 2;
-      transition: left 0.25s ease;
+      cursor: pointer;
+    }
+    .solar-thumb-item.done-dot {
+      background: #9CA3AF;
+      opacity: 0.7;
     }
 
     /* Green Dot: Current Local Time (NOW) */
@@ -292,13 +318,13 @@
       position: absolute;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 15px;
-      height: 15px;
+      width: 16px;
+      height: 16px;
       border-radius: 50%;
       background: #22C55E;
       border: 2.5px solid #FFFFFF;
-      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.28), 0 2px 6px rgba(0,0,0,0.3);
-      z-index: 3;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.32), 0 2px 6px rgba(0,0,0,0.35);
+      z-index: 4;
       transition: left 0.25s ease;
     }
 
@@ -315,7 +341,8 @@
     }
     .timeline-card.now-active {
       border-color: var(--accent);
-      box-shadow: 0 6px 20px rgba(200, 75, 49, 0.1);
+      border-width: 2px;
+      box-shadow: 0 8px 24px rgba(200, 75, 49, 0.14);
     }
     .timeline-card.done-card {
       opacity: 0.74;
@@ -326,7 +353,7 @@
       background: #F3F1EC;
     }
 
-    /* Card Top Row: Number, Time + Right Stamp & Status Buttons */
+    /* Card Top Row */
     .card-top-bar {
       display: flex;
       align-items: flex-start;
@@ -370,6 +397,12 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      animation: pulseNow 2s infinite;
+    }
+
+    @keyframes pulseNow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.78; }
     }
 
     .time-text {
@@ -401,7 +434,7 @@
       border: 1.5px dashed #C8B9A6;
       background: #FDFBF7;
       color: var(--sub);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       padding: 3px 8px;
       border-radius: 8px;
@@ -409,7 +442,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 32px;
+      min-width: 34px;
       height: 28px;
       transform: rotate(-3deg);
       transition: transform 0.15s ease, border-color 0.15s ease;
@@ -422,7 +455,7 @@
       transform: rotate(-5deg);
     }
 
-    /* Floating Popover for Quick Emoji Stamp */
+    /* Floating Popover for Quick Emoji Stamp + Custom Emoji Input */
     .emoji-popover {
       position: absolute;
       top: 34px;
@@ -430,13 +463,17 @@
       background: #FFFFFF;
       border: 1.5px solid var(--ink);
       border-radius: 14px;
-      padding: 8px;
+      padding: 10px;
+      width: 236px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+      z-index: 80;
+    }
+
+    .emoji-grid {
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
-      width: 215px;
-      box-shadow: 0 10px 26px rgba(0,0,0,0.18);
-      z-index: 60;
+      margin-bottom: 8px;
     }
 
     .status-btn {
@@ -536,7 +573,7 @@
       white-space: nowrap;
     }
 
-    /* Expense & Extra Spend Badges on Card */
+    /* Expense & Extra Spend Badges on Card (No delete X on outer card!) */
     .card-finance-box {
       margin-top: 10px;
       padding: 9px 12px;
@@ -554,14 +591,6 @@
     .finance-line.extra-item {
       color: var(--sub);
       font-size: 12px;
-    }
-    .inline-del-exp {
-      border: none;
-      background: transparent;
-      color: #9CA3AF;
-      cursor: pointer;
-      font-size: 11px;
-      padding: 0 4px;
     }
 
     /* Quick Inline Expense Drawer on Card */
@@ -831,12 +860,16 @@
   <!-- Top Header -->
   <header class="app-header">
     <div class="brand-row">
-      <div class="brand-logo">旅</div>
-      <div class="brand-title">TABIGRAM</div>
+      <div class="brand-left">
+        <div class="brand-logo">旅</div>
+        <div class="brand-title">TABIGRAM</div>
+      </div>
+      <!-- Travel Mode Lock Toggle (#8: Lock structural edit/delete during trip while keeping mood, expense, photo, done/cancel active!) -->
+      <button class="pill-btn" id="travelModeBtn" onclick="toggleTravelLockMode()">🔓 規劃模式</button>
     </div>
 
     <div class="top-actions">
-      <button class="pill-btn primary" onclick="openItemModal()">＋ 新增行程</button>
+      <button class="pill-btn primary" id="addTopBtn" onclick="openItemModal()">＋ 新增行程</button>
       <button class="pill-btn" id="tripCountBtn" onclick="openTripManager()">旅行專案 (1)</button>
       <button class="pill-btn accent-outline" onclick="openArchiveModal()">典藏旅程</button>
       <button class="pill-btn" onclick="openPinModal()">密碼鎖</button>
@@ -860,7 +893,7 @@
       <div class="weather-strip">
         <div class="weather-badge" id="weatherBadge">☀️ 載入氣象中...</div>
         <div style="display:flex; gap:6px;">
-          <button class="mini-btn" onclick="refreshRealtimeWeather(true)">↻ 即時更新</button>
+          <button class="mini-btn" id="refreshWeatherBtn" onclick="refreshRealtimeWeather(true)">↻ 即時更新</button>
           <button class="mini-btn delete-btn" id="deleteDayBtn" style="display:none;" onclick="deleteCurrentDay()">刪除此日</button>
         </div>
       </div>
@@ -868,15 +901,13 @@
       <div class="solar-meta">
         <span id="sunriseLabel">日出 06:15</span>
         <span class="solar-legend">
-          <span><i class="legend-dot" style="background:var(--accent);"></i>行程 <b id="tripTimeIndicatorLabel">09:00</b></span>
+          <span><i class="legend-dot" style="background:var(--accent);"></i>活動編號點</span>
           <span><i class="legend-dot" style="background:#22C55E;"></i>現在 <b id="nowTimeIndicatorLabel">--:--</b></span>
         </span>
         <span id="sunsetLabel">日落 17:30</span>
       </div>
-      <div class="solar-track" id="solarTrackBar">
-        <div class="solar-thumb-trip" id="solarThumbTrip" title="行程時間" style="left: 40%;"></div>
-        <div class="solar-thumb-now" id="solarThumbNow" title="現在當地時間" style="left: 55%;"></div>
-      </div>
+      <!-- Solar Track: Renders numbered orange dots (1, 2, 3...) for all day activities + 1 live green NOW dot -->
+      <div class="solar-track" id="solarTrackBar"></div>
     </section>
 
     <!-- View 1: Timeline View -->
@@ -902,7 +933,7 @@
     <button class="dock-tab" id="tabBtnBudget" onclick="switchMainView('budget')">清單/預算</button>
   </nav>
 
-  <!-- Modal 1: Add / Edit Itinerary Item (Clean labels, zero bracket clutter!) -->
+  <!-- Modal 1: Add / Edit Itinerary Item -->
   <div class="modal-backdrop" id="itemModal">
     <div class="modal-sheet">
       <div class="modal-header">
@@ -928,7 +959,7 @@
           <input type="text" class="form-input" id="fSubtitle" placeholder="丸之內北口 / 澀谷 SHIBUYA SKY" />
         </div>
 
-        <!-- Transit / Ferry Multi-Leg Builder (Clean placeholders without bracket noise) -->
+        <!-- Transit / Ferry Multi-Leg Builder -->
         <div id="transitFieldsBox" style="display:none; margin-top:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <span style="font-size:12.5px; font-weight:800;">🚃 路線分段</span>
@@ -961,7 +992,7 @@
           </div>
         </div>
 
-        <!-- Road Trip Fields (#4th Type) -->
+        <!-- Road Trip Fields -->
         <div id="roadtripFieldsBox" style="display:none; margin-top:10px;">
           <div class="form-row-2">
             <div>
@@ -1016,7 +1047,7 @@
           </div>
         </div>
 
-        <!-- Base Budget & Extra Expenses -->
+        <!-- Base Budget & Extra Expenses Manager (Edit/Delete extra expenses inside Edit Modal! #6 & #10) -->
         <div class="form-row-2" style="margin-top:10px;">
           <div>
             <label class="form-label">幣別</label>
@@ -1035,6 +1066,14 @@
           </div>
         </div>
 
+        <div style="margin-top:10px; background:#FAF8F4; padding:10px; border-radius:12px; border:1px dashed var(--border);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-size:12.5px; font-weight:800;">🛍️ 額外消費明細管理</span>
+            <button type="button" class="mini-btn" onclick="addExtraExpenseRowInModal()">＋ 新增明細</button>
+          </div>
+          <div id="modalExtraExpensesList"></div>
+        </div>
+
         <!-- Pure Text Note with 90-degree Top-Left Corner -->
         <label class="form-label">備註</label>
         <textarea class="form-textarea sharp-tl" id="fNote" placeholder="輸入記事內容..."></textarea>
@@ -1051,7 +1090,7 @@
           </div>
         </div>
 
-        <!-- Multi-Photo Upload (Available for ALL types including Transit/Ferry/Flight/Roadtrip) -->
+        <!-- Multi-Photo Upload -->
         <label class="form-label">上傳相片</label>
         <input type="file" class="form-input" id="fPhotosInput" accept="image/*" multiple onchange="handleFormPhotosUpload(event)" />
         <div class="card-photos-strip" id="formPhotosPreview"></div>
@@ -1100,7 +1139,7 @@
     </div>
   </div>
 
-  <!-- Modal 3: 9:16 Story Card Generator (All 5 Templates: Polaroid, Transit, Ferry, Flight Boarding Pass, Road Trip) -->
+  <!-- Modal 3: 9:16 Story Card Generator -->
   <div class="modal-backdrop" id="shareModal">
     <div class="modal-sheet">
       <div class="modal-header">
@@ -1124,19 +1163,33 @@
         <label class="form-label">內層票卡配色</label>
         <div class="swatch-row" id="innerCardSwatches"></div>
 
-        <!-- Optional Mood Emoji Toggle on Story Card -->
+        <!-- Paper Texture Selector for Transit / Ticket Cards (#4: Dot Grid / Graph Grid / Plain) -->
+        <label class="form-label">票卡紙張紋理</label>
+        <div class="swatch-row" id="paperTextureSwatches">
+          <button type="button" class="swatch-btn active" data-tex="dots" style="background:#FAF8F4; border:1px solid #ccc;" onclick="selectPaperTexture('dots')">點點紙 (Dot Grid)</button>
+          <button type="button" class="swatch-btn" data-tex="grid" style="background:#FAF8F4; border:1px solid #ccc;" onclick="selectPaperTexture('grid')">方格網格紙 (Graph)</button>
+          <button type="button" class="swatch-btn" data-tex="plain" style="background:#FAF8F4; border:1px solid #ccc;" onclick="selectPaperTexture('plain')">素面紙</button>
+        </div>
+
+        <!-- Mood Stamp & Polaroid Sticker Overlay Toggles -->
         <div style="margin-top:10px; display:flex; align-items:center; justify-content:space-between; background:#FAF8F4; padding:8px 12px; border-radius:10px; border:1px solid var(--border);">
           <span style="font-size:13px; font-weight:700;">顯示心情 Emoji 印記</span>
           <input type="checkbox" id="shareShowMoodCheck" checked onchange="renderStoryCanvas()" style="width:18px; height:18px;" />
         </div>
 
-        <!-- Quick Photo Upload inside Share Modal (So even Transit/Flight/Roadtrip can add Polaroids anytime!) -->
+        <!-- Restored Overlay Polaroid Sticker on Non-Polaroid Templates (#3) -->
+        <div id="overlayPolaroidToggleRow" style="margin-top:8px; display:none; align-items:center; justify-content:space-between; background:#FAF8F4; padding:8px 12px; border-radius:10px; border:1px solid var(--border);">
+          <span style="font-size:13px; font-weight:700;">於票卡上疊貼拍立得小卡</span>
+          <input type="checkbox" id="shareOverlayPolaroidCheck" checked onchange="renderStoryCanvas()" style="width:18px; height:18px;" />
+        </div>
+
+        <!-- Quick Photo Upload inside Share Modal -->
         <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:12.5px; font-weight:800;">📸 此行程拍立得相片</span>
+          <span style="font-size:12.5px; font-weight:800;">📸 拍立得相片庫</span>
           <button type="button" class="mini-btn" onclick="triggerQuickPhotoUpload(currentShareItem.id, true)">＋ 新增相片</button>
         </div>
 
-        <!-- Conditional Polaroid Controls -->
+        <!-- Polaroid Controls -->
         <div id="polaroidControlsBox" style="margin-top:8px; border-top:1px dashed var(--border); padding-top:10px;">
           <div id="sharePhotoSelectorRow" style="display:none; margin-bottom:8px;">
             <div class="card-photos-strip" id="sharePhotoThumbs"></div>
@@ -1345,7 +1398,7 @@
       { id: "Europe/Paris", label: "Europe/Paris (巴黎/歐洲)" }
     ];
 
-    const MOOD_EMOJIS = ["✨", "☕", "🥹", "🌊", "🍜", "🛍️", "🚃", "📸", "🌙", "🥺"];
+    const DEFAULT_MOOD_EMOJIS = ["✨", "☕", "🥹", "🌊", "🍜", "🛍️", "🚃", "📸", "🌙", "🥺"];
 
     const OUTER_SWATCHES = [
       { id: "navy", name: "深海夜藍", bg: "#111A27", text: "#F6F3EC" },
@@ -1364,15 +1417,18 @@
     /*************************************************************************
      * 2. STATE & PERSISTENCE
      *************************************************************************/
-    const STORAGE_KEY = "TABIGRAM_STATE_V2";
-    const LEGACY_KEYS = ["TABIGRAM_STATE_V1", "TABI_NOTE_STATE_V3"];
+    const STORAGE_KEY = "TABIGRAM_STATE_V3";
+    const LEGACY_KEYS = ["TABIGRAM_STATE_V2", "TABIGRAM_STATE_V1", "TABI_NOTE_STATE_V3"];
 
     let appState = {
       activeTripId: "trip_1",
       activeDayIndex: 0,
       showHomeTz: true,
+      travelLockMode: false, // #7: Travel Mode (locks structural edit/delete, keeps mood/expense/photo/done/cancel)
       outerSwatchId: localStorage.getItem("TABIGRAM_OUTER_SWATCH") || "navy",
       innerSwatchId: localStorage.getItem("TABIGRAM_INNER_SWATCH") || "cream",
+      paperTexture: localStorage.getItem("TABIGRAM_PAPER_TEX") || "dots",
+      customEmojis: [],
       pinCode: "",
       geoCache: {},
       trips: [
@@ -1451,6 +1507,8 @@
       } catch (e) {}
       appState.outerSwatchId = localStorage.getItem("TABIGRAM_OUTER_SWATCH") || appState.outerSwatchId || "navy";
       appState.innerSwatchId = localStorage.getItem("TABIGRAM_INNER_SWATCH") || appState.innerSwatchId || "cream";
+      appState.paperTexture = localStorage.getItem("TABIGRAM_PAPER_TEX") || appState.paperTexture || "dots";
+      appState.customEmojis = Array.isArray(appState.customEmojis) ? appState.customEmojis : [];
     }
 
     function saveAppState() {
@@ -1471,6 +1529,12 @@
         appState.activeDayIndex = 0;
       }
       return trip.days[appState.activeDayIndex];
+    }
+
+    function toggleTravelLockMode() {
+      appState.travelLockMode = !appState.travelLockMode;
+      saveAppState();
+      renderAll();
     }
 
     /*************************************************************************
@@ -1532,7 +1596,7 @@
     }
 
     /*************************************************************************
-     * 4. REAL-TIME OPEN-METEO WEATHER & DUAL-DOT SOLAR TRACK (Orange + Green)
+     * 4. REAL-TIME WEATHER & MULTI-ACTIVITY NUMBERED SOLAR TRACK (Fix #2, #3, #9)
      *************************************************************************/
     function getDefaultCoordForTz(tz) {
       const map = {
@@ -1578,10 +1642,21 @@
       return { icon: "⛈️", text: "雷雨" };
     }
 
-    async function refreshRealtimeWeather() {
+    // Fix #9: Clear visual feedback when user clicks "↻ 即時更新"
+    async function refreshRealtimeWeather(manualClick = false) {
       const trip = getActiveTrip();
       const day = getActiveDay();
       if (!day) return;
+
+      const badgeEl = document.getElementById("weatherBadge");
+      const btnEl = document.getElementById("refreshWeatherBtn");
+      if (manualClick) {
+        if (badgeEl) {
+          badgeEl.textContent = "⏳ 正在同步當地即時氣象...";
+          badgeEl.style.background = "#FEF3C7";
+        }
+        if (btnEl) btnEl.textContent = "更新中...";
+      }
 
       const coord = detectDayTargetCoord(day, trip);
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${coord.lat}&longitude=${coord.lng}&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto&forecast_days=1`;
@@ -1601,19 +1676,60 @@
           if (srRaw && srRaw.includes("T")) day.sunrise = srRaw.split("T")[1].slice(0, 5);
           if (ssRaw && ssRaw.includes("T")) day.sunset = ssRaw.split("T")[1].slice(0, 5);
           saveAppState();
-          renderDayWeatherBar();
         }
-      } catch (e) {
-        renderDayWeatherBar();
+      } catch (e) {}
+
+      renderDayWeatherBar();
+
+      if (manualClick) {
+        if (badgeEl) {
+          badgeEl.style.background = "#DCFCE7";
+          setTimeout(() => { badgeEl.style.background = "#F8F6F0"; }, 900);
+        }
+        if (btnEl) {
+          btnEl.textContent = "✓ 已更新";
+          setTimeout(() => { btnEl.textContent = "↻ 即時更新"; }, 1200);
+        }
       }
     }
 
-    function hhmmToPercent(hhmm) {
-      if (!hhmm || !hhmm.includes(":")) return 50;
+    function hhmmToMinutes(hhmm) {
+      if (!hhmm || !hhmm.includes(":")) return 540;
       const [h, m] = hhmm.split(":").map(Number);
-      return Math.min(98, Math.max(2, ((h * 60 + m) / 1440) * 100));
+      return (h || 0) * 60 + (m || 0);
     }
 
+    function hhmmToPercent(hhmm) {
+      const mins = hhmmToMinutes(hhmm);
+      return Math.min(97, Math.max(3, (mins / 1440) * 100));
+    }
+
+    function getCurrentTimeHHMMInTz(tz) {
+      try {
+        return new Date().toLocaleTimeString("en-GB", {
+          timeZone: tz || "Asia/Taipei",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        });
+      } catch (e) {
+        const d = new Date();
+        return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+      }
+    }
+
+    // Fix #2: Check if an itinerary item is genuinely happening RIGHT NOW in its local timezone!
+    function isItemHappeningNow(item) {
+      if (!item || item.status === "done" || item.status === "cancelled") return false;
+      const nowHHMM = getCurrentTimeHHMMInTz(item.startTz || "Asia/Taipei");
+      const nowMin = hhmmToMinutes(nowHHMM);
+      const startMin = hhmmToMinutes(item.startTime || "09:00");
+      let endMin = hhmmToMinutes(item.endTime || "10:00");
+      if (endMin < startMin) endMin += 1440; // Cross-midnight support
+      return nowMin >= startMin && nowMin <= endMin;
+    }
+
+    // Fix #3: Render ALL numbered orange activity dots (1, 2, 3...) + 1 live green NOW dot on the Solar Track!
     function updateSolarTrackDots() {
       const trip = getActiveTrip();
       const day = getActiveDay();
@@ -1625,40 +1741,42 @@
       const ssPct = hhmmToPercent(ss);
       const noonPct = (srPct + ssPct) / 2;
 
-      // Dynamic gradient aligned with actual sunrise & sunset
       const trackEl = document.getElementById("solarTrackBar");
-      if (trackEl) {
-        trackEl.style.background = `linear-gradient(90deg, #1E293B 0%, #1E293B ${Math.max(0, srPct - 6)}%, #38BDF8 ${srPct}%, #FACC15 ${noonPct}%, #FB923C ${ssPct}%, #1E293B ${Math.min(100, ssPct + 6)}%, #0F172A 100%)`;
-      }
+      if (!trackEl) return;
 
-      // 1. Orange Dot: Active (first non-done, non-cancelled) itinerary item startTime
-      const activeItem = day.items.find(i => i.status !== "done" && i.status !== "cancelled") || day.items[0];
-      const tripTimeStr = activeItem ? (activeItem.startTime || "09:00") : "09:00";
-      const tripPct = hhmmToPercent(tripTimeStr);
-      const tripThumb = document.getElementById("solarThumbTrip");
-      if (tripThumb) tripThumb.style.left = `${tripPct}%`;
-      const tripLbl = document.getElementById("tripTimeIndicatorLabel");
-      if (tripLbl) tripLbl.textContent = tripTimeStr;
+      trackEl.style.background = `linear-gradient(90deg, #1E293B 0%, #1E293B ${Math.max(0, srPct - 6)}%, #38BDF8 ${srPct}%, #FACC15 ${noonPct}%, #FB923C ${ssPct}%, #1E293B ${Math.min(100, ssPct + 6)}%, #0F172A 100%)`;
 
-      // 2. Green Dot: Real-time NOW in the active timezone
-      const activeTz = (activeItem && activeItem.startTz) || trip.homeTz || "Asia/Taipei";
-      try {
-        const nowStr = new Date().toLocaleTimeString("en-GB", {
-          timeZone: activeTz,
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false
-        });
-        const nowPct = hhmmToPercent(nowStr);
-        const nowThumb = document.getElementById("solarThumbNow");
-        if (nowThumb) nowThumb.style.left = `${nowPct}%`;
-        const nowLbl = document.getElementById("nowTimeIndicatorLabel");
-        if (nowLbl) nowLbl.textContent = nowStr;
-      } catch (e) {}
+      let dotsHtml = "";
+      day.items.forEach((item, idx) => {
+        if (item.status === "cancelled") return;
+        const pct = hhmmToPercent(item.startTime || "09:00");
+        const isDone = item.status === "done";
+        dotsHtml += `
+          <div class="solar-thumb-item ${isDone ? "done-dot" : ""}"
+               style="left:${pct}%;"
+               title="#${idx + 1} ${escapeHtml(item.title)} (${item.startTime})"
+               onclick="scrollToCardById('${item.id}')">${idx + 1}</div>
+        `;
+      });
+
+      const activeTz = (day.items[0] && day.items[0].startTz) || trip.homeTz || "Asia/Taipei";
+      const nowStr = getCurrentTimeHHMMInTz(activeTz);
+      const nowPct = hhmmToPercent(nowStr);
+
+      dotsHtml += `<div class="solar-thumb-now" style="left:${nowPct}%;" title="現在當地時間 ${nowStr}"></div>`;
+      trackEl.innerHTML = dotsHtml;
+
+      const nowLbl = document.getElementById("nowTimeIndicatorLabel");
+      if (nowLbl) nowLbl.textContent = nowStr;
+    }
+
+    function scrollToCardById(itemId) {
+      const el = document.getElementById(`card_${itemId}`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     /*************************************************************************
-     * 5. UI RENDERING (Direct Emoji Stamp & Direct Expense Entry on Card)
+     * 5. UI RENDERING
      *************************************************************************/
     function renderAll() {
       renderHeaderAndTabs();
@@ -1674,6 +1792,20 @@
 
     function renderHeaderAndTabs() {
       document.getElementById("tripCountBtn").textContent = `旅行專案 (${appState.trips.length})`;
+
+      // Travel Mode Lock UI (#8)
+      const tmBtn = document.getElementById("travelModeBtn");
+      const addTopBtn = document.getElementById("addTopBtn");
+      if (appState.travelLockMode) {
+        tmBtn.textContent = "🔒 旅途中 (已鎖定結構)";
+        tmBtn.className = "pill-btn travel-mode-on";
+        addTopBtn.style.display = "none";
+      } else {
+        tmBtn.textContent = "🔓 規劃模式";
+        tmBtn.className = "pill-btn";
+        addTopBtn.style.display = "inline-flex";
+      }
+
       const bar = document.getElementById("tripTabsBar");
       bar.innerHTML = "";
       appState.trips.forEach(trip => {
@@ -1685,16 +1817,18 @@
           appState.activeDayIndex = 0;
           saveAppState();
           renderAll();
-          refreshRealtimeWeather();
+          refreshRealtimeWeather(false);
         };
         bar.appendChild(btn);
       });
 
-      const addBtn = document.createElement("button");
-      addBtn.className = "trip-tab dashed";
-      addBtn.textContent = "＋ 新增旅行";
-      addBtn.onclick = () => createNewTripProject();
-      bar.appendChild(addBtn);
+      if (!appState.travelLockMode) {
+        const addBtn = document.createElement("button");
+        addBtn.className = "trip-tab dashed";
+        addBtn.textContent = "＋ 新增旅行";
+        addBtn.onclick = () => createNewTripProject();
+        bar.appendChild(addBtn);
+      }
     }
 
     function renderDayWeatherBar() {
@@ -1711,31 +1845,38 @@
           appState.activeDayIndex = idx;
           saveAppState();
           renderAll();
-          refreshRealtimeWeather();
+          refreshRealtimeWeather(false);
         };
         pillsBar.appendChild(p);
       });
 
-      const addDayBtn = document.createElement("button");
-      addDayBtn.className = "day-pill";
-      addDayBtn.style.color = "#2B5B84";
-      addDayBtn.textContent = "＋ DAY";
-      addDayBtn.onclick = () => {
-        trip.days.push({
-          weatherText: day.weatherText || "☀️ 晴朗 20°C",
-          sunrise: day.sunrise || "06:15",
-          sunset: day.sunset || "17:30",
-          items: []
-        });
-        appState.activeDayIndex = trip.days.length - 1;
-        saveAppState();
-        renderAll();
-        refreshRealtimeWeather();
-      };
-      pillsBar.appendChild(addDayBtn);
+      if (!appState.travelLockMode) {
+        const addDayBtn = document.createElement("button");
+        addDayBtn.className = "day-pill";
+        addDayBtn.style.color = "#2B5B84";
+        addDayBtn.textContent = "＋ DAY";
+        addDayBtn.onclick = () => {
+          trip.days.push({
+            weatherText: day.weatherText || "☀️ 晴朗 20°C",
+            sunrise: day.sunrise || "06:15",
+            sunset: day.sunset || "17:30",
+            items: []
+          });
+          appState.activeDayIndex = trip.days.length - 1;
+          saveAppState();
+          renderAll();
+          refreshRealtimeWeather(false);
+        };
+        pillsBar.appendChild(addDayBtn);
+      }
 
-      document.getElementById("deleteDayBtn").style.display = trip.days.length > 1 ? "inline-flex" : "none";
-      document.getElementById("homeTzToggleBtn").textContent = `家鄉時區對照：${appState.showHomeTz ? "開" : "關"}`;
+      document.getElementById("deleteDayBtn").style.display = (!appState.travelLockMode && trip.days.length > 1) ? "inline-flex" : "none";
+
+      const tzBtn = document.getElementById("homeTzToggleBtn");
+      tzBtn.textContent = `家鄉時區對照：${appState.showHomeTz ? "開" : "關"}`;
+      tzBtn.style.background = appState.showHomeTz ? "#191919" : "#FFFFFF";
+      tzBtn.style.color = appState.showHomeTz ? "#FFFFFF" : "#191919";
+
       document.getElementById("weatherBadge").textContent = day.weatherText || "☀️ 晴朗 20°C";
       document.getElementById("sunriseLabel").textContent = `日出 ${day.sunrise || "06:15"}`;
       document.getElementById("sunsetLabel").textContent = `日落 ${day.sunset || "17:30"}`;
@@ -1760,7 +1901,8 @@
     }
 
     function convertTimeBetweenTz(timeHHMM, fromTz, toTz) {
-      if (!timeHHMM || !fromTz || !toTz || fromTz === toTz) return null;
+      if (!timeHHMM || !fromTz || !toTz) return null;
+      if (fromTz === toTz) return `${timeHHMM} (與家鄉同區)`;
       try {
         const [h, m] = timeHHMM.split(":").map(Number);
         const now = new Date();
@@ -1777,7 +1919,7 @@
         else if (totalMin >= 1440) { totalMin -= 1440; dayShift = " (+1日)"; }
         const nh = String(Math.floor(totalMin / 60)).padStart(2, "0");
         const nm = String(totalMin % 60).padStart(2, "0");
-        return `${nh}:${nm}${dayShift}`;
+        return `家鄉 ${nh}:${nm}${dayShift}`;
       } catch (e) {
         return null;
       }
@@ -1816,27 +1958,29 @@
         return;
       }
 
-      const firstActiveIdx = day.items.findIndex(i => i.status !== "done" && i.status !== "cancelled");
+      const allEmojis = [...DEFAULT_MOOD_EMOJIS, ...(appState.customEmojis || [])];
 
       day.items.forEach((item, idx) => {
         const card = document.createElement("div");
+        card.id = `card_${item.id}`;
         const isDone = item.status === "done";
         const isCancel = item.status === "cancelled";
-        const isNow = idx === firstActiveIdx;
+        const isNow = isItemHappeningNow(item); // Fix #2: Genuine real-time window check!
 
         card.className = "timeline-card" + (isNow ? " now-active" : "") + (isDone ? " done-card" : "") + (isCancel ? " cancelled-card" : "");
 
+        // Fix #9: Always show visible badge when Home TZ Compare is ON!
         let homeTzHtml = "";
-        if (appState.showHomeTz && item.startTz && item.startTz !== trip.homeTz) {
-          const convStart = convertTimeBetweenTz(item.startTime, item.startTz, trip.homeTz);
+        if (appState.showHomeTz) {
+          const convStart = convertTimeBetweenTz(item.startTime, item.startTz || trip.homeTz, trip.homeTz);
           if (convStart) {
-            homeTzHtml = `<span class="home-tz-sub">家鄉 ${convStart}</span>`;
+            homeTzHtml = `<span class="home-tz-sub">${convStart}</span>`;
           }
         }
 
         const subText = formatItemSubtitle(item);
 
-        // Finance Summary on Card
+        // Fix #6: Outer card shows expenses cleanly WITHOUT delete '✕' buttons (deletion is safely inside Edit Modal)
         const baseCost = Number(item.cost) || 0;
         const extras = Array.isArray(item.extraExpenses) ? item.extraExpenses : [];
         const extraSum = extras.reduce((acc, ex) => acc + (Number(ex.amount) || 0), 0);
@@ -1844,13 +1988,10 @@
 
         let financeHtml = "";
         if (baseCost > 0 || extras.length > 0) {
-          const extraLines = extras.map((ex, exIdx) => `
+          const extraLines = extras.map(ex => `
             <div class="finance-line extra-item">
               <span>＋ ${escapeHtml(ex.name || "額外消費")}</span>
-              <span>
-                ${cur} ${Number(ex.amount || 0).toLocaleString()}
-                <button class="inline-del-exp" title="刪除此筆消費" onclick="removeInlineExtraExpense('${item.id}', ${exIdx})">✕</button>
-              </span>
+              <span>${cur} ${Number(ex.amount || 0).toLocaleString()}</span>
             </div>`).join("");
 
           financeHtml = `
@@ -1883,14 +2024,20 @@
             `</div>`;
         }
 
-        // Quick Emoji Stamp Popover HTML (Right next to Done / Cancel!)
+        // Fix #5: Emoji Stamp Popover with Custom Emoji Input!
         const isPopoverOpen = activeEmojiPopoverItemId === item.id;
         const popoverHtml = isPopoverOpen ? `
           <div class="emoji-popover" onclick="event.stopPropagation()">
-            ${MOOD_EMOJIS.map(em => `
-              <button type="button" class="emoji-opt ${item.mood === em ? 'selected' : ''}" onclick="setCardMoodStamp('${item.id}', '${em}')">${em}</button>
-            `).join("")}
-            <button type="button" class="mini-btn" style="width:100%; justify-content:center; margin-top:4px;" onclick="setCardMoodStamp('${item.id}', '')">清除心情印章</button>
+            <div class="emoji-grid">
+              ${allEmojis.map(em => `
+                <button type="button" class="emoji-opt ${item.mood === em ? 'selected' : ''}" onclick="setCardMoodStamp('${item.id}', '${em}')">${em}</button>
+              `).join("")}
+            </div>
+            <div style="display:flex; gap:5px; margin-bottom:6px;">
+              <input type="text" class="form-input" id="customEmojiInp_${item.id}" placeholder="自訂 Emoji..." style="padding:5px 8px; font-size:13px;" />
+              <button type="button" class="mini-btn" style="background:var(--ink); color:#fff; white-space:nowrap;" onclick="addCustomEmojiAndStamp('${item.id}')">蓋章</button>
+            </div>
+            <button type="button" class="mini-btn" style="width:100%; justify-content:center;" onclick="setCardMoodStamp('${item.id}', '')">清除印章</button>
           </div>
         ` : "";
 
@@ -1898,14 +2045,13 @@
           <div class="card-top-bar">
             <div class="card-time-group">
               <span class="step-circle">${idx + 1}</span>
-              ${isNow ? `<span class="now-badge">● NOW</span>` : ""}
+              ${isNow ? `<span class="now-badge">● NOW 進行中</span>` : ""}
               <span class="time-text">${item.startTime || "09:00"} → ${item.endTime || "10:00"}</span>
               ${homeTzHtml}
             </div>
 
-            <!-- Stamp Emoji Button + Done + Cancel on the exact same top row! -->
             <div class="status-btns">
-              <button type="button" class="mood-stamp-btn ${item.mood ? "stamped" : ""}" title="點選蓋上心情印章" onclick="toggleEmojiPopover(event, '${item.id}')">
+              <button type="button" class="mood-stamp-btn ${item.mood ? "stamped" : ""}" title="心情印章" onclick="toggleEmojiPopover(event, '${item.id}')">
                 ${item.mood ? escapeHtml(item.mood) : "☺ 印章"}
               </button>
               ${popoverHtml}
@@ -1923,9 +2069,8 @@
             ${urlHtml}
             ${financeHtml}
 
-            <!-- Direct Inline Expense Input Drawer on Card -->
             <div class="quick-expense-drawer" id="expDrawer_${item.id}">
-              <input type="text" class="form-input" id="expName_${item.id}" placeholder="消費品項 (如: 咖啡/紀念品)" style="flex:1.3; min-width:120px; padding:7px 10px; font-size:13px;" />
+              <input type="text" class="form-input" id="expName_${item.id}" placeholder="消費品項" style="flex:1.3; min-width:110px; padding:7px 10px; font-size:13px;" />
               <input type="number" class="form-input" id="expAmt_${item.id}" placeholder="金額 (${cur})" style="flex:0.8; min-width:80px; padding:7px 10px; font-size:13px;" />
               <button type="button" class="mini-btn" style="background:var(--ink); color:#fff;" onclick="saveInlineExtraExpense('${item.id}')">入帳</button>
             </div>
@@ -1935,13 +2080,13 @@
 
           <div class="card-footer">
             <div class="card-actions-left">
-              <button class="mini-btn" onclick="openItemModal('${item.id}')">編輯</button>
+              ${!appState.travelLockMode ? `<button class="mini-btn" onclick="openItemModal('${item.id}')">編輯</button>` : ""}
               <button class="mini-btn" onclick="triggerQuickPhotoUpload('${item.id}', false)">照片 ${item.photos && item.photos.length ? `(${item.photos.length})` : ""}</button>
               <button class="mini-btn" onclick="toggleQuickExpenseDrawer('${item.id}')">＋ 消費</button>
               <button class="mini-btn" onclick="openExternalGoogleMap('${item.id}')">地圖</button>
               <button class="mini-btn share-highlight" onclick="openShareModal('${item.id}', 0)">分享</button>
             </div>
-            <button class="mini-btn delete-btn" onclick="deleteItineraryItem('${item.id}')">刪除</button>
+            ${!appState.travelLockMode ? `<button class="mini-btn delete-btn" onclick="deleteItineraryItem('${item.id}')">刪除</button>` : ""}
           </div>
         `;
 
@@ -1972,6 +2117,18 @@
       renderTimelineCards();
     }
 
+    function addCustomEmojiAndStamp(itemId) {
+      const inp = document.getElementById(`customEmojiInp_${itemId}`);
+      if (!inp) return;
+      const val = inp.value.trim();
+      if (!val) return;
+      appState.customEmojis = appState.customEmojis || [];
+      if (!DEFAULT_MOOD_EMOJIS.includes(val) && !appState.customEmojis.includes(val)) {
+        appState.customEmojis.push(val);
+      }
+      setCardMoodStamp(itemId, val);
+    }
+
     function toggleQuickExpenseDrawer(itemId) {
       const el = document.getElementById(`expDrawer_${itemId}`);
       if (!el) return;
@@ -1994,15 +2151,6 @@
 
       item.extraExpenses = Array.isArray(item.extraExpenses) ? item.extraExpenses : [];
       item.extraExpenses.push({ name, amount });
-      saveAppState();
-      renderAll();
-    }
-
-    function removeInlineExtraExpense(itemId, expIdx) {
-      const day = getActiveDay();
-      const item = day.items.find(i => i.id === itemId);
-      if (!item || !Array.isArray(item.extraExpenses)) return;
-      item.extraExpenses.splice(expIdx, 1);
       saveAppState();
       renderAll();
     }
@@ -2041,7 +2189,7 @@
     }
 
     /*************************************************************************
-     * 6. ADD / EDIT ITEM MODAL (Clean Labels, Zero Bracket Clutter)
+     * 6. ADD / EDIT ITEM MODAL (With Extra Expense Management & Deletion #6/#10)
      *************************************************************************/
     function initFormSelectors() {
       const startTzSel = document.getElementById("fStartTz");
@@ -2077,7 +2225,6 @@
       document.getElementById("roadtripFieldsBox").style.display = (t === "roadtrip") ? "block" : "none";
     }
 
-    // Clean placeholders without long bracketed descriptions!
     function addTransitLegRow(leg = { from: "", to: "", line: "", trainNo: "" }) {
       const container = document.getElementById("transitLegsContainer");
       const div = document.createElement("div");
@@ -2098,6 +2245,18 @@
       container.appendChild(div);
     }
 
+    function addExtraExpenseRowInModal(exp = { name: "", amount: "" }) {
+      const container = document.getElementById("modalExtraExpensesList");
+      const row = document.createElement("div");
+      row.className = "extra-exp-row";
+      row.innerHTML = `
+        <input type="text" class="form-input modal-exp-name" placeholder="消費品項" value="${escapeHtml(exp.name || "")}" />
+        <input type="number" class="form-input modal-exp-amt" placeholder="金額" value="${exp.amount !== undefined ? exp.amount : ""}" />
+        <button type="button" class="mini-btn delete-btn" onclick="this.closest('.extra-exp-row').remove()">刪除</button>
+      `;
+      container.appendChild(row);
+    }
+
     function openItemModal(itemId = null) {
       editingItemId = itemId;
       const trip = getActiveTrip();
@@ -2106,6 +2265,7 @@
 
       document.getElementById("itemModalTitle").textContent = item ? "編輯行程卡片" : "新增行程卡片";
       document.getElementById("transitLegsContainer").innerHTML = "";
+      document.getElementById("modalExtraExpensesList").innerHTML = "";
 
       if (item) {
         document.getElementById("fType").value = item.type || "spot";
@@ -2140,6 +2300,10 @@
           item.transitLegs.forEach(l => addTransitLegRow(l));
         } else {
           addTransitLegRow();
+        }
+
+        if (Array.isArray(item.extraExpenses) && item.extraExpenses.length > 0) {
+          item.extraExpenses.forEach(ex => addExtraExpenseRowInModal(ex));
         }
 
         formTempPhotos = Array.isArray(item.photos) ? [...item.photos] : [];
@@ -2254,7 +2418,6 @@
         renderAll();
         if (fromShareModal && currentShareItem && currentShareItem.id === itemId) {
           selectedSharePhotoIndex = item.photos.length - 1;
-          document.getElementById("shareTemplateSelect").value = "polaroid";
           onShareTemplateChange();
         }
       };
@@ -2313,6 +2476,16 @@
         await geocodeStationOnline(title, startTz);
       }
 
+      // Collect edited extra expenses from modal (#6 & #10)
+      const extraExpenses = [];
+      document.querySelectorAll("#modalExtraExpensesList .extra-exp-row").forEach(row => {
+        const name = row.querySelector(".modal-exp-name").value.trim();
+        const amount = Number(row.querySelector(".modal-exp-amt").value) || 0;
+        if (name || amount > 0) {
+          extraExpenses.push({ name: name || "現場消費", amount });
+        }
+      });
+
       const payload = {
         id: editingItemId || ("item_" + Date.now()),
         type,
@@ -2333,7 +2506,7 @@
         endTime,
         currency,
         cost,
-        extraExpenses: existingItem && Array.isArray(existingItem.extraExpenses) ? existingItem.extraExpenses : [],
+        extraExpenses,
         note,
         url,
         urlLabel,
@@ -2352,7 +2525,7 @@
       saveAppState();
       closeItemModal();
       renderAll();
-      refreshRealtimeWeather();
+      refreshRealtimeWeather(false);
     }
 
     /*************************************************************************
@@ -2385,7 +2558,7 @@
       saveAppState();
       openTripManager();
       renderAll();
-      refreshRealtimeWeather();
+      refreshRealtimeWeather(false);
     }
 
     function saveCurrentTripMeta() {
@@ -2421,7 +2594,7 @@
       saveAppState();
       closeTripManager();
       renderAll();
-      refreshRealtimeWeather();
+      refreshRealtimeWeather(false);
     }
 
     function deleteCurrentTrip() {
@@ -2439,12 +2612,9 @@
     }
 
     /*************************************************************************
-     * 8. 9:16 STORY CARD ENGINE (All 5 Templates)
-     * - Template 1: Polaroid Frame (Available for ALL item types!)
-     * - Template 2: Beck's Octilinear Metro Topology (Solid colored endpoints + Split half-and-half transfer nodes!)
-     * - Template 3: Vintage Ferry / Boat Ticket Stub (Perforated notches, wave pattern, pier info)
-     * - Template 4: Boarding Pass + Real 3D Orthographic Globe (Zero overlapping typography!)
-     * - Template 5: Road Trip Highway Milestone Log
+     * 8. 9:16 STORY CARD ENGINE
+     * - Dot Grid / Graph Grid Paper Texture (#4)
+     * - Overlay Mini Polaroid Sticker on Transit/Ferry/Flight/Roadtrip (#3)
      *************************************************************************/
     function initSwatchButtons() {
       const outerRow = document.getElementById("outerPaperSwatches");
@@ -2460,6 +2630,10 @@
           style="background:${s.bg}; color:${s.text}; border:1px solid #ccc;"
           onclick="selectInnerSwatch('${s.id}')">${s.name}</button>
       `).join("");
+
+      document.querySelectorAll("#paperTextureSwatches .swatch-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-tex") === appState.paperTexture);
+      });
     }
 
     function selectOuterSwatch(id) {
@@ -2474,6 +2648,50 @@
       localStorage.setItem("TABIGRAM_INNER_SWATCH", id);
       initSwatchButtons();
       renderStoryCanvas();
+    }
+
+    function selectPaperTexture(tex) {
+      appState.paperTexture = tex;
+      localStorage.setItem("TABIGRAM_PAPER_TEX", tex);
+      initSwatchButtons();
+      renderStoryCanvas();
+    }
+
+    // Draw Dot Grid or Graph Grid Texture inside Ticket Card (#4)
+    function drawCardPaperTexture(ctx, x, y, w, h, radius, bgFill, textureMode) {
+      drawRoundedRect(ctx, x, y, w, h, radius, bgFill);
+      if (!textureMode || textureMode === "plain") return;
+
+      ctx.save();
+      drawRoundedRectPath(ctx, x, y, w, h, radius);
+      ctx.clip();
+
+      if (textureMode === "dots") {
+        ctx.fillStyle = "rgba(25, 25, 25, 0.13)";
+        const step = 34;
+        for (let gx = x + 26; gx < x + w - 16; gx += step) {
+          for (let gy = y + 26; gy < y + h - 16; gy += step) {
+            ctx.beginPath();
+            ctx.arc(gx, gy, 2.2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      } else if (textureMode === "grid") {
+        ctx.strokeStyle = "rgba(25, 25, 25, 0.075)";
+        ctx.lineWidth = 1.5;
+        const step = 38;
+        ctx.beginPath();
+        for (let gx = x + step; gx < x + w; gx += step) {
+          ctx.moveTo(gx, y);
+          ctx.lineTo(gx, y + h);
+        }
+        for (let gy = y + step; gy < y + h; gy += step) {
+          ctx.moveTo(x, gy);
+          ctx.lineTo(x + w, gy);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
     }
 
     async function ensureWorldAtlasLoaded() {
@@ -2525,7 +2743,10 @@
       const tpl = document.getElementById("shareTemplateSelect").value;
       const hasPhotos = Array.isArray(currentShareItem.photos) && currentShareItem.photos.length > 0;
 
-      // Show Polaroid controls when in Polaroid mode OR when item has uploaded photos
+      // Show overlay toggle whenever template is NOT polaroid and item has photos (#3)
+      const overlayToggleRow = document.getElementById("overlayPolaroidToggleRow");
+      overlayToggleRow.style.display = (tpl !== "polaroid" && hasPhotos) ? "flex" : "none";
+
       const polaroidBox = document.getElementById("polaroidControlsBox");
       polaroidBox.style.display = (tpl === "polaroid" || hasPhotos) ? "block" : "none";
 
@@ -2534,7 +2755,7 @@
         thumbRow.style.display = "block";
         document.getElementById("sharePhotoThumbs").innerHTML = currentShareItem.photos.map((p, i) => `
           <img class="card-photo-thumb" src="${p.dataUrl}" style="border:${i === selectedSharePhotoIndex ? "3px solid var(--accent)" : "1px solid var(--border)"}"
-            onclick="selectedSharePhotoIndex=${i}; document.getElementById('shareTemplateSelect').value='polaroid'; onShareTemplateChange();" />
+            onclick="selectedSharePhotoIndex=${i}; onShareTemplateChange();" />
         `).join("");
         const currentPhoto = currentShareItem.photos[selectedSharePhotoIndex];
         document.getElementById("sharePolaroidCaption").value = (currentPhoto && currentPhoto.caption) || "";
@@ -2547,12 +2768,72 @@
     }
 
     /**
-     * TEMPLATE 2: Beck's Octilinear Metro Topology
-     * - Endpoints: Solid circle in the exact same color as the line!
-     * - Transfer Stations: Half-and-half split dual-color solid circle (left half incoming color, right half outgoing color)!
+     * Draw Mini Polaroid Sticker Overlay on Non-Polaroid Cards (Transit, Ferry, Flight, Roadtrip) (#3)
+     */
+    async function drawMiniPolaroidStickerOverlay(ctx, item, cardX, cardY, cardW, cardH) {
+      if (!item.photos || !item.photos[selectedSharePhotoIndex]) return;
+      const overlayCheck = document.getElementById("shareOverlayPolaroidCheck");
+      if (overlayCheck && !overlayCheck.checked) return;
+
+      const photoObj = item.photos[selectedSharePhotoIndex];
+      const imgObj = await loadImageElement(photoObj.dataUrl);
+
+      const zoom = parseFloat(document.getElementById("photoZoomRange").value) || 1;
+      const panX = parseFloat(document.getElementById("photoPanXRange").value) || 0;
+      const panY = parseFloat(document.getElementById("photoPanYRange").value) || 0;
+      const capText = document.getElementById("sharePolaroidCaption").value.trim();
+
+      const pW = 310, pH = 365;
+      const px = cardX + cardW - pW - 28;
+      const py = cardY + cardH - pH - 28;
+
+      ctx.save();
+      ctx.translate(px + pW / 2, py + pH / 2);
+      ctx.rotate(0.065); // Stylish tilted Polaroid sticker
+
+      // Drop shadow
+      ctx.shadowColor = "rgba(0, 0, 0, 0.28)";
+      ctx.shadowBlur = 24;
+      ctx.shadowOffsetY = 10;
+      drawRoundedRect(ctx, -pW / 2, -pH / 2, pW, pH, 14, "#FFFFFF");
+      ctx.shadowColor = "transparent";
+
+      // Washi Tape at top center of Polaroid sticker
+      ctx.save();
+      ctx.rotate(-0.04);
+      ctx.fillStyle = "rgba(200, 75, 49, 0.72)";
+      ctx.fillRect(-52, -pH / 2 - 12, 104, 24);
+      ctx.restore();
+
+      // Inner Photo Crop
+      const imgX = -pW / 2 + 18, imgY = -pH / 2 + 18, imgW = pW - 36, imgH = pH - 86;
+      ctx.save();
+      drawRoundedRectPath(ctx, imgX, imgY, imgW, imgH, 8);
+      ctx.clip();
+
+      const scale = Math.max(imgW / imgObj.width, imgH / imgObj.height) * zoom;
+      const dw = imgObj.width * scale;
+      const dh = imgObj.height * scale;
+      const dx = imgX + (imgW - dw) / 2 + panX * 1.2;
+      const dy = imgY + (imgH - dh) / 2 + panY * 1.2;
+      ctx.drawImage(imgObj, dx, dy, dw, dh);
+      ctx.restore();
+
+      if (capText) {
+        ctx.fillStyle = "#191919";
+        ctx.font = "700 20px 'Noto Sans TC', sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(capText.slice(0, 14), 0, pH / 2 - 26);
+      }
+
+      ctx.restore();
+    }
+
+    /**
+     * TEMPLATE 2: Beck's Octilinear Metro Topology on Dot Grid / Graph Grid Paper
      */
     function drawBeckOctilinearTransitCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch) {
-      drawRoundedRect(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg);
+      drawCardPaperTexture(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg, appState.paperTexture);
 
       const legs = (Array.isArray(item.transitLegs) && item.transitLegs.length > 0)
         ? item.transitLegs
@@ -2631,7 +2912,6 @@
         y: Math.round(cy + (p.y - midY) * scale)
       }));
 
-      // Draw Octilinear Route Lines
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       for (let i = 1; i < screenPts.length; i++) {
@@ -2661,41 +2941,36 @@
         ctx.stroke();
       }
 
-      // Draw Solid Same-Color Endpoints & Split Dual-Color Transfer Nodes!
+      // Solid Same-Color Endpoints + Split Half-and-Half Transfer Nodes
       screenPts.forEach((pt, idx) => {
         const st = stations[idx];
         const isTransfer = idx > 0 && idx < screenPts.length - 1 && st.inColor !== st.outColor;
         const r = 22;
 
-        // Subtle outer white halo so solid nodes pop cleanly from line
         ctx.beginPath();
         ctx.arc(pt.x, pt.y, r + 4, 0, Math.PI * 2);
         ctx.fillStyle = innerSwatch.bg;
         ctx.fill();
 
         if (isTransfer) {
-          // Left half: incoming line color
           ctx.beginPath();
           ctx.arc(pt.x, pt.y, r, Math.PI * 0.5, Math.PI * 1.5);
           ctx.closePath();
           ctx.fillStyle = st.inColor;
           ctx.fill();
 
-          // Right half: outgoing line color
           ctx.beginPath();
           ctx.arc(pt.x, pt.y, r, -Math.PI * 0.5, Math.PI * 0.5);
           ctx.closePath();
           ctx.fillStyle = st.outColor;
           ctx.fill();
         } else {
-          // Solid single-color circle matching the route line color!
           ctx.beginPath();
           ctx.arc(pt.x, pt.y, r, 0, Math.PI * 2);
           ctx.fillStyle = st.inColor;
           ctx.fill();
         }
 
-        // Station Name Label
         ctx.font = "900 32px 'Noto Sans TC', sans-serif";
         ctx.fillStyle = innerSwatch.text;
         const label = st.name;
@@ -2716,16 +2991,14 @@
      * TEMPLATE 3: Vintage Ferry / Maritime Boarding Ticket Stub
      */
     function drawFerryTicketCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch, outerSwatch) {
-      drawRoundedRect(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg);
+      drawCardPaperTexture(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg, appState.paperTexture);
 
-      // Side perforated ticket notches
       ctx.fillStyle = outerSwatch.bg;
       ctx.beginPath();
       ctx.arc(cardX, cardY + cardH * 0.62, 26, 0, Math.PI * 2);
       ctx.arc(cardX + cardW, cardY + cardH * 0.62, 26, 0, Math.PI * 2);
       ctx.fill();
 
-      // Dashed tear line
       ctx.strokeStyle = "rgba(0,0,0,0.16)";
       ctx.lineWidth = 3;
       ctx.setLineDash([12, 10]);
@@ -2735,7 +3008,6 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Top Navy Maritime Header Band
       drawRoundedRect(ctx, cardX + 36, cardY + 36, cardW - 72, 92, 18, "#0F2942");
       ctx.fillStyle = "#FFFFFF";
       ctx.font = "800 26px 'JetBrains Mono', monospace";
@@ -2748,7 +3020,6 @@
         trainNo: "DECK PASS"
       };
 
-      // Pier Departure -> Arrival Display
       ctx.fillStyle = "#64748B";
       ctx.font = "700 22px 'JetBrains Mono', monospace";
       ctx.fillText("EMBARKATION PIER", cardX + 64, cardY + 220);
@@ -2764,7 +3035,6 @@
       ctx.fillText((leg.to || "抵達港").slice(0, 6), cardX + cardW - 64, cardY + 295);
       ctx.textAlign = "left";
 
-      // Center Ship & Nautical Wave Graphic
       const midX = cardX + cardW / 2;
       ctx.strokeStyle = "#0284C7";
       ctx.lineWidth = 5;
@@ -2777,7 +3047,6 @@
       ctx.fillText("⛴️", midX, cardY + 262);
       ctx.textAlign = "left";
 
-      // Nautical Wave Curves
       ctx.strokeStyle = "rgba(2, 132, 199, 0.22)";
       ctx.lineWidth = 4;
       for (let wy = cardY + 380; wy <= cardY + 540; wy += 45) {
@@ -2789,7 +3058,6 @@
         ctx.stroke();
       }
 
-      // Lower Stub Details (Well-spaced columns, zero overlap)
       const stubY = cardY + cardH * 0.62 + 75;
       ctx.fillStyle = "#64748B";
       ctx.font = "700 20px 'JetBrains Mono', monospace";
@@ -2805,24 +3073,20 @@
       ctx.font = "800 28px 'Noto Sans TC', sans-serif";
       ctx.fillText((leg.trainNo || "自由席").slice(0, 8), cardX + 690, stubY + 48);
 
-      // Barcode Strip at bottom of Ferry Ticket
       drawBarcodeStrip(ctx, cardX + 64, cardY + cardH - 135, cardW - 128, 70, innerSwatch.text);
     }
 
     /**
-     * TEMPLATE 4: Refined Boarding Pass + Real 3D Orthographic Globe
-     * Strictly engineered column spacing & letter-spacing so IATA codes, city names,
-     * flight numbers, gates, and times NEVER overlap!
+     * TEMPLATE 4: Boarding Pass + Real 3D Orthographic Globe (Zero Overlap Typography!)
      */
     async function drawBoardingPassWith3DGlobeCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch, outerSwatch) {
-      drawRoundedRect(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg);
+      drawCardPaperTexture(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg, appState.paperTexture);
 
       const depCode = (item.depIata || "TPE").toUpperCase().slice(0, 4);
       const arrCode = (item.arrIata || "NRT").toUpperCase().slice(0, 4);
       const dep = AIRPORT_COORDS[depCode] || AIRPORT_COORDS["TPE"];
       const arr = AIRPORT_COORDS[arrCode] || AIRPORT_COORDS["NRT"];
 
-      // 1. Top Half: Real 3D Orthographic Globe Window (Height: 540px)
       const globeBoxX = cardX + 28;
       const globeBoxY = cardY + 28;
       const globeBoxW = cardW - 56;
@@ -2876,7 +3140,6 @@
       ctx.lineWidth = 2.5;
       ctx.stroke();
 
-      // Great Circle Route Curve
       const routeFeature = {
         type: "LineString",
         coordinates: [[dep.lng, dep.lat], [arr.lng, arr.lat]]
@@ -2901,7 +3164,6 @@
         ctx.stroke();
       });
 
-      // Top Left & Right HUD inside Globe Window (Strictly separated, zero overlap)
       ctx.fillStyle = "#94A3B8";
       ctx.font = "700 19px 'JetBrains Mono', monospace";
       ctx.fillText("GREAT CIRCLE TELEMETRY", globeBoxX + 30, globeBoxY + 42);
@@ -2910,10 +3172,8 @@
       ctx.fillText(`${item.flightNo || "FLIGHT"}`, globeBoxX + globeBoxW - 30, globeBoxY + 42);
       ctx.textAlign = "left";
 
-      // 2. Boarding Pass Lower Section with Perforated Tear Line (Zero Overlap Typography!)
       const bpTop = globeBoxY + globeBoxH + 45;
 
-      // Left Zone: Departure IATA | Center Zone: Plane Icon | Right Zone: Arrival IATA
       ctx.fillStyle = "#64748B";
       ctx.font = "700 18px 'JetBrains Mono', monospace";
       ctx.fillText("ORIGIN", cardX + 58, bpTop);
@@ -2921,7 +3181,6 @@
       ctx.fillText("DESTINATION", cardX + cardW - 58, bpTop);
       ctx.textAlign = "left";
 
-      // Giant IATA 3-Letter Codes at fixed left/right anchors so they NEVER collide with center icon
       ctx.fillStyle = innerSwatch.text;
       ctx.font = "400 76px 'Dela Gothic One', sans-serif";
       ctx.fillText(depCode, cardX + 58, bpTop + 86);
@@ -2930,7 +3189,6 @@
       ctx.fillText(arrCode, cardX + cardW - 58, bpTop + 86);
       ctx.textAlign = "left";
 
-      // Center Flight Path Arrow
       const centerAxis = cardX + cardW / 2;
       ctx.strokeStyle = "#CBD5E1";
       ctx.lineWidth = 3;
@@ -2944,7 +3202,6 @@
       ctx.fillText("✈️", centerAxis, bpTop + 72);
       ctx.textAlign = "left";
 
-      // Airport Full Names (Truncated cleanly to max 16 chars each side)
       ctx.fillStyle = "#64748B";
       ctx.font = "700 18px 'JetBrains Mono', monospace";
       ctx.fillText((dep.name || "").slice(0, 16), cardX + 58, bpTop + 120);
@@ -2952,7 +3209,6 @@
       ctx.fillText((arr.name || "").slice(0, 16), cardX + cardW - 58, bpTop + 120);
       ctx.textAlign = "left";
 
-      // Perforated Notch Line
       const notchY = bpTop + 162;
       ctx.fillStyle = outerSwatch.bg;
       ctx.beginPath();
@@ -2969,7 +3225,6 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // 3-Column Flight Metadata Grid (Fixed X coordinates: Col1=58, Col2=360, Col3=640)
       const gridY = notchY + 52;
       ctx.fillStyle = "#64748B";
       ctx.font = "700 18px 'JetBrains Mono', monospace";
@@ -2983,7 +3238,6 @@
       ctx.fillText(`${item.startTime || "09:00"} → ${item.endTime || "13:00"}`, cardX + 330, gridY + 42);
       ctx.fillText((item.gateSeat || "GATE TBD").slice(0, 11), cardX + 660, gridY + 42);
 
-      // Barcode Strip at bottom
       drawBarcodeStrip(ctx, cardX + 58, cardY + cardH - 115, cardW - 116, 64, innerSwatch.text);
     }
 
@@ -2991,9 +3245,8 @@
      * TEMPLATE 5: Road Trip Highway Milestone Card
      */
     function drawRoadTripLogCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch) {
-      drawRoundedRect(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg);
+      drawCardPaperTexture(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg, appState.paperTexture);
 
-      // Highway Shield Header
       drawRoundedRect(ctx, cardX + 42, cardY + 42, cardW - 84, 96, 20, "#1E3A2F");
       ctx.fillStyle = "#F6F3EC";
       ctx.font = "800 26px 'JetBrains Mono', monospace";
@@ -3004,7 +3257,6 @@
       const stopsList = item.roadStops ? item.roadStops.split(/[,，、]/).map(s => s.trim()).filter(Boolean) : [];
       const allNodes = [fromName, ...stopsList, toName];
 
-      // Winding Asphalt Road Path through Center
       const startY = cardY + 230;
       const endY = cardY + cardH - 130;
       const stepY = (endY - startY) / Math.max(1, allNodes.length - 1);
@@ -3015,7 +3267,6 @@
         return { name, x: cx + offset, y: startY + idx * stepY };
       });
 
-      // Road Outer Asphalt
       ctx.strokeStyle = "#292524";
       ctx.lineWidth = 34;
       ctx.lineCap = "round";
@@ -3024,7 +3275,6 @@
       pts.forEach((p, i) => { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
       ctx.stroke();
 
-      // Road Center Yellow Dashed Line
       ctx.strokeStyle = "#FACC15";
       ctx.lineWidth = 4;
       ctx.setLineDash([16, 14]);
@@ -3033,7 +3283,6 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Draw Milestone Pins
       pts.forEach((p, idx) => {
         const isEnd = idx === 0 || idx === pts.length - 1;
         ctx.beginPath();
@@ -3082,11 +3331,17 @@
       const outerSwatch = OUTER_SWATCHES.find(s => s.id === appState.outerSwatchId) || OUTER_SWATCHES[0];
       const innerSwatch = INNER_SWATCHES.find(s => s.id === appState.innerSwatchId) || INNER_SWATCHES[0];
 
+      const capText = document.getElementById("sharePolaroidCaption").value.trim();
+      if (item.photos && item.photos[selectedSharePhotoIndex]) {
+        item.photos[selectedSharePhotoIndex].caption = capText;
+        saveAppState();
+      }
+
       // 1. Outer Background Paper
       ctx.fillStyle = outerSwatch.bg;
       ctx.fillRect(0, 0, W, H);
 
-      // 2. Clean Minimal Top Header (No bulky logo!)
+      // 2. Clean Minimal Top Header
       ctx.fillStyle = outerSwatch.text;
       ctx.globalAlpha = 0.85;
       ctx.font = "800 24px 'JetBrains Mono', monospace";
@@ -3118,14 +3373,18 @@
 
       if (tpl === "transit") {
         drawBeckOctilinearTransitCard(ctx, item, mainX, mainY, mainW, mainH, innerSwatch);
+        await drawMiniPolaroidStickerOverlay(ctx, item, mainX, mainY, mainW, mainH);
       } else if (tpl === "ferry") {
         drawFerryTicketCard(ctx, item, mainX, mainY, mainW, mainH, innerSwatch, outerSwatch);
+        await drawMiniPolaroidStickerOverlay(ctx, item, mainX, mainY, mainW, mainH);
       } else if (tpl === "flight") {
         await drawBoardingPassWith3DGlobeCard(ctx, item, mainX, mainY, mainW, mainH, innerSwatch, outerSwatch);
+        await drawMiniPolaroidStickerOverlay(ctx, item, mainX, mainY, mainW, mainH);
       } else if (tpl === "roadtrip") {
         drawRoadTripLogCard(ctx, item, mainX, mainY, mainW, mainH, innerSwatch);
+        await drawMiniPolaroidStickerOverlay(ctx, item, mainX, mainY, mainW, mainH);
       } else {
-        // Polaroid Frame Mode (Works for ANY item type!)
+        // Full Polaroid Frame Mode
         drawRoundedRect(ctx, mainX, mainY, mainW, mainH, 24, "#FFFFFF");
         const photoX = mainX + 44, photoY = mainY + 44, photoW = mainW - 88, photoH = mainH - 210;
 
@@ -3156,11 +3415,6 @@
         }
         ctx.restore();
 
-        const capText = document.getElementById("sharePolaroidCaption").value.trim();
-        if (item.photos && item.photos[selectedSharePhotoIndex]) {
-          item.photos[selectedSharePhotoIndex].caption = capText;
-          saveAppState();
-        }
         if (capText) {
           ctx.fillStyle = "#292524";
           ctx.font = "700 32px 'Noto Sans TC', sans-serif";
@@ -3172,7 +3426,7 @@
 
       // 4. Lower Summary Stub Card (Y: 1275 -> 1715)
       const ticketY = 1275, ticketH = 440;
-      drawRoundedRect(ctx, mainX, ticketY, mainW, ticketH, 32, innerSwatch.bg);
+      drawCardPaperTexture(ctx, mainX, ticketY, mainW, ticketH, 32, innerSwatch.bg, appState.paperTexture);
 
       ctx.fillStyle = innerSwatch.text;
       ctx.font = "900 44px 'Noto Sans TC', sans-serif";
@@ -3241,7 +3495,7 @@
     }
 
     /*************************************************************************
-     * 9. LEAFLET ROUTE MAP (Restored Reliable Standard OpenStreetMap Tiles!)
+     * 9. LEAFLET ROUTE MAP (Standard OpenStreetMap Tiles)
      *************************************************************************/
     function switchMainView(view) {
       document.getElementById("timelineView").style.display = (view === "timeline") ? "block" : "none";
@@ -3263,7 +3517,6 @@
 
       if (!leafletMap) {
         leafletMap = L.map(mapEl).setView([25.0478, 121.5170], 12);
-        // Restored standard OpenStreetMap tile server so tiles ALWAYS load reliably!
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           maxZoom: 19,
           attribution: "&copy; OpenStreetMap contributors"
@@ -3476,7 +3729,7 @@
     }
 
     /*************************************************************************
-     * 11. ARCHIVE POSTER, PIN LOCK & PWA ICON (Dela Gothic One "旅")
+     * 11. ARCHIVE POSTER, PIN LOCK & GUARANTEED DELA GOTHIC ONE APP ICON (#1)
      *************************************************************************/
     function openArchiveModal() {
       const trip = getActiveTrip();
@@ -3585,13 +3838,15 @@
       e.target.value = "";
     }
 
-    // Mount Apple Touch Icon using Dela Gothic One font
+    // Fix #1: Strictly await document.fonts.ready & explicit Dela Gothic One glyph load before rendering Apple Touch Icon!
     async function mountAppleTouchIcon() {
       try {
-        if (document.fonts && document.fonts.load) {
-          await document.fonts.load("400 300px 'Dela Gothic One'");
+        if (document.fonts) {
+          await document.fonts.load("400 300px 'Dela Gothic One'", "旅");
+          await document.fonts.ready;
         }
       } catch (e) {}
+
       const c = document.createElement("canvas");
       c.width = 512;
       c.height = 512;
@@ -3599,14 +3854,24 @@
       ctx.fillStyle = "#141413";
       ctx.fillRect(0, 0, 512, 512);
       ctx.fillStyle = "#F6F3EC";
-      ctx.font = "400 290px 'Dela Gothic One', 'Noto Sans TC', sans-serif";
+      ctx.font = "400 300px 'Dela Gothic One', sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText("旅", 256, 266);
-      const link = document.createElement("link");
-      link.rel = "apple-touch-icon";
-      link.href = c.toDataURL("image/png");
-      document.head.appendChild(link);
+      ctx.fillText("旅", 256, 268);
+
+      const dataUrl = c.toDataURL("image/png");
+      document.querySelectorAll("link[rel='apple-touch-icon'], link[rel='icon']").forEach(el => el.remove());
+
+      const appleLink = document.createElement("link");
+      appleLink.rel = "apple-touch-icon";
+      appleLink.href = dataUrl;
+      document.head.appendChild(appleLink);
+
+      const favLink = document.createElement("link");
+      favLink.rel = "icon";
+      favLink.type = "image/png";
+      favLink.href = dataUrl;
+      document.head.appendChild(favLink);
     }
 
     function escapeHtml(str) {
@@ -3656,9 +3921,13 @@
       }
       initFormSelectors();
       renderAll();
-      refreshRealtimeWeather();
-      // Keep the green NOW dot on the solar track live-updated every 30 seconds
-      setInterval(updateSolarTrackDots, 30000);
+      refreshRealtimeWeather(false);
+
+      // Re-evaluate NOW active status & Solar Track green dot every 30 seconds
+      setInterval(() => {
+        updateSolarTrackDots();
+        renderTimelineCards();
+      }, 30000);
     });
   </script>
 </body>

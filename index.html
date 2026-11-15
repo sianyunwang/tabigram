@@ -1030,8 +1030,8 @@
 
       <!-- 右上角整合型下拉選單按鈕 -->
       <div style="position: relative;">
-        <button class="pill-btn" id="menuToggleBtn" onclick="toggleHeaderDropdown()" style="display: flex; align-items: center; gap: 4px; font-weight: 700;">
-          選單 ▾
+        <button class="pill-btn" id="menuToggleBtn" onclick="toggleHeaderDropdown()" style="display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; padding: 4px 10px;">
+          ☰
         </button>
 
         <!-- 下拉選單內容 (預設隱藏) -->
@@ -4769,18 +4769,6 @@
           await pullAllCloudTripsAndMerge();
         }
       });
-    }
-
-    function updateCloudButtonBadge() {
-      const btn = document.getElementById("cloudSyncBtn");
-      if (!btn) return;
-      if (currentCloudUser) {
-        btn.textContent = "☁️ 帳號";
-        btn.classList.add("travel-mode-on");
-      } else {
-        btn.textContent = "☁️ 登入";
-        btn.classList.remove("travel-mode-on");
-      }
     }
 
     function openCloudModal() {

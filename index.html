@@ -1015,7 +1015,7 @@
           <option value="clean">Simple</option>
           <option value="metallic">Silvre</option>
         </select>
-        <button class="pill-btn" id="travelModeBtn" onclick="toggleTravelLockMode()">🔓 規劃中</button>
+        <button class="pill-btn accent-outline" id="travelModeBtn" onclick="toggleTravelLockMode()">🔓</button>
       </div>
     </div>
 
@@ -2075,12 +2075,12 @@
       const tmBtn = document.getElementById("travelModeBtn");
       const addTopBtn = document.getElementById("addTopBtn");
       if (appState.travelLockMode) {
-        tmBtn.textContent = "🔒 旅途中";
-        tmBtn.className = "pill-btn travel-mode-on";
+        tmBtn.textContent = "🔒";
+        tmBtn.className = "pill-btn travel-mode-on"; // 維持原本的反綠
         addTopBtn.style.display = "none";
       } else {
-        tmBtn.textContent = "🔓 規劃中";
-        tmBtn.className = "pill-btn";
+        tmBtn.textContent = "🔓";
+        tmBtn.className = "pill-btn accent-outline"; // 編輯中顯示橘紅色
         addTopBtn.style.display = "inline-flex";
       }
 
@@ -2180,7 +2180,7 @@
 
     function convertTimeBetweenTz(timeHHMM, fromTz, toTz) {
       if (!timeHHMM || !fromTz || !toTz) return null;
-      if (fromTz === toTz) return `${timeHHMM} (同區)`;
+      if (fromTz === toTz) return null;
       try {
         const [h, m] = timeHHMM.split(":").map(Number);
         const now = new Date();
@@ -2197,7 +2197,7 @@
         else if (totalMin >= 1440) { totalMin -= 1440; dayShift = " (+1日)"; }
         const nh = String(Math.floor(totalMin / 60)).padStart(2, "0");
         const nm = String(totalMin % 60).padStart(2, "0");
-        return `家鄉 ${nh}:${nm}${dayShift}`;
+        return `${nh}:${nm}${dayShift}`;
       } catch (e) {
         return null;
       }

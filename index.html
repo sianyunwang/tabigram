@@ -1006,49 +1006,48 @@
 <body>
 
   <!-- Top Header -->
+  <!-- Top Header -->
   <header class="app-header" id="appTopHeader">
-    <div class="brand-row">
-      <div class="brand-left">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: relative;">
+      
+      <!-- 左側：Logo + 品牌字 + 新增按鈕 -->
+      <div style="display: flex; align-items: center; gap: 8px;">
         <div class="brand-logo">旅</div>
-        <div class="brand-title">TABIGRAM</div>
+        <span style="font-family: 'Dela Gothic One', sans-serif; font-size: 19px; letter-spacing: 1px; margin-right: 4px;">TABIGRAM</span>
+        <button class="pill-btn primary" id="addTopBtn" onclick="openItemModal()" style="padding: 6px 12px; font-size: 12px;">＋ 新增行程</button>
       </div>
-      <div class="header-right-controls">
+
+      <!-- 右側：佈景、編輯鎖、漢堡選單 -->
+      <div style="display: flex; align-items: center; gap: 6px;">
         <select class="theme-select-pill" id="uiThemeSelect" onchange="setUiMaterialTheme(this.value)">
           <option value="clean">Simple</option>
           <option value="metallic">Silvre</option>
         </select>
-        <button class="pill-btn accent-outline" id="travelModeBtn" onclick="toggleTravelLockMode()">🔓</button>
-      </div>
-    </div>
+        <button class="pill-btn accent-outline" id="travelModeBtn" onclick="toggleTravelLockMode()" style="padding: 4px 10px;">🔓</button>
 
-    <!-- 頂部導覽列：左側 Logo / 右側下拉選單 -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: relative;">
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="font-family: 'Dela Gothic One', sans-serif; font-size: 18px; letter-spacing: 1px;">TABIGRAM</span>
-        <button class="pill-btn primary" id="addTopBtn" onclick="openItemModal()" style="padding: 6px 12px; font-size: 12px;">＋ 新增行程</button>
-      </div>
+        <!-- 右上角整合型下拉選單按鈕 -->
+        <div style="position: relative;">
+          <button class="pill-btn" id="menuToggleBtn" onclick="toggleHeaderDropdown()" style="display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; padding: 4px 10px;">
+            ☰
+          </button>
 
-      <!-- 右上角整合型下拉選單按鈕 -->
-      <div style="position: relative;">
-        <button class="pill-btn" id="menuToggleBtn" onclick="toggleHeaderDropdown()" style="display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; padding: 4px 10px;">
-          ☰
-        </button>
-
-        <!-- 下拉選單內容 (預設隱藏) -->
-        <div id="headerDropdownMenu" style="display: none; position: absolute; right: 0; top: 110%; background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); width: 180px; z-index: 100; overflow: hidden; padding: 4px;">
-          <button class="dropdown-item" id="dropdownCloudBtn" onclick="openCloudModal(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 10px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-             登入
-          </button>
-          <button class="dropdown-item" onclick="openTripManager(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 10px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-             我的旅程
-          </button>
-          <button class="dropdown-item" onclick="openArchiveModal(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 10px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-             典藏旅程
-          </button>
+          <!-- 下拉選單內容 (預設隱藏) -->
+          <div id="headerDropdownMenu" style="display: none; position: absolute; right: 0; top: 110%; background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); width: 150px; z-index: 100; overflow: hidden; padding: 4px;">
+            <button class="dropdown-item" id="dropdownCloudBtn" onclick="openCloudModal(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 10px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
+              ☁️ 登入
+            </button>
+            <button class="dropdown-item" onclick="openTripManager(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 10px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
+              ✈️ 我的旅程
+            </button>
+            <button class="dropdown-item" onclick="openArchiveModal(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 10px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
+              📦 典藏旅程
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
+    </div>
+    
     <div class="trip-tabs-bar" id="tripTabsBar"></div>
   </header>
 
@@ -2148,8 +2147,7 @@
     }
 
     function renderHeaderAndTabs() {
-      document.getElementById("tripCountBtn").textContent = `旅行專案 (${appState.trips.length})`;
-
+      
       const tmBtn = document.getElementById("travelModeBtn");
       const addTopBtn = document.getElementById("addTopBtn");
       if (appState.travelLockMode) {

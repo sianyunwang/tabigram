@@ -1021,11 +1021,32 @@
       </div>
     </div>
 
-    <div class="top-actions">
-      <button class="pill-btn primary" id="addTopBtn" onclick="openItemModal()">＋ 新增行程</button>
-      <button class="pill-btn" id="tripCountBtn" onclick="openTripManager()">旅行專案 (1)</button>
-      <button class="pill-btn" id="cloudSyncBtn" onclick="openCloudModal()">☁️ 雲端</button>
-      <button class="pill-btn accent-outline" onclick="openArchiveModal()">典藏旅程</button>
+    <!-- 頂部導覽列：左側 Logo / 右側下拉選單 -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; position: relative;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-family: 'Dela Gothic One', sans-serif; font-size: 18px; letter-spacing: 1px;">TABIGRAM</span>
+        <button class="pill-btn primary" id="addTopBtn" onclick="openItemModal()" style="padding: 6px 12px; font-size: 12px;">＋ 新增行程</button>
+      </div>
+
+      <!-- 右上角整合型下拉選單按鈕 -->
+      <div style="position: relative;">
+        <button class="pill-btn" id="menuToggleBtn" onclick="toggleHeaderDropdown()" style="display: flex; align-items: center; gap: 4px; font-weight: 700;">
+          選單 ▾
+        </button>
+
+        <!-- 下拉選單內容 (預設隱藏) -->
+        <div id="headerDropdownMenu" style="display: none; position: absolute; right: 0; top: 110%; background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); width: 180px; z-index: 100; overflow: hidden; padding: 4px;">
+          <button class="dropdown-item" id="dropdownCloudBtn" onclick="openCloudModal(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 10px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
+             登入
+          </button>
+          <button class="dropdown-item" onclick="openTripManager(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 10px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
+             我的旅程
+          </button>
+          <button class="dropdown-item" onclick="openArchiveModal(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 10px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
+             典藏旅程
+          </button>
+        </div>
+      </div>
     </div>
 
     <div class="trip-tabs-bar" id="tripTabsBar"></div>
@@ -5064,6 +5085,36 @@
         saveAppState();
         renderAll();
       } catch (e) {}
+    }
+    // 控制右上角選單的展開與收合
+    function toggleHeaderDropdown() {
+      const menu = document.getElementById("headerDropdownMenu");
+      if (!menu) return;
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    // 點擊畫面其他地方自動收起選單
+    window.addEventListener("click", (e) => {
+      const menu = document.getElementById("headerDropdownMenu");
+      const btn = document.getElementById("menuToggleBtn");
+      if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.style.display = "none";
+      }
+    });
+
+    // 動態更新下拉選單第一項的登入/帳號狀態
+    function updateCloudButtonBadge() {
+      const dropdownCloudBtn = document.getElementById("dropdownCloudBtn");
+      const menuBtn = document.getElementById("menuToggleBtn");
+      if (!dropdownCloudBtn) return;
+
+      if (currentCloudUser) {
+        dropdownCloudBtn.textContent = `☁️ ${currentCloudUser.email}`;
+        if (menuBtn) menuBtn.classList.add("travel-mode-on");
+      } else {
+        dropdownCloudBtn.textContent = "☁️ 登入";
+        if (menuBtn) menuBtn.classList.remove("travel-mode-on");
+      }
     }
     // Boot
     window.addEventListener("DOMContentLoaded", () => {

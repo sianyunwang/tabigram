@@ -1060,7 +1060,7 @@
       <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
         <div class="brand-logo">旅</div>
         <span style="font-family: 'Dela Gothic One', sans-serif; font-size: 19px; letter-spacing: 1px; margin-right: 2px;">TABIGRAM</span>
-        <button class="pill-btn primary" id="addTopBtn" onclick="openItemModal()" style="padding: 6px 12px; font-size: 12px;">＋ 新增行程</button>
+        
       </div>
 
       <!-- 右側：佈景、編輯鎖、漢堡選單 -->
@@ -1153,6 +1153,11 @@
     <!-- View 3: Checklist & Dual-Track Finance View -->
     <section id="budgetView" style="display:none;"></section>
   </main>
+
+  <!-- Floating Add Itinerary Capsule Button -->
+  <button id="floatingAddBtn" onclick="openItemModal()" style="position:fixed; right:20px; bottom:82px; z-index:900; background:var(--ink); color:#fff; border:none; border-radius:999px; padding:12px 18px; font-weight:900; font-size:14px; box-shadow:0 6px 20px rgba(0,0,0,0.25); display:inline-flex; align-items:center; gap:6px; cursor:pointer; transition:transform 0.15s ease;">
+    <span style="font-size:16px; line-height:1;">＋</span> <span style="font-size:13px;">新增行程</span>
+  </button>
 
   <!-- Bottom Navigation Dock -->
   <nav class="bottom-dock">
@@ -1682,17 +1687,30 @@
       <div class="brand-logo" style="width:48px; height:48px; font-size:24px; margin:0 auto 12px;">旅</div>
       <div style="font-family:var(--display); font-size:20px; margin-bottom:6px;">WELCOME TO TABIGRAM</div>
       <div style="font-size:13px; color:var(--sub); line-height:1.55; margin-bottom:16px;">
-        你的雲端帳號已連線！目前雲端尚無旅程紀錄，立即建立你的第一趟專屬旅程，或輸入旅伴的 6 碼邀請碼加入同行吧。
+        你的雲端帳號已連線！歡迎使用 TABIGRAM，請選擇以下方式開始：
       </div>
-      <div class="form-card" style="text-align:left;">
-        <label class="form-label">第一趟旅程名稱</label>
-        <input type="text" class="form-input" id="onboardTripTitleInput" placeholder="例如：01 東京新木場・銀杏策展" value="01 我的首趟雲端旅程" />
+      
+      <!-- Option 1: Create New Trip -->
+      <div class="form-card" style="text-align:left; margin-bottom:10px;">
+        <div style="font-size:13px; font-weight:900; margin-bottom:6px;">✨ 建立我自己的新旅程</div>
+        <label class="form-label">旅程名稱</label>
+        <input type="text" class="form-input" id="onboardTripTitleInput" placeholder="例如：東京賞櫻行" value="01 我的首趟雲端旅程" />
         <label class="form-label">出發日期</label>
         <input type="date" class="form-input" id="onboardTripDateInput" />
-        <button type="button" class="pill-btn primary" style="width:100%; justify-content:center; padding:11px; margin-top:12px;" onclick="completeOnboardingCreateTrip()">✨ 建立第一趟旅程</button>
+        <button type="button" class="pill-btn primary" style="width:100%; justify-content:center; padding:11px; margin-top:10px;" onclick="completeOnboardingCreateTrip()">建立並開始策展</button>
       </div>
-      <div style="margin-top:8px;">
-        <button type="button" class="mini-btn" onclick="closeOnboardingModal(); openCloudModal();">我有 6 碼邀請碼，加入朋友行程</button>
+
+      <!-- Option 2: Join Friend's Trip by Invite Code -->
+      <div class="form-card" style="text-align:left;">
+        <div style="font-size:13px; font-weight:900; margin-bottom:6px;">🤝 輸入朋友的 6 碼邀請碼加入</div>
+        <div style="display:flex; gap:6px;">
+          <input type="text" class="form-input" id="onboardInviteCodeInput" placeholder="例如：A3B8K2" maxlength="6" style="font-family:var(--mono); text-transform:uppercase; letter-spacing:2px;" />
+          <button type="button" class="pill-btn primary" onclick="completeOnboardingJoinTrip()">加入行程</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <button type="button" class="mini-btn" onclick="closeOnboardingModal()">先跳過，進入預設範例行程</button>
       </div>
     </div>
   </div>
@@ -2331,13 +2349,17 @@
       const tmBtn = document.getElementById("travelModeBtn");
       const addTopBtn = document.getElementById("addTopBtn");
       if (appState.travelLockMode) {
-        tmBtn.textContent = "🔒";
-        tmBtn.className = "pill-btn travel-mode-on"; // 維持原本的反綠
-        addTopBtn.style.display = "none";
+        if (tmBtn) {
+          tmBtn.textContent = "🔒";
+          tmBtn.className = "pill-btn travel-mode-on"; // 維持原本的反綠
+        }
+        if (addTopBtn) addTopBtn.style.display = "none";
       } else {
-        tmBtn.textContent = "🔓";
-        tmBtn.className = "pill-btn accent-outline"; // 編輯中顯示橘紅色
-        addTopBtn.style.display = "inline-flex";
+        if (tmBtn) {
+          tmBtn.textContent = "🔓";
+          tmBtn.className = "pill-btn accent-outline"; // 編輯中顯示橘紅色
+        }
+        if (addTopBtn) addTopBtn.style.display = "inline-flex";
       }
 
       const bar = document.getElementById("tripTabsBar");
@@ -2362,6 +2384,11 @@
         addBtn.textContent = "＋ 新增旅行";
         addBtn.onclick = () => createNewTripProject();
         bar.appendChild(addBtn);
+      }
+
+      const floatBtn = document.getElementById("floatingAddBtn");
+      if (floatBtn) {
+        floatBtn.style.display = appState.travelLockMode ? "none" : "inline-flex";
       }
     }
 
@@ -2511,7 +2538,7 @@
         container.innerHTML = `
           <div class="timeline-card" style="text-align:center; padding:32px 16px; color:var(--sub);">
             <div style="font-size:15px; font-weight:800; margin-bottom:6px;">此日尚無行程卡片</div>
-            <div style="font-size:13px;">點擊上方「＋ 新增行程」開始策展你的旅途時刻</div>
+            <div style="font-size:13px;">點擊右下角「＋ 新增行程」開始策展你的旅途時刻</div>
           </div>`;
         return;
       }
@@ -3191,10 +3218,9 @@
     /*************************************************************************
      * 9. 分享旅程 (9:16 STORY CARD ENGINE)
      *************************************************************************/
+    let isTimetableCompactMode = false;
+    let transitMapUnlocked = false;
     let transitRouteTransform = { x: 0, y: 0, scale: 1.0 };
-      transitMapUnlocked = false;
-      const hintEl = document.getElementById('transitLockHintBadge');
-      if (hintEl) { hintEl.textContent = '點擊畫布路線圖解鎖縮放'; hintEl.style.background = '#EFECE4'; hintEl.style.color = 'var(--sub)'; }
     let roadtripEditorialState = {
       font: "sans",
       color: "#FFFFFF",
@@ -5429,8 +5455,6 @@
     }
 
     // === 四大核心升級擴充邏輯 ===
-    let isTimetableCompactMode = false;
-    let transitMapUnlocked = false;
 
     function toggleTimetableMode() {
       isTimetableCompactMode = !isTimetableCompactMode;
@@ -5623,6 +5647,20 @@
       document.getElementById("onboardingModal").classList.remove("open");
     }
 
+    async function completeOnboardingJoinTrip() {
+      const codeInp = document.getElementById("onboardInviteCodeInput");
+      const code = codeInp ? codeInp.value.trim().toUpperCase() : "";
+      if (code.length < 4) return alert("請輸入有效之 6 碼邀請碼");
+      
+      closeOnboardingModal();
+      openCloudModal();
+      const modalInp = document.getElementById("joinShareCodeInput");
+      if (modalInp) {
+        modalInp.value = code;
+        await joinTripByShareCode();
+      }
+    }
+
     function completeOnboardingCreateTrip() {
       const title = document.getElementById("onboardTripTitleInput").value.trim() || "01 我的首趟雲端旅程";
       const startDate = document.getElementById("onboardTripDateInput").value || new Date().toISOString().slice(0, 10);
@@ -5663,3 +5701,4 @@
   </script>
 </body>
 </html>
+Processed and analyzed in code

@@ -3012,6 +3012,9 @@
 
     function resetTransitRouteTransform() {
       transitRouteTransform = { x: 0, y: 0, scale: 1.0 };
+      if (document.getElementById("metroWalkGapRange")) document.getElementById("metroWalkGapRange").value = 64;
+      if (document.getElementById("metroClampRange")) document.getElementById("metroClampRange").value = 185;
+      if (document.getElementById("metroFontRange")) document.getElementById("metroFontRange").value = 30;
       renderStoryCanvas();
     }
 

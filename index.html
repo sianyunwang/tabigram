@@ -38,6 +38,7 @@
       --sans: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
       --serif: 'Noto Serif TC', 'Playfair Display', Georgia, serif;
       --metal-deg: 135deg;
+      --header-h: 132px;
     }
 
     * {
@@ -56,8 +57,7 @@
       transition: background 0.25s ease, color 0.25s ease;
     }
 
-    /* === 3 UI MATERIAL THEMES === */
-    /* Theme 2: Aerospace Anodized Silver (Future Metallic + Gyroscope) */
+    /* === Theme: Silvre (Aerospace Anodized Silver + Gyroscope) === */
     body.theme-metallic {
       --bg: #CFD6DF;
       --card: #E6ECF2;
@@ -76,93 +76,19 @@
     body.theme-metallic .timeline-card,
     body.theme-metallic .form-card,
     body.theme-metallic .bottom-dock {
-      background: linear-gradient(var(--metal-deg), rgba(255,255,255,0.92) 0%, rgba(224,232,241,0.88) 48%, rgba(205,215,228,0.92) 52%, rgba(242,246,251,0.95) 100%) !important;
+      background: linear-gradient(var(--metal-deg), rgba(255,255,255,0.94) 0%, rgba(224,232,241,0.9) 48%, rgba(205,215,228,0.94) 52%, rgba(242,246,251,0.96) 100%) !important;
       border-color: rgba(255, 255, 255, 0.95) !important;
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.98) !important;
     }
 
-    /* Theme 3: Raw Kinari Washi (Tactile Paper Journal) */
-    body.theme-paper {
-      --bg: #EAE2D3;
-      --card: #F7F2E7;
-      --ink: #2B2623;
-      --sub: #756B60;
-      --border: #D6CBB9;
-      --accent: #B84028;
-      --accent-soft: #F5E6E2;
-      background-color: #EAE2D3 !important;
-      background-image:
-        radial-gradient(rgba(43, 38, 35, 0.09) 1px, transparent 0),
-        radial-gradient(rgba(184, 64, 40, 0.04) 1px, transparent 0) !important;
-      background-size: 20px 20px !important;
-      background-position: 0 0, 10px 10px !important;
-    }
-    body.theme-paper .timeline-card {
-      background: #F7F2E7 !important;
-      border: 1px solid #D5C9B6 !important;
-      border-left: 4px dashed #C7B9A3 !important;
-      box-shadow: 2px 4px 12px rgba(43, 38, 35, 0.07) !important;
-    }
-    body.theme-paper .timeline-card::before {
-      content: "";
-      position: absolute;
-      top: -8px;
-      left: 50%;
-      transform: translateX(-50%) rotate(-1.5deg);
-      width: 78px;
-      height: 18px;
-      background: repeating-linear-gradient(45deg, rgba(200,75,49,0.22), rgba(200,75,49,0.22) 5px, rgba(255,255,255,0.45) 5px, rgba(255,255,255,0.45) 10px);
-      border: 1px solid rgba(200,75,49,0.22);
-      border-radius: 2px;
-      pointer-events: none;
-    }
-    body.theme-paper .note-box {
-      background: repeating-linear-gradient(transparent, transparent 23px, rgba(117, 107, 96, 0.16) 24px) !important;
-      line-height: 24px !important;
-    }
-
-    /* Red Ink Completion Stamp & Thud Animation */
-    @keyframes stampThud {
-      0% { transform: scale(2.4) rotate(-18deg); opacity: 0; }
-      65% { transform: scale(0.92) rotate(-7deg); opacity: 1; }
-      85% { transform: scale(1.04) rotate(-7deg); }
-      100% { transform: scale(1) rotate(-7deg); opacity: 1; }
-    }
-    .ink-seal-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 2.5px solid #C83E2B;
-      color: #C83E2B;
-      background: rgba(200, 62, 43, 0.07);
-      font-family: var(--mono);
-      font-size: 10.5px;
-      font-weight: 900;
-      letter-spacing: 0.06em;
-      padding: 2px 7px;
-      border-radius: 4px;
-      transform: rotate(-7deg);
-      box-shadow: inset 0 0 0 1px rgba(200, 62, 43, 0.18);
-      user-select: none;
-      pointer-events: none;
-    }
-    .ink-seal-badge.cancelled {
-      border-color: #64748B;
-      color: #64748B;
-      background: rgba(100, 116, 139, 0.08);
-    }
-    .ink-seal-badge.animate-thud {
-      animation: stampThud 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    }
-
     /* Top Header */
     .app-header {
-      padding: calc(env(safe-area-inset-top, 16px) + 12px) 16px 10px;
-      background: rgba(246, 243, 236, 0.94);
+      padding: calc(env(safe-area-inset-top, 12px) + 10px) 16px 8px;
+      background: rgba(246, 243, 236, 0.95);
       backdrop-filter: blur(12px);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 120;
       border-bottom: 1px solid var(--border);
     }
 
@@ -170,61 +96,89 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 10px;
     }
 
     .brand-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .brand-logo {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       background: #141413;
       color: #F6F3EC;
-      border-radius: 10px;
+      border-radius: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: var(--display);
       font-weight: 400;
-      font-size: 21px;
+      font-size: 19px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.14);
       flex-shrink: 0;
     }
 
     .brand-title {
       font-family: var(--display);
-      font-size: 23px;
+      font-size: 21px;
       font-weight: 400;
       letter-spacing: 0.05em;
       color: var(--ink);
       line-height: 1;
     }
 
+    .header-right-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .theme-select-pill {
+      border: 1px solid var(--border);
+      background: #FFFFFF;
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 12.5px;
+      font-weight: 800;
+      padding: 6px 24px 6px 11px;
+      border-radius: 999px;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+      background-position: calc(100% - 13px) 50%, calc(100% - 8px) 50%;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+    }
+
     .top-actions {
       display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-      margin-bottom: 10px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 6px;
+      margin-bottom: 8px;
+      scrollbar-width: none;
     }
+    .top-actions::-webkit-scrollbar { display: none; }
 
     .pill-btn {
       border: 1px solid var(--border);
       background: #FFFFFF;
       color: var(--ink);
       font-family: var(--sans);
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 700;
-      padding: 7px 13px;
+      padding: 6px 12px;
       border-radius: 999px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
+      white-space: nowrap;
       transition: all 0.15s ease;
     }
 
@@ -249,20 +203,20 @@
     /* Trip Tabs */
     .trip-tabs-bar {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       overflow-x: auto;
-      padding-bottom: 4px;
+      padding-bottom: 2px;
       scrollbar-width: none;
     }
     .trip-tabs-bar::-webkit-scrollbar { display: none; }
 
     .trip-tab {
       white-space: nowrap;
-      padding: 6px 14px;
-      border-radius: 10px;
+      padding: 5px 12px;
+      border-radius: 9px;
       border: 1px solid var(--border);
       background: #FFFFFF;
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 700;
       color: var(--sub);
       cursor: pointer;
@@ -281,42 +235,47 @@
     .main-container {
       max-width: 640px;
       margin: 0 auto;
-      padding: 14px 16px;
+      padding: 10px 16px 16px;
     }
 
-    /* Day & Weather Bar */
+    /* Sticky Day & Weather Bar */
     .day-weather-card {
-      background: #FFFFFF;
+      position: sticky;
+      top: var(--header-h, 132px);
+      z-index: 95;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 14px 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+      border-radius: 18px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
     }
 
     .day-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
     }
 
     .day-pills {
       display: flex;
-      gap: 6px;
+      gap: 5px;
       overflow-x: auto;
       padding-bottom: 2px;
       align-items: center;
+      scrollbar-width: none;
     }
+    .day-pills::-webkit-scrollbar { display: none; }
 
     .day-pill {
       font-family: var(--mono);
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
-      padding: 6px 13px;
-      border-radius: 10px;
+      padding: 5px 11px;
+      border-radius: 8px;
       border: 1px solid var(--border);
       background: #FFFFFF;
       color: var(--ink);
@@ -333,20 +292,20 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 10px;
+      gap: 6px;
+      margin-bottom: 6px;
       flex-wrap: wrap;
     }
 
     .weather-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 5px 12px;
+      gap: 5px;
+      padding: 4px 10px;
       border-radius: 999px;
       background: #F8F6F0;
       border: 1px solid var(--border);
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 700;
       transition: background 0.2s ease;
     }
@@ -356,29 +315,28 @@
       justify-content: space-between;
       align-items: center;
       font-family: var(--mono);
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 700;
       color: var(--sub);
-      margin-bottom: 9px;
+      margin-bottom: 5px;
     }
 
     .solar-track {
       position: relative;
-      height: 12px;
+      height: 11px;
       border-radius: 999px;
       background: linear-gradient(90deg, #1E293B 0%, #3B82F6 25%, #F59E0B 50%, #EA580C 75%, #1E293B 100%);
       overflow: visible;
-      margin-top: 6px;
-      margin-bottom: 4px;
+      margin-top: 4px;
+      margin-bottom: 2px;
     }
 
-    /* Numbered Orange Dots: All Scheduled Activities on that Day (1, 2, 3...) */
     .solar-thumb-item {
       position: absolute;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 20px;
-      height: 20px;
+      width: 19px;
+      height: 19px;
       border-radius: 50%;
       background: var(--accent);
       color: #FFFFFF;
@@ -398,13 +356,12 @@
       opacity: 0.7;
     }
 
-    /* Green Dot: Current Local Time (NOW) */
     .solar-thumb-now {
       position: absolute;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
       border-radius: 50%;
       background: #22C55E;
       border: 2.5px solid #FFFFFF;
@@ -418,7 +375,7 @@
       background: #FFFFFF;
       border: 1.5px solid var(--border);
       border-radius: 20px;
-      padding: 16px;
+      padding: 15px 16px 10px;
       margin-bottom: 14px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.03);
       transition: transform 0.15s ease, border-color 0.15s ease;
@@ -430,38 +387,39 @@
       box-shadow: 0 8px 24px rgba(200, 75, 49, 0.14);
     }
     .timeline-card.done-card {
-      opacity: 0.78;
+      opacity: 0.82;
       background: #FAF8F4;
     }
     .timeline-card.cancelled-card {
-      opacity: 0.55;
+      opacity: 0.58;
       background: #F3F1EC;
     }
 
     /* Card Top Row */
     .card-top-bar {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 6px;
       margin-bottom: 8px;
     }
 
     .card-time-group {
       display: flex;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 7px;
+      flex-wrap: nowrap;
+      gap: 6px;
+      min-width: 0;
     }
 
     .step-circle {
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       background: var(--ink);
       color: #FFFFFF;
       font-family: var(--mono);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 800;
       display: inline-flex;
       align-items: center;
@@ -475,13 +433,14 @@
     .now-badge {
       background: var(--accent);
       color: #FFFFFF;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 800;
-      padding: 3px 9px;
+      padding: 2px 7px;
       border-radius: 999px;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
+      white-space: nowrap;
       animation: pulseNow 2s infinite;
     }
 
@@ -492,57 +451,93 @@
 
     .time-text {
       font-family: var(--mono);
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
       color: var(--accent);
+      white-space: nowrap;
     }
 
     .home-tz-sub {
       font-family: var(--mono);
-      font-size: 11px;
+      font-size: 10.5px;
       color: var(--sub);
       background: #F4F1EA;
-      padding: 2px 7px;
+      padding: 2px 6px;
       border-radius: 6px;
+      white-space: nowrap;
     }
 
     .status-btns {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       flex-shrink: 0;
       position: relative;
-      flex-wrap: wrap;
-      justify-content: flex-end;
     }
 
-    /* Mood Stamp Button */
+    /* Upright Heart Mood Stamp Button (0deg) */
     .mood-stamp-btn {
-      border: 1.5px dashed #C8B9A6;
+      border: 1px dashed #C8B9A6;
       background: #FDFBF7;
       color: var(--sub);
-      font-size: 13px;
-      font-weight: 700;
-      padding: 3px 8px;
+      font-size: 14px;
+      padding: 0;
       border-radius: 8px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 34px;
+      width: 30px;
       height: 28px;
-      transform: rotate(-3deg);
-      transition: transform 0.15s ease, border-color 0.15s ease;
+      transform: none;
+      transition: background 0.15s ease, border-color 0.15s ease;
     }
     .mood-stamp-btn.stamped {
       border-style: solid;
       border-color: var(--accent);
       background: var(--accent-soft);
-      font-size: 16px;
-      transform: rotate(-5deg);
+      font-size: 15px;
     }
 
-    /* Floating Popover for Quick Emoji Stamp */
+    /* Completion / Cancelled Red Ink Stamp Positioned Below Done/Cancel Buttons */
+    @keyframes stampThud {
+      0% { transform: scale(2.3) rotate(-14deg); opacity: 0; }
+      65% { transform: scale(0.93) rotate(-6deg); opacity: 1; }
+      85% { transform: scale(1.03) rotate(-6deg); }
+      100% { transform: scale(1) rotate(-6deg); opacity: 1; }
+    }
+    .ink-seal-badge {
+      position: absolute;
+      top: 33px;
+      right: 0;
+      z-index: 15;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #C83E2B;
+      color: #C83E2B;
+      background: rgba(255, 250, 248, 0.9);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      padding: 2px 7px;
+      border-radius: 4px;
+      transform: rotate(-6deg);
+      box-shadow: 0 2px 6px rgba(200, 62, 43, 0.12), inset 0 0 0 1px rgba(200, 62, 43, 0.18);
+      user-select: none;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .ink-seal-badge.cancelled {
+      border-color: #64748B;
+      color: #64748B;
+      background: rgba(248, 250, 252, 0.92);
+    }
+    .ink-seal-badge.animate-thud {
+      animation: stampThud 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
     .emoji-popover {
       position: absolute;
       top: 34px;
@@ -569,12 +564,13 @@
       color: var(--sub);
       font-size: 12px;
       font-weight: 700;
-      padding: 5px 9px;
+      padding: 4px 8px;
       border-radius: 8px;
       cursor: pointer;
       height: 28px;
       display: inline-flex;
       align-items: center;
+      white-space: nowrap;
     }
     .status-btn.active-done {
       border-style: solid;
@@ -603,7 +599,7 @@
     }
 
     .card-title {
-      font-size: 19px;
+      font-size: 18.5px;
       font-weight: 900;
       color: var(--ink);
       line-height: 1.35;
@@ -615,7 +611,7 @@
     }
 
     .card-subtitle {
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 600;
       color: var(--sub);
       margin-top: 4px;
@@ -624,7 +620,7 @@
       word-break: break-word;
     }
 
-    /* Note Box: Top-Left 90-degree sharp corner, other 3 corners rounded */
+    /* Note Box: Top-Left 90-degree sharp corner */
     .note-box {
       margin-top: 10px;
       background: #F8F6F1;
@@ -638,7 +634,6 @@
       word-break: break-word;
     }
 
-    /* Dedicated URL Chip */
     .url-chip-row {
       margin-top: 8px;
     }
@@ -660,7 +655,6 @@
       white-space: nowrap;
     }
 
-    /* Expense & Extra Spend Badges on Card */
     .card-finance-box {
       margin-top: 10px;
       padding: 9px 12px;
@@ -680,7 +674,6 @@
       font-size: 12px;
     }
 
-    /* Quick Inline Expense Drawer on Card */
     .quick-expense-drawer {
       margin-top: 10px;
       padding: 10px;
@@ -695,7 +688,6 @@
       display: flex;
     }
 
-    /* Card Polaroid Preview Strip */
     .card-photos-strip {
       display: flex;
       gap: 8px;
@@ -704,8 +696,8 @@
       padding-bottom: 4px;
     }
     .card-photo-thumb {
-      width: 68px;
-      height: 68px;
+      width: 64px;
+      height: 64px;
       border-radius: 8px;
       object-fit: cover;
       border: 1px solid var(--border);
@@ -713,34 +705,58 @@
       cursor: pointer;
     }
 
-    /* Card Bottom Actions */
+    /* Card Bottom Actions: Option B Borderless Single-Row Easy-Tap Text Bar */
     .card-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 13px;
-      padding-top: 11px;
+      margin-top: 10px;
+      padding-top: 4px;
       border-top: 1px solid #EFECE4;
-      gap: 8px;
-      flex-wrap: wrap;
+      width: 100%;
+      flex-wrap: nowrap;
     }
-    .card-actions-left {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
+    .footer-text-btn {
+      border: none;
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 13.5px;
+      font-weight: 800;
+      padding: 9px 6px;
+      min-height: 38px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      flex: 1;
+      transition: background 0.12s ease, opacity 0.12s ease;
     }
+    .footer-text-btn:active {
+      background: rgba(0, 0, 0, 0.06);
+    }
+    .footer-text-btn.share-text {
+      color: var(--accent);
+    }
+    .footer-text-btn.delete-text {
+      color: #8C857B;
+    }
+
     .mini-btn {
       border: 1px solid var(--border);
       background: #FFFFFF;
       color: var(--ink);
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 700;
-      padding: 6px 11px;
+      padding: 5px 10px;
       border-radius: 8px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      white-space: nowrap;
     }
     .mini-btn.share-highlight {
       background: var(--accent-soft);
@@ -793,7 +809,7 @@
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 12px;
       z-index: 500;
     }
     .modal-backdrop.open {
@@ -802,10 +818,10 @@
     .modal-sheet {
       background: var(--bg);
       width: 100%;
-      max-width: 560px;
-      max-height: 90vh;
+      max-width: 520px;
+      max-height: 92vh;
       border-radius: 24px;
-      padding: 20px;
+      padding: 16px;
       overflow-y: auto;
       box-shadow: 0 20px 50px rgba(0,0,0,0.28);
       border: 1px solid var(--border);
@@ -814,10 +830,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
     .modal-title {
-      font-size: 19px;
+      font-size: 18px;
       font-weight: 900;
     }
 
@@ -825,24 +841,24 @@
       background: #FFFFFF;
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 14px;
-      margin-bottom: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
     }
     .form-label {
       display: block;
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 800;
       color: var(--ink);
-      margin-bottom: 5px;
-      margin-top: 10px;
+      margin-bottom: 4px;
+      margin-top: 8px;
     }
     .form-label:first-child {
       margin-top: 0;
     }
     .form-input, .form-select, .form-textarea {
       width: 100%;
-      padding: 10px 12px;
-      font-size: 14px;
+      padding: 8px 10px;
+      font-size: 13.5px;
       font-family: var(--sans);
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -853,14 +869,19 @@
     }
     .form-textarea.sharp-tl {
       border-radius: 0px 12px 12px 12px;
-      min-height: 74px;
+      min-height: 70px;
       resize: vertical;
     }
 
     .form-row-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 8px;
+    }
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
     }
     @media (max-width: 480px) {
       .form-row-2.mobile-stack {
@@ -876,12 +897,12 @@
     }
 
     .emoji-opt {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
       border: 1px solid var(--border);
       background: #FAF8F4;
-      font-size: 18px;
+      font-size: 17px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -923,44 +944,85 @@
       background: #E5E3DF;
     }
 
-    .swatch-row {
+    /* Share Modal Compact Accordion & Tool Tabs */
+    .share-preview-stage {
+      text-align: center;
+      background: #E7E2D8;
+      padding: 10px;
+      border-radius: 16px;
+      margin-bottom: 10px;
+    }
+    .share-tool-tabs {
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 6px;
+      gap: 6px;
+      margin-top: 8px;
     }
-    .swatch-btn {
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12px;
+    .share-tool-tab {
+      flex: 1;
+      border: 1px solid var(--border);
+      background: #FAF8F4;
+      color: var(--ink);
+      font-size: 12.5px;
       font-weight: 800;
-      border: 2px solid transparent;
+      padding: 7px 8px;
+      border-radius: 10px;
       cursor: pointer;
+      text-align: center;
     }
-    .swatch-btn.active {
-      border-color: var(--accent);
+    .share-tool-tab.active {
+      background: var(--ink);
+      color: #FFFFFF;
+      border-color: var(--ink);
+    }
+    .share-drawer-panel {
+      display: none;
+      margin-top: 8px;
+      padding: 10px;
+      background: #FAF8F4;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .share-drawer-panel.open {
+      display: block;
+    }
+    .compact-slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .compact-slider-row:last-child {
+      margin-bottom: 0;
+    }
+    .compact-slider-row input[type="range"] {
+      width: 58%;
     }
   </style>
 </head>
 <body>
 
   <!-- Top Header -->
-  <header class="app-header">
+  <header class="app-header" id="appTopHeader">
     <div class="brand-row">
       <div class="brand-left">
         <div class="brand-logo">旅</div>
         <div class="brand-title">TABIGRAM</div>
       </div>
-      <button class="pill-btn" id="travelModeBtn" onclick="toggleTravelLockMode()">🔓 規劃模式</button>
+      <div class="header-right-controls">
+        <select class="theme-select-pill" id="uiThemeSelect" onchange="setUiMaterialTheme(this.value)">
+          <option value="clean">Simple</option>
+          <option value="metallic">Silvre</option>
+        </select>
+        <button class="pill-btn" id="travelModeBtn" onclick="toggleTravelLockMode()">🔓 規劃中</button>
+      </div>
     </div>
 
     <div class="top-actions">
       <button class="pill-btn primary" id="addTopBtn" onclick="openItemModal()">＋ 新增行程</button>
       <button class="pill-btn" id="tripCountBtn" onclick="openTripManager()">旅行專案 (1)</button>
       <button class="pill-btn accent-outline" onclick="openArchiveModal()">典藏旅程</button>
-      <button class="pill-btn primary" id="uiThemeBtn-clean" onclick="setUiMaterialTheme('clean')">極簡現代</button>
-      <button class="pill-btn" id="uiThemeBtn-metallic" onclick="setUiMaterialTheme('metallic')">航太冷銀</button>
-      <button class="pill-btn" id="uiThemeBtn-paper" onclick="setUiMaterialTheme('paper')">生成手抄紙</button>
       <button class="pill-btn" onclick="openPinModal()">密碼鎖</button>
       <button class="pill-btn" onclick="exportBackupJSON()">匯出</button>
       <button class="pill-btn" onclick="document.getElementById('importFileInput').click()">匯入</button>
@@ -972,27 +1034,25 @@
 
   <!-- Main Content -->
   <main class="main-container">
-    <!-- Day & Real-time Open-Meteo Weather Bar -->
-    <section class="day-weather-card">
+    <!-- Sticky Day & Real-time Open-Meteo Weather Bar -->
+    <section class="day-weather-card" id="stickyWeatherCard">
       <div class="day-row">
         <div class="day-pills" id="dayPillsBar"></div>
-        <button class="pill-btn" id="homeTzToggleBtn" onclick="toggleHomeTzCompare()">家鄉時區對照：開</button>
+        <button class="pill-btn" id="homeTzToggleBtn" onclick="toggleHomeTzCompare()">家鄉時區：開</button>
       </div>
 
       <div class="weather-strip">
         <div class="weather-badge" id="weatherBadge">☀️ 載入氣象中...</div>
         <div style="display:flex; gap:6px;">
-          <button class="mini-btn" id="refreshWeatherBtn" onclick="refreshRealtimeWeather(true)">↻ 即時更新</button>
+          <button class="mini-btn" id="refreshWeatherBtn" onclick="refreshRealtimeWeather(true)">↻ 更新</button>
           <button class="mini-btn delete-btn" id="deleteDayBtn" style="display:none;" onclick="deleteCurrentDay()">刪除此日</button>
         </div>
       </div>
 
-      <!-- Simplified Clean Sunrise / Sunset Labels -->
       <div class="solar-meta">
         <span id="sunriseLabel">日出 06:15</span>
         <span id="sunsetLabel">日落 17:30</span>
       </div>
-      <!-- Solar Track: Renders numbered orange dots (1, 2, 3...) + 1 live green NOW dot -->
       <div class="solar-track" id="solarTrackBar"></div>
     </section>
 
@@ -1048,7 +1108,7 @@
         <!-- Transit / Ferry Multi-Leg Builder -->
         <div id="transitFieldsBox" style="display:none; margin-top:10px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <span style="font-size:12.5px; font-weight:800;">🚃 路線分段 (不同交接站名將自動繪製站外轉乘虛線)</span>
+            <span style="font-size:12.5px; font-weight:800;">🚃 路線分段</span>
             <button type="button" class="mini-btn" onclick="addTransitLegRow()">＋ 新增轉乘段</button>
           </div>
           <div id="transitLegsContainer"></div>
@@ -1082,11 +1142,11 @@
         <div id="roadtripFieldsBox" style="display:none; margin-top:10px;">
           <div class="form-row-2">
             <div>
-              <label class="form-label">出發地 (A點)</label>
+              <label class="form-label">出發地</label>
               <input type="text" class="form-input" id="fRoadFrom" placeholder="Kona / 七里ヶ浜" />
             </div>
             <div>
-              <label class="form-label">目的地 (B點，自動抓經緯度)</label>
+              <label class="form-label">目的地</label>
               <input type="text" class="form-input" id="fRoadTo" placeholder="Hilo / 鎌倉高校前" />
             </div>
           </div>
@@ -1160,11 +1220,9 @@
           <div id="modalExtraExpensesList"></div>
         </div>
 
-        <!-- Pure Text Note with 90-degree Top-Left Corner -->
         <label class="form-label">備註</label>
         <textarea class="form-textarea sharp-tl" id="fNote" placeholder="輸入記事內容..."></textarea>
 
-        <!-- Dedicated URL & Label Fields -->
         <div class="form-row-2 mobile-stack" style="margin-top:8px;">
           <div>
             <label class="form-label">相關網址</label>
@@ -1176,7 +1234,6 @@
           </div>
         </div>
 
-        <!-- Multi-Photo Upload -->
         <label class="form-label">上傳相片</label>
         <input type="file" class="form-input" id="fPhotosInput" accept="image/*" multiple onchange="handleFormPhotosUpload(event)" />
         <div class="card-photos-strip" id="formPhotosPreview"></div>
@@ -1225,160 +1282,151 @@
     </div>
   </div>
 
-  <!-- Modal 3: 9:16 Story Card Generator (Full Interactive Controls + Multi-Polaroid & Emoji Collage) -->
+  <!-- Modal 3: 分享旅程 (Preview-First + Compact Single-Row Selectors + Collapsible Tool Drawers) -->
   <div class="modal-backdrop" id="shareModal">
-    <div class="modal-sheet" style="max-width: 560px;">
-      <div class="modal-header">
-        <div class="modal-title">9:16 限動圖卡策展</div>
+    <div class="modal-sheet" style="max-width: 500px; padding: 14px;">
+      <div class="modal-header" style="margin-bottom:8px;">
+        <div class="modal-title">分享旅程</div>
         <button class="pill-btn" onclick="closeShareModal()">關閉</button>
       </div>
 
-      <div class="form-card">
-        <label class="form-label">視覺版型切換</label>
-        <select class="form-select" id="shareTemplateSelect" onchange="onShareTemplateChange()">
-          <option value="polaroid">📸 拍立得底片 (Polaroid Frame)</option>
-          <option value="transit">🚃 地鐵 / 鐵道拓撲票卡 (Metro / Rail)</option>
-          <option value="ferry">⛴️ 船班航線登船票根 (Ferry Ticket)</option>
-          <option value="flight">✈️ 球面大圓航跡登機證 (Boarding Pass)</option>
-          <option value="roadtrip">🚗 公路旅行攝影誌 (Road Trip Editorial)</option>
-        </select>
+      <!-- Live Interactive Canvas Always Visible at Top -->
+      <div class="share-preview-stage">
+        <canvas id="storyCanvas" width="1080" height="1920" style="width:100%; max-width:255px; height:auto; border-radius:12px; box-shadow:0 10px 26px rgba(0,0,0,0.22); touch-action:none; cursor:grab; display:inline-block;"></canvas>
+      </div>
 
-        <label class="form-label">外層底紙配色</label>
-        <div class="swatch-row" id="outerPaperSwatches"></div>
-
-        <label class="form-label">內層票卡配色</label>
-        <div class="swatch-row" id="innerCardSwatches"></div>
-
-        <label class="form-label">票卡紙張紋理</label>
-        <div class="swatch-row" id="paperTextureSwatches">
-          <button type="button" class="swatch-btn active" data-tex="dots" style="background:#FAF8F4; border:1px solid #ccc;" onclick="selectPaperTexture('dots')">點點紙 (Dot Grid)</button>
-          <button type="button" class="swatch-btn" data-tex="grid" style="background:#FAF8F4; border:1px solid #ccc;" onclick="selectPaperTexture('grid')">方格網格紙 (Graph)</button>
-          <button type="button" class="swatch-btn" data-tex="cross" style="background:#FAF8F4; border:1px solid #ccc;" onclick="selectPaperTexture('cross')">十字刻度紙 (Cross)</button>
-          <button type="button" class="swatch-btn" data-tex="plain" style="background:#FAF8F4; border:1px solid #ccc;" onclick="selectPaperTexture('plain')">素面紙</button>
+      <!-- Compact Control Deck -->
+      <div class="form-card" style="padding:10px; margin-bottom:10px;">
+        <!-- Row 1: Template Select + Mood Checkbox -->
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+          <select class="form-select" id="shareTemplateSelect" onchange="onShareTemplateChange()" style="flex:1; padding:7px 10px; font-weight:700;">
+            <option value="polaroid">📸 拍立得底片</option>
+            <option value="transit">🚃 地鐵 / 鐵道票卡</option>
+            <option value="ferry">⛴️ 船班登船票根</option>
+            <option value="flight">✈️ 航跡登機證</option>
+            <option value="roadtrip">🚗 公路旅行攝影誌</option>
+          </select>
+          <label style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:800; white-space:nowrap; cursor:pointer; background:#FAF8F4; padding:7px 10px; border-radius:10px; border:1px solid var(--border);">
+            <input type="checkbox" id="shareShowMoodCheck" checked onchange="renderStoryCanvas()" style="width:15px; height:15px; margin:0;" />
+            心情印記
+          </label>
         </div>
 
-        <!-- 🚇 地鐵拓撲專屬自由調整面板 -->
-        <div id="transitTopologyControlsBox" style="display:none; margin-top:12px; padding:10px 12px; background:#FAF8F4; border:1px solid var(--border); border-radius:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span style="font-size:12.5px; font-weight:900;">🚇 八向地鐵拓撲參數 (路線20px/端點18px)</span>
-            <button type="button" class="mini-btn" onclick="resetTransitRouteTransform()">重置路線位置</button>
+        <!-- Row 2: 3-in-1 Single Row Dropdowns (Outer Paper / Inner Card / Paper Texture) -->
+        <div class="form-row-3">
+          <div>
+            <label class="form-label" style="font-size:11px; margin-bottom:2px;">底紙配色</label>
+            <select class="form-select" id="outerPaperSelect" onchange="selectOuterSwatch(this.value)" style="padding:6px 8px; font-size:12px; font-weight:700;"></select>
           </div>
-          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px;">
-            <span>站外轉乘虛線間距 (<b id="lblWalkGap">64</b>px)</span>
-            <input type="range" id="metroWalkGapRange" min="42" max="105" step="2" value="64" oninput="document.getElementById('lblWalkGap').textContent=this.value; renderStoryCanvas();" style="width:55%;" />
+          <div>
+            <label class="form-label" style="font-size:11px; margin-bottom:2px;">內層配色</label>
+            <select class="form-select" id="innerCardSelect" onchange="selectInnerSwatch(this.value)" style="padding:6px 8px; font-size:12px; font-weight:700;"></select>
           </div>
-          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px;">
-            <span>長途路線收斂上限 (<b id="lblMaxClamp">185</b>px)</span>
-            <input type="range" id="metroClampRange" min="110" max="260" step="5" value="185" oninput="document.getElementById('lblMaxClamp').textContent=this.value; renderStoryCanvas();" style="width:55%;" />
-          </div>
-          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700;">
-            <span>站名文字大小 (<b id="lblMetroFont">30</b>px)</span>
-            <input type="range" id="metroFontRange" min="22" max="40" step="1" value="30" oninput="document.getElementById('lblMetroFont').textContent=this.value; renderStoryCanvas();" style="width:55%;" />
-          </div>
-          <div style="font-size:11px; color:var(--sub); margin-top:6px;">
-            💡 可直接在下方畫布「單指拖曳移動路線、雙指縮放路線」（鎖定 0° 不歪斜）。若上下段交接站名不同（如：北門 ➔ 機捷台北車站），自動繪製站外轉乘短距虛線。
+          <div>
+            <label class="form-label" style="font-size:11px; margin-bottom:2px;">紙張紋理</label>
+            <select class="form-select" id="paperTextureSelect" onchange="selectPaperTexture(this.value)" style="padding:6px 8px; font-size:12px; font-weight:700;">
+              <option value="dots">點點紙</option>
+              <option value="grid">方格紙</option>
+              <option value="cross">十字紙</option>
+              <option value="plain">素面紙</option>
+            </select>
           </div>
         </div>
 
-        <!-- 🛣️ 公路攝影誌專屬設定面板 -->
-        <div id="roadtripEditorialControlsBox" style="display:none; margin-top:12px; padding:10px 12px; background:#FAF8F4; border:1px solid var(--border); border-radius:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span style="font-size:12.5px; font-weight:900;">🚗 公路旅行攝影誌設定</span>
-            <button type="button" class="mini-btn" onclick="resetRoadtripPhotoTransform()">重置相片構圖</button>
-          </div>
-          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
-            <button type="button" class="mini-btn share-highlight" id="rtFontBtn-sans" onclick="setRoadtripEditorialOpt('font', 'sans')">現代黑體</button>
-            <button type="button" class="mini-btn" id="rtFontBtn-serif" onclick="setRoadtripEditorialOpt('font', 'serif')">報紙感明體</button>
-            <button type="button" class="mini-btn share-highlight" id="rtColorBtn-white" onclick="setRoadtripEditorialOpt('color', '#FFFFFF')">純白字＋箭頭</button>
-            <button type="button" class="mini-btn" id="rtColorBtn-black" onclick="setRoadtripEditorialOpt('color', '#141413')">純黑字＋箭頭</button>
-          </div>
-          <div style="display:flex; gap:6px; align-items:center; margin-bottom:8px;">
-            <span style="font-size:12px; font-weight:700;">座標位置：</span>
-            <button type="button" class="mini-btn share-highlight" id="rtPosBtn-br" onclick="setRoadtripEditorialOpt('pos', 'br')">右下角</button>
-            <button type="button" class="mini-btn" id="rtPosBtn-bl" onclick="setRoadtripEditorialOpt('pos', 'bl')">左下角</button>
-          </div>
-          <label class="form-label" style="margin-top:4px;">目的地經緯度 (自動抓取目的地 B 點，可微調)</label>
-          <input type="text" class="form-input" id="rtCoordTextInput" placeholder="35.3067° N, 139.5005° E" oninput="renderStoryCanvas()" />
+        <!-- Row 3: Collapsible Tool Drawer Tabs -->
+        <div class="share-tool-tabs">
+          <button type="button" class="share-tool-tab" id="drawerTab-design" onclick="toggleShareDrawer('design')">路線設計調整</button>
+          <button type="button" class="share-tool-tab" id="drawerTab-stickers" onclick="toggleShareDrawer('stickers')">相片與貼圖</button>
         </div>
 
-        <!-- Mood Stamp Toggle -->
-        <div style="margin-top:10px; display:flex; align-items:center; justify-content:space-between; background:#FAF8F4; padding:8px 12px; border-radius:10px; border:1px solid var(--border);">
-          <span style="font-size:13px; font-weight:700;">於底部票根顯示心情 Emoji 印記</span>
-          <input type="checkbox" id="shareShowMoodCheck" checked onchange="renderStoryCanvas()" style="width:18px; height:18px;" />
-        </div>
-
-        <!-- 📸 多張拍立得 ＋ 手札 Emoji 自由貼紙圖層系統 -->
-        <div style="margin-top:10px; padding:10px 12px; background:#FAF8F4; border:1px solid var(--border); border-radius:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span style="font-size:12.5px; font-weight:900;">📒 手札自由拼貼層 (多張拍立得 ＋ Emoji)</span>
-            <button type="button" class="mini-btn delete-btn" onclick="removeSelectedStorySticker()">🗑️ 刪除選中貼紙</button>
+        <!-- Drawer 1: Design Adjustment (Adapts cleanly to Transit / Roadtrip / Polaroid) -->
+        <div class="share-drawer-panel" id="shareDrawer-design">
+          <!-- Transit Design Controls -->
+          <div id="transitTopologyControlsBox" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:12px; font-weight:900;">路線設計調整</span>
+              <button type="button" class="mini-btn" onclick="resetTransitRouteTransform()">重置</button>
+            </div>
+            <div class="compact-slider-row">
+              <span>站外轉乘虛線間距</span>
+              <input type="range" id="metroWalkGapRange" min="42" max="105" step="2" value="64" oninput="renderStoryCanvas()" />
+            </div>
+            <div class="compact-slider-row">
+              <span>長途路線收斂上限</span>
+              <input type="range" id="metroClampRange" min="110" max="260" step="5" value="185" oninput="renderStoryCanvas()" />
+            </div>
+            <div class="compact-slider-row">
+              <span>站名文字大小</span>
+              <input type="range" id="metroFontRange" min="22" max="40" step="1" value="30" oninput="renderStoryCanvas()" />
+            </div>
           </div>
 
-          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
-            <button type="button" class="mini-btn share-highlight" onclick="triggerAddStickerPolaroidUpload()">＋ 新增拍立得貼紙</button>
-            <button type="button" class="mini-btn" onclick="triggerQuickPhotoUpload(currentShareItem.id, true)">＋ 上傳底圖相片</button>
+          <!-- Roadtrip Design Controls -->
+          <div id="roadtripEditorialControlsBox" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:12px; font-weight:900;">版面與座標調整</span>
+              <button type="button" class="mini-btn" onclick="resetRoadtripPhotoTransform()">重置</button>
+            </div>
+            <div style="display:flex; gap:5px; flex-wrap:wrap; margin-bottom:6px;">
+              <button type="button" class="mini-btn share-highlight" id="rtFontBtn-sans" onclick="setRoadtripEditorialOpt('font', 'sans')">現代黑體</button>
+              <button type="button" class="mini-btn" id="rtFontBtn-serif" onclick="setRoadtripEditorialOpt('font', 'serif')">報紙感明體</button>
+              <button type="button" class="mini-btn share-highlight" id="rtColorBtn-white" onclick="setRoadtripEditorialOpt('color', '#FFFFFF')">白字</button>
+              <button type="button" class="mini-btn" id="rtColorBtn-black" onclick="setRoadtripEditorialOpt('color', '#141413')">黑字</button>
+              <button type="button" class="mini-btn share-highlight" id="rtPosBtn-br" onclick="setRoadtripEditorialOpt('pos', 'br')">右下座標</button>
+              <button type="button" class="mini-btn" id="rtPosBtn-bl" onclick="setRoadtripEditorialOpt('pos', 'bl')">左下座標</button>
+            </div>
+            <input type="text" class="form-input" id="rtCoordTextInput" placeholder="目的地經緯度" oninput="renderStoryCanvas()" style="padding:6px 9px; font-size:12.5px;" />
+          </div>
+
+          <!-- Polaroid Frame Sliders -->
+          <div id="polaroidControlsBox" style="display:none;">
+            <div class="compact-slider-row">
+              <span>相片縮放</span>
+              <input type="range" id="photoZoomRange" min="1" max="2.6" step="0.05" value="1" oninput="renderStoryCanvas()" />
+            </div>
+            <div class="compact-slider-row">
+              <span>水平移動</span>
+              <input type="range" id="photoPanXRange" min="-150" max="150" step="2" value="0" oninput="renderStoryCanvas()" />
+            </div>
+            <div class="compact-slider-row">
+              <span>垂直移動</span>
+              <input type="range" id="photoPanYRange" min="-150" max="150" step="2" value="0" oninput="renderStoryCanvas()" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Drawer 2: Photos & Stickers (No Cluttered Titles or Instructions) -->
+        <div class="share-drawer-panel" id="shareDrawer-stickers">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:8px;">
+            <div style="display:flex; gap:6px;">
+              <button type="button" class="mini-btn share-highlight" onclick="triggerAddStickerPolaroidUpload()">＋ 拍立得貼紙</button>
+              <button type="button" class="mini-btn" onclick="triggerQuickPhotoUpload(currentShareItem.id, true)">＋ 底圖相片</button>
+            </div>
+            <button type="button" class="mini-btn delete-btn" onclick="removeSelectedStorySticker()">🗑️ 刪除選中</button>
           </div>
 
           <div id="sharePhotoSelectorRow" style="display:none; margin-bottom:8px;">
-            <div style="font-size:11.5px; color:var(--sub); margin-bottom:4px;">點選相片可設為主圖，或點「＋貼進畫布」疊加多張拍立得：</div>
-            <div class="card-photos-strip" id="sharePhotoThumbs"></div>
+            <div class="card-photos-strip" id="sharePhotoThumbs" style="margin-top:0;"></div>
           </div>
 
-          <label class="form-label">當前選中拍立得 / 主圖白邊短註</label>
-          <input type="text" class="form-input" id="sharePolaroidCaption" placeholder="輸入拍立得白邊文字..." oninput="onPolaroidCaptionInput(this.value)" />
+          <input type="text" class="form-input" id="sharePolaroidCaption" placeholder="拍立得白邊短註..." oninput="onPolaroidCaptionInput(this.value)" style="padding:6px 9px; font-size:12.5px; margin-bottom:8px;" />
 
-          <div style="margin-top:8px;">
-            <div style="font-size:12px; font-weight:800; margin-bottom:5px;">點選插入手札 Emoji 貼紙（可在畫布自由拖曳/縮放/旋轉）：</div>
-            <div style="display:flex; gap:5px; flex-wrap:wrap;">
-              <button type="button" class="emoji-opt" onclick="addEmojiStickerToStory('☕')">☕</button>
-              <button type="button" class="emoji-opt" onclick="addEmojiStickerToStory('🚃')">🚃</button>
-              <button type="button" class="emoji-opt" onclick="addEmojiStickerToStory('🌊')">🌊</button>
-              <button type="button" class="emoji-opt" onclick="addEmojiStickerToStory('🍂')">🍂</button>
-              <button type="button" class="emoji-opt" onclick="addEmojiStickerToStory('🍜')">🍜</button>
-              <button type="button" class="emoji-opt" onclick="addEmojiStickerToStory('📸')">📸</button>
-              <button type="button" class="emoji-opt" onclick="addEmojiStickerToStory('✨')">✨</button>
-              <button type="button" class="mini-btn" onclick="promptCustomStoryEmojiSticker()">＋自訂</button>
-            </div>
-          </div>
-
-          <!-- Classic Polaroid Frame Sliders -->
-          <div id="polaroidControlsBox" style="margin-top:8px; border-top:1px dashed var(--border); padding-top:8px;">
-            <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700;">
-              <span>底片框相片縮放</span>
-              <input type="range" id="photoZoomRange" min="1" max="2.6" step="0.05" value="1" oninput="renderStoryCanvas()" style="width:65%;" />
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-top:4px;">
-              <span>水平移動</span>
-              <input type="range" id="photoPanXRange" min="-150" max="150" step="2" value="0" oninput="renderStoryCanvas()" style="width:65%;" />
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-top:4px;">
-              <span>垂直移動</span>
-              <input type="range" id="photoPanYRange" min="-150" max="150" step="2" value="0" oninput="renderStoryCanvas()" style="width:65%;" />
-            </div>
+          <div style="display:flex; gap:5px; flex-wrap:wrap; align-items:center;">
+            <button type="button" class="emoji-opt" onclick="addEmojiStickerToStory('☕')">☕</button>
+            <button type="button" class="emoji-opt" onclick="addEmojiStickerToStory('🚃')">🚃</button>
+            <button type="button" class="emoji-opt" onclick="addEmojiStickerToStory('🌊')">🌊</button>
+            <button type="button" class="emoji-opt" onclick="addEmojiStickerToStory('🍂')">🍂</button>
+            <button type="button" class="emoji-opt" onclick="addEmojiStickerToStory('🍜')">🍜</button>
+            <button type="button" class="emoji-opt" onclick="addEmojiStickerToStory('📸')">📸</button>
+            <button type="button" class="emoji-opt" onclick="addEmojiStickerToStory('✨')">✨</button>
+            <button type="button" class="mini-btn" onclick="promptCustomStoryEmojiSticker()">＋自訂</button>
           </div>
         </div>
       </div>
 
-      <!-- Interactive Touch Canvas + Long-Press Image Toggle -->
-      <div style="text-align:center; background:#E7E2D8; padding:14px; border-radius:18px;">
-        <div style="display:flex; justify-content:center; gap:6px; margin-bottom:10px;">
-          <button type="button" class="mini-btn share-highlight" id="canvasInteractModeBtn" onclick="toggleStoryPreviewMode(false)">🖐️ 畫布觸控排版模式</button>
-          <button type="button" class="mini-btn" id="imgLongPressModeBtn" onclick="toggleStoryPreviewMode(true)">📱 iPhone 長按存圖模式</button>
-        </div>
-
-        <canvas id="storyCanvas" width="1080" height="1920" style="width:100%; max-width:320px; height:auto; border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,0.22); touch-action:none; cursor:grab;"></canvas>
-        <img id="storyPreviewImg" alt="TABIGRAM Story Card" style="display:none; width:100%; max-width:320px; border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,0.22);" />
-
-        <div style="font-size:12px; color:var(--sub); margin-top:8px; font-weight:600;">
-          單指拖曳移動、雙指縮放旋轉貼紙或路線圖；完成後可點下方按鈕分享或切換「長按存圖」
-        </div>
-      </div>
-
-      <div style="margin-top:14px;">
-        <button class="pill-btn primary" style="width:100%; justify-content:center; padding:14px; font-size:15px;" onclick="shareOrSaveStoryImage()">
-          分享 / 儲存至相簿
-        </button>
-      </div>
+      <button class="pill-btn primary" style="width:100%; justify-content:center; padding:12px; font-size:14.5px;" onclick="shareOrSaveStoryImage()">
+        分享 / 儲存至相簿
+      </button>
     </div>
   </div>
 
@@ -1391,10 +1439,10 @@
       </div>
       <div style="text-align:center; background:#E7E2D8; padding:14px; border-radius:18px;">
         <canvas id="archiveCanvas" width="1080" height="1920" style="display:none;"></canvas>
-        <img id="archivePreviewImg" alt="TABIGRAM Archive" style="width:100%; max-width:310px; border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,0.22);" />
+        <img id="archivePreviewImg" alt="TABIGRAM Archive" style="width:100%; max-width:290px; border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,0.22);" />
       </div>
       <div style="margin-top:14px;">
-        <button class="pill-btn primary" style="width:100%; justify-content:center; padding:14px; font-size:15px;" onclick="shareOrSaveArchiveImage()">
+        <button class="pill-btn primary" style="width:100%; justify-content:center; padding:13px; font-size:15px;" onclick="shareOrSaveArchiveImage()">
           分享 / 儲存典藏海報至相簿
         </button>
       </div>
@@ -1417,7 +1465,7 @@
       "第二航廈": [25.0772, 121.2322], "大園": [25.0545, 121.2121],
       "領航": [25.0221, 121.2155], "環北": [24.9672, 121.2186], "老街溪": [24.9575, 121.2195],
 
-      // Taipei Metro (Red, Blue, Green, Orange Zhonghe-Xinlu, Brown, Circular)
+      // Taipei Metro
       "淡水": [25.1678, 121.4455], "紅樹林": [25.1540, 121.4589], "北投": [25.1318, 121.4986],
       "劍潭": [25.0848, 121.5250], "圓山": [25.0714, 121.5201], "民權西路": [25.0629, 121.5193],
       "雙連": [25.0578, 121.5207], "中山": [25.0527, 121.5204], "台北車站": [25.0478, 121.5170],
@@ -1561,7 +1609,7 @@
       { id: "Europe/Paris", label: "Europe/Paris (巴黎/歐洲)" }
     ];
 
-    const DEFAULT_MOOD_EMOJIS = ["✨", "☕", "🥹", "🌊", "🍜", "🛍️", "🚃", "📸", "🌙", "🥺"];
+    const DEFAULT_MOOD_EMOJIS = ["❤️", "✨", "☕", "🥹", "🌊", "🍜", "🛍️", "🚃", "📸", "🌙"];
 
     const OUTER_SWATCHES = [
       { id: "navy", name: "深海夜藍", bg: "#111A27", text: "#F6F3EC" },
@@ -1651,6 +1699,7 @@
     let lastStampedCardId = null;
     let leafletMap = null;
     let worldLandGeoJSON = null;
+    let activeShareDrawer = null;
 
     function loadAppState() {
       try {
@@ -1670,7 +1719,9 @@
           }
         }
       } catch (e) {}
-      appState.uiTheme = localStorage.getItem("TABIGRAM_UI_THEME") || appState.uiTheme || "clean";
+      let savedTheme = localStorage.getItem("TABIGRAM_UI_THEME") || appState.uiTheme || "clean";
+      if (savedTheme === "paper") savedTheme = "clean";
+      appState.uiTheme = savedTheme;
       appState.outerSwatchId = localStorage.getItem("TABIGRAM_OUTER_SWATCH") || appState.outerSwatchId || "navy";
       appState.innerSwatchId = localStorage.getItem("TABIGRAM_INNER_SWATCH") || appState.innerSwatchId || "cream";
       appState.paperTexture = localStorage.getItem("TABIGRAM_PAPER_TEX") || appState.paperTexture || "dots";
@@ -1703,23 +1754,29 @@
       renderAll();
     }
 
+    function syncStickyHeaderOffset() {
+      const hdr = document.getElementById("appTopHeader");
+      if (hdr) {
+        document.documentElement.style.setProperty("--header-h", `${hdr.offsetHeight}px`);
+      }
+    }
+    window.addEventListener("resize", syncStickyHeaderOffset);
+
     /*************************************************************************
-     * 3. 3 UI MATERIAL THEMES & GYROSCOPE DYNAMIC REFLECTION
+     * 3. UI MATERIAL THEMES (Simple / Silvre + Gyroscope)
      *************************************************************************/
     let gyroInitialized = false;
     let smoothMetalDeg = 135;
 
     function setUiMaterialTheme(themeId) {
-      appState.uiTheme = themeId || "clean";
+      if (themeId !== "metallic") themeId = "clean";
+      appState.uiTheme = themeId;
       localStorage.setItem("TABIGRAM_UI_THEME", appState.uiTheme);
-      document.body.classList.remove("theme-metallic", "theme-paper");
+      document.body.classList.remove("theme-metallic");
       if (appState.uiTheme === "metallic") document.body.classList.add("theme-metallic");
-      if (appState.uiTheme === "paper") document.body.classList.add("theme-paper");
 
-      ["clean", "metallic", "paper"].forEach(t => {
-        const b = document.getElementById("uiThemeBtn-" + t);
-        if (b) b.classList.toggle("primary", t === appState.uiTheme);
-      });
+      const sel = document.getElementById("uiThemeSelect");
+      if (sel) sel.value = appState.uiTheme;
 
       if (appState.uiTheme === "metallic") {
         enableMetallicGyroscope();
@@ -1876,10 +1933,10 @@
       const btnEl = document.getElementById("refreshWeatherBtn");
       if (manualClick) {
         if (badgeEl) {
-          badgeEl.textContent = "⏳ 正在同步當地即時氣象...";
+          badgeEl.textContent = "⏳ 同步當地氣象中...";
           badgeEl.style.background = "#FEF3C7";
         }
-        if (btnEl) btnEl.textContent = "更新中...";
+        if (btnEl) btnEl.textContent = "...";
       }
 
       const coord = detectDayTargetCoord(day, trip);
@@ -1911,8 +1968,8 @@
           setTimeout(() => { badgeEl.style.background = "#F8F6F0"; }, 900);
         }
         if (btnEl) {
-          btnEl.textContent = "✓ 已更新";
-          setTimeout(() => { btnEl.textContent = "↻ 即時更新"; }, 1200);
+          btnEl.textContent = "✓";
+          setTimeout(() => { btnEl.textContent = "↻ 更新"; }, 1200);
         }
       }
     }
@@ -2003,6 +2060,7 @@
       renderHeaderAndTabs();
       renderDayWeatherBar();
       renderTimelineCards();
+      syncStickyHeaderOffset();
       if (document.getElementById("budgetView").style.display !== "none") {
         renderBudgetAndChecklist();
       }
@@ -2017,11 +2075,11 @@
       const tmBtn = document.getElementById("travelModeBtn");
       const addTopBtn = document.getElementById("addTopBtn");
       if (appState.travelLockMode) {
-        tmBtn.textContent = "🔒 旅途中 (已鎖定結構)";
+        tmBtn.textContent = "🔒 旅途中";
         tmBtn.className = "pill-btn travel-mode-on";
         addTopBtn.style.display = "none";
       } else {
-        tmBtn.textContent = "🔓 規劃模式";
+        tmBtn.textContent = "🔓 規劃中";
         tmBtn.className = "pill-btn";
         addTopBtn.style.display = "inline-flex";
       }
@@ -2093,7 +2151,7 @@
       document.getElementById("deleteDayBtn").style.display = (!appState.travelLockMode && trip.days.length > 1) ? "inline-flex" : "none";
 
       const tzBtn = document.getElementById("homeTzToggleBtn");
-      tzBtn.textContent = `家鄉時區對照：${appState.showHomeTz ? "開" : "關"}`;
+      tzBtn.textContent = `家鄉時區：${appState.showHomeTz ? "開" : "關"}`;
       tzBtn.style.background = appState.showHomeTz ? "#191919" : "#FFFFFF";
       tzBtn.style.color = appState.showHomeTz ? "#FFFFFF" : "#191919";
 
@@ -2122,7 +2180,7 @@
 
     function convertTimeBetweenTz(timeHHMM, fromTz, toTz) {
       if (!timeHHMM || !fromTz || !toTz) return null;
-      if (fromTz === toTz) return `${timeHHMM} (與家鄉同區)`;
+      if (fromTz === toTz) return `${timeHHMM} (同區)`;
       try {
         const [h, m] = timeHHMM.split(":").map(Number);
         const now = new Date();
@@ -2263,20 +2321,20 @@
           <div class="card-top-bar">
             <div class="card-time-group">
               <span class="step-circle">${idx + 1}</span>
-              ${isNow ? `<span class="now-badge">● NOW 進行中</span>` : ""}
+              ${isNow ? `<span class="now-badge">● NOW</span>` : ""}
               <span class="time-text">${item.startTime || "09:00"} → ${item.endTime || "10:00"}</span>
               ${homeTzHtml}
             </div>
 
             <div class="status-btns">
-              ${isDone ? `<span class="ink-seal-badge ${shouldAnimateStamp ? 'animate-thud' : ''}">COMPLETED ✓</span>` : ""}
-              ${isCancel ? `<span class="ink-seal-badge cancelled ${shouldAnimateStamp ? 'animate-thud' : ''}">CANCELLED</span>` : ""}
-              <button type="button" class="mood-stamp-btn ${item.mood ? "stamped" : ""}" title="心情印章" onclick="toggleEmojiPopover(event, '${item.id}')">
-                ${item.mood ? escapeHtml(item.mood) : "☺ 印章"}
+              <button type="button" class="mood-stamp-btn ${item.mood ? "stamped" : ""}" title="心情貼圖" onclick="toggleEmojiPopover(event, '${item.id}')">
+                ${item.mood ? escapeHtml(item.mood) : "❤️"}
               </button>
               ${popoverHtml}
               <button class="status-btn ${isDone ? "active-done" : ""}" onclick="toggleItemStatus('${item.id}', 'done')">完成</button>
               <button class="status-btn ${isCancel ? "active-cancel" : ""}" onclick="toggleItemStatus('${item.id}', 'cancelled')">取消</button>
+              ${isDone ? `<span class="ink-seal-badge ${shouldAnimateStamp ? 'animate-thud' : ''}">COMPLETED ✓</span>` : ""}
+              ${isCancel ? `<span class="ink-seal-badge cancelled ${shouldAnimateStamp ? 'animate-thud' : ''}">CANCELLED</span>` : ""}
             </div>
           </div>
 
@@ -2299,14 +2357,12 @@
           </div>
 
           <div class="card-footer">
-            <div class="card-actions-left">
-              ${!appState.travelLockMode ? `<button class="mini-btn" onclick="openItemModal('${item.id}')">編輯</button>` : ""}
-              <button class="mini-btn" onclick="triggerQuickPhotoUpload('${item.id}', false)">照片 ${item.photos && item.photos.length ? `(${item.photos.length})` : ""}</button>
-              <button class="mini-btn" onclick="toggleQuickExpenseDrawer('${item.id}')">＋ 消費</button>
-              <button class="mini-btn" onclick="openExternalGoogleMap('${item.id}')">地圖</button>
-              <button class="mini-btn share-highlight" onclick="openShareModal('${item.id}', 0)">分享</button>
-            </div>
-            ${!appState.travelLockMode ? `<button class="mini-btn delete-btn" onclick="deleteItineraryItem('${item.id}')">刪除</button>` : ""}
+            ${!appState.travelLockMode ? `<button class="footer-text-btn" onclick="openItemModal('${item.id}')">編輯</button>` : ""}
+            <button class="footer-text-btn" onclick="triggerQuickPhotoUpload('${item.id}', false)">照片</button>
+            <button class="footer-text-btn" onclick="toggleQuickExpenseDrawer('${item.id}')">消費</button>
+            <button class="footer-text-btn" onclick="openExternalGoogleMap('${item.id}')">地圖</button>
+            <button class="footer-text-btn share-text" onclick="openShareModal('${item.id}', 0)">分享</button>
+            ${!appState.travelLockMode ? `<button class="footer-text-btn delete-text" onclick="deleteItineraryItem('${item.id}')">刪除</button>` : ""}
           </div>
         `;
 
@@ -2834,15 +2890,9 @@
     }
 
     /*************************************************************************
-     * 9. 9:16 STORY CARD ENGINE
-     * - Interactive Beck's Octilinear Metro Topology (20px line, 18px node,
-     *   Out-of-Station Dashed Walk, Anti-Foldback, 8-Way Collision-Free Labels)
-     * - Road Trip Editorial (A ────▶ B Flat-Start Solid Arrow, Sans/Serif, BL/BR Coords)
-     * - Real 3D Orthographic Globe Boarding Pass (Preserved 100%)
-     * - Vintage Maritime Ferry Ticket (Preserved 100%)
-     * - Multi-Polaroid & Emoji Free Stickers Multi-Touch Engine
+     * 9. 分享旅程 (9:16 STORY CARD ENGINE)
      *************************************************************************/
-    let transitRouteTransform = { x: 0, y: 0, scale: 1.0 }; // Locked 0° rotation
+    let transitRouteTransform = { x: 0, y: 0, scale: 1.0 };
     let roadtripEditorialState = {
       font: "sans",
       color: "#FFFFFF",
@@ -2854,45 +2904,51 @@
     let storyStickerLayers = [];
     let activeStickerId = null;
 
-    function initSwatchButtons() {
-      const outerRow = document.getElementById("outerPaperSwatches");
-      outerRow.innerHTML = OUTER_SWATCHES.map(s => `
-        <button type="button" class="swatch-btn ${s.id === appState.outerSwatchId ? "active" : ""}"
-          style="background:${s.bg}; color:${s.text};"
-          onclick="selectOuterSwatch('${s.id}')">${s.name}</button>
-      `).join("");
+    function initSwatchDropdowns() {
+      const outerSel = document.getElementById("outerPaperSelect");
+      if (outerSel) {
+        outerSel.innerHTML = OUTER_SWATCHES.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+        outerSel.value = appState.outerSwatchId;
+      }
 
-      const innerRow = document.getElementById("innerCardSwatches");
-      innerRow.innerHTML = INNER_SWATCHES.map(s => `
-        <button type="button" class="swatch-btn ${s.id === appState.innerSwatchId ? "active" : ""}"
-          style="background:${s.bg}; color:${s.text}; border:1px solid #ccc;"
-          onclick="selectInnerSwatch('${s.id}')">${s.name}</button>
-      `).join("");
+      const innerSel = document.getElementById("innerCardSelect");
+      if (innerSel) {
+        innerSel.innerHTML = INNER_SWATCHES.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+        innerSel.value = appState.innerSwatchId;
+      }
 
-      document.querySelectorAll("#paperTextureSwatches .swatch-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.getAttribute("data-tex") === appState.paperTexture);
-      });
+      const texSel = document.getElementById("paperTextureSelect");
+      if (texSel) {
+        texSel.value = appState.paperTexture;
+      }
     }
 
     function selectOuterSwatch(id) {
       appState.outerSwatchId = id;
       localStorage.setItem("TABIGRAM_OUTER_SWATCH", id);
-      initSwatchButtons();
       renderStoryCanvas();
     }
 
     function selectInnerSwatch(id) {
       appState.innerSwatchId = id;
       localStorage.setItem("TABIGRAM_INNER_SWATCH", id);
-      initSwatchButtons();
       renderStoryCanvas();
     }
 
     function selectPaperTexture(tex) {
       appState.paperTexture = tex;
       localStorage.setItem("TABIGRAM_PAPER_TEX", tex);
-      initSwatchButtons();
       renderStoryCanvas();
+    }
+
+    function toggleShareDrawer(drawerName) {
+      activeShareDrawer = (activeShareDrawer === drawerName) ? null : drawerName;
+      ["design", "stickers"].forEach(k => {
+        const tab = document.getElementById("drawerTab-" + k);
+        const panel = document.getElementById("shareDrawer-" + k);
+        if (tab) tab.classList.toggle("active", activeShareDrawer === k);
+        if (panel) panel.classList.toggle("open", activeShareDrawer === k);
+      });
     }
 
     function drawCardPaperTexture(ctx, x, y, w, h, radius, bgFill, textureMode) {
@@ -2981,27 +3037,6 @@
       renderStoryCanvas();
     }
 
-    function toggleStoryPreviewMode(showImgForLongPress) {
-      const canvas = document.getElementById("storyCanvas");
-      const img = document.getElementById("storyPreviewImg");
-      document.getElementById("canvasInteractModeBtn").classList.toggle("share-highlight", !showImgForLongPress);
-      document.getElementById("imgLongPressModeBtn").classList.toggle("share-highlight", showImgForLongPress);
-      if (showImgForLongPress) {
-        const prev = activeStickerId;
-        activeStickerId = null;
-        renderStoryCanvas().then(() => {
-          img.src = canvas.toDataURL("image/png");
-          canvas.style.display = "none";
-          img.style.display = "inline-block";
-          activeStickerId = prev;
-        });
-      } else {
-        canvas.style.display = "inline-block";
-        img.style.display = "none";
-        renderStoryCanvas();
-      }
-    }
-
     async function openShareModal(itemId, photoIdx = 0) {
       const day = getActiveDay();
       const item = day.items.find(i => i.id === itemId);
@@ -3024,7 +3059,6 @@
       transitRouteTransform = { x: 0, y: 0, scale: 1.0 };
       resetRoadtripPhotoTransform();
 
-      // Auto-resolve destination B coordinates for Road Trip
       const destName = item.roadTo || item.roadFrom || item.title.split(/to|➔|→/i).pop().trim();
       let destCoord = lookupStationCoordSync(destName);
       if (!destCoord && destName) {
@@ -3036,7 +3070,6 @@
         rtInp.value = formatCoordString(destCoord.lat, destCoord.lng);
       }
 
-      // Initialize sticker layer if item has photos and template is not pure polaroid
       storyStickerLayers = [];
       if (tplSelect.value !== "polaroid" && Array.isArray(item.photos) && item.photos.length > 0) {
         const firstP = item.photos[selectedSharePhotoIndex] || item.photos[0];
@@ -3062,8 +3095,13 @@
       document.getElementById("photoPanXRange").value = 0;
       document.getElementById("photoPanYRange").value = 0;
 
-      toggleStoryPreviewMode(false);
-      initSwatchButtons();
+      activeShareDrawer = null;
+      ["design", "stickers"].forEach(k => {
+        document.getElementById("drawerTab-" + k)?.classList.remove("active");
+        document.getElementById("shareDrawer-" + k)?.classList.remove("open");
+      });
+
+      initSwatchDropdowns();
       onShareTemplateChange();
       document.getElementById("shareModal").classList.add("open");
     }
@@ -3077,6 +3115,23 @@
       const tpl = document.getElementById("shareTemplateSelect").value;
       const hasPhotos = Array.isArray(currentShareItem.photos) && currentShareItem.photos.length > 0;
 
+      const designTabBtn = document.getElementById("drawerTab-design");
+      if (designTabBtn) {
+        if (tpl === "transit") {
+          designTabBtn.style.display = "block";
+          designTabBtn.textContent = "路線設計調整";
+        } else if (tpl === "roadtrip") {
+          designTabBtn.style.display = "block";
+          designTabBtn.textContent = "版面與座標調整";
+        } else if (tpl === "polaroid") {
+          designTabBtn.style.display = "block";
+          designTabBtn.textContent = "相片構圖調整";
+        } else {
+          designTabBtn.style.display = "none";
+          if (activeShareDrawer === "design") toggleShareDrawer("design");
+        }
+      }
+
       document.getElementById("transitTopologyControlsBox").style.display = (tpl === "transit") ? "block" : "none";
       document.getElementById("roadtripEditorialControlsBox").style.display = (tpl === "roadtrip") ? "block" : "none";
       document.getElementById("polaroidControlsBox").style.display = (tpl === "polaroid") ? "block" : "none";
@@ -3086,9 +3141,9 @@
         thumbRow.style.display = "block";
         document.getElementById("sharePhotoThumbs").innerHTML = currentShareItem.photos.map((p, i) => `
           <div style="display:inline-flex; flex-direction:column; align-items:center; gap:3px; margin-right:6px;">
-            <img class="card-photo-thumb" src="${p.dataUrl}" style="border:${i === selectedSharePhotoIndex ? "3px solid var(--accent)" : "1px solid var(--border)"}"
+            <img class="card-photo-thumb" src="${p.dataUrl}" style="width:54px; height:54px; border:${i === selectedSharePhotoIndex ? "3px solid var(--accent)" : "1px solid var(--border)"}"
               onclick="selectedSharePhotoIndex=${i}; onShareTemplateChange();" />
-            <button type="button" class="mini-btn" style="font-size:10px; padding:2px 6px;" onclick="addExistingPhotoAsPolaroidSticker(${i})">＋貼進畫布</button>
+            <button type="button" class="mini-btn" style="font-size:10px; padding:2px 5px;" onclick="addExistingPhotoAsPolaroidSticker(${i})">＋貼紙</button>
           </div>
         `).join("");
         const currentPhoto = currentShareItem.photos[selectedSharePhotoIndex];
@@ -3182,7 +3237,7 @@
     }
 
     function promptCustomStoryEmojiSticker() {
-      const em = prompt("請輸入想貼在畫布上的 Emoji 或手札文字印章：", "⛩️");
+      const em = prompt("輸入 Emoji 或短字印章：", "⛩️");
       if (em && em.trim()) addEmojiStickerToStory(em.trim());
     }
 
@@ -3220,7 +3275,6 @@
           drawRoundedRect(ctx, -pW / 2, -pH / 2, pW, pH, 14, "#FFFFFF");
           ctx.shadowColor = "transparent";
 
-          // Washi tape
           ctx.save();
           ctx.rotate(-0.04);
           ctx.fillStyle = "rgba(200, 75, 49, 0.72)";
@@ -3266,12 +3320,6 @@
       });
     }
 
-    /**
-     * TEMPLATE 2: Beck's Octilinear Metro Topology
-     * - Locked 20px Line Width, 18px Seamless Solid Endpoint, Concentric Rings for In-Station Transfer
-     * - Short Discontinuous Dashed Line for Out-of-Station Transfer (with Anti-Foldback)
-     * - 8-Way Collision-Free Station Name Placement
-     */
     function drawBeckOctilinearTransitCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch) {
       drawCardPaperTexture(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg, appState.paperTexture);
 
@@ -3537,9 +3585,6 @@
       ctx.restore();
     }
 
-    /**
-     * TEMPLATE 3: Vintage Ferry / Maritime Boarding Ticket Stub (Preserved 100%)
-     */
     function drawFerryTicketCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch, outerSwatch) {
       drawCardPaperTexture(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg, appState.paperTexture);
 
@@ -3626,9 +3671,6 @@
       drawBarcodeStrip(ctx, cardX + 64, cardY + cardH - 135, cardW - 128, 70, innerSwatch.text);
     }
 
-    /**
-     * TEMPLATE 4: Boarding Pass + Real 3D Orthographic Globe (Preserved 100%)
-     */
     async function drawBoardingPassWith3DGlobeCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch, outerSwatch) {
       drawCardPaperTexture(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg, appState.paperTexture);
 
@@ -3791,12 +3833,6 @@
       drawBarcodeStrip(ctx, cardX + 58, cardY + cardH - 115, cardW - 116, 64, innerSwatch.text);
     }
 
-    /**
-     * TEMPLATE 5: Road Trip Editorial Photography Card
-     * - Top A ───────────▶ B (Flat start, Solid triangle head, Middle baseline, Unified White/Black)
-     * - Choice of Modern Sans or Newspaper Serif
-     * - Swiss Minimalist Pure White Fine Coordinates at Bottom-Left or Bottom-Right (No symbol/box)
-     */
     async function drawRoadTripLogCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch) {
       drawCardPaperTexture(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg, appState.paperTexture);
 
@@ -3960,7 +3996,6 @@
       } else if (tpl === "roadtrip") {
         await drawRoadTripLogCard(ctx, item, mainX, mainY, mainW, mainH, innerSwatch);
       } else {
-        // Full Polaroid Frame Mode
         drawRoundedRect(ctx, mainX, mainY, mainW, mainH, 24, "#FFFFFF");
         const photoX = mainX + 44, photoY = mainY + 44, photoW = mainW - 88, photoH = mainH - 210;
 
@@ -3986,7 +4021,7 @@
           ctx.fillStyle = "#78716C";
           ctx.font = "700 28px 'Noto Sans TC', sans-serif";
           ctx.textAlign = "center";
-          ctx.fillText("點擊上方「＋ 上傳底圖相片」即可放入拍立得", photoX + photoW / 2, photoY + photoH / 2);
+          ctx.fillText("於下方「相片與貼圖」新增相片", photoX + photoW / 2, photoY + photoH / 2);
           ctx.textAlign = "left";
         }
         ctx.restore();
@@ -4034,7 +4069,7 @@
       ctx.fillText(`${item.startTime} LOGGED`, 0, 26);
       ctx.restore();
 
-      // 5. Render All Free Multi-Polaroid & Emoji Stickers on Top!
+      // 5. Render All Free Multi-Polaroid & Emoji Stickers on Top
       drawAllStoryStickers(ctx);
 
       // 6. Low-Profile Corner Watermark in Dela Gothic One at Bottom-Right
@@ -4047,17 +4082,12 @@
       ctx.fillText("TABIGRAM", W - 84, 1795);
       ctx.textAlign = "left";
       ctx.globalAlpha = 1;
-
-      const previewImg = document.getElementById("storyPreviewImg");
-      if (previewImg && previewImg.style.display !== "none") {
-        previewImg.src = canvas.toDataURL("image/png");
-      }
     }
 
     async function shareOrSaveStoryImage() {
       const canvas = document.getElementById("storyCanvas");
       const prevSel = activeStickerId;
-      activeStickerId = null; // Hide red selection frame when exporting
+      activeStickerId = null;
       await renderStoryCanvas();
       await shareCanvasViaNativeOrDownload(canvas, `tabigram-story-${Date.now()}.png`);
       activeStickerId = prevSel;
@@ -4189,7 +4219,6 @@
               renderStoryCanvas();
             }
           } else if (mode === "transitRoute") {
-            // Strictly locked at 0° rotation!
             transitRouteTransform.scale = Math.max(0.45, Math.min(2.4, initScale * ratio));
             renderStoryCanvas();
           } else if (mode === "roadPhoto") {
@@ -4206,7 +4235,6 @@
       canvas.addEventListener("pointerup", endPtr);
       canvas.addEventListener("pointercancel", endPtr);
 
-      // Mouse Wheel Zoom / Shift+Wheel Rotate for Desktop Testing
       canvas.addEventListener("wheel", (e) => {
         e.preventDefault();
         const pt = toCanvasPt(e.clientX, e.clientY);
@@ -4228,7 +4256,7 @@
     }
 
     /*************************************************************************
-     * 10. LEAFLET ROUTE MAP (Standard OpenStreetMap Tiles)
+     * 10. LEAFLET ROUTE MAP
      *************************************************************************/
     function switchMainView(view) {
       document.getElementById("timelineView").style.display = (view === "timeline") ? "block" : "none";
@@ -4656,7 +4684,6 @@
       renderAll();
       refreshRealtimeWeather(false);
 
-      // Re-evaluate NOW active status & Solar Track green dot every 5 seconds & on visibility/focus
       setInterval(() => {
         updateSolarTrackDots();
       }, 5000);

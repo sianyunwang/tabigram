@@ -4991,6 +4991,31 @@
       });
     }
 
+    async function handleMagicLinkRedirect() {
+      if (!window.location.hash || !window.location.hash.includes("access_token")) return;
+      try {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = hashParams.get("access_token");
+        const refreshToken = hashParams.get("refresh_token");
+        
+        if (accessToken && sbClient) {
+          const { data, error } = await sbClient.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          });
+          if (!error && data && data.session) {
+            currentCloudUser = data.session.user;
+            updateCloudButtonBadge();
+            window.history.replaceState({}, document.title, window.location.pathname);
+            alert("🎉 成功登入 TABIGRAM 雲端！");
+            renderAll();
+          }
+        }
+      } catch (e) {
+        console.error("Magic link token parse error:", e);
+      }
+    }
+
     function openCloudModal() {
       initSupabaseClient();
       renderCloudModalUI();
@@ -5650,6 +5675,7 @@
       mountAppleTouchIcon();
       loadAppState();
       initSupabaseClient();
+      handleMagicLinkRedirect();
       initFormSelectors();
       bindStoryCanvasMultiTouch();
       renderAll();

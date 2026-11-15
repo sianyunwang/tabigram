@@ -1026,7 +1026,6 @@
       <button class="pill-btn" id="tripCountBtn" onclick="openTripManager()">旅行專案 (1)</button>
       <button class="pill-btn" id="cloudSyncBtn" onclick="openCloudModal()">☁️ 雲端</button>
       <button class="pill-btn accent-outline" onclick="openArchiveModal()">典藏旅程</button>
-      <button class="pill-btn" onclick="openPinModal()">密碼鎖</button>
       <button class="pill-btn" onclick="exportBackupJSON()">匯出</button>
       <button class="pill-btn" onclick="document.getElementById('importFileInput').click()">匯入</button>
       <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importBackupJSON(event)" />
@@ -1447,10 +1446,10 @@
           登入後可將本機行程備份至雲端，並透過 6 碼邀請碼與旅伴共享行程表（你的私人備註、心情印章、拍立得與額外消費將獨立保存，絕不被覆蓋）。
         </div>
         <label class="form-label">輸入 Email 接收登入確認信</label>
-        <div style="display:flex; gap:6px;">
-          <input type="email" class="form-input" id="cloudEmailInput" placeholder="name@example.com" />
-          <button type="button" class="pill-btn primary" id="sendOtpBtn" onclick="sendCloudEmailOtp()">寄送登入信</button>
-        </div>
+        <input type="email" class="form-input" id="cloudEmailInput" placeholder="name@example.com" style="margin-bottom:8px;" />
+        <button type="button" class="pill-btn primary" id="sendOtpBtn" onclick="sendCloudEmailOtp()" style="width:100%; justify-content:center; padding:10px; font-weight:800;">
+          📧 傳送雲端登入確認信
+        </button>
       </div>
 
       <!-- 狀態 B：已登入 -->
@@ -4626,15 +4625,6 @@
       await shareCanvasViaNativeOrDownload(canvas, `tabigram-archive-${Date.now()}.png`);
     }
 
-    function openPinModal() {
-      const current = appState.pinCode || "";
-      const input = prompt(current ? "輸入新 4 位數密碼（留空可解除密碼鎖）：" : "設定 4 位數隱私密碼鎖：", current);
-      if (input === null) return;
-      appState.pinCode = input.trim();
-      saveAppState();
-      alert(appState.pinCode ? "已啟用密碼鎖保護。" : "已解除密碼鎖。");
-    }
-
     function exportBackupJSON() {
       const blob = new Blob([JSON.stringify(appState, null, 2)], { type: "application/json" });
       const a = document.createElement("a");
@@ -5072,13 +5062,6 @@
       mountAppleTouchIcon();
       loadAppState();
       initSupabaseClient();
-      if (appState.pinCode) {
-        const entered = prompt("請輸入 TABIGRAM 解鎖密碼：");
-        if (entered !== appState.pinCode) {
-          document.body.innerHTML = "<div style='padding:60px 20px; text-align:center; font-weight:800;'>🔒 密碼錯誤，請重新整理頁面再試。</div>";
-          return;
-        }
-      }
       initFormSelectors();
       bindStoryCanvasMultiTouch();
       renderAll();

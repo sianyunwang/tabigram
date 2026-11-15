@@ -1951,6 +1951,7 @@
       activeDayIndex: 0,
       showHomeTz: true,
       travelLockMode: false,
+      deletedTripIds: [],
       uiTheme: localStorage.getItem("TABIGRAM_UI_THEME") || "clean",
       outerSwatchId: localStorage.getItem("TABIGRAM_OUTER_SWATCH") || "navy",
       innerSwatchId: localStorage.getItem("TABIGRAM_INNER_SWATCH") || "cream",
@@ -3203,12 +3204,23 @@
       refreshRealtimeWeather(false);
     }
 
-    function deleteCurrentTrip() {
+    async function deleteCurrentTrip() {
       if (appState.trips.length <= 1) {
         alert("至少需保留一個旅行專案分頁。");
         return;
       }
       if (!confirm("確定要刪除此旅行專案嗎？")) return;
+      
+      const tripToDelete = getActiveTrip();
+      
+      appState.deletedTripIds = appState.deletedTripIds || [];
+      appState.deletedTripIds.push(tripToDelete.id);
+
+      if (sbClient && currentCloudUser && tripToDelete.shareCode) {
+        await sbClient.from("trips").delete().eq("id", tripToDelete.id);
+        await sbClient.from("user_journals").delete().eq("trip_id", tripToDelete.id);
+      }
+
       appState.trips = appState.trips.filter(t => t.id !== appState.activeTripId);
       appState.activeTripId = appState.trips[0].id;
       appState.activeDayIndex = 0;
@@ -3216,7 +3228,6 @@
       closeTripManager();
       renderAll();
     }
-
     /*************************************************************************
      * 9. 分享旅程 (9:16 STORY CARD ENGINE)
      *************************************************************************/
@@ -5362,7 +5373,7 @@
     async function pullAllCloudTripsAndMerge() {
       if (!sbClient || !currentCloudUser) return;
       try {
-        const { data: myJournals } = await sbClient
+        const deletedIds = appState.deletedTripIds || [];
           .from("user_journals")
           .select("*")
           .eq("user_id", currentCloudUser.id);

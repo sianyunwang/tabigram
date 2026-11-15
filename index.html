@@ -22,6 +22,8 @@
   <script src="https://cdn.jsdelivr.net/npm/d3-array@3"></script>
   <script src="https://cdn.jsdelivr.net/npm/d3-geo@3"></script>
   <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+  <!-- Supabase JS SDK v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root {
@@ -1022,6 +1024,7 @@
     <div class="top-actions">
       <button class="pill-btn primary" id="addTopBtn" onclick="openItemModal()">＋ 新增行程</button>
       <button class="pill-btn" id="tripCountBtn" onclick="openTripManager()">旅行專案 (1)</button>
+      <button class="pill-btn" id="cloudSyncBtn" onclick="openCloudModal()">☁️ 雲端</button>
       <button class="pill-btn accent-outline" onclick="openArchiveModal()">典藏旅程</button>
       <button class="pill-btn" onclick="openPinModal()">密碼鎖</button>
       <button class="pill-btn" onclick="exportBackupJSON()">匯出</button>
@@ -1429,7 +1432,73 @@
       </button>
     </div>
   </div>
+<!-- Modal 5: Cloud Auth, Invite Code & Dual-Track Sync -->
+  <div class="modal-backdrop" id="cloudModal">
+    <div class="modal-sheet" style="max-width: 440px;">
+      <div class="modal-header">
+        <div class="modal-title">☁️ 雲端同步與旅伴協作</div>
+        <button class="pill-btn" onclick="closeCloudModal()">關閉</button>
+      </div>
 
+      <!-- 狀態 A：尚未登入 (訪客模式) -->
+      <div id="cloudLoggedOutBox" class="form-card">
+        <div style="font-size:13px; color:var(--sub); line-height:1.5; margin-bottom:12px;">
+          登入後可將本機行程無痛備份至雲端，並透過 6 碼邀請碼與旅伴共享行程表（你的私人備註、心情印章、拍立得與額外消費將獨立保存，絕不被覆蓋）。
+        </div>
+        <label class="form-label">輸入 Email 接收 6 位數驗證碼</label>
+        <div style="display:flex; gap:6px; margin-bottom:10px;">
+          <input type="email" class="form-input" id="cloudEmailInput" placeholder="name@example.com" />
+          <button type="button" class="pill-btn primary" id="sendOtpBtn" onclick="sendCloudEmailOtp()">寄送驗證碼</button>
+        </div>
+
+        <div id="otpVerifyRow" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed var(--border);">
+          <label class="form-label">輸入信箱收到的 6 位數驗證碼</label>
+          <div style="display:flex; gap:6px;">
+            <input type="text" class="form-input" id="cloudOtpInput" placeholder="123456" maxlength="6" style="font-family:var(--mono); letter-spacing:3px; text-align:center;" />
+            <button type="button" class="pill-btn primary" onclick="verifyCloudEmailOtp()">確認登入</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 狀態 B：已登入 -->
+      <div id="cloudLoggedInBox" style="display:none;">
+        <div class="form-card" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-size:11.5px; color:var(--sub);">已連線帳號</div>
+            <div style="font-size:13.5px; font-weight:800;" id="cloudUserEmailLabel"></div>
+          </div>
+          <button type="button" class="mini-btn delete-btn" onclick="signOutCloud()">登出</button>
+        </div>
+
+        <!-- 目前旅程的雲端協作卡片 -->
+        <div class="form-card">
+          <div style="font-size:13.5px; font-weight:900; margin-bottom:6px;" id="cloudActiveTripTitle">目前專案</div>
+          <div id="cloudShareCodeBadge" style="display:none; background:#FAF8F4; border:1px dashed var(--border); padding:8px 12px; border-radius:10px; margin-bottom:10px; text-align:center;">
+            <span style="font-size:12px; color:var(--sub);">旅伴邀請碼：</span>
+            <strong id="cloudShareCodeText" style="font-family:var(--mono); font-size:18px; letter-spacing:3px; color:var(--accent);"></strong>
+          </div>
+
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="pill-btn primary" style="flex:1; justify-content:center;" id="publishTripBtn" onclick="publishActiveTripToCloud()">⬆️ 發佈 / 更新共用行程</button>
+            <button type="button" class="pill-btn" style="flex:1; justify-content:center;" onclick="syncMyJournalToCloud()">📔 同步我的手札</button>
+          </div>
+          <div style="font-size:11.5px; color:var(--sub); margin-top:8px; line-height:1.4;">
+            • <b>發佈共用行程</b>：將時間、地點、路線推送給所有團員。<br/>
+            • <b>同步我的手札</b>：單獨備份你的私人備註、心情印章、拍立得與額外消費。
+          </div>
+        </div>
+
+        <!-- 輸入邀請碼加入朋友的旅程 -->
+        <div class="form-card">
+          <div style="font-size:13.5px; font-weight:900; margin-bottom:6px;">🤝 加入旅伴的行程</div>
+          <div style="display:flex; gap:6px;">
+            <input type="text" class="form-input" id="joinShareCodeInput" placeholder="輸入 6 碼邀請碼" maxlength="6" style="font-family:var(--mono); text-transform:uppercase; letter-spacing:2px;" />
+            <button type="button" class="pill-btn primary" onclick="joinTripByShareCode()">加入並合併</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Modal 4: Full Trip Archive Souvenir Card -->
   <div class="modal-backdrop" id="archiveModal">
     <div class="modal-sheet">
@@ -4670,11 +4739,355 @@
         img.src = src;
       });
     }
+/*************************************************************************
+     * 13. SUPABASE CLOUD AUTH & DUAL-TRACK MERGE ENGINE
+     *     - Main Trip Layer (trips): Shared schedule, times, locations, transit
+     *     - Personal Journal Layer (user_journals): Private notes, mood stamps,
+     *       Polaroid photos, extra expenses, done/cancelled status (Never overwritten!)
+     *************************************************************************/
+    const SUPABASE_URL = "https://pjgjxvahhauqluassiuo.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_6FOfxpsIuTDrJq0BFCAW6w_uzp-IhVX";
+    let sbClient = null;
+    let currentCloudUser = null;
 
+    function initSupabaseClient() {
+      if (sbClient || !window.supabase) return;
+      sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      sbClient.auth.onAuthStateChange(async (event, session) => {
+        currentCloudUser = session ? session.user : null;
+        updateCloudButtonBadge();
+        if (currentCloudUser && event === "SIGNED_IN") {
+          await pullAllCloudTripsAndMerge();
+        }
+      });
+
+      sbClient.auth.getSession().then(async ({ data }) => {
+        currentCloudUser = data && data.session ? data.session.user : null;
+        updateCloudButtonBadge();
+        if (currentCloudUser) {
+          await pullAllCloudTripsAndMerge();
+        }
+      });
+    }
+
+    function updateCloudButtonBadge() {
+      const btn = document.getElementById("cloudSyncBtn");
+      if (!btn) return;
+      if (currentCloudUser) {
+        btn.textContent = "☁️ 已連線";
+        btn.classList.add("travel-mode-on");
+      } else {
+        btn.textContent = "☁️ 雲端";
+        btn.classList.remove("travel-mode-on");
+      }
+    }
+
+    function openCloudModal() {
+      initSupabaseClient();
+      renderCloudModalUI();
+      document.getElementById("cloudModal").classList.add("open");
+    }
+
+    function closeCloudModal() {
+      document.getElementById("cloudModal").classList.remove("open");
+    }
+
+    function renderCloudModalUI() {
+      const outBox = document.getElementById("cloudLoggedOutBox");
+      const inBox = document.getElementById("cloudLoggedInBox");
+      if (!currentCloudUser) {
+        outBox.style.display = "block";
+        inBox.style.display = "none";
+        return;
+      }
+
+      outBox.style.display = "none";
+      inBox.style.display = "block";
+      document.getElementById("cloudUserEmailLabel").textContent = currentCloudUser.email || "已登入旅人";
+
+      const trip = getActiveTrip();
+      document.getElementById("cloudActiveTripTitle").textContent = `目前專案：${trip.title}`;
+
+      const codeBadge = document.getElementById("cloudShareCodeBadge");
+      const pubBtn = document.getElementById("publishTripBtn");
+      if (trip.shareCode) {
+        codeBadge.style.display = "block";
+        document.getElementById("cloudShareCodeText").textContent = trip.shareCode;
+      } else {
+        codeBadge.style.display = "none";
+      }
+
+      // If user is a guest member (not the owner), disable overwriting the master schedule
+      if (trip.ownerId && trip.ownerId !== currentCloudUser.id) {
+        pubBtn.textContent = "🔒 團員唯讀主行程";
+        pubBtn.disabled = true;
+        pubBtn.style.opacity = "0.55";
+      } else {
+        pubBtn.textContent = "⬆️ 發佈 / 更新共用行程";
+        pubBtn.disabled = false;
+        pubBtn.style.opacity = "1";
+      }
+    }
+
+    async function sendCloudEmailOtp() {
+      initSupabaseClient();
+      const email = document.getElementById("cloudEmailInput").value.trim();
+      if (!email) return alert("請輸入 Email 信箱");
+      const btn = document.getElementById("sendOtpBtn");
+      btn.textContent = "寄送中...";
+      const { error } = await sbClient.auth.signInWithOtp({ email });
+      btn.textContent = "寄送驗證碼";
+      if (error) {
+        alert("寄送失敗：" + error.message);
+      } else {
+        document.getElementById("otpVerifyRow").style.display = "block";
+        alert("驗證碼已寄出！請至信箱查收 6 位數驗證碼（若未看到請檢查垃圾郵件匣）。");
+      }
+    }
+
+    async function verifyCloudEmailOtp() {
+      const email = document.getElementById("cloudEmailInput").value.trim();
+      const token = document.getElementById("cloudOtpInput").value.trim();
+      if (!email || !token) return alert("請輸入完整 6 位數驗證碼");
+      const { error } = await sbClient.auth.verifyOtp({ email, token, type: "email" });
+      if (error) {
+        alert("驗證碼錯誤或已過期：" + error.message);
+      } else {
+        renderCloudModalUI();
+        alert("🎉 登入成功！已自動整合你的本機與雲端行程。");
+      }
+    }
+
+    async function signOutCloud() {
+      if (!sbClient) return;
+      await sbClient.auth.signOut();
+      currentCloudUser = null;
+      updateCloudButtonBadge();
+      renderCloudModalUI();
+    }
+
+    // Extract Personal Journal Layer from a Trip (Private notes, mood stamps, photos, extraExpenses, status)
+    function extractPersonalJournalFromTrip(trip) {
+      const itemsMap = {};
+      (trip.days || []).forEach(day => {
+        (day.items || []).forEach(item => {
+          itemsMap[item.id] = {
+            personalNote: item.personalNote || "",
+            mood: item.mood || "",
+            status: item.status || "normal",
+            photos: item.photos || [],
+            extraExpenses: item.extraExpenses || []
+          };
+        });
+      });
+      return {
+        checklist: trip.checklist || [],
+        items: itemsMap
+      };
+    }
+
+    // Strip Personal Layer before publishing Master Shared Trip
+    function buildCleanMasterTripPayload(trip) {
+      const clone = JSON.parse(JSON.stringify(trip));
+      (clone.days || []).forEach(day => {
+        (day.items || []).forEach(item => {
+          item.mood = "";
+          item.status = "normal";
+          item.photos = [];
+          item.extraExpenses = [];
+        });
+      });
+      return clone;
+    }
+
+    // Merge Master Trip + Personal Journal without losing user's private memories
+    function mergeMasterWithPersonalJournal(masterTrip, journalData) {
+      const merged = JSON.parse(JSON.stringify(masterTrip));
+      if (!journalData) return merged;
+      if (Array.isArray(journalData.checklist)) {
+        merged.checklist = journalData.checklist;
+      }
+      const jItems = journalData.items || {};
+      (merged.days || []).forEach(day => {
+        (day.items || []).forEach(item => {
+          const priv = jItems[item.id];
+          if (priv) {
+            if (priv.mood) item.mood = priv.mood;
+            if (priv.status) item.status = priv.status;
+            if (Array.isArray(priv.photos) && priv.photos.length > 0) item.photos = priv.photos;
+            if (Array.isArray(priv.extraExpenses) && priv.extraExpenses.length > 0) item.extraExpenses = priv.extraExpenses;
+            if (priv.personalNote) {
+              item.personalNote = priv.personalNote;
+              if (!item.note.includes(priv.personalNote)) {
+                item.note = item.note ? `${item.note}\n[我的筆記] ${priv.personalNote}` : priv.personalNote;
+              }
+            }
+          }
+        });
+      });
+      return merged;
+    }
+
+    function generateSixCharShareCode() {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let code = "";
+      for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      return code;
+    }
+
+    // Owner publishes/updates Master Trip + syncs their own Journal
+    async function publishActiveTripToCloud() {
+      if (!currentCloudUser) return alert("請先登入雲端帳號");
+      const trip = getActiveTrip();
+      if (trip.ownerId && trip.ownerId !== currentCloudUser.id) {
+        return alert("只有建立此行程的主揪可以修改共用主行程喔！");
+      }
+
+      const btn = document.getElementById("publishTripBtn");
+      btn.textContent = "上傳中...";
+
+      if (!trip.shareCode) trip.shareCode = generateSixCharShareCode();
+      trip.ownerId = currentCloudUser.id;
+
+      const masterPayload = buildCleanMasterTripPayload(trip);
+      const personalJournal = extractPersonalJournalFromTrip(trip);
+
+      const { error: tripErr } = await sbClient.from("trips").upsert({
+        id: trip.id,
+        owner_id: currentCloudUser.id,
+        share_code: trip.shareCode,
+        title: trip.title,
+        payload: masterPayload,
+        updated_at: new Date().toISOString()
+      });
+
+      if (tripErr) {
+        btn.textContent = "⬆️ 發佈 / 更新共用行程";
+        return alert("發佈失敗：" + tripErr.message);
+      }
+
+      await sbClient.from("user_journals").upsert({
+        user_id: currentCloudUser.id,
+        trip_id: trip.id,
+        journal_data: personalJournal,
+        updated_at: new Date().toISOString()
+      });
+
+      saveAppState();
+      renderCloudModalUI();
+      alert(`✅ 已發佈至雲端！\n旅伴邀請碼：${trip.shareCode}\n同行友人輸入此邀請碼即可同步行程。`);
+    }
+
+    // Sync ONLY personal journal (notes, mood stamps, photos, extra expenses)
+    async function syncMyJournalToCloud() {
+      if (!currentCloudUser) return alert("請先登入雲端帳號");
+      const trip = getActiveTrip();
+      if (!trip.shareCode) {
+        return alert("此專案尚未發佈至雲端，請主揪先按「發佈共用行程」。");
+      }
+
+      const personalJournal = extractPersonalJournalFromTrip(trip);
+      const { error } = await sbClient.from("user_journals").upsert({
+        user_id: currentCloudUser.id,
+        trip_id: trip.id,
+        journal_data: personalJournal,
+        updated_at: new Date().toISOString()
+      });
+
+      if (error) alert("手札同步失敗：" + error.message);
+      else alert("📔 你的私人備註、心情印章、拍立得與額外消費已安全備份至雲端！");
+    }
+
+    // Companion joins a shared trip using 6-char invite code
+    async function joinTripByShareCode() {
+      if (!currentCloudUser) return alert("請先登入雲端帳號");
+      const code = document.getElementById("joinShareCodeInput").value.trim().toUpperCase();
+      if (code.length < 4) return alert("請輸入 6 碼邀請碼");
+
+      const { data: tripRow, error } = await sbClient
+        .from("trips")
+        .select("*")
+        .eq("share_code", code)
+        .single();
+
+      if (error || !tripRow) {
+        return alert("找不到此邀請碼的行程，請確認拼寫是否正確。");
+      }
+
+      const { data: journalRow } = await sbClient
+        .from("user_journals")
+        .select("*")
+        .eq("user_id", currentCloudUser.id)
+        .eq("trip_id", tripRow.id)
+        .maybeSingle();
+
+      const mergedTrip = mergeMasterWithPersonalJournal(tripRow.payload, journalRow ? journalRow.journal_data : null);
+      mergedTrip.ownerId = tripRow.owner_id;
+      mergedTrip.shareCode = tripRow.share_code;
+
+      const existIdx = appState.trips.findIndex(t => t.id === mergedTrip.id);
+      if (existIdx !== -1) {
+        // Keep local personal journal if cloud journal is empty
+        const localPriv = extractPersonalJournalFromTrip(appState.trips[existIdx]);
+        appState.trips[existIdx] = mergeMasterWithPersonalJournal(mergedTrip, localPriv);
+      } else {
+        appState.trips.push(mergedTrip);
+      }
+
+      appState.activeTripId = mergedTrip.id;
+      appState.activeDayIndex = 0;
+      saveAppState();
+      renderAll();
+      renderCloudModalUI();
+      alert(`🎉 成功加入「${mergedTrip.title}」！`);
+    }
+
+    // Auto-pull updates on login/reload while preserving personal memories
+    async function pullAllCloudTripsAndMerge() {
+      if (!sbClient || !currentCloudUser) return;
+      try {
+        const { data: myJournals } = await sbClient
+          .from("user_journals")
+          .select("*")
+          .eq("user_id", currentCloudUser.id);
+
+        const { data: ownedTrips } = await sbClient
+          .from("trips")
+          .select("*")
+          .eq("owner_id", currentCloudUser.id);
+
+        const journalTripIds = (myJournals || []).map(j => j.trip_id);
+        let sharedTrips = [];
+        if (journalTripIds.length > 0) {
+          const { data } = await sbClient.from("trips").select("*").in("id", journalTripIds);
+          sharedTrips = data || [];
+        }
+
+        const allCloudMap = new Map();
+        [...(ownedTrips || []), ...sharedTrips].forEach(r => allCloudMap.set(r.id, r));
+
+        allCloudMap.forEach((row) => {
+          const jRec = (myJournals || []).find(j => j.trip_id === row.id);
+          const localIdx = appState.trips.findIndex(t => t.id === row.id);
+          const localPriv = localIdx !== -1 ? extractPersonalJournalFromTrip(appState.trips[localIdx]) : null;
+          const merged = mergeMasterWithPersonalJournal(row.payload, (jRec && jRec.journal_data) || localPriv);
+          merged.ownerId = row.owner_id;
+          merged.shareCode = row.share_code;
+
+          if (localIdx !== -1) appState.trips[localIdx] = merged;
+          else appState.trips.push(merged);
+        });
+
+        saveAppState();
+        renderAll();
+      } catch (e) {}
+    }
     // Boot
     window.addEventListener("DOMContentLoaded", () => {
       mountAppleTouchIcon();
       loadAppState();
+      initSupabaseClient();
       if (appState.pinCode) {
         const entered = prompt("請輸入 TABIGRAM 解鎖密碼：");
         if (entered !== appState.pinCode) {

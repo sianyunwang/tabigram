@@ -1437,14 +1437,13 @@
       </div>
 
       <!-- 狀態 A：尚未登入 (訪客模式) -->
-      <!-- 狀態 A：尚未登入 (訪客模式) -->
       <div id="cloudLoggedOutBox" class="form-card">
         <div style="font-size:13px; color:var(--sub); line-height:1.5; margin-bottom:12px;">
           登入後可將本機行程備份至雲端，並透過 6 碼邀請碼與旅伴共享行程表（你的私人備註、心情印章、拍立得與額外消費將獨立保存，絕不被覆蓋）。
         </div>
         <label class="form-label">輸入 Email 接收登入確認信</label>
-        <input type="email" class="form-input" id="cloudEmailInput" placeholder="name@example.com" style="margin-bottom:8px;" />
-        <button type="button" class="pill-btn primary" id="sendOtpBtn" onclick="sendCloudEmailOtp()" style="width:100%; justify-content:center; padding:10px; font-weight:800;">
+        <input type="email" class="form-input" id="cloudEmailInput" placeholder="name@example.com" style="margin-bottom:10px; padding:10px;" />
+        <button type="button" id="sendOtpBtn" onclick="sendCloudEmailOtp()" style="width:100%; padding:12px; background:var(--ink); color:#FFFFFF; border:none; border-radius:10px; font-weight:900; font-size:14px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.15); transition:opacity 0.15s ease;">
           📧 傳送雲端登入確認信
         </button>
       </div>
@@ -4814,19 +4813,31 @@
       initSupabaseClient();
       const email = document.getElementById("cloudEmailInput").value.trim();
       if (!email) return alert("請輸入 Email 信箱");
+      
       const btn = document.getElementById("sendOtpBtn");
+      if (btn.disabled) return; // 防止重複連點
+      
+      btn.disabled = true;
       btn.textContent = "寄送中...";
+      
       const { error } = await sbClient.auth.signInWithOtp({
         email,
         options: {
           emailRedirectTo: window.location.origin + window.location.pathname
         }
       });
-      btn.textContent = "寄送登入信";
+      
+      btn.disabled = false;
+      btn.textContent = "📧 傳送雲端登入確認信";
+      
       if (error) {
-        alert("寄送失敗：" + error.message);
+        if (error.message.includes("rate limit")) {
+          alert("⚠️ 寄送頻率過快（Supabase 免費版保護機制）。請稍候 5～10 分鐘後再試，或直接使用已登入其他裝置的瀏覽器連線。");
+        } else {
+          alert("寄送失敗：" + error.message);
+        }
       } else {
-        alert("📩 登入信已寄出！請打開信箱點擊「Confirm email address」或「Log In」連結，頁面就會自動跳轉並完成登入。");
+        alert("📩 登入確認信已寄出！請至信箱點擊信中的「Confirm email address」或「Log In」連結，頁面就會自動跳轉並完成登入。");
       }
     }
 

@@ -1,4 +1,29 @@
-function renderCloudModalUI() {
+with open('index (1)_3.html', 'r', encoding='utf-8') as f:
+    html = f.read()
+
+# 1. Update HTML badge block
+old_badge = """          <div id="cloudShareCodeBadge" style="display:none; background:#FAF8F4; border:1px dashed var(--border); padding:8px 12px; border-radius:10px; margin-bottom:10px; text-align:center;">
+            <span style="font-size:12px; color:var(--sub);">旅伴邀請碼：</span>
+            <strong id="cloudShareCodeText" style="font-family:var(--mono); font-size:18px; letter-spacing:3px; color:var(--accent);"></strong>
+          </div>"""
+
+new_badge = """          <div id="cloudShareCodeBadge" style="display:none; background:#FAF8F4; border:1px dashed var(--border); padding:8px 12px; border-radius:10px; margin-bottom:10px; text-align:center;">
+            <span style="font-size:12px; color:var(--sub);">旅伴邀請碼：</span>
+            <strong id="cloudShareCodeText" style="font-family:var(--mono); font-size:18px; letter-spacing:3px; color:var(--accent);"></strong>
+            <div id="cloudCompanionStatsBox" style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border); font-size:12px; color:var(--ink); text-align:left;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span id="cloudCompanionCountText" style="font-weight:800;">👥 讀取旅伴名單中...</span>
+                <button type="button" class="mini-btn" style="padding:2px 8px; font-size:11px;" onclick="fetchTripCompanions()">↻ 重新整理</button>
+              </div>
+              <div id="cloudCompanionListText" style="margin-top:4px; color:var(--sub); font-family:var(--mono); font-size:11.5px; line-height:1.5; word-break:break-all;"></div>
+            </div>
+          </div>"""
+
+assert old_badge in html, "old_badge not found"
+html = html.replace(old_badge, new_badge, 1)
+
+# 2. Update renderCloudModalUI and add fetchTripCompanions
+old_render_cloud = """    function renderCloudModalUI() {
       const outBox = document.getElementById("cloudLoggedOutBox");
       const inBox = document.getElementById("cloudLoggedInBox");
       if (!currentCloudUser) {
@@ -19,7 +44,44 @@ function renderCloudModalUI() {
       if (trip.shareCode) {
         codeBadge.style.display = "block";
         document.getElementById("cloudShareCodeText").textContent = trip.shareCode;
-        fetchTripCompanions(); // ⬅️ 就是加了這一行，讓它自動讀取人數！
+      } else {
+        codeBadge.style.display = "none";
+      }
+
+      // If user is a guest member (not the owner), disable overwriting the master schedule
+      if (trip.ownerId && trip.ownerId !== currentCloudUser.id) {
+        pubBtn.textContent = "🔒 團員唯讀主行程";
+        pubBtn.disabled = true;
+        pubBtn.style.opacity = "0.55";
+      } else {
+        pubBtn.textContent = "⬆️ 發佈 / 更新共用行程";
+        pubBtn.disabled = false;
+        pubBtn.style.opacity = "1";
+      }
+    }"""
+
+new_render_cloud = """    function renderCloudModalUI() {
+      const outBox = document.getElementById("cloudLoggedOutBox");
+      const inBox = document.getElementById("cloudLoggedInBox");
+      if (!currentCloudUser) {
+        outBox.style.display = "block";
+        inBox.style.display = "none";
+        return;
+      }
+
+      outBox.style.display = "none";
+      inBox.style.display = "block";
+      document.getElementById("cloudUserEmailLabel").textContent = currentCloudUser.email || "已登入旅人";
+
+      const trip = getActiveTrip();
+      document.getElementById("cloudActiveTripTitle").textContent = `目前專案：${trip.title}`;
+
+      const codeBadge = document.getElementById("cloudShareCodeBadge");
+      const pubBtn = document.getElementById("publishTripBtn");
+      if (trip.shareCode) {
+        codeBadge.style.display = "block";
+        document.getElementById("cloudShareCodeText").textContent = trip.shareCode;
+        fetchTripCompanions();
       } else {
         codeBadge.style.display = "none";
       }
@@ -36,7 +98,7 @@ function renderCloudModalUI() {
       }
     }
 
-    // ⬅️ 緊接著在它正下方加上這個負責去 Supabase 算人數的函式
+    // 查詢並統計此行程已加入的旅伴名單
     async function fetchTripCompanions() {
       if (!sbClient || !currentCloudUser) return;
       const trip = getActiveTrip();
@@ -63,4 +125,282 @@ function renderCloudModalUI() {
         const roleBadge = isOwner ? " <b style='color:var(--accent);'>[主揪]</b>" : "";
         return `• ${escapeHtml(label)}${roleBadge}`;
       }).join("<br/>");
+    }"""
+
+assert old_render_cloud in html, "old_render_cloud not found"
+html = html.replace(old_render_cloud, new_render_cloud, 1)
+
+# 3. Update user_journals upserts to include user_email
+old_upsert_1 = """      await sbClient.from("user_journals").upsert({
+        user_id: currentCloudUser.id,
+        trip_id: trip.id,
+        journal_data: personalJournal,
+        updated_at: new Date().toISOString()
+      });"""
+
+new_upsert_1 = """      await sbClient.from("user_journals").upsert({
+        user_id: currentCloudUser.id,
+        user_email: currentCloudUser.email,
+        trip_id: trip.id,
+        journal_data: personalJournal,
+        updated_at: new Date().toISOString()
+      });"""
+
+assert old_upsert_1 in html, "old_upsert_1 not found"
+html = html.replace(old_upsert_1, new_upsert_1, 1)
+
+old_upsert_2 = """      const { error } = await sbClient.from("user_journals").upsert({
+        user_id: currentCloudUser.id,
+        trip_id: trip.id,
+        journal_data: personalJournal,
+        updated_at: new Date().toISOString()
+      });"""
+
+new_upsert_2 = """      const { error } = await sbClient.from("user_journals").upsert({
+        user_id: currentCloudUser.id,
+        user_email: currentCloudUser.email,
+        trip_id: trip.id,
+        journal_data: personalJournal,
+        updated_at: new Date().toISOString()
+      });"""
+
+assert old_upsert_2 in html, "old_upsert_2 not found"
+html = html.replace(old_upsert_2, new_upsert_2, 1)
+
+# 4. Update joinTripByShareCode to auto-register companion in user_journals
+old_join_end = """      appState.activeTripId = mergedTrip.id;
+      appState.activeDayIndex = 0;
+      saveAppState();
+      renderAll();
+      renderCloudModalUI();
+      alert(`🎉 成功加入「${mergedTrip.title}」！`);"""
+
+new_join_end = """      appState.activeTripId = mergedTrip.id;
+      appState.activeDayIndex = 0;
+
+      // 自動在雲端登記旅伴加入紀錄
+      const activeTripNow = appState.trips.find(t => t.id === mergedTrip.id) || mergedTrip;
+      await sbClient.from("user_journals").upsert({
+        user_id: currentCloudUser.id,
+        user_email: currentCloudUser.email,
+        trip_id: mergedTrip.id,
+        journal_data: extractPersonalJournalFromTrip(activeTripNow),
+        updated_at: new Date().toISOString()
+      });
+
+      saveAppState();
+      renderAll();
+      renderCloudModalUI();
+      alert(`🎉 成功加入「${mergedTrip.title}」！`);"""
+
+assert old_join_end in html, "old_join_end not found"
+html = html.replace(old_join_end, new_join_end, 1)
+
+with open('index.html', 'w', encoding='utf-8') as f:
+    f.write(html)
+print("Saved index.html successfully")
+```Standardizing tool call...
+Chad: I need to call `google:ds_python_interpreter` properly instead of writing raw markdown code block! Let's invoke `google:ds_python_interpreter`.
+
+```python?code_reference&code_event_index=1
+with open('index (1)_3.html', 'r', encoding='utf-8') as f:
+    html = f.read()
+
+# 1. Update HTML badge block
+old_badge = """          <div id="cloudShareCodeBadge" style="display:none; background:#FAF8F4; border:1px dashed var(--border); padding:8px 12px; border-radius:10px; margin-bottom:10px; text-align:center;">
+            <span style="font-size:12px; color:var(--sub);">旅伴邀請碼：</span>
+            <strong id="cloudShareCodeText" style="font-family:var(--mono); font-size:18px; letter-spacing:3px; color:var(--accent);"></strong>
+          </div>"""
+
+new_badge = """          <div id="cloudShareCodeBadge" style="display:none; background:#FAF8F4; border:1px dashed var(--border); padding:8px 12px; border-radius:10px; margin-bottom:10px; text-align:center;">
+            <span style="font-size:12px; color:var(--sub);">旅伴邀請碼：</span>
+            <strong id="cloudShareCodeText" style="font-family:var(--mono); font-size:18px; letter-spacing:3px; color:var(--accent);"></strong>
+            <div id="cloudCompanionStatsBox" style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border); font-size:12px; color:var(--ink); text-align:left;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span id="cloudCompanionCountText" style="font-weight:800;">👥 讀取旅伴名單中...</span>
+                <button type="button" class="mini-btn" style="padding:2px 8px; font-size:11px;" onclick="fetchTripCompanions()">↻ 重新整理</button>
+              </div>
+              <div id="cloudCompanionListText" style="margin-top:4px; color:var(--sub); font-family:var(--mono); font-size:11.5px; line-height:1.5; word-break:break-all;"></div>
+            </div>
+          </div>"""
+
+assert old_badge in html, "old_badge not found"
+html = html.replace(old_badge, new_badge, 1)
+
+# 2. Update renderCloudModalUI and add fetchTripCompanions
+old_render_cloud = """    function renderCloudModalUI() {
+      const outBox = document.getElementById("cloudLoggedOutBox");
+      const inBox = document.getElementById("cloudLoggedInBox");
+      if (!currentCloudUser) {
+        outBox.style.display = "block";
+        inBox.style.display = "none";
+        return;
+      }
+
+      outBox.style.display = "none";
+      inBox.style.display = "block";
+      document.getElementById("cloudUserEmailLabel").textContent = currentCloudUser.email || "已登入旅人";
+
+      const trip = getActiveTrip();
+      document.getElementById("cloudActiveTripTitle").textContent = `目前專案：${trip.title}`;
+
+      const codeBadge = document.getElementById("cloudShareCodeBadge");
+      const pubBtn = document.getElementById("publishTripBtn");
+      if (trip.shareCode) {
+        codeBadge.style.display = "block";
+        document.getElementById("cloudShareCodeText").textContent = trip.shareCode;
+      } else {
+        codeBadge.style.display = "none";
+      }
+
+      // If user is a guest member (not the owner), disable overwriting the master schedule
+      if (trip.ownerId && trip.ownerId !== currentCloudUser.id) {
+        pubBtn.textContent = "🔒 團員唯讀主行程";
+        pubBtn.disabled = true;
+        pubBtn.style.opacity = "0.55";
+      } else {
+        pubBtn.textContent = "⬆️ 發佈 / 更新共用行程";
+        pubBtn.disabled = false;
+        pubBtn.style.opacity = "1";
+      }
+    }"""
+
+new_render_cloud = """    function renderCloudModalUI() {
+      const outBox = document.getElementById("cloudLoggedOutBox");
+      const inBox = document.getElementById("cloudLoggedInBox");
+      if (!currentCloudUser) {
+        outBox.style.display = "block";
+        inBox.style.display = "none";
+        return;
+      }
+
+      outBox.style.display = "none";
+      inBox.style.display = "block";
+      document.getElementById("cloudUserEmailLabel").textContent = currentCloudUser.email || "已登入旅人";
+
+      const trip = getActiveTrip();
+      document.getElementById("cloudActiveTripTitle").textContent = `目前專案：${trip.title}`;
+
+      const codeBadge = document.getElementById("cloudShareCodeBadge");
+      const pubBtn = document.getElementById("publishTripBtn");
+      if (trip.shareCode) {
+        codeBadge.style.display = "block";
+        document.getElementById("cloudShareCodeText").textContent = trip.shareCode;
+        fetchTripCompanions();
+      } else {
+        codeBadge.style.display = "none";
+      }
+
+      // If user is a guest member (not the owner), disable overwriting the master schedule
+      if (trip.ownerId && trip.ownerId !== currentCloudUser.id) {
+        pubBtn.textContent = "🔒 團員唯讀主行程";
+        pubBtn.disabled = true;
+        pubBtn.style.opacity = "0.55";
+      } else {
+        pubBtn.textContent = "⬆️ 發佈 / 更新共用行程";
+        pubBtn.disabled = false;
+        pubBtn.style.opacity = "1";
+      }
     }
+
+    // 查詢並統計此行程已加入的旅伴名單
+    async function fetchTripCompanions() {
+      if (!sbClient || !currentCloudUser) return;
+      const trip = getActiveTrip();
+      const countEl = document.getElementById("cloudCompanionCountText");
+      const listEl = document.getElementById("cloudCompanionListText");
+      if (!countEl || !listEl || !trip.shareCode) return;
+
+      countEl.textContent = "👥 統計中...";
+      const { data, error } = await sbClient
+        .from("user_journals")
+        .select("user_id, user_email, updated_at")
+        .eq("trip_id", trip.id);
+
+      if (error || !data) {
+        countEl.textContent = "👥 尚未讀取到旅伴資料";
+        listEl.textContent = "";
+        return;
+      }
+
+      countEl.textContent = `👥 共 ${data.length} 位旅人參與此行程`;
+      listEl.innerHTML = data.map((row, idx) => {
+        const isOwner = (row.user_id === trip.ownerId);
+        const label = row.user_email || `旅人 #${idx + 1}`;
+        const roleBadge = isOwner ? " <b style='color:var(--accent);'>[主揪]</b>" : "";
+        return `• ${escapeHtml(label)}${roleBadge}`;
+      }).join("<br/>");
+    }"""
+
+assert old_render_cloud in html, "old_render_cloud not found"
+html = html.replace(old_render_cloud, new_render_cloud, 1)
+
+# 3. Update user_journals upserts to include user_email
+old_upsert_1 = """      await sbClient.from("user_journals").upsert({
+        user_id: currentCloudUser.id,
+        trip_id: trip.id,
+        journal_data: personalJournal,
+        updated_at: new Date().toISOString()
+      });"""
+
+new_upsert_1 = """      await sbClient.from("user_journals").upsert({
+        user_id: currentCloudUser.id,
+        user_email: currentCloudUser.email,
+        trip_id: trip.id,
+        journal_data: personalJournal,
+        updated_at: new Date().toISOString()
+      });"""
+
+assert old_upsert_1 in html, "old_upsert_1 not found"
+html = html.replace(old_upsert_1, new_upsert_1, 1)
+
+old_upsert_2 = """      const { error } = await sbClient.from("user_journals").upsert({
+        user_id: currentCloudUser.id,
+        trip_id: trip.id,
+        journal_data: personalJournal,
+        updated_at: new Date().toISOString()
+      });"""
+
+new_upsert_2 = """      const { error } = await sbClient.from("user_journals").upsert({
+        user_id: currentCloudUser.id,
+        user_email: currentCloudUser.email,
+        trip_id: trip.id,
+        journal_data: personalJournal,
+        updated_at: new Date().toISOString()
+      });"""
+
+assert old_upsert_2 in html, "old_upsert_2 not found"
+html = html.replace(old_upsert_2, new_upsert_2, 1)
+
+# 4. Update joinTripByShareCode to auto-register companion in user_journals
+old_join_end = """      appState.activeTripId = mergedTrip.id;
+      appState.activeDayIndex = 0;
+      saveAppState();
+      renderAll();
+      renderCloudModalUI();
+      alert(`🎉 成功加入「${mergedTrip.title}」！`);"""
+
+new_join_end = """      appState.activeTripId = mergedTrip.id;
+      appState.activeDayIndex = 0;
+
+      // 自動在雲端登記旅伴加入紀錄
+      const activeTripNow = appState.trips.find(t => t.id === mergedTrip.id) || mergedTrip;
+      await sbClient.from("user_journals").upsert({
+        user_id: currentCloudUser.id,
+        user_email: currentCloudUser.email,
+        trip_id: mergedTrip.id,
+        journal_data: extractPersonalJournalFromTrip(activeTripNow),
+        updated_at: new Date().toISOString()
+      });
+
+      saveAppState();
+      renderAll();
+      renderCloudModalUI();
+      alert(`🎉 成功加入「${mergedTrip.title}」！`);"""
+
+assert old_join_end in html, "old_join_end not found"
+html = html.replace(old_join_end, new_join_end, 1)
+
+with open('index.html', 'w', encoding='utf-8') as f:
+    f.write(html)
+print("Saved index.html successfully")

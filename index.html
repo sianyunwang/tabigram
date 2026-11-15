@@ -1441,22 +1441,15 @@
       </div>
 
       <!-- 狀態 A：尚未登入 (訪客模式) -->
+      <!-- 狀態 A：尚未登入 (訪客模式) -->
       <div id="cloudLoggedOutBox" class="form-card">
         <div style="font-size:13px; color:var(--sub); line-height:1.5; margin-bottom:12px;">
-          登入後可將本機行程無痛備份至雲端，並透過 6 碼邀請碼與旅伴共享行程表（你的私人備註、心情印章、拍立得與額外消費將獨立保存，絕不被覆蓋）。
+          登入後可將本機行程備份至雲端，並透過 6 碼邀請碼與旅伴共享行程表（你的私人備註、心情印章、拍立得與額外消費將獨立保存，絕不被覆蓋）。
         </div>
-        <label class="form-label">輸入 Email 接收 6 位數驗證碼</label>
-        <div style="display:flex; gap:6px; margin-bottom:10px;">
+        <label class="form-label">輸入 Email 接收登入確認信</label>
+        <div style="display:flex; gap:6px;">
           <input type="email" class="form-input" id="cloudEmailInput" placeholder="name@example.com" />
-          <button type="button" class="pill-btn primary" id="sendOtpBtn" onclick="sendCloudEmailOtp()">寄送驗證碼</button>
-        </div>
-
-        <div id="otpVerifyRow" style="display:none; margin-top:8px; padding-top:8px; border-top:1px dashed var(--border);">
-          <label class="form-label">輸入信箱收到的 6 位數驗證碼</label>
-          <div style="display:flex; gap:6px;">
-            <input type="text" class="form-input" id="cloudOtpInput" placeholder="123456" maxlength="6" style="font-family:var(--mono); letter-spacing:3px; text-align:center;" />
-            <button type="button" class="pill-btn primary" onclick="verifyCloudEmailOtp()">確認登入</button>
-          </div>
+          <button type="button" class="pill-btn primary" id="sendOtpBtn" onclick="sendCloudEmailOtp()">寄送登入信</button>
         </div>
       </div>
 
@@ -4836,26 +4829,17 @@
       if (!email) return alert("請輸入 Email 信箱");
       const btn = document.getElementById("sendOtpBtn");
       btn.textContent = "寄送中...";
-      const { error } = await sbClient.auth.signInWithOtp({ email });
-      btn.textContent = "寄送驗證碼";
+      const { error } = await sbClient.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: window.location.origin + window.location.pathname
+        }
+      });
+      btn.textContent = "寄送登入信";
       if (error) {
         alert("寄送失敗：" + error.message);
       } else {
-        document.getElementById("otpVerifyRow").style.display = "block";
-        alert("驗證碼已寄出！請至信箱查收 6 位數驗證碼（若未看到請檢查垃圾郵件匣）。");
-      }
-    }
-
-    async function verifyCloudEmailOtp() {
-      const email = document.getElementById("cloudEmailInput").value.trim();
-      const token = document.getElementById("cloudOtpInput").value.trim();
-      if (!email || !token) return alert("請輸入完整 6 位數驗證碼");
-      const { error } = await sbClient.auth.verifyOtp({ email, token, type: "email" });
-      if (error) {
-        alert("驗證碼錯誤或已過期：" + error.message);
-      } else {
-        renderCloudModalUI();
-        alert("🎉 登入成功！已自動整合你的本機與雲端行程。");
+        alert("📩 登入信已寄出！請打開信箱點擊「Confirm email address」或「Log In」連結，頁面就會自動跳轉並完成登入。");
       }
     }
 

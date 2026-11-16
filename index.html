@@ -1260,6 +1260,37 @@
     .compact-slider-row input[type="range"] {
       width: 58%;
     }
+    /* 試算表匯入 */
+    .csv-step-title { font-size: 14px; font-weight: 900; margin-bottom: 6px; }
+    .csv-hint { font-size: 12px; color: var(--sub); line-height: 1.6; }
+    .csv-guide { font-size: 12px; border: 1px dashed var(--border); border-radius: 10px; padding: 8px 10px; background: rgba(255,255,255,0.5); }
+    .csv-guide summary { cursor: pointer; font-weight: 800; }
+    .csv-guide-group { margin-top: 10px; font-weight: 900; color: var(--accent); font-size: 11.5px; }
+    .csv-guide-row { display: grid; grid-template-columns: 96px 1fr; gap: 8px; padding: 3px 0; border-bottom: 1px solid rgba(0,0,0,0.05); line-height: 1.5; }
+    .csv-guide-row span { color: var(--sub); }
+    .csv-guide-note { margin-top: 10px; line-height: 1.7; color: var(--sub); }
+    .csv-target-row { display: flex; gap: 16px; margin: 14px 0 8px; font-size: 13px; font-weight: 800; }
+    .csv-target-row label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+    .csv-preview { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+    .csv-summary { font-size: 13.5px; line-height: 1.6; }
+    .csv-chip { display: inline-block; font-size: 12px; font-weight: 800; background: var(--accent-soft); color: var(--ink); border-radius: 999px; padding: 2px 9px; margin: 0 4px 4px 0; }
+    .csv-note { font-size: 12px; color: var(--sub); margin-top: 3px; }
+    .csv-warn-box { margin-top: 10px; background: #FFF6E5; border: 1px solid #F3D9A4; color: #7A4B00; border-radius: 10px; padding: 8px 10px; font-size: 12px; line-height: 1.65; max-height: 170px; overflow-y: auto; }
+    .csv-warn-title { font-weight: 900; margin-bottom: 2px; }
+    .csv-ok-box { margin-top: 10px; background: #EAF7EE; border: 1px solid #BFE3CA; color: #14532D; border-radius: 10px; padding: 8px 10px; font-size: 12px; font-weight: 800; }
+    .csv-preview-error { margin-top: 12px; background: #FDECEC; border: 1px solid #F5C2C2; color: #8A1C1C; border-radius: 10px; padding: 9px 11px; font-size: 13px; font-weight: 700; }
+    .csv-prev-list { margin-top: 10px; max-height: 300px; overflow-y: auto; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,0.6); padding: 4px 10px 8px; }
+    .csv-prev-day { font-family: var(--mono); font-size: 11.5px; font-weight: 800; color: var(--accent); margin-top: 10px; padding-bottom: 3px; border-bottom: 1px solid var(--border); }
+    .csv-prev-item { display: grid; grid-template-columns: 92px 20px 1fr auto; gap: 6px; align-items: start; font-size: 12.5px; padding: 5px 0; border-bottom: 1px dashed rgba(0,0,0,0.06); }
+    .csv-prev-time { font-family: var(--mono); font-size: 11.5px; color: var(--sub); padding-top: 1px; }
+    .csv-prev-title { font-weight: 800; min-width: 0; word-break: break-word; }
+    .csv-prev-title small { display: block; font-weight: 500; color: var(--sub); font-size: 11.5px; }
+    .csv-prev-money { font-family: var(--mono); font-size: 11.5px; color: var(--sub); white-space: nowrap; }
+    @media (max-width: 480px) {
+      .csv-prev-item { grid-template-columns: 78px 18px 1fr; }
+      .csv-prev-money { grid-column: 3; }
+      .csv-guide-row { grid-template-columns: 82px 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -1563,6 +1594,7 @@
             🔒 私人行程 (僅自己可見，不發佈給旅伴)
           </label>
       </div>
+      <div id="fPrivateHint" style="display:none; margin:-6px 0 12px; font-size:12px; color:var(--sub); text-align:right;"></div>
       <div style="display:flex; gap:10px;">
         <button class="pill-btn primary" style="flex:1; justify-content:center; padding:12px;" onclick="saveItineraryItem()">儲存行程卡片</button>
       </div>
@@ -1979,37 +2011,54 @@
     </div>
   </div>
 
-  <!-- Modal 9: 公版試算表 (CSV) 匯入與範本下載 (#16) -->
+  <!-- Modal 9: 試算表 (CSV) 匯入與範本 -->
   <div class="modal-backdrop" id="csvImportModal">
-    <div class="modal-sheet" style="max-width: 500px;">
+    <div class="modal-sheet" style="max-width: 560px;">
       <div class="modal-header">
-        <div class="modal-title">📊 試算表 (CSV) 匯入與範本</div>
+        <div class="modal-title">📊 試算表匯入</div>
         <button class="pill-btn" onclick="closeCsvImportModal()">✕</button>
       </div>
+
       <div class="form-card">
-        <div style="font-size:13px; color:var(--sub); line-height:1.55; margin-bottom:10px;">
-          支援在 Excel 或 Google Sheets 排好行程後存成 <b>.csv (UTF-8)</b> 一鍵匯入。<br>全新 V2 格式支援分離起訖點與明確指定路線名稱（如：JR山手線），確保地圖與路線顏色精準對應！
+        <div class="csv-step-title">① 下載範本，用 Excel 或 Google 試算表填寫</div>
+        <div class="csv-hint">
+          一列就是一個行程。第 2 列是各欄的填寫說明（# 開頭，匯入時會自動略過）。不用的欄位可以留空或整欄刪掉，順序也可以調整。
         </div>
-        <div style="background:#FAF8F4; border:1px dashed var(--border); border-radius:10px; padding:10px; font-size:12px; line-height:1.6; margin-bottom:12px; overflow-x:auto;">
-          <b>V2 標準欄位順序 (共 14 欄)：</b><br/>
-          <code style="font-family:var(--mono); font-size:11px; white-space:nowrap; color:var(--ink);">天數, 類型, 標題, 開始時間, 結束時間, 跨日, 時區, 幣別, 預定費用, 出發地, 目的地, 路線或副標題, 車次或備註, 網址</code><br/>
-          <span style="color:var(--sub); display:inline-block; margin-top:4px;">
-            • <b>類型 (Type)</b> 必填：<code style="font-family:var(--mono);">spot</code> (景點), <code style="font-family:var(--mono);">transit</code> (交通), <code style="font-family:var(--mono);">flight</code> (航班), <code style="font-family:var(--mono);">roadtrip</code> (公路)<br/>
-            • <b>路線 (Line)</b>：填寫精確路線名（例：<code style="font-family:var(--mono);">JR山手線</code>、<code style="font-family:var(--mono);">東海道新幹線</code>）會自動對應顏色。<br/>
-            • <b>跨日 (Offset)</b>：若行程跨夜請填 <code style="font-family:var(--mono);">1</code>，否則留空或填 <code style="font-family:var(--mono);">0</code>。
-          </span>
+        <div style="display:flex; gap:8px; margin:10px 0 8px;">
+          <button type="button" class="pill-btn primary" style="flex:1; justify-content:center;" onclick="downloadCsvTemplate(false)">⬇️ 空白範本</button>
+          <button type="button" class="pill-btn" style="flex:1; justify-content:center;" onclick="downloadCsvTemplate(true)">⬇️ 填寫範例</button>
         </div>
-        <button type="button" class="pill-btn" style="width:100%; justify-content:center; padding:10px; margin-bottom:12px;" onclick="downloadStandardCsvTemplate()">
-          ⬇️ 下載 V2 標準試算表範本 (.csv)
-        </button>
-        <label class="form-label">選擇要匯入的 CSV 檔案</label>
-        <input type="file" class="form-input" id="csvImportFileInput" accept=".csv,text/csv" onchange="handleCsvFileImport(event)" />
-        <div style="margin-top:8px;">
-          <label style="display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; cursor:pointer;">
-            <input type="checkbox" id="csvCreateNewTripCheck" checked style="width:15px; height:15px;" />
-            匯入為獨立的新旅行專案（取消勾選則合併至目前專案）
-          </label>
+        <details class="csv-guide">
+          <summary>每一欄怎麼填？</summary>
+          <div id="csvGuideTable"></div>
+        </details>
+      </div>
+
+      <div class="form-card">
+        <div class="csv-step-title">② 匯入</div>
+        <label class="form-label">直接從試算表複製貼上（最簡單）</label>
+        <textarea class="form-input" id="csvPasteInput" rows="3" style="resize:vertical; font-size:12px;" placeholder="在 Excel 或 Google 試算表選取「含第一列欄位名稱」的範圍，複製後貼在這裡" oninput="onCsvPasteInput()"></textarea>
+        <label class="form-label" style="margin-top:10px;">或選擇 .csv 檔案</label>
+        <input type="file" class="form-input" id="csvImportFileInput" accept=".csv,.tsv,.txt,text/csv,text/plain" onchange="handleCsvFileImport(event)" />
+        <div class="csv-hint" style="margin-top:4px;">Excel：另存新檔 →「CSV UTF-8」；Google 試算表：檔案 → 下載 →「逗號分隔值 (.csv)」。</div>
+
+        <div class="csv-target-row">
+          <label><input type="radio" name="csvTarget" value="new" checked onchange="onCsvSettingsChange()" /> 建立新旅行</label>
+          <label><input type="radio" name="csvTarget" value="merge" onchange="onCsvSettingsChange()" /> 加到目前旅行</label>
         </div>
+        <div id="csvNewTripFields" style="display:grid; grid-template-columns:1.4fr 1fr; gap:8px;">
+          <div>
+            <label class="form-label">旅行名稱</label>
+            <input type="text" class="form-input" id="csvTripTitle" placeholder="例如：東京賞楓" />
+          </div>
+          <div>
+            <label class="form-label">第一天日期</label>
+            <input type="date" class="form-input" id="csvStartDate" onchange="this.dataset.auto='0'; onCsvSettingsChange()" />
+          </div>
+        </div>
+        <div id="csvMergeInfo" class="csv-hint" style="display:none; margin-top:6px;"></div>
+
+        <div id="csvPreview"></div>
       </div>
     </div>
   </div>
@@ -3514,6 +3563,7 @@
         document.getElementById("fEndMin").value = em || "00";
         document.getElementById("fEndDayOffset").value = item.endDayOffset !== undefined ? item.endDayOffset : 0;
         document.getElementById("fIsPrivate").checked = !!item.isPrivate;
+        applyCompanionPrivateLock(item);
 
         document.getElementById("fCurrency").value = item.currency || "NT$";
         document.getElementById("fCost").value = item.cost || "";
@@ -3561,6 +3611,7 @@
         document.getElementById("fEndMin").value = sm || "00";
         document.getElementById("fEndDayOffset").value = "0";
         document.getElementById("fIsPrivate").checked = false;
+        applyCompanionPrivateLock(null);
 
         document.getElementById("fCurrency").value = inheritedCurrency;
         document.getElementById("fCost").value = "";
@@ -3652,6 +3703,29 @@
       inp.click();
     }
 
+    function applyCompanionPrivateLock(existingItem) {
+      const cb = document.getElementById("fIsPrivate");
+      const hint = document.getElementById("fPrivateHint");
+      if (!cb || !hint) return;
+      if (!isTripCompanionView(getActiveTrip())) {
+        cb.disabled = false;
+        hint.style.display = "none";
+        return;
+      }
+      cb.disabled = true;
+      hint.style.display = "block";
+      if (!existingItem) {
+        cb.checked = true;
+        hint.textContent = "你是旅伴：自己新增的行程會存成私人行程，只有你看得到。";
+      } else if (existingItem.isPrivate) {
+        cb.checked = true;
+        hint.textContent = "這是你的私人行程，只有你看得到。";
+      } else {
+        cb.checked = false;
+        hint.textContent = "這是管理員的共用行程：行程內容以管理員為準，你的修改在同步後可能被覆蓋；私人筆記、照片、消費會保留。";
+      }
+    }
+
     async function saveItineraryItem() {
       const day = getActiveDay();
       const existingItem = editingItemId ? day.items.find(i => i.id === editingItemId) : null;
@@ -3673,7 +3747,12 @@
       const startTime = `${document.getElementById("fStartHour").value}:${document.getElementById("fStartMin").value}`;
       const endTime = `${document.getElementById("fEndHour").value}:${document.getElementById("fEndMin").value}`;
       const endDayOffset = Number(document.getElementById("fEndDayOffset").value) || 0;
-      const isPrivate = document.getElementById("fIsPrivate").checked;
+      let isPrivate = document.getElementById("fIsPrivate").checked;
+      const companionMode = isTripCompanionView(getActiveTrip());
+      if (companionMode) isPrivate = existingItem ? !!existingItem.isPrivate : true;
+      const createdBy = existingItem
+        ? existingItem.createdBy
+        : ((currentCloudUser && currentCloudUser.id) || appState.lastCloudUserId || undefined);
 
       const currency = document.getElementById("fCurrency").value;
       const cost = Number(document.getElementById("fCost").value) || 0;
@@ -3744,7 +3823,8 @@
         photos: formTempPhotos,
         status: existingItem ? (existingItem.status || "normal") : "normal",
         endDayOffset,
-        isPrivate
+        isPrivate,
+        createdBy
       };
 
       if (editingItemId) {
@@ -6002,6 +6082,31 @@ function initSupabaseClient() {
       return await sbClient.from("trips").select("*").eq("share_code", code).single();
     }
 
+    // 共用行程中「我是旅伴（不是管理員）」：旅伴新增的行程無法發佈到共用行程，只能存在自己的手札
+    function isTripCompanionView(trip) {
+      const uid = currentCloudUser ? currentCloudUser.id : appState.lastCloudUserId;
+      if (!trip || !trip.shareCode || !trip.ownerId || !uid) return false;
+      return !isUserTripAdmin(trip, { id: uid });
+    }
+
+    // 從雲端合併時，保留本機還沒同步上去的私人行程（否則會被雲端版本蓋掉而消失）
+    function keepLocalPrivateItems(merged, localTrip) {
+      if (!merged || !localTrip) return 0;
+      const ids = new Set();
+      (merged.days || []).forEach(d => (d.items || []).forEach(it => ids.add(it.id)));
+      let kept = 0;
+      (localTrip.days || []).forEach((d, dIdx) => (d.items || []).forEach(it => {
+        if (!it || !it.isPrivate || ids.has(it.id) || !merged.days || merged.days.length === 0) return;
+        const target = merged.days[Math.min(dIdx, merged.days.length - 1)];
+        target.items = target.items || [];
+        target.items.push(it);
+        target.items.sort((a, b) => hhmmToMinutes(a.startTime) - hhmmToMinutes(b.startTime));
+        ids.add(it.id);
+        kept++;
+      }));
+      return kept;
+    }
+
     function isUserTripAdmin(trip, user) {
       if (!trip || !user) return false;
       if (!trip.ownerId || trip.ownerId === user.id) return true;
@@ -6649,6 +6754,7 @@ function initSupabaseClient() {
         }
 
         const deletedIds = appState.deletedTripIds || [];
+        let needResyncActiveTrip = false;
         const allCloudMap = new Map();
         [...(ownedTrips || []), ...sharedTrips].forEach(r => allCloudMap.set(r.id, r));
 
@@ -6664,6 +6770,8 @@ function initSupabaseClient() {
           merged.ownerId = row.owner_id;
           merged.shareCode = row.share_code;
           carryOverLocalPhotos(merged, localIdx !== -1 ? appState.trips[localIdx] : null);
+          const keptPrivate = keepLocalPrivateItems(merged, localIdx !== -1 ? appState.trips[localIdx] : null);
+          if (keptPrivate > 0 && merged.id === appState.activeTripId) needResyncActiveTrip = true;
 
           if (localIdx !== -1) appState.trips[localIdx] = merged;
           else appState.trips.push(merged);
@@ -6679,6 +6787,7 @@ function initSupabaseClient() {
         saveAppState();
         renderAll();
         resolveMissingCloudPhotos();
+        if (needResyncActiveTrip) debouncedSyncToCloud();
       } catch (e) {}
     }
     // 控制右上角選單的展開與收合
@@ -6699,6 +6808,10 @@ function initSupabaseClient() {
 
     // 動態更新下拉選單的登入/帳號狀態、個人設定與頭像
     function updateCloudButtonBadge() {
+      if (currentCloudUser && appState.lastCloudUserId !== currentCloudUser.id) {
+        appState.lastCloudUserId = currentCloudUser.id;
+        saveAppState();
+      }
       const dropdownCloudBtn = document.getElementById("dropdownCloudBtn");
       const dropdownProfileBtn = document.getElementById("dropdownProfileBtn");
       const menuBtn = document.getElementById("menuToggleBtn");
@@ -7221,8 +7334,156 @@ function initSupabaseClient() {
       a.click();
     }
 
-    // #16 Standard CSV Template & Import
+    /*************************************************************************
+     * 試算表 (CSV) 匯入與範本
+     * - 依「欄位名稱」對應，欄位可以換順序、刪掉不用的欄，也相容舊版 14 欄格式
+     * - 類型、時區、幣別可以直接寫中文；時間、日期接受多種寫法
+     * - 天數、時區空白時沿用上一列；「轉乘」列會接到上一段交通，變成同一張卡片的多段路線
+     * - 匯入前先預覽，列出每一列看不懂的地方
+     *************************************************************************/
+    const CSV_COLUMNS = [
+      { key: "day",       header: "天數",           group: "基本", hint: "1、2、3…；同一天只要填第一列" },
+      { key: "date",      header: "日期",           group: "基本", hint: "可不填；填了會自動算天數，如 2026/12/01" },
+      { key: "type",      header: "類型",           group: "基本", hint: "景點／交通／航班／自駕／轉乘" },
+      { key: "title",     header: "標題",           group: "基本", hint: "必填（轉乘列可空白）" },
+      { key: "start",     header: "開始時間",       group: "基本", hint: "如 09:30、9:30、下午2點" },
+      { key: "end",       header: "結束時間",       group: "基本", hint: "可不填，預設 1 小時" },
+      { key: "nextDay",   header: "隔天結束",       group: "基本", hint: "過了午夜才結束，填「是」" },
+      { key: "tz",        header: "時區",           group: "基本", hint: "如 日本、台灣；空白沿用上一列" },
+      { key: "endTz",     header: "抵達時區",       group: "交通", hint: "跨時區的航班才需要填" },
+      { key: "currency",  header: "幣別",           group: "費用", hint: "如 ¥、NT$、JPY、日圓；可不填" },
+      { key: "cost",      header: "費用",           group: "費用", hint: "數字，可含逗號，如 3,070" },
+      { key: "from",      header: "出發地",         group: "交通", hint: "交通：起站｜航班：機場代碼 TPE｜自駕：起點" },
+      { key: "to",        header: "目的地",         group: "交通", hint: "交通：迄站｜航班：機場代碼 NRT｜自駕：終點" },
+      { key: "route",     header: "路線/航班/公路", group: "交通", hint: "交通：JR山手線｜航班：BR198｜自駕：國道134號" },
+      { key: "trainSeat", header: "車次/座位",      group: "交通", hint: "交通：車次｜航班：航廈或座位" },
+      { key: "stops",     header: "途經點",         group: "交通", hint: "自駕用，多個地點用「、」分隔" },
+      { key: "subtitle",  header: "地點/副標題",    group: "其他", hint: "景點用，如分店、入口" },
+      { key: "note",      header: "備註",           group: "其他", hint: "任何提醒" },
+      { key: "url",       header: "網址",           group: "其他", hint: "https://…" },
+      { key: "urlLabel",  header: "網址名稱",       group: "其他", hint: "可不填，如 官網、訂位" },
+      { key: "private",   header: "私人行程",       group: "其他", hint: "填「是」只有自己看得到" },
+      { key: "dayTheme",  header: "當日主題",       group: "每日", hint: "每天填在任一列就好" },
+      { key: "dayCity",   header: "所在城市",       group: "每日", hint: "每天填一次，用來抓天氣" }
+    ];
+
+    const CSV_FIELD_ALIASES = {
+      day: ["天數", "第幾天", "天", "day", "dayno"],
+      date: ["日期", "date"],
+      type: ["類型", "種類", "type"],
+      title: ["標題", "名稱", "行程名稱", "行程", "title", "name"],
+      start: ["開始時間", "開始", "出發時間", "起始時間", "時間", "start", "starttime", "time"],
+      end: ["結束時間", "結束", "抵達時間", "end", "endtime"],
+      nextDay: ["隔天結束", "跨日", "跨夜", "nextday", "offset", "+1"],
+      tz: ["時區", "出發時區", "timezone", "tz"],
+      endTz: ["抵達時區", "結束時區", "arrivaltimezone"],
+      currency: ["幣別", "貨幣", "currency"],
+      cost: ["費用", "預定費用", "價格", "金額", "票價", "cost", "price"],
+      from: ["出發地", "起點", "起站", "出發站", "出發機場", "from"],
+      to: ["目的地", "終點", "迄站", "抵達站", "抵達機場", "to"],
+      route: ["路線航班公路", "路線航班編號公路", "路線", "航班", "航班編號", "公路", "line", "route", "flight", "flightno"],
+      trainSeat: ["車次座位", "車次", "座位", "班次", "train", "seat"],
+      stops: ["途經點", "途經", "停靠點", "stops"],
+      subtitle: ["地點副標題", "地點", "副標題", "地址", "subtitle", "address", "place"],
+      note: ["備註", "說明", "note", "notes", "memo"],
+      url: ["網址", "連結", "url", "link"],
+      urlLabel: ["網址名稱", "連結名稱", "urllabel"],
+      private: ["私人行程", "私人", "private"],
+      dayTheme: ["當日主題", "主題", "重要提醒", "theme"],
+      dayCity: ["所在城市", "城市", "city", "location"],
+      // 舊版 V2 格式的合併欄位，依類型拆開
+      routeOrSubtitle: ["路線或副標題"],
+      trainOrNote: ["車次或備註"]
+    };
+
+    // 舊版 14 欄、沒有標題列時的固定順序
+    const CSV_LEGACY_ORDER = ["day", "type", "title", "start", "end", "nextDay", "tz", "currency", "cost", "from", "to", "routeOrSubtitle", "trainOrNote", "url"];
+
+    const CSV_TYPE_ALIASES = [
+      ["outTransfer", ["出站轉乘", "outtransfer"]],
+      ["transfer", ["轉乘", "站內轉乘", "transfer"]],
+      ["flight", ["航班", "飛機", "班機", "飛行", "flight", "plane"]],
+      ["roadtrip", ["自駕", "公路", "開車", "租車", "騎車", "機車", "單車", "roadtrip", "drive", "car"]],
+      ["transit", ["交通", "鐵道", "電車", "地鐵", "捷運", "火車", "新幹線", "高鐵", "巴士", "公車", "客運", "渡輪", "船", "纜車", "train", "transit", "bus", "ferry", "subway", "metro"]],
+      ["spot", ["景點", "餐廳", "餐飲", "美食", "購物", "住宿", "飯店", "旅館", "活動", "一般", "spot", "food", "hotel", "shopping"]]
+    ];
+
+    const CSV_TZ_ALIASES = [
+      ["Asia/Taipei", ["台灣", "臺灣", "台北", "臺北", "高雄", "taiwan", "taipei", "utc+8", "gmt+8", "+8"]],
+      ["Asia/Tokyo", ["日本", "東京", "大阪", "京都", "名古屋", "福岡", "北海道", "札幌", "沖繩", "japan", "tokyo", "osaka", "utc+9", "gmt+9", "+9"]],
+      ["Asia/Seoul", ["韓國", "首爾", "釜山", "濟州", "korea", "seoul", "busan"]],
+      ["Asia/Hong_Kong", ["香港", "澳門", "hongkong", "macau", "macao"]],
+      ["Asia/Singapore", ["新加坡", "singapore"]],
+      ["Asia/Bangkok", ["泰國", "曼谷", "清邁", "普吉", "thailand", "bangkok", "utc+7", "gmt+7", "+7"]],
+      ["Pacific/Honolulu", ["夏威夷", "檀香山", "hawaii", "honolulu", "utc-10", "gmt-10", "-10"]],
+      ["America/Los_Angeles", ["美西", "加州", "洛杉磯", "舊金山", "西雅圖", "拉斯維加斯", "losangeles", "sanfrancisco", "seattle", "california"]],
+      ["America/New_York", ["美東", "紐約", "波士頓", "華盛頓", "newyork", "boston"]],
+      ["Europe/London", ["英國", "倫敦", "uk", "london"]],
+      ["Europe/Paris", ["法國", "巴黎", "歐洲", "德國", "義大利", "西班牙", "荷蘭", "瑞士", "france", "paris", "europe"]]
+    ];
+
+    // 常見機場 → 時區（航班沒填時區時自動判斷）
+    const CSV_AIRPORT_TZ = {
+      TPE: "Asia/Taipei", TSA: "Asia/Taipei", KHH: "Asia/Taipei", RMQ: "Asia/Taipei",
+      NRT: "Asia/Tokyo", HND: "Asia/Tokyo", KIX: "Asia/Tokyo", ITM: "Asia/Tokyo", NGO: "Asia/Tokyo", FUK: "Asia/Tokyo",
+      CTS: "Asia/Tokyo", OKA: "Asia/Tokyo", SDJ: "Asia/Tokyo", HIJ: "Asia/Tokyo", KMJ: "Asia/Tokyo", KOJ: "Asia/Tokyo",
+      ICN: "Asia/Seoul", GMP: "Asia/Seoul", PUS: "Asia/Seoul", CJU: "Asia/Seoul",
+      HKG: "Asia/Hong_Kong", MFM: "Asia/Hong_Kong", SIN: "Asia/Singapore", BKK: "Asia/Bangkok", DMK: "Asia/Bangkok",
+      CNX: "Asia/Bangkok", HKT: "Asia/Bangkok", HNL: "Pacific/Honolulu", OGG: "Pacific/Honolulu", KOA: "Pacific/Honolulu",
+      LAX: "America/Los_Angeles", SFO: "America/Los_Angeles", SEA: "America/Los_Angeles", LAS: "America/Los_Angeles",
+      JFK: "America/New_York", EWR: "America/New_York", LGA: "America/New_York", BOS: "America/New_York",
+      LHR: "Europe/London", LGW: "Europe/London", CDG: "Europe/Paris", ORY: "Europe/Paris", FRA: "Europe/Paris",
+      AMS: "Europe/Paris", MUC: "Europe/Paris", FCO: "Europe/Paris", ZRH: "Europe/Paris", VIE: "Europe/Paris"
+    };
+
+    const CSV_CURRENCY_ALIASES = [
+      ["NT$", ["nt$", "nt", "twd", "ntd", "台幣", "臺幣", "新台幣", "新臺幣", "元"]],
+      ["HK$", ["hk$", "hkd", "港幣", "港元"]],
+      ["US$", ["us$", "usd", "$", "美金", "美元"]],
+      ["¥", ["¥", "￥", "jpy", "日圓", "日幣", "日元", "円", "yen"]],
+      ["€", ["€", "eur", "歐元"]],
+      ["₩", ["₩", "krw", "韓元", "韓幣", "韓圜"]]
+    ];
+
+    const CSV_TZ_DEFAULT_CURRENCY = {
+      "Asia/Tokyo": "¥", "Asia/Seoul": "₩", "Asia/Hong_Kong": "HK$", "Pacific/Honolulu": "US$",
+      "America/Los_Angeles": "US$", "America/New_York": "US$", "Europe/Paris": "€"
+    };
+
+    const CSV_TYPE_ICON = { spot: "📍", transit: "🚃", flight: "✈️", roadtrip: "🚗" };
+    const CSV_TYPE_LABEL = { spot: "景點", transit: "交通", flight: "航班", roadtrip: "自駕" };
+
+    // 填寫範例（東京 3 天，涵蓋每一種類型與欄位）
+    const CSV_EXAMPLE_ROWS = [
+      { day: "1", date: "2026/12/01", type: "航班", title: "長榮 去程", start: "08:50", end: "13:15", tz: "台灣", endTz: "日本", currency: "NT$", cost: "12,500", from: "TPE", to: "NRT", route: "BR198", trainSeat: "第二航廈・座位 32A", note: "提前 2.5 小時到機場", dayTheme: "抵達東京", dayCity: "東京" },
+      { type: "交通", title: "成田特快進市區", start: "14:15", end: "15:10", tz: "日本", currency: "¥", cost: "3,070", from: "成田空港", to: "東京", route: "成田特快", trainSeat: "N'EX 30號" },
+      { type: "轉乘", end: "15:45", cost: "210", from: "東京", to: "秋葉原", route: "JR山手線", trainSeat: "內環方向" },
+      { type: "景點", title: "飯店 Check-in", start: "16:00", end: "16:30", subtitle: "秋葉原", note: "先寄放行李" },
+      { type: "景點", title: "自己去按摩", start: "20:00", end: "21:00", cost: "6,000", private: "是" },
+      { day: "2", type: "景點", title: "新宿御苑賞楓", start: "09:30", end: "12:00", cost: "500", subtitle: "新宿門入口", url: "https://fng.or.jp/shinjuku/", urlLabel: "官網", dayTheme: "賞楓＋海邊兜風", dayCity: "東京" },
+      { type: "自駕", title: "湘南海岸兜風", start: "14:00", end: "16:30", cost: "2,000", from: "七里ヶ浜", to: "鎌倉高校前", route: "國道134號", stops: "江之島、稻村崎", note: "傍晚看富士山夕陽" },
+      { type: "景點", title: "新宿居酒屋", start: "22:30", end: "00:30", nextDay: "是", cost: "4,000", subtitle: "思い出横丁" },
+      { day: "3", type: "航班", title: "長榮 回程", start: "17:30", end: "20:40", tz: "日本", endTz: "台灣", currency: "NT$", from: "NRT", to: "TPE", route: "BR197", dayCity: "東京" }
+    ];
+
+    let csvImportState = { rows: null, sourceName: "", encoding: "UTF-8", analysis: null };
+    let csvPasteTimer = null;
+
     function openCsvImportModal() {
+      clearTimeout(csvPasteTimer);
+      csvImportState ={ rows: null, sourceName: "", encoding: "UTF-8", analysis: null };
+      const fileInp = document.getElementById("csvImportFileInput");
+      if (fileInp) fileInp.value = "";
+      const paste = document.getElementById("csvPasteInput");
+      if (paste) paste.value = "";
+      const titleInp = document.getElementById("csvTripTitle");
+      if (titleInp) titleInp.value = "";
+      const dateInp = document.getElementById("csvStartDate");
+      if (dateInp) { dateInp.value = new Date().toISOString().slice(0, 10); dateInp.dataset.auto = "1"; }
+      const newRadio = document.querySelector('input[name="csvTarget"][value="new"]');
+      if (newRadio) newRadio.checked = true;
+      renderCsvGuide();
+      onCsvSettingsChange();
       openModalBackdrop("csvImportModal");
     }
 
@@ -7230,189 +7491,699 @@ function initSupabaseClient() {
       closeModalBackdrop("csvImportModal");
     }
 
-    function downloadStandardCsvTemplate() {
-      const rows = [
-        ["天數", "類型", "標題", "開始時間", "結束時間", "跨日", "時區", "幣別", "預定費用", "出發地", "目的地", "路線或副標題", "車次或備註", "網址"],
-        ["1", "flight", "星宇去程 TPE-NRT", "08:50", "13:15", "0", "Asia/Tokyo", "NT$", "12500", "TPE", "NRT", "BR198", "提前2.5小時抵達二航", ""],
-        ["1", "transit", "N'EX 成田特快進市區", "14:15", "15:10", "0", "Asia/Tokyo", "¥", "3070", "成田空港", "東京", "成田特快", "N'EX 30號", ""],
-        ["1", "transit", "前往飯店", "15:30", "15:45", "0", "Asia/Tokyo", "¥", "210", "東京", "秋葉原", "JR山手線", "內環方向", ""],
-        ["1", "spot", "飯店 Check-in", "16:00", "16:30", "0", "Asia/Tokyo", "¥", "0", "", "", "秋葉原 JR東日本大飯店", "先寄放行李", ""],
-        ["2", "spot", "新宿御苑賞景", "09:30", "12:00", "0", "Asia/Tokyo", "¥", "500", "", "", "新宿門入口", "自備野餐墊", "https://fng.or.jp/shinjuku/"],
-        ["2", "roadtrip", "湘南海岸兜風", "14:00", "16:30", "0", "Asia/Tokyo", "¥", "2000", "七里ヶ浜", "鎌倉高校前", "國道134號", "傍晚看富士山夕陽", ""]
-      ];
-      const csvText = "\uFEFF" + rows.map(r => r.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
+    function renderCsvGuide() {
+      const box = document.getElementById("csvGuideTable");
+      if (!box || box.dataset.ready) return;
+      const groups = ["基本", "交通", "費用", "其他", "每日"];
+      box.innerHTML = groups.map(g => `
+        <div class="csv-guide-group">${g === "交通" ? "交通／航班／自駕" : g}</div>
+        ${CSV_COLUMNS.filter(c => c.group === g).map(c => `
+          <div class="csv-guide-row"><b>${escapeHtml(c.header)}</b><span>${escapeHtml(c.hint)}</span></div>`).join("")}
+      `).join("") + `
+        <div class="csv-guide-note">
+          <b>轉乘</b>：接在上一段「交通」後面，變成同一張卡片的下一段路線；需要出站再轉乘就填「出站轉乘」。<br>
+          <b>天數、時區</b>空白時會沿用上一列；<b>開始時間</b>空白時接在上一個行程之後。<br>
+          不用的欄位可以留空或整欄刪掉，欄位順序也可以調整。
+        </div>`;
+      box.dataset.ready = "1";
+    }
+
+    function csvCell(v) {
+      return `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
+    }
+
+    function downloadCsvTemplate(withExamples) {
+      const header = CSV_COLUMNS.map(c => c.header);
+      const hintRow = CSV_COLUMNS.map((c, i) => (i === 0 ? "# 說明列（匯入時自動略過）：" : "") + c.hint);
+      const rows = [header, hintRow];
+      if (withExamples) CSV_EXAMPLE_ROWS.forEach(ex => rows.push(CSV_COLUMNS.map(c => ex[c.key] || "")));
+      const csvText = "﻿" + rows.map(r => r.map(csvCell).join(",")).join("\r\n") + "\r\n";
       const blob = new Blob([csvText], { type: "text/csv;charset=utf-8;" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = "TABIGRAM_公版行程範本.csv";
+      a.download = withExamples ? "TABIGRAM_行程填寫範例.csv" : "TABIGRAM_行程範本.csv";
       a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     }
 
-    function parseCsvRows(text) {
+    // ---------- 讀檔：自動判斷編碼（UTF-8 / Excel 常見的 Big5 / 日文 Shift_JIS）與分隔符號 ----------
+    function decodeCsvBuffer(buf) {
+      const bytes = new Uint8Array(buf);
+      try {
+        return { text: new TextDecoder("utf-8", { fatal: true }).decode(bytes), encoding: "UTF-8" };
+      } catch (e) {}
+      let best = null;
+      for (const enc of ["big5", "shift_jis", "gb18030"]) {
+        try {
+          const text = new TextDecoder(enc).decode(bytes);
+          const bad = (text.match(/�/g) || []).length;
+          if (!best || bad < best.bad) best = { text, encoding: enc.toUpperCase(), bad };
+        } catch (e) {}
+      }
+      return best || { text: new TextDecoder().decode(bytes), encoding: "UTF-8" };
+    }
+
+    function detectCsvDelimiter(text) {
+      const line = text.replace(/^﻿/, "").split(/\r?\n/).find(l => l.trim()) || "";
+      const counts = { "\t": 0, ",": 0, ";": 0 };
+      let inQ = false;
+      for (const ch of line) {
+        if (ch === '"') inQ = !inQ;
+        else if (!inQ && ch in counts) counts[ch]++;
+      }
+      const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+      return best[1] > 0 ? best[0] : ",";
+    }
+
+    function parseCsvRows(text, delimiter) {
+      const delim = delimiter || detectCsvDelimiter(text);
       const rows = [];
       let curRow = [];
       let curCell = "";
       let inQuotes = false;
-      const clean = text.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+      const clean = text.replace(/^﻿/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
       for (let i = 0; i < clean.length; i++) {
         const ch = clean[i];
-        const next = clean[i + 1];
         if (inQuotes) {
-          if (ch === '"' && next === '"') {
-            curCell += '"';
-            i++;
-          } else if (ch === '"') {
-            inQuotes = false;
-          } else {
-            curCell += ch;
-          }
+          if (ch === '"' && clean[i + 1] === '"') { curCell += '"'; i++; }
+          else if (ch === '"') inQuotes = false;
+          else curCell += ch;
+        } else if (ch === '"' && curCell.trim() === "") {
+          inQuotes = true;
+          curCell = "";
+        } else if (ch === delim) {
+          curRow.push(curCell.trim());
+          curCell = "";
+        } else if (ch === "\n") {
+          curRow.push(curCell.trim());
+          rows.push(curRow);
+          curRow = [];
+          curCell = "";
         } else {
-          if (ch === '"') {
-            inQuotes = true;
-          } else if (ch === ",") {
-            curRow.push(curCell.trim());
-            curCell = "";
-          } else if (ch === "\n") {
-            curRow.push(curCell.trim());
-            if (curRow.some(c => c !== "")) rows.push(curRow);
-            curRow = [];
-            curCell = "";
-          } else {
-            curCell += ch;
-          }
+          curCell += ch;
         }
       }
       if (curCell !== "" || curRow.length > 0) {
         curRow.push(curCell.trim());
-        if (curRow.some(c => c !== "")) rows.push(curRow);
+        rows.push(curRow);
       }
       return rows;
+    }
+
+    // ---------- 各種欄位值的寬鬆解析 ----------
+    function csvNormHeader(h) {
+      return String(h || "").replace(/[（(][^）)]*[）)]/g, "").replace(/[\s／\/、|｜＿_\-]/g, "").toLowerCase();
+    }
+
+    function csvNormValue(v) {
+      return String(v || "").trim().toLowerCase().replace(/\s+/g, "");
+    }
+
+    function csvMatchAlias(value, table) {
+      const n = csvNormValue(value);
+      if (!n) return null;
+      for (const [key, aliases] of table) if (aliases.includes(n)) return key;
+      for (const [key, aliases] of table) {
+        if (aliases.some(a => a.length >= 2 && /[^\x00-\x7F]/.test(a) && n.includes(a))) return key;
+      }
+      return undefined;
+    }
+
+    function parseCsvType(v) {
+      if (!String(v || "").trim()) return null;
+      const t = csvMatchAlias(v, CSV_TYPE_ALIASES);
+      return t === undefined ? "unknown" : t;
+    }
+
+    function parseCsvTz(v) {
+      const s = String(v || "").trim();
+      if (!s) return null;
+      const exact = TIMEZONES.find(t => t.id.toLowerCase() === s.toLowerCase());
+      if (exact) return exact.id;
+      const m = csvMatchAlias(s, CSV_TZ_ALIASES);
+      return m || undefined;
+    }
+
+    function parseCsvCurrency(v) {
+      const s = String(v || "").trim();
+      if (!s) return null;
+      const m = csvMatchAlias(s, CSV_CURRENCY_ALIASES);
+      return m || undefined;
+    }
+
+    function csvPad2(n) { return String(n).padStart(2, "0"); }
+
+    function parseCsvTime(raw) {
+      let s = String(raw || "").trim();
+      if (!s) return null;
+      if (/^0?\.\d+$/.test(s)) {                      // Excel 的時間小數（0.375 = 09:00）
+        const mins = Math.round(parseFloat(s) * 1440);
+        return csvPad2(Math.floor(mins / 60) % 24) + ":" + csvPad2(mins % 60);
+      }
+      const pm = /下午|晚上|傍晚|p\.?m\.?/i.test(s);
+      const am = /上午|早上|凌晨|a\.?m\.?/i.test(s);
+      s = s.replace(/上午|下午|早上|晚上|傍晚|凌晨|中午|a\.?m\.?|p\.?m\.?/ig, "")
+        .replace(/[：]/g, ":").replace(/[點点時时]/g, ":").replace(/半/g, "30").replace(/分/g, "")
+        .replace(/\s+/g, "").replace(/:$/, "");
+      let h, m;
+      let mt = s.match(/^(\d{1,2}):(\d{1,2})(?::\d{1,2})?$/);
+      if (mt) { h = +mt[1]; m = +mt[2]; }
+      else if (/^\d{3,4}$/.test(s)) { h = +s.slice(0, -2); m = +s.slice(-2); }
+      else if (/^\d{1,2}$/.test(s)) { h = +s; m = 0; }
+      else return undefined;
+      if (pm && h < 12) h += 12;
+      if (am && h === 12) h = 0;
+      if (h === 24 && m === 0) h = 0;
+      if (h > 23 || m > 59) return undefined;
+      return csvPad2(h) + ":" + csvPad2(m);
+    }
+
+    function parseCsvDate(raw, fallbackYear) {
+      let s = String(raw || "").trim().replace(/[（(][^）)]*[）)]/g, "").replace(/\s+/g, "");
+      if (!s) return null;
+      let y, mo, d;
+      if (/^\d{5}(\.\d+)?$/.test(s) && +s > 30000 && +s < 80000) {   // Excel 日期序號
+        const dt = new Date(Date.UTC(1899, 11, 30) + Math.floor(+s) * 86400000);
+        y = dt.getUTCFullYear(); mo = dt.getUTCMonth() + 1; d = dt.getUTCDate();
+      } else {
+        let mt = s.match(/^(\d{4})[\/\-.年](\d{1,2})[\/\-.月](\d{1,2})日?$/);
+        if (mt) { y = +mt[1]; mo = +mt[2]; d = +mt[3]; }
+        else if ((mt = s.match(/^(\d{1,2})[\/\-.月](\d{1,2})日?$/))) { y = fallbackYear; mo = +mt[1]; d = +mt[2]; }
+        else return undefined;
+      }
+      const dt = new Date(y, mo - 1, d);
+      if (dt.getFullYear() !== y || dt.getMonth() !== mo - 1 || dt.getDate() !== d) return undefined;
+      return `${y}-${csvPad2(mo)}-${csvPad2(d)}`;
+    }
+
+    function csvDaysBetween(a, b) {
+      const [y1, m1, d1] = a.split("-").map(Number);
+      const [y2, m2, d2] = b.split("-").map(Number);
+      return Math.round((Date.UTC(y2, m2 - 1, d2) - Date.UTC(y1, m1 - 1, d1)) / 86400000);
+    }
+
+    function parseCsvBool(v) {
+      const s = csvNormValue(v);
+      if (!s) return null;
+      if (/^(是|y|yes|true|1|v|✓|✔|o|ok|對|要|私人|隔天|次日|\+1)$/.test(s)) return true;
+      if (/^(否|n|no|false|0|x|不|不是|公開)$/.test(s)) return false;
+      return undefined;
+    }
+
+    function parseCsvNextDay(v) {
+      const s = csvNormValue(v);
+      if (!s) return 0;
+      if (/^[+-]?\d$/.test(s)) return parseInt(s, 10);
+      const b = parseCsvBool(s);
+      if (b === true) return 1;
+      if (b === false) return 0;
+      return undefined;
+    }
+
+    function parseCsvCost(v) {
+      const s = String(v || "").trim();
+      if (!s) return { amount: 0, currency: null };
+      const currency = parseCsvCurrency((s.match(/^[^\d\-.]+/) || [""])[0]) || parseCsvCurrency((s.match(/[^\d.,\s]+$/) || [""])[0]) || null;
+      const num = parseFloat(s.replace(/[^\d.\-]/g, ""));
+      return { amount: isNaN(num) ? undefined : num, currency };
+    }
+
+    function csvAddMinutes(hhmm, mins) {
+      const total = hhmmToMinutes(hhmm) + mins;
+      return { time: csvPad2(Math.floor(total / 60) % 24) + ":" + csvPad2(total % 60), wrapped: total >= 1440 };
+    }
+
+    // ---------- 分析：把試算表的每一列轉成行程卡片，並記下所有看不懂的地方 ----------
+    function analyzeCsvImport(rows, opts) {
+      const warnings = [];
+      const warn = (rowNo, msg) => warnings.push({ rowNo, msg });
+      const isComment = r => (r.find(c => String(c).trim() !== "") || "").trim().startsWith("#");
+      const isEmpty = r => !r.some(c => String(c).trim() !== "");
+
+      // 找標題列並對應欄位
+      let headerIdx = rows.findIndex(r => !isEmpty(r) && !isComment(r));
+      if (headerIdx === -1) return { error: "找不到任何資料。" };
+      const colMap = {};
+      const unknownHeaders = [];
+      rows[headerIdx].forEach((h, i) => {
+        const n = csvNormHeader(h);
+        if (!n) return;
+        const key = Object.keys(CSV_FIELD_ALIASES).find(k => CSV_FIELD_ALIASES[k].includes(n));
+        if (key && colMap[key] === undefined) colMap[key] = i;
+        else if (!key) unknownHeaders.push(String(h).trim());
+      });
+      let legacy = false;
+      let dataStart = headerIdx + 1;
+      if (Object.keys(colMap).length < 2) {
+        // 沒有可辨識的標題列：當作舊版固定 14 欄格式
+        legacy = true;
+        CSV_LEGACY_ORDER.forEach((k, i) => { colMap[k] = i; });
+        dataStart = headerIdx;
+        unknownHeaders.length = 0;
+      } else if (colMap.routeOrSubtitle !== undefined || colMap.trainOrNote !== undefined) {
+        legacy = true;
+      }
+      if (colMap.title === undefined && colMap.type === undefined) {
+        return { error: "找不到「標題」或「類型」欄位。請確認第一列是欄位名稱，或使用新的範本。" };
+      }
+      const get = (r, key) => (colMap[key] !== undefined ? String(r[colMap[key]] == null ? "" : r[colMap[key]]).trim() : "");
+
+      const dataRows = [];
+      for (let i = dataStart; i < rows.length; i++) {
+        if (isEmpty(rows[i]) || isComment(rows[i])) continue;
+        dataRows.push({ rowNo: i + 1, cols: rows[i] });
+      }
+      if (dataRows.length === 0) return { error: "只有標題列，沒有任何行程資料。" };
+
+      // 第一天日期：加到現有旅行時用該旅行的第一天；新旅行用檔案中最早的日期，沒有的話用使用者選的日期
+      const fallbackYear = Number((opts.baseDate || new Date().toISOString()).slice(0, 4));
+      let minDate = null;
+      dataRows.forEach(dr => {
+        const d = parseCsvDate(get(dr.cols, "date"), fallbackYear);
+        if (d && (!minDate || d < minDate)) minDate = d;
+      });
+      const baseDate = opts.mode === "merge"
+        ? (opts.targetTrip && opts.targetTrip.startDate) || opts.baseDate
+        : (minDate || opts.baseDate);
+
+      const existingKeys = new Set();
+      if (opts.mode === "merge" && opts.targetTrip) {
+        (opts.targetTrip.days || []).forEach((d, i) => (d.items || []).forEach(it => existingKeys.add(`${i + 1}|${it.startTime}|${it.title}`)));
+      }
+
+      const entries = [];
+      const dayMeta = {};
+      const lastItemByDay = {};
+      const lastTransitByDay = {};
+      let lastDay = null;
+      let lastTz = null;
+      let duplicates = 0;
+      let idSeq = 0;
+      const idBase = Date.now().toString(36);
+
+      for (const { rowNo, cols } of dataRows) {
+        // ---- 天數 ----
+        let day = null;
+        const dateRaw = get(cols, "date");
+        const dayRaw = get(cols, "day");
+        if (dateRaw) {
+          const d = parseCsvDate(dateRaw, fallbackYear);
+          if (d && baseDate) {
+            day = csvDaysBetween(baseDate, d) + 1;
+            if (day < 1) { warn(rowNo, `日期 ${dateRaw} 早於旅行第一天，已略過這一列`); continue; }
+          } else if (!d) {
+            warn(rowNo, `日期「${dateRaw}」看不懂，改用天數欄`);
+          }
+        }
+        if (day === null && dayRaw) {
+          const n = parseInt(dayRaw.replace(/[^\d]/g, ""), 10);
+          if (n >= 1) day = n;
+          else warn(rowNo, `天數「${dayRaw}」看不懂，沿用上一列`);
+        }
+        if (day === null) {
+          if (lastDay === null) { day = 1; if (!dayRaw) warn(rowNo, "第一列沒有填天數，當作第 1 天"); }
+          else day = lastDay;
+        }
+        if (day > 60) { warn(rowNo, `天數 ${day} 太大（上限 60 天），已略過這一列`); continue; }
+        lastDay = day;
+
+        // ---- 每日主題、城市 ----
+        const theme = get(cols, "dayTheme");
+        const city = get(cols, "dayCity");
+        if (theme || city) {
+          dayMeta[day] = dayMeta[day] || {};
+          if (theme && !dayMeta[day].theme) dayMeta[day].theme = theme;
+          if (city && !dayMeta[day].city) dayMeta[day].city = city;
+        }
+
+        // ---- 類型 ----
+        const typeRaw = get(cols, "type");
+        let type = parseCsvType(typeRaw);
+        let from = get(cols, "from");
+        let to = get(cols, "to");
+        let route = get(cols, "route");
+        let trainSeat = get(cols, "trainSeat");
+        let subtitle = get(cols, "subtitle");
+        let note = get(cols, "note");
+        if (type === "unknown") { warn(rowNo, `類型「${typeRaw}」看不懂，當作景點`); type = "spot"; }
+        if (!type) {
+          if (/^[A-Za-z]{3}$/.test(from) && /^[A-Za-z]{3}$/.test(to)) type = "flight";
+          else if (from && to) type = "transit";
+          else type = "spot";
+        }
+        // 舊版合併欄位依類型拆開
+        const legacyRoute = get(cols, "routeOrSubtitle");
+        const legacyTrain = get(cols, "trainOrNote");
+        if (legacyRoute) { if (type === "spot") subtitle = subtitle || legacyRoute; else route = route || legacyRoute; }
+        if (legacyTrain) { if (type === "spot" || type === "roadtrip") note = note || legacyTrain; else trainSeat = trainSeat || legacyTrain; }
+
+        const costParsed = parseCsvCost(get(cols, "cost"));
+        if (costParsed.amount === undefined) { warn(rowNo, `費用「${get(cols, "cost")}」看不懂，當作 0`); costParsed.amount = 0; }
+
+        // ---- 轉乘：接到同一天上一段交通 ----
+        if (type === "transfer" || type === "outTransfer") {
+          const parent = lastTransitByDay[day];
+          if (parent) {
+            parent.transitLegs.push({ from: from || "", to: to || "", line: route || "", trainNo: trainSeat || "", isOutTransfer: type === "outTransfer" });
+            const endT = parseCsvTime(get(cols, "end"));
+            if (endT) parent.endTime = endT;
+            else if (get(cols, "end")) warn(rowNo, `結束時間「${get(cols, "end")}」看不懂，沿用上一段`);
+            if (costParsed.amount) parent.cost = (Number(parent.cost) || 0) + costParsed.amount;
+            if (note) parent.note = parent.note ? `${parent.note}\n${note}` : note;
+            continue;
+          }
+          warn(rowNo, "「轉乘」前面沒有同一天的交通，改成一張新的交通卡片");
+          type = "transit";
+        }
+
+        // ---- 時區 ----
+        let tz = parseCsvTz(get(cols, "tz"));
+        if (tz === undefined) { warn(rowNo, `時區「${get(cols, "tz")}」看不懂，沿用上一列`); tz = null; }
+        if (!tz && type === "flight") tz = CSV_AIRPORT_TZ[from.toUpperCase()] || null;
+        if (!tz) tz = lastTz || opts.homeTz || "Asia/Taipei";
+        lastTz = tz;
+        let endTz = parseCsvTz(get(cols, "endTz"));
+        if (endTz === undefined) { warn(rowNo, `抵達時區「${get(cols, "endTz")}」看不懂，用出發時區`); endTz = null; }
+        if (!endTz && type === "flight") endTz = CSV_AIRPORT_TZ[to.toUpperCase()] || null;
+        if (!endTz) endTz = tz;
+        if (type === "flight" && endTz !== tz) lastTz = endTz;   // 搭完飛機之後的行程沿用抵達地時區
+
+        // ---- 時間 ----
+        const startRaw = get(cols, "start");
+        let startTime = parseCsvTime(startRaw);
+        const startBad = startTime === undefined;
+        if (!startTime) {
+          const prev = lastItemByDay[day];
+          if (prev) {
+            startTime = prev.endTime;
+            if (startBad) warn(rowNo, `開始時間「${startRaw}」看不懂，改接在上一個行程之後（${startTime}）`);
+          } else {
+            startTime = "09:00";
+            warn(rowNo, startBad ? `開始時間「${startRaw}」看不懂，暫定 09:00` : "沒有開始時間，暫定 09:00");
+          }
+        }
+        const endRaw = get(cols, "end");
+        let endTime = parseCsvTime(endRaw);
+        let nextDay = parseCsvNextDay(get(cols, "nextDay"));
+        if (nextDay === undefined) { warn(rowNo, `隔天結束「${get(cols, "nextDay")}」看不懂，當作同一天`); nextDay = 0; }
+        if (endTime === undefined) { warn(rowNo, `結束時間「${endRaw}」看不懂，預設 1 小時`); endTime = null; }
+        if (!endTime) {
+          const auto = csvAddMinutes(startTime, 60);
+          endTime = auto.time;
+          if (auto.wrapped && !nextDay) nextDay = 1;
+        } else if (!nextDay && endTz === tz && hhmmToMinutes(endTime) < hhmmToMinutes(startTime)) {
+          nextDay = 1;
+          warn(rowNo, `結束 ${endTime} 早於開始 ${startTime}，已當作隔天結束`);
+        }
+
+        // ---- 標題 ----
+        let title = get(cols, "title");
+        if (!title) {
+          if (type === "flight") title = `${route || "航班"} ${from.toUpperCase()}→${to.toUpperCase()}`.trim();
+          else if ((type === "transit" || type === "roadtrip") && (from || to)) title = `${from || "?"} → ${to || "?"}`;
+          else { title = "未命名行程"; warn(rowNo, "標題空白，暫時命名為「未命名行程」"); }
+        }
+
+        if (opts.mode === "merge" && existingKeys.has(`${day}|${startTime}|${title}`)) { duplicates++; continue; }
+
+        // ---- 幣別、費用 ----
+        let currency = parseCsvCurrency(get(cols, "currency"));
+        if (currency === undefined) {
+          const raw = get(cols, "currency");
+          currency = stripMarkup(raw, 8);
+          warn(rowNo, `幣別「${raw}」不在 App 的選單裡，會照原樣記錄`);
+        }
+        currency = currency || costParsed.currency || CSV_TZ_DEFAULT_CURRENCY[tz] || "NT$";
+
+        // ---- 航班機場代碼 ----
+        if (type === "flight") {
+          from = from.toUpperCase();
+          to = to.toUpperCase();
+          if (from && !/^[A-Z]{3}$/.test(from)) warn(rowNo, `出發機場「${from}」建議填 3 碼代碼（如 TPE），地圖才畫得出航線`);
+          if (to && !/^[A-Z]{3}$/.test(to)) warn(rowNo, `抵達機場「${to}」建議填 3 碼代碼（如 NRT），地圖才畫得出航線`);
+        }
+
+        // ---- 網址、私人 ----
+        const urlRaw = get(cols, "url");
+        const url = safeExternalUrl(urlRaw);
+        if (urlRaw && !url) warn(rowNo, `網址「${urlRaw}」不是有效的網址，已略過`);
+        let isPrivate = parseCsvBool(get(cols, "private"));
+        if (isPrivate === undefined) { warn(rowNo, `私人行程「${get(cols, "private")}」看不懂，當作公開`); isPrivate = false; }
+        if (opts.companion) isPrivate = true;
+
+        const item = {
+          id: `item_csv_${idBase}_${(idSeq++).toString(36)}`,
+          type,
+          title,
+          mood: "",
+          subtitle,
+          depIata: type === "flight" ? from : "",
+          arrIata: type === "flight" ? to : "",
+          flightNo: type === "flight" ? route : "",
+          gateSeat: type === "flight" ? trainSeat : "",
+          roadFrom: type === "roadtrip" ? from : "",
+          roadTo: type === "roadtrip" ? to : "",
+          roadStops: type === "roadtrip" ? get(cols, "stops").split(/[,，、;；\/]/).map(s => s.trim()).filter(Boolean).join("、") : "",
+          roadHighway: type === "roadtrip" ? route : "",
+          startTz: tz,
+          endTz,
+          startTime,
+          endTime,
+          currency,
+          cost: costParsed.amount || 0,
+          extraExpenses: [],
+          note,
+          url,
+          urlLabel: url ? (get(cols, "urlLabel") || "相關連結") : "",
+          transitLegs: type === "transit" ? [{ from: from || "", to: to || "", line: route || "", trainNo: trainSeat || "", isOutTransfer: false }] : [],
+          photos: [],
+          status: "normal",
+          endDayOffset: Math.max(-1, Math.min(3, nextDay || 0)),
+          isPrivate: !!isPrivate,
+          createdBy: opts.userId || undefined
+        };
+        entries.push({ day, item, rowNo });
+        lastItemByDay[day] = item;
+        if (type === "transit") lastTransitByDay[day] = item;
+        else delete lastTransitByDay[day];
+      }
+
+      const maxDay = entries.reduce((m, e) => Math.max(m, e.day), 0);
+      return { entries, dayMeta, warnings, duplicates, baseDate, minDate, maxDay, legacy, unknownHeaders, colCount: Object.keys(colMap).length };
+    }
+
+    // ---------- 匯入畫面 ----------
+    function getCsvImportOptions() {
+      const mode = (document.querySelector('input[name="csvTarget"]:checked') || {}).value === "merge" ? "merge" : "new";
+      const targetTrip = mode === "merge" ? getActiveTrip() : null;
+      const uid = (currentCloudUser && currentCloudUser.id) || appState.lastCloudUserId || undefined;
+      return {
+        mode,
+        targetTrip,
+        baseDate: (document.getElementById("csvStartDate") || {}).value || new Date().toISOString().slice(0, 10),
+        homeTz: (targetTrip && targetTrip.homeTz) || "Asia/Taipei",
+        companion: mode === "merge" && isTripCompanionView(targetTrip),
+        userId: uid
+      };
+    }
+
+    function onCsvSettingsChange() {
+      const opts = getCsvImportOptions();
+      const newFields = document.getElementById("csvNewTripFields");
+      const mergeInfo = document.getElementById("csvMergeInfo");
+      if (newFields) newFields.style.display = opts.mode === "new" ? "grid" : "none";
+      if (mergeInfo) {
+        mergeInfo.style.display = opts.mode === "merge" ? "block" : "none";
+        if (opts.mode === "merge") {
+          const t = getActiveTrip();
+          mergeInfo.textContent = `會加到「${t.title}」，天數從這趟旅行的第一天（${t.startDate || "未設定"}）開始算；同一天、同時間、同標題的行程會略過，不會重複。`
+            + (opts.companion ? "你是旅伴，匯入的行程會存成私人行程。" : "");
+        }
+      }
+      runCsvAnalysis();
+    }
+
+    function runCsvAnalysis() {
+      const box = document.getElementById("csvPreview");
+      if (!box) return;
+      if (!csvImportState.rows) { box.innerHTML = ""; return; }
+      const opts = getCsvImportOptions();
+      const result = analyzeCsvImport(csvImportState.rows, opts);
+      csvImportState.analysis = result;
+      // 新旅行：檔案有日期時，自動帶入第一天
+      const dateInp = document.getElementById("csvStartDate");
+      if (opts.mode === "new" && result.minDate && dateInp && dateInp.dataset.auto === "1" && dateInp.value !== result.minDate) {
+        dateInp.value = result.minDate;
+      }
+      renderCsvPreview(result, opts);
+    }
+
+    function renderCsvPreview(result, opts) {
+      const box = document.getElementById("csvPreview");
+      if (result.error) {
+        box.innerHTML = `<div class="csv-preview-error">⚠️ ${escapeHtml(result.error)}</div>`;
+        return;
+      }
+      const byType = {};
+      result.entries.forEach(e => { byType[e.item.type] = (byType[e.item.type] || 0) + 1; });
+      const typeChips = Object.keys(byType).map(t => `<span class="csv-chip">${CSV_TYPE_ICON[t]} ${CSV_TYPE_LABEL[t]} ${byType[t]}</span>`).join("");
+      const notes = [];
+      if (csvImportState.encoding !== "UTF-8") notes.push(`檔案編碼是 ${csvImportState.encoding}，已自動轉換`);
+      if (result.legacy) notes.push("偵測到舊版格式，已自動對應欄位");
+      if (result.unknownHeaders.length) notes.push(`這些欄位看不懂，已略過：${result.unknownHeaders.join("、")}`);
+      if (result.duplicates) notes.push(`${result.duplicates} 筆跟目前旅行重複，已略過`);
+
+      const warnHtml = result.warnings.length ? `
+        <div class="csv-warn-box">
+          <div class="csv-warn-title">⚠️ ${result.warnings.length} 個地方需要留意（仍可匯入，括號內是試算表的列號）</div>
+          ${result.warnings.slice(0, 40).map(w => `<div>第 ${w.rowNo} 列：${escapeHtml(w.msg)}</div>`).join("")}
+          ${result.warnings.length > 40 ? `<div>…還有 ${result.warnings.length - 40} 個</div>` : ""}
+        </div>` : `<div class="csv-ok-box">✅ 每一列都看得懂，沒有需要修正的地方</div>`;
+
+      const days = {};
+      result.entries.forEach(e => { (days[e.day] = days[e.day] || []).push(e.item); });
+      let shown = 0;
+      const dayHtml = Object.keys(days).map(Number).sort((a, b) => a - b).map(d => {
+        const meta = result.dayMeta[d] || {};
+        const items = days[d].slice().sort((a, b) => hhmmToMinutes(a.startTime) - hhmmToMinutes(b.startTime));
+        const rowsHtml = items.map(it => {
+          if (shown++ >= 120) return "";
+          let detail = "";
+          if (it.type === "flight") detail = `${it.depIata} → ${it.arrIata} ${it.flightNo}`;
+          else if (it.type === "transit") detail = it.transitLegs.map(l => `${l.from}→${l.to}${l.line ? " " + l.line : ""}`).join(" ／ ");
+          else if (it.type === "roadtrip") detail = `${it.roadFrom} → ${it.roadTo}${it.roadStops ? "（經 " + it.roadStops + "）" : ""}`;
+          else detail = it.subtitle;
+          const money = it.cost ? `${it.currency} ${Number(it.cost).toLocaleString()}` : "";
+          return `<div class="csv-prev-item">
+            <span class="csv-prev-time">${it.startTime}–${it.endTime}${it.endDayOffset > 0 ? "+1" : ""}</span>
+            <span>${CSV_TYPE_ICON[it.type]}</span>
+            <span class="csv-prev-title">${escapeHtml(it.title)}${it.isPrivate ? " 🔒" : ""}${detail ? `<small>${escapeHtml(detail)}</small>` : ""}</span>
+            <span class="csv-prev-money">${escapeHtml(money)}</span>
+          </div>`;
+        }).join("");
+        const dateLabel = result.baseDate ? getDayFormattedDateString(result.baseDate, d - 1) : "";
+        return `<div class="csv-prev-day">DAY ${String(d).padStart(2, "0")} ${dateLabel ? "· " + dateLabel : ""}${meta.city ? " · 📍" + escapeHtml(meta.city) : ""}${meta.theme ? " · " + escapeHtml(meta.theme) : ""}</div>${rowsHtml}`;
+      }).join("");
+
+      const count = result.entries.length;
+      box.innerHTML = `
+        <div class="csv-preview">
+          <div class="csv-summary">
+            <b>將匯入 ${count} 筆行程，共 ${result.maxDay} 天</b>${result.baseDate ? `（${result.baseDate.replace(/-/g, "/")} 起）` : ""}
+            <div style="margin-top:6px;">${typeChips}</div>
+            ${notes.map(n => `<div class="csv-note">ℹ️ ${escapeHtml(n)}</div>`).join("")}
+          </div>
+          ${warnHtml}
+          <div class="csv-prev-list">${dayHtml}${shown > 120 ? `<div class="csv-note">…只顯示前 120 筆</div>` : ""}</div>
+          <button type="button" class="pill-btn primary" style="width:100%; justify-content:center; padding:11px; margin-top:10px;" ${count ? "" : "disabled"} onclick="commitCsvImport()">
+            ${count ? `確認匯入 ${count} 筆` : "沒有可匯入的行程"}
+          </button>
+        </div>`;
     }
 
     function handleCsvFileImport(e) {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
-      const createNew = document.getElementById("csvCreateNewTripCheck")?.checked;
       const reader = new FileReader();
       reader.onload = (ev) => {
         try {
-          const rows = parseCsvRows(ev.target.result || "");
-          if (rows.length < 2) {
-            alert("CSV 檔案內容為空或僅有標題列。");
-            return;
-          }
-          const dataRows = rows.slice(1);
-          let targetTrip;
-          if (createNew) {
-            const newId = "trip_" + Date.now();
-            const num = String(appState.trips.length + 1).padStart(2, "0");
-            const baseName = file.name.replace(/\.csv$/i, "") || "匯入行程";
-            targetTrip = {
-              id: newId,
-              title: `${num} ${baseName}`,
-              startDate: new Date().toISOString().slice(0, 10),
-              homeTz: "Asia/Taipei",
-              checklist: [],
-              days: []
-            };
-            appState.trips.push(targetTrip);
-            appState.activeTripId = newId;
-          } else {
-            targetTrip = getActiveTrip();
-          }
-
-          let importedCount = 0;
-          dataRows.forEach((cols, idx) => {
-            const dayNum = Math.max(1, parseInt(cols[0], 10) || 1);
-            while (targetTrip.days.length < dayNum) {
-              targetTrip.days.push({
-                weatherText: "☀️ 晴朗 22°C",
-                sunrise: "06:15",
-                sunset: "17:45",
-                items: []
-              });
-            }
-            
-            // Format: 天數(0), 類型(1), 標題(2), 開始時間(3), 結束時間(4), 跨日(5), 時區(6), 幣別(7), 預定費用(8), 出發地(9), 目的地(10), 路線或副標題(11), 車次或備註(12), 網址(13)
-            const rawType = (cols[1] || "spot").toLowerCase().trim();
-            const type = ["spot", "transit", "flight", "roadtrip"].includes(rawType) ? rawType : "spot";
-            const title = cols[2] || "未命名行程";
-            const startTime = /^\d{1,2}:\d{2}$/.test(cols[3] || "") ? cols[3].padStart(5, "0") : "09:00";
-            const endTime = /^\d{1,2}:\d{2}$/.test(cols[4] || "") ? cols[4].padStart(5, "0") : "10:00";
-            const offsetDay = parseInt(cols[5], 10) || 0;
-            const tz = cols[6] || targetTrip.homeTz || "Asia/Taipei";
-            const currency = cols[7] || (tz === "Asia/Tokyo" ? "¥" : "NT$");
-            const cost = Number(cols[8]) || 0;
-            
-            const fromLoc = cols[9] || "";
-            const toLoc = cols[10] || "";
-            const lineOrSub = cols[11] || "";
-            const trainOrNote = cols[12] || "";
-            const url = cols[13] || "";
-
-            const item = {
-              id: `item_csv_${Date.now()}_${idx}`,
-              type,
-              title,
-              mood: "",
-              subtitle: type === "spot" ? lineOrSub : "",
-              depIata: type === "flight" ? fromLoc.toUpperCase() : "",
-              arrIata: type === "flight" ? toLoc.toUpperCase() : "",
-              flightNo: type === "flight" ? lineOrSub : "",
-              gateSeat: type === "flight" ? trainOrNote : "",
-              roadFrom: type === "roadtrip" ? fromLoc : "",
-              roadTo: type === "roadtrip" ? toLoc : "",
-              roadStops: "",
-              roadHighway: type === "roadtrip" ? lineOrSub : "",
-              startTz: tz,
-              endTz: tz,
-              startTime,
-              endTime,
-              currency,
-              cost,
-              extraExpenses: [],
-              note: (type === "spot" || type === "roadtrip") ? trainOrNote : "",
-              url,
-              urlLabel: url ? "相關連結" : "",
-              transitLegs: [],
-              photos: [],
-              status: "normal",
-              endDayOffset: offsetDay,
-              isPrivate: false
-            };
-
-            if (type === "transit") {
-              // Detailed extraction
-              item.transitLegs.push({
-                from: fromLoc || "起站",
-                to: toLoc || "迄站",
-                line: lineOrSub || "鐵道路線",
-                trainNo: trainOrNote || "",
-                isOutTransfer: false
-              });
-            }
-
-            targetTrip.days[dayNum - 1].items.push(item);
-            importedCount++;
-          });
-
-          targetTrip.days.forEach(d => {
-            d.items.sort((a, b) => hhmmToMinutes(a.startTime) - hhmmToMinutes(b.startTime));
-          });
-
-          appState.activeDayIndex = 0;
-          saveAppState();
-          debouncedSyncToCloud();
-          closeCsvImportModal();
-          renderAll();
-          refreshRealtimeWeather(false);
-          alert(`✅ 成功從試算表匯入 ${importedCount} 筆行程卡片！`);
+          const { text, encoding } = decodeCsvBuffer(ev.target.result);
+          csvImportState.rows = parseCsvRows(text);
+          csvImportState.sourceName = file.name.replace(/\.(csv|tsv|txt)$/i, "");
+          csvImportState.encoding = encoding;
+          const paste = document.getElementById("csvPasteInput");
+          if (paste) paste.value = "";
+          const titleInp = document.getElementById("csvTripTitle");
+          if (titleInp && !titleInp.value.trim()) titleInp.value = csvImportState.sourceName.replace(/^TABIGRAM_?/, "") || "";
+          runCsvAnalysis();
         } catch (err) {
-          alert("匯入 CSV 失敗，請確認檔案格式為 UTF-8 編碼。");
+          document.getElementById("csvPreview").innerHTML = `<div class="csv-preview-error">⚠️ 讀不到這個檔案。請確認是 .csv 檔，或改用下方「直接貼上」。</div>`;
         }
       };
-      reader.readAsText(file, "UTF-8");
-      e.target.value = "";
+      reader.readAsArrayBuffer(file);
+    }
+
+    function onCsvPasteInput() {
+      clearTimeout(csvPasteTimer);
+      csvPasteTimer = setTimeout(() => {
+        const text = (document.getElementById("csvPasteInput") || {}).value || "";
+        if (!text.trim()) { csvImportState.rows = null; runCsvAnalysis(); return; }
+        csvImportState.rows = parseCsvRows(text);
+        csvImportState.sourceName = "";
+        csvImportState.encoding = "UTF-8";
+        const fileInp = document.getElementById("csvImportFileInput");
+        if (fileInp) fileInp.value = "";
+        runCsvAnalysis();
+      }, 300);
+    }
+
+    function commitCsvImport() {
+      const result = csvImportState.analysis;
+      if (!result || result.error || !result.entries.length) return;
+      const opts = getCsvImportOptions();
+      let trip;
+      if (opts.mode === "new") {
+        const num = String(appState.trips.length + 1).padStart(2, "0");
+        const name = ((document.getElementById("csvTripTitle") || {}).value || "").trim() || csvImportState.sourceName || "匯入的旅行";
+        trip = normalizeTrip({
+          id: "trip_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+          title: /^\d{2}\s/.test(name) ? name : `${num} ${name}`,
+          startDate: result.baseDate || new Date().toISOString().slice(0, 10),
+          homeTz: "Asia/Taipei",
+          checklist: [],
+          days: []
+        });
+        trip.days = [];
+        appState.trips.push(trip);
+      } else {
+        trip = getActiveTrip();
+      }
+      while (trip.days.length < result.maxDay) {
+        trip.days.push({ weatherText: "☀️ 晴朗 22°C", sunrise: "06:15", sunset: "17:45", items: [] });
+      }
+      result.entries.forEach(({ day, item }) => trip.days[day - 1].items.push(item));
+      Object.keys(result.dayMeta).forEach(d => {
+        const day = trip.days[Number(d) - 1];
+        if (!day) return;
+        const meta = result.dayMeta[d];
+        if (meta.theme && !day.theme) day.theme = meta.theme;
+        if (meta.city && !day.location) day.location = meta.city;
+      });
+      trip.days.forEach(d => d.items.sort((a, b) => hhmmToMinutes(a.startTime) - hhmmToMinutes(b.startTime)));
+      sanitizeTripData(trip);
+
+      appState.activeTripId = trip.id;
+      appState.activeDayIndex = Math.max(0, Math.min(...result.entries.map(e => e.day)) - 1);
+      saveAppState();
+      debouncedSyncToCloud();
+      closeCsvImportModal();
+      renderAll();
+      refreshRealtimeWeather(false);
+      geocodeImportedPlaces(result.entries.map(e => e.item));
+      alert(`✅ 已匯入 ${result.entries.length} 筆行程到「${trip.title}」` + (result.warnings.length ? `\n有 ${result.warnings.length} 個地方用了預設值，可以打開卡片再確認。` : ""));
+    }
+
+    // 匯入後在背景補上地圖座標（OpenStreetMap 規定每秒最多查一次）
+    async function geocodeImportedPlaces(items) {
+      const queue = [];
+      const seen = new Set();
+      const add = (name, tz) => {
+        const n = String(name || "").trim();
+        if (!n || seen.has(n) || lookupStationCoordSync(n)) return;
+        seen.add(n);
+        queue.push([n, tz]);
+      };
+      items.forEach(it => {
+        if (it.type === "transit") it.transitLegs.forEach(l => { add(l.from, it.startTz); add(l.to, it.endTz); });
+        else if (it.type === "roadtrip") {
+          add(it.roadFrom, it.startTz); add(it.roadTo, it.endTz);
+          (it.roadStops || "").split(/[,，、]/).forEach(s => add(s, it.startTz));
+        } else if (it.type === "spot") add(it.title, it.startTz);
+      });
+      for (const [name, tz] of queue.slice(0, 60)) {
+        try { await geocodeStationOnline(name, tz); } catch (e) {}
+        await new Promise(r => setTimeout(r, 1100));
+      }
     }
 
   </script>

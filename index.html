@@ -2477,7 +2477,7 @@
         {
           id: "trip_1",
           title: "01 新旅行",
-          startDate: new Date().toISOString().slice(0, 10),
+          startDate: cdLocalDateStr(),
           homeTz: "Asia/Taipei",
           checklist: [],
           days: [
@@ -2756,7 +2756,7 @@
       if (!Array.isArray(appState.trips)) appState.trips = [];
       appState.trips = appState.trips.map(normalizeTrip).filter(Boolean);
       if (appState.trips.length === 0) {
-        appState.trips.push(normalizeTrip({ id: "trip_" + Date.now(), title: "01 新旅行", startDate: new Date().toISOString().slice(0, 10) }));
+        appState.trips.push(normalizeTrip({ id: "trip_" + Date.now(), title: "01 新旅行", startDate: cdLocalDateStr() }));
       }
       return appState.trips.find(t => t.id === appState.activeTripId) || appState.trips[0];
     }
@@ -3881,7 +3881,11 @@
       }
     }
 
+    let itemSaveLockedUntil = 0;
     async function saveItineraryItem() {
+      // 防止連點兩次「儲存」而新增出兩張一樣的卡片
+      if (Date.now() < itemSaveLockedUntil) return;
+      itemSaveLockedUntil = Date.now() + 800;
       const day = getActiveDay();
       const existingItem = editingItemId ? day.items.find(i => i.id === editingItemId) : null;
 
@@ -3925,21 +3929,8 @@
           const isOutTransfer = row.querySelector(".leg-out-transfer").checked;
           if (from || to) transitLegs.push({ from, to, line, trainNo, isOutTransfer });
         });
-        for (const leg of transitLegs) {
-          if (leg.from) await geocodeStationOnline(leg.from, startTz);
-          if (leg.to) await geocodeStationOnline(leg.to, endTz);
-        }
-      } else if (type === "roadtrip") {
-        if (roadFrom) await geocodeStationOnline(roadFrom, startTz);
-        if (roadTo) await geocodeStationOnline(roadTo, endTz);
-        if (roadStops) {
-          for (const st of roadStops.split(/[,，、]/)) {
-            if (st.trim()) await geocodeStationOnline(st.trim(), startTz);
-          }
-        }
-      } else if (type === "spot") {
-        await geocodeStationOnline(title, startTz);
       }
+      // 地圖座標改成存檔後在背景查詢（不再讓「儲存」卡住 1～2 秒）
 
       const extraExpenses = [];
       document.querySelectorAll("#modalExtraExpensesList .extra-exp-row").forEach(row => {
@@ -3994,6 +3985,7 @@
       closeItemModal();
       renderAll();
       refreshRealtimeWeather(false);
+      geocodeImportedPlaces([payload]);
       debouncedSyncToCloud();
     }
 
@@ -4054,7 +4046,7 @@
       appState.trips.push({
         id: newId,
         title: `${num} 新旅行策展`,
-        startDate: new Date().toISOString().slice(0, 10),
+        startDate: cdLocalDateStr(),
         homeTz: "Asia/Taipei",
         checklist: [],
         days: [
@@ -6979,7 +6971,7 @@ function initSupabaseClient() {
         if (allCloudMap.size === 0 && !localStorage.getItem("TABIGRAM_ONBOARDED_" + currentCloudUser.id)) {
           localStorage.setItem("TABIGRAM_ONBOARDED_" + currentCloudUser.id, "1");
           const obDate = document.getElementById("onboardTripDateInput");
-          if (obDate) obDate.value = new Date().toISOString().slice(0, 10);
+          if (obDate) obDate.value = cdLocalDateStr();
           openModalBackdrop("onboardingModal");
         }
 
@@ -7319,7 +7311,7 @@ function initSupabaseClient() {
 
     function completeOnboardingCreateTrip() {
       const title = document.getElementById("onboardTripTitleInput").value.trim() || "01 我的首趟雲端旅程";
-      const startDate = document.getElementById("onboardTripDateInput").value || new Date().toISOString().slice(0, 10);
+      const startDate = document.getElementById("onboardTripDateInput").value || cdLocalDateStr();
       const trip = getActiveTrip();
       trip.title = title;
       trip.startDate = startDate;
@@ -7673,7 +7665,7 @@ function initSupabaseClient() {
       const titleInp = document.getElementById("csvTripTitle");
       if (titleInp) titleInp.value = "";
       const dateInp = document.getElementById("csvStartDate");
-      if (dateInp) { dateInp.value = new Date().toISOString().slice(0, 10); dateInp.dataset.auto = "1"; }
+      if (dateInp) { dateInp.value = cdLocalDateStr(); dateInp.dataset.auto = "1"; }
       const newRadio = document.querySelector('input[name="csvTarget"][value="new"]');
       if (newRadio) newRadio.checked = true;
       renderCsvGuide();
@@ -8174,7 +8166,7 @@ function initSupabaseClient() {
       return {
         mode,
         targetTrip,
-        baseDate: (document.getElementById("csvStartDate") || {}).value || new Date().toISOString().slice(0, 10),
+        baseDate: (document.getElementById("csvStartDate") || {}).value || cdLocalDateStr(),
         homeTz: (targetTrip && targetTrip.homeTz) || "Asia/Taipei",
         companion: mode === "merge" && isTripCompanionView(targetTrip),
         userId: uid
@@ -8322,7 +8314,7 @@ function initSupabaseClient() {
         trip = normalizeTrip({
           id: "trip_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
           title: /^\d{2}\s/.test(name) ? name : `${num} ${name}`,
-          startDate: result.baseDate || new Date().toISOString().slice(0, 10),
+          startDate: result.baseDate || cdLocalDateStr(),
           homeTz: "Asia/Taipei",
           checklist: [],
           days: []
@@ -8478,12 +8470,13 @@ function initSupabaseClient() {
 
       // ---------- 出發前 ----------
       if (now < tripStart) {
-        const daysLeft = cdCalendarDaysBetween(today, trip.startDate);
+        // 以「第一個行程」的日期算天數（第一天沒排行程、或旅程日期設在過去時才不會算錯）
+        const daysLeft = Math.max(0, cdCalendarDaysBetween(today, cdLocalDateStr(new Date(tripStart))));
         const msLeft = tripStart - now;
         const fromDate = trip.countdownFrom && /^\d{4}-\d{2}-\d{2}$/.test(trip.countdownFrom) ? trip.countdownFrom : today;
-        const total = Math.max(1, cdCalendarDaysBetween(fromDate, trip.startDate));
+        const total = Math.max(1, cdCalendarDaysBetween(fromDate, cdLocalDateStr(new Date(tripStart))));
         const firstLabel = first ? `${CD_TYPE_ICON[first.item.type] || "📍"} ${first.item.title || "第一個行程"}` : "還沒有安排行程";
-        const dateLabel = getDayFormattedDateString(trip.startDate, 0);
+        const dateLabel = getDayFormattedDateString(trip.startDate, first ? first.dayIdx : 0);
         if (msLeft <= 86400000 && first) {
           return {
             mode: "soon", signature: `soon|${first.item.id}`,
@@ -8651,31 +8644,32 @@ function initSupabaseClient() {
       ctx.font = "700 34px 'JetBrains Mono', monospace";
       ctx.textBaseline = "alphabetic";
       ctx.textAlign = "left";
-      ctx.fillText("TABIGRAM", 84, 140);
+      // 限動安全區：上方約 270px 會被頭像與帳號名稱蓋住、下方約 300px 會被回覆列蓋住
+      ctx.fillText("TABIGRAM", 84, 330);
       ctx.textAlign = "right";
-      ctx.fillText(cdLocalDateStr().replace(/-/g, "."), W - 84, 140);
+      ctx.fillText(cdLocalDateStr().replace(/-/g, "."), W - 84, 330);
       ctx.globalAlpha = 1;
 
       // 標籤
       ctx.textAlign = "center";
       ctx.font = "700 40px 'JetBrains Mono', monospace";
       ctx.fillStyle = accent;
-      ctx.fillText(view.share.during ? "ON THE ROAD" : "COUNTDOWN", W / 2, 420);
+      ctx.fillText(view.share.during ? "ON THE ROAD" : "COUNTDOWN", W / 2, 500);
 
       // 大數字（太長時自動縮小）
       ctx.fillStyle = outer.text;
-      let size = 420;
+      let size = 380;
       ctx.font = `400 ${size}px 'Dela Gothic One', sans-serif`;
       while (ctx.measureText(view.share.number).width > W - 160 && size > 160) {
         size -= 20;
         ctx.font = `400 ${size}px 'Dela Gothic One', sans-serif`;
       }
-      ctx.fillText(view.share.number, W / 2, 820);
-      ctx.font = "900 72px 'Noto Sans TC', sans-serif";
-      ctx.fillText(view.share.during ? `DAY ${view.share.unit}` : view.share.unit, W / 2, 940);
+      ctx.fillText(view.share.number, W / 2, 850);
+      ctx.font = "900 68px 'Noto Sans TC', sans-serif";
+      ctx.fillText(view.share.during ? `DAY ${view.share.unit}` : view.share.unit, W / 2, 955);
 
       // 旅行名稱（最多兩行）
-      ctx.font = "900 64px 'Noto Sans TC', sans-serif";
+      ctx.font = "900 58px 'Noto Sans TC', sans-serif";
       const title = trip.title || "我的旅行";
       const lines = [];
       let cur = "";
@@ -8683,13 +8677,14 @@ function initSupabaseClient() {
         if (ctx.measureText(cur + ch).width > W - 200) { lines.push(cur); cur = ch; } else cur += ch;
       }
       if (cur) lines.push(cur);
-      lines.slice(0, 2).forEach((ln, i) => ctx.fillText(ln, W / 2, 1090 + i * 84));
+      lines.slice(0, 2).forEach((ln, i) => ctx.fillText(ln, W / 2, 1070 + i * 74));
 
       // 票券資訊卡
-      const cardX = 96, cardY = 1290, cardW = W - 192, cardH = 420;
+      const cardX = 96, cardY = 1240, cardW = W - 192, cardH = 370;
       drawCardPaperTexture(ctx, cardX, cardY, cardW, cardH, 36, inner.bg, appState.paperTexture);
       const daysCount = Math.max(1, (trip.days || []).length);
-      const startLabel = getDayFormattedDateString(trip.startDate, 0);
+      const firstDayIdx = countdownState.schedule.length ? countdownState.schedule[0].dayIdx : 0;
+      const startLabel = getDayFormattedDateString(trip.startDate, firstDayIdx);
       const endLabel = getDayFormattedDateString(trip.startDate, daysCount - 1);
       const city = ((trip.days || [])[0] || {}).location || "";
       const flight = countdownState.schedule.find(e => e.item.type === "flight");
@@ -8702,7 +8697,7 @@ function initSupabaseClient() {
       if (flight) rows.push(["航班", `${flight.item.depIata || ""} ✈ ${flight.item.arrIata || ""} ${flight.item.flightNo || ""}`.trim()]);
       ctx.textAlign = "left";
       rows.slice(0, 4).forEach(([k, v], i) => {
-        const y = cardY + 92 + i * 72;
+        const y = cardY + 84 + i * 66;
         ctx.fillStyle = inner.text;
         ctx.globalAlpha = 0.55;
         ctx.font = "700 32px 'Noto Sans TC', sans-serif";
@@ -8714,16 +8709,10 @@ function initSupabaseClient() {
         ctx.textAlign = "left";
       });
       // 進度條
-      const barY = cardY + cardH - 56;
+      const barY = cardY + cardH - 48;
       drawRoundedRect(ctx, cardX + 56, barY, cardW - 112, 16, 8, "rgba(0,0,0,0.08)");
       drawRoundedRect(ctx, cardX + 56, barY, Math.max(16, (cardW - 112) * view.pct), 16, 8, accent);
 
-      ctx.textAlign = "center";
-      ctx.fillStyle = outer.text;
-      ctx.globalAlpha = 0.6;
-      ctx.font = "700 30px 'Noto Sans TC', sans-serif";
-      ctx.fillText(view.share.during ? "旅行進行中" : "期待出發中", W / 2, 1830);
-      ctx.globalAlpha = 1;
       return canvas;
     }
 

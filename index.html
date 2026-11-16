@@ -2301,12 +2301,143 @@
       });
     }
 
-    function saveAppState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-      } catch (e) {
-        alert("本機儲存空間接近上限，建議減少單筆高解析度照片數量。");
+    /*
+     * 照片存儲：記憶體中的 appState 照片仍保留 dataUrl（畫面、分享、雲端同步都不用改），
+     * 但寫入 localStorage 時只存照片編號 pid，圖片本體放在 IndexedDB。
+     * 只有在 IndexedDB 確認寫入成功後，localStorage 才會拿掉該張照片的 dataUrl，避免掉照片。
+     */
+    const PHOTO_DB_NAME = "TABIGRAM_PHOTOS";
+    const PHOTO_STORE = "photos";
+    let photoDbPromise = null;
+    let photoDbReady = false;          // IndexedDB 可用且已讀取完成
+    const photoPidsInDb = new Set();   // 已確認存在 IndexedDB 的照片編號
+    let photoFlushRunning = false;
+    let photoFlushAgain = false;
+
+    function openPhotoDb() {
+      if (!photoDbPromise) {
+        photoDbPromise = new Promise((resolve, reject) => {
+          if (!window.indexedDB) return reject(new Error("IndexedDB unavailable"));
+          const req = indexedDB.open(PHOTO_DB_NAME, 1);
+          req.onupgradeneeded = () => req.result.createObjectStore(PHOTO_STORE);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+          req.onblocked = () => reject(new Error("IndexedDB blocked"));
+        }).catch(e => { photoDbPromise = null; throw e; });
       }
+      return photoDbPromise;
+    }
+
+    function forEachStoredPhoto(cb) {
+      (appState.trips || []).forEach(t => (t.days || []).forEach(d => (d.items || []).forEach(it => {
+        if (Array.isArray(it.photos)) it.photos.forEach(p => { if (p && typeof p === "object") cb(p); });
+      })));
+    }
+
+    function newPhotoId() {
+      return "ph_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    }
+
+    function serializeStateForLocal() {
+      return JSON.stringify(appState, (key, val) => {
+        if (photoDbReady && val && typeof val === "object" && typeof val.pid === "string"
+            && typeof val.dataUrl === "string" && photoPidsInDb.has(val.pid)) {
+          const { dataUrl, ...rest } = val;
+          return rest;
+        }
+        return val;
+      });
+    }
+
+    // 開機時：從 IndexedDB 把照片補回記憶體，並把舊版內嵌在 localStorage 的照片搬過去
+    async function hydratePhotosFromIDB() {
+      let db;
+      try { db = await openPhotoDb(); } catch (e) { return; }
+      const all = await new Promise(resolve => {
+        const out = new Map();
+        try {
+          const req = db.transaction(PHOTO_STORE, "readonly").objectStore(PHOTO_STORE).openCursor();
+          req.onsuccess = () => {
+            const c = req.result;
+            if (c) { out.set(c.key, c.value); c.continue(); } else resolve(out);
+          };
+          req.onerror = () => resolve(null);
+        } catch (e) { resolve(null); }
+      });
+      if (!all) return;
+      all.forEach((_, k) => photoPidsInDb.add(k));
+      forEachStoredPhoto(p => {
+        if (p.pid && typeof p.dataUrl !== "string" && all.has(p.pid)) p.dataUrl = all.get(p.pid);
+      });
+      photoDbReady = true;
+      saveAppState();
+    }
+
+    async function flushPhotosToIDB() {
+      if (photoFlushRunning) { photoFlushAgain = true; return; }
+      photoFlushRunning = true;
+      try {
+        do {
+          photoFlushAgain = false;
+          const db = await openPhotoDb();
+          const toWrite = [];
+          const referenced = new Set();
+          forEachStoredPhoto(p => {
+            if (!p.pid) return;
+            referenced.add(p.pid);
+            if (typeof p.dataUrl === "string" && !photoPidsInDb.has(p.pid)) toWrite.push([p.pid, p.dataUrl]);
+          });
+          const toDelete = [...photoPidsInDb].filter(id => !referenced.has(id));
+          if (toWrite.length || toDelete.length) {
+            await new Promise((resolve, reject) => {
+              const tx = db.transaction(PHOTO_STORE, "readwrite");
+              const st = tx.objectStore(PHOTO_STORE);
+              toWrite.forEach(([k, v]) => st.put(v, k));
+              toDelete.forEach(k => st.delete(k));
+              tx.oncomplete = resolve;
+              tx.onerror = () => reject(tx.error);
+              tx.onabort = () => reject(tx.error);
+            });
+            toWrite.forEach(([k]) => photoPidsInDb.add(k));
+            toDelete.forEach(k => photoPidsInDb.delete(k));
+          }
+        } while (photoFlushAgain);
+      } catch (e) {
+        // IndexedDB 寫入失敗：退回舊做法，照片內嵌在 localStorage
+        photoDbReady = false;
+        photoFlushRunning = false;
+        saveAppState();
+        return;
+      }
+      photoFlushRunning = false;
+      writeStateToLocalStorage(false);
+    }
+
+    function writeStateToLocalStorage(quiet) {
+      try {
+        localStorage.setItem(STORAGE_KEY, serializeStateForLocal());
+      } catch (e) {
+        if (!quiet) alert("本機儲存空間接近上限，建議減少單筆高解析度照片數量。");
+      }
+    }
+
+    function saveAppState() {
+      let needsFlush = false;
+      if (photoDbReady) {
+        const referenced = new Set();
+        forEachStoredPhoto(p => {
+          if (typeof p.dataUrl !== "string") { if (p.pid) referenced.add(p.pid); return; }
+          if (!p.pid) p.pid = newPhotoId();
+          referenced.add(p.pid);
+          if (!photoPidsInDb.has(p.pid)) needsFlush = true;
+        });
+        if (!needsFlush) {
+          for (const id of photoPidsInDb) { if (!referenced.has(id)) { needsFlush = true; break; } }
+        }
+      }
+      // 有照片還在等 IndexedDB 時，若 localStorage 暫時塞不下就先不警告，等寫完會再存一次
+      writeStateToLocalStorage(needsFlush);
+      if (needsFlush) flushPhotosToIDB();
     }
 
     // 補齊旅程資料結構（雲端或舊版本資料缺欄位時，避免新增/渲染時出錯）
@@ -3010,7 +3141,7 @@
         let photosHtml = "";
         if (Array.isArray(item.photos) && item.photos.length > 0) {
           photosHtml = `<div class="card-photos-strip">` +
-            item.photos.map((p, pIdx) => `<img class="card-photo-thumb" src="${p.dataUrl}" onclick="openShareModal('${item.id}', ${pIdx})" />`).join("") +
+            item.photos.map((p, pIdx) => (p && p.dataUrl) ? `<img class="card-photo-thumb" src="${p.dataUrl}" onclick="openShareModal('${item.id}', ${pIdx})" />` : "").join("") +
             `</div>`;
         }
 
@@ -3641,6 +3772,7 @@
         try {
           await sbClient.from("trips").delete().eq("id", tripToDelete.id);
           await sbClient.from("user_journals").delete().eq("trip_id", tripToDelete.id);
+          await removeTripPhotosFromCloud(tripToDelete.id);
         } catch (e) {
           console.warn("Delete cloud trip failed:", e);
         }
@@ -5713,7 +5845,7 @@ function initSupabaseClient() {
       sbClient.auth.onAuthStateChange(async (event, session) => {
         currentCloudUser = session ? session.user : null;
         updateCloudButtonBadge();
-        if (currentCloudUser && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")) {
+        if (currentCloudUser && event === "SIGNED_IN") {
           await pullAllCloudTripsAndMerge();
         }
       });
@@ -6001,6 +6133,163 @@ function initSupabaseClient() {
       renderCloudModalUI();
     }
 
+    /*
+     * 雲端照片：照片本體上傳到 Supabase Storage（bucket: journal-photos，路徑 使用者ID/旅程ID/照片ID.jpg），
+     * user_journals 只存 { pid, caption, cloudPath }。每張照片只上傳一次，之後同步只傳文字。
+     */
+    const PHOTO_BUCKET = "journal-photos";
+    const photoUploadsInFlight = new Map();
+    let resolvingCloudPhotos = false;
+    let photoUploadPausedUntil = 0;   // 上傳失敗（例如 bucket 未設定）時暫停 10 分鐘，避免每次同步都白傳
+
+    function forEachTripPhoto(trip, cb) {
+      (trip.days || []).forEach(d => (d.items || []).forEach(it => {
+        if (Array.isArray(it.photos)) it.photos.forEach(p => { if (p && typeof p === "object") cb(p, it); });
+      }));
+    }
+
+    function dataUrlToBlob(dataUrl) {
+      const comma = dataUrl.indexOf(",");
+      const mime = (dataUrl.slice(0, comma).match(/data:([^;]+)/) || [])[1] || "image/jpeg";
+      const bin = atob(dataUrl.slice(comma + 1));
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return new Blob([bytes], { type: mime });
+    }
+
+    function blobToDataUrl(blob) {
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = () => reject(r.error);
+        r.readAsDataURL(blob);
+      });
+    }
+
+    // 把這趟旅程中還沒上傳過的照片傳到 Storage（失敗的下次同步會再試）
+    async function uploadPendingTripPhotos(trip) {
+      if (!sbClient || !currentCloudUser || !trip) return;
+      if (Date.now() < photoUploadPausedUntil) return;
+      const uid = currentCloudUser.id;
+      const jobs = [];
+      forEachTripPhoto(trip, p => {
+        if (typeof p.dataUrl !== "string" || p.cloudPath) return;
+        if (!p.pid) p.pid = newPhotoId();
+        const path = `${uid}/${trip.id}/${p.pid}.jpg`;
+        let job = photoUploadsInFlight.get(p.pid);
+        if (!job) {
+          job = sbClient.storage.from(PHOTO_BUCKET)
+            .upload(path, dataUrlToBlob(p.dataUrl), { contentType: "image/jpeg", upsert: true })
+            .then(({ error }) => { if (error) throw error; return path; })
+            .finally(() => photoUploadsInFlight.delete(p.pid));
+          photoUploadsInFlight.set(p.pid, job);
+        }
+        jobs.push(job.then(savedPath => { p.cloudPath = savedPath; })
+          .catch(e => {
+            photoUploadPausedUntil = Date.now() + 10 * 60 * 1000;
+            console.warn("Photo upload failed:", e && e.message ? e.message : e);
+          }));
+      });
+      if (!jobs.length) return;
+      await Promise.all(jobs);
+      saveAppState();
+    }
+
+    function toCloudPhotoRefs(photos) {
+      if (!Array.isArray(photos)) return [];
+      return photos.filter(p => p && typeof p === "object").map(p => {
+        const ref = { pid: p.pid || null, caption: p.caption || "" };
+        if (p.cloudPath) ref.cloudPath = p.cloudPath;
+        return ref;
+      });
+    }
+
+    // 上傳用的手札：先把照片傳到 Storage，再把手札裡的照片換成只有路徑的版本
+    async function buildCloudJournalFromTrip(trip) {
+      await uploadPendingTripPhotos(trip);
+      const journal = extractPersonalJournalFromTrip(trip);
+      Object.values(journal.items || {}).forEach(it => { it.photos = toCloudPhotoRefs(it.photos); });
+      const priv = journal.privateItems || {};
+      Object.keys(priv).forEach(k => {
+        priv[k] = (priv[k] || []).map(it => ({ ...it, photos: toCloudPhotoRefs(it.photos) }));
+      });
+      return journal;
+    }
+
+    // 雲端合併後：從本機舊資料補回圖片；本機還沒上傳成功的照片要保留，不能被雲端清單蓋掉
+    function carryOverLocalPhotos(merged, localTrip) {
+      if (!merged || !localTrip) return;
+      const localById = new Map();
+      const dataByPid = new Map();
+      (localTrip.days || []).forEach(d => (d.items || []).forEach(it => {
+        localById.set(it.id, it);
+        (it.photos || []).forEach(p => {
+          if (p && p.pid && typeof p.dataUrl === "string") dataByPid.set(p.pid, p.dataUrl);
+        });
+      }));
+      (merged.days || []).forEach(d => (d.items || []).forEach(it => {
+        if (!Array.isArray(it.photos)) it.photos = [];
+        it.photos.forEach(p => {
+          if (p && p.pid && typeof p.dataUrl !== "string" && dataByPid.has(p.pid)) p.dataUrl = dataByPid.get(p.pid);
+        });
+        const loc = localById.get(it.id);
+        if (!loc || !Array.isArray(loc.photos) || loc.photos === it.photos) return;
+        const havePids = new Set(it.photos.map(p => p && p.pid).filter(Boolean));
+        const haveData = new Set(it.photos.map(p => p && p.dataUrl).filter(Boolean));
+        loc.photos.forEach(p => {
+          if (!p || typeof p.dataUrl !== "string" || p.cloudPath) return;
+          if ((p.pid && havePids.has(p.pid)) || haveData.has(p.dataUrl)) return;
+          it.photos.push(p);
+        });
+      }));
+    }
+
+    function readPhotoFromIDB(db, pid) {
+      return new Promise(resolve => {
+        try {
+          const req = db.transaction(PHOTO_STORE, "readonly").objectStore(PHOTO_STORE).get(pid);
+          req.onsuccess = () => resolve(typeof req.result === "string" ? req.result : null);
+          req.onerror = () => resolve(null);
+        } catch (e) { resolve(null); }
+      });
+    }
+
+    // 補齊缺圖的照片：先找本機 IndexedDB，沒有才從 Storage 下載（下載後存進本機，不會重複下載）
+    async function resolveMissingCloudPhotos() {
+      if (resolvingCloudPhotos) return;
+      resolvingCloudPhotos = true;
+      try {
+        const missing = [];
+        forEachStoredPhoto(p => { if (typeof p.dataUrl !== "string" && (p.pid || p.cloudPath)) missing.push(p); });
+        if (!missing.length) return;
+        let db = null;
+        try { if (photoDbReady) db = await openPhotoDb(); } catch (e) {}
+        let changed = false;
+        for (const p of missing) {
+          let data = null;
+          if (db && p.pid && photoPidsInDb.has(p.pid)) data = await readPhotoFromIDB(db, p.pid);
+          if (!data && p.cloudPath && sbClient && currentCloudUser) {
+            try {
+              const { data: blob, error } = await sbClient.storage.from(PHOTO_BUCKET).download(p.cloudPath);
+              if (!error && blob) data = await blobToDataUrl(blob);
+            } catch (e) {}
+          }
+          if (data) { p.dataUrl = data; changed = true; }
+        }
+        if (changed) { saveAppState(); renderAll(); }
+      } finally {
+        resolvingCloudPhotos = false;
+      }
+    }
+
+    async function removeTripPhotosFromCloud(tripId) {
+      if (!sbClient || !currentCloudUser) return;
+      const folder = `${currentCloudUser.id}/${tripId}`;
+      const { data } = await sbClient.storage.from(PHOTO_BUCKET).list(folder, { limit: 1000 });
+      const paths = (data || []).map(f => `${folder}/${f.name}`);
+      if (paths.length) await sbClient.storage.from(PHOTO_BUCKET).remove(paths);
+    }
+
     // Extract Personal Journal Layer from a Trip (Private notes, mood stamps, photos, extraExpenses, status)
     function extractPersonalJournalFromTrip(trip) {
       const itemsMap = {};
@@ -6098,7 +6387,7 @@ function initSupabaseClient() {
       if (!trip.ownerId) trip.ownerId = currentCloudUser.id;
 
       const masterPayload = buildCleanMasterTripPayload(trip);
-      const personalJournal = extractPersonalJournalFromTrip(trip);
+      const personalJournal = await buildCloudJournalFromTrip(trip);
 
       const { error: tripErr } = await sbClient.from("trips").upsert({
         id: trip.id,
@@ -6135,7 +6424,7 @@ function initSupabaseClient() {
         return alert("此專案尚未發佈至雲端，請管理員先按「發佈共用行程」。");
       }
 
-      const personalJournal = extractPersonalJournalFromTrip(trip);
+      const personalJournal = await buildCloudJournalFromTrip(trip);
       const { error } = await sbClient.from("user_journals").upsert({
         user_id: currentCloudUser.id,
         user_email: currentCloudUser.email,
@@ -6192,13 +6481,14 @@ function initSupabaseClient() {
         user_id: currentCloudUser.id,
         user_email: currentCloudUser.email,
         trip_id: mergedTrip.id,
-        journal_data: extractPersonalJournalFromTrip(activeTripNow),
+        journal_data: await buildCloudJournalFromTrip(activeTripNow),
         updated_at: new Date().toISOString()
       });
 
       saveAppState();
       renderAll();
       renderCloudModalUI();
+      resolveMissingCloudPhotos();
       alert(`🎉 成功加入「${mergedTrip.title}」！`);
     }
 
@@ -6238,6 +6528,7 @@ function initSupabaseClient() {
           if (!merged) return;
           merged.ownerId = row.owner_id;
           merged.shareCode = row.share_code;
+          carryOverLocalPhotos(merged, localIdx !== -1 ? appState.trips[localIdx] : null);
 
           if (localIdx !== -1) appState.trips[localIdx] = merged;
           else appState.trips.push(merged);
@@ -6252,6 +6543,7 @@ function initSupabaseClient() {
 
         saveAppState();
         renderAll();
+        resolveMissingCloudPhotos();
       } catch (e) {}
     }
     // 控制右上角選單的展開與收合
@@ -6576,8 +6868,10 @@ function initSupabaseClient() {
       renderAll();
     }
     // Boot
-    window.addEventListener("DOMContentLoaded", () => {
+    window.addEventListener("DOMContentLoaded", async () => {
       loadAppState();
+      // 必須在雲端同步之前把照片補回，否則同步時會上傳沒有圖片的照片
+      await hydratePhotosFromIDB();
       initSupabaseClient();
       initFormSelectors();
       bindStoryCanvasMultiTouch();

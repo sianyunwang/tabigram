@@ -3561,6 +3561,7 @@
           item.photos.push(c);
         }
         saveAppState();
+        debouncedSyncToCloud();
         renderAll();
         if (fromShareModal && currentShareItem && currentShareItem.id === itemId) {
           selectedSharePhotoIndex = item.photos.length - 1;
@@ -4112,6 +4113,7 @@
           activeStickerId = id;
         }
         saveAppState();
+        debouncedSyncToCloud();
         onShareTemplateChange();
       };
       inp.click();
@@ -4125,6 +4127,7 @@
       if (currentShareItem && currentShareItem.photos && currentShareItem.photos[selectedSharePhotoIndex]) {
         currentShareItem.photos[selectedSharePhotoIndex].caption = val;
         saveAppState();
+        debouncedSyncToCloud();
       }
       renderStoryCanvas();
     }

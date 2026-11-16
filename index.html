@@ -19,12 +19,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=JetBrains+Mono:wght@400;500;700;800&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@600;700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
 
 
-  <!-- D3-Geo & TopoJSON for Real 3D Orthographic Great Circle Flight Globe -->
-  <script src="https://cdn.jsdelivr.net/npm/d3-array@3"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3-geo@3"></script>
-  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
-  <!-- Supabase JS SDK v2 -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- D3-Geo & TopoJSON（3D 航線地球）改為打開分享卡片時才載入，見 ensureWorldAtlasLoaded() -->
+  <!-- Supabase JS SDK：鎖定確切版本，避免套件更新後網頁突然壞掉；defer 不擋住畫面顯示 -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"></script>
 
   <style>
     :root {
@@ -69,10 +66,21 @@
       --border: rgba(255, 255, 255, 0.88);
       --accent: #0284C7;
       --accent-soft: #E0F2FE;
+      background: transparent !important;
+    }
+    /* 背景改成固定圖層，取代 background-attachment: fixed（捲動時不必每格重畫整個背景，iOS 也看得到漸層） */
+    body.theme-metallic::before,
+    body.theme-lilac::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+    body.theme-metallic::before {
       background:
         repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 1px, transparent 1px, transparent 3px),
-        linear-gradient(var(--metal-deg), #C3CCD7 0%, #E8EEF5 38%, #BCC6D3 68%, #DFE6F0 100%) !important;
-      background-attachment: fixed !important;
+        linear-gradient(var(--metal-deg), #C3CCD7 0%, #E8EEF5 38%, #BCC6D3 68%, #DFE6F0 100%);
     }
     body.theme-metallic .app-header,
     body.theme-metallic .day-weather-card,
@@ -98,8 +106,10 @@
       --border: rgba(233, 223, 248, 0.92);
       --accent: #6F4E37;
       --accent-soft: #F4EFEB;
-      background: radial-gradient(circle at 15% 10%, #F8F5FF 0%, #EFE8FA 48%, #E4DAF6 100%) !important;
-      background-attachment: fixed !important;
+      background: transparent !important;
+    }
+    body.theme-lilac::before {
+      background: radial-gradient(circle at 15% 10%, #F8F5FF 0%, #EFE8FA 48%, #E4DAF6 100%);
     }
     body.theme-lilac .app-header,
     body.theme-lilac .day-weather-card,
@@ -111,6 +121,16 @@
       -webkit-backdrop-filter: blur(22px) saturate(155%) !important;
       border-color: rgba(255, 255, 255, 0.9) !important;
       box-shadow: 0 10px 28px rgba(109, 40, 217, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+    }
+
+    /* 效能：卡片背後只有平滑底色，模糊看不出差別卻最耗效能；只保留頂部列、天氣列、底部列的毛玻璃 */
+    .timeline-card,
+    body.theme-metallic .timeline-card,
+    body.theme-lilac .timeline-card,
+    body.theme-metallic .form-card,
+    body.theme-lilac .form-card {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
     }
 
     /* Top Header: Liquid Glass & Clean Spacing (Enhanced Safe Area for Dynamic Island / Notch) */
@@ -2291,6 +2311,7 @@
       appState.paperTexture = localStorage.getItem("TABIGRAM_PAPER_TEX") || appState.paperTexture || "dots";
       appState.customEmojis = Array.isArray(appState.customEmojis) ? appState.customEmojis : [];
       appState.trips = (appState.trips || []).map(normalizeTrip).filter(Boolean);
+      sanitizeAppStateData();
       // Purge legacy demo item if accidentally present
       (appState.trips || []).forEach(t => {
         (t.days || []).forEach(d => {
@@ -2454,6 +2475,65 @@
       if (!t.title) t.title = "未命名旅行";
       if (!t.id) t.id = "trip_" + Date.now();
       return t;
+    }
+
+    /*
+     * 安全性：清理從外部進來的資料（雲端共用行程、加入旅程、匯入備份、本機舊資料）。
+     * ID 會直接放進 onclick="...('ID')"，HTML 跳脫擋不住，所以 ID 只允許英數、底線、連字號。
+     */
+    const SAFE_ID_RE = /^[A-Za-z0-9_-]{1,80}$/;
+    const TIME_RE = /^\d{1,2}:\d{2}$/;
+
+    function safeIdOr(v, prefix) {
+      if (typeof v === "string" && SAFE_ID_RE.test(v)) return v;
+      return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    }
+
+    function stripMarkup(v, maxLen) {
+      return String(v == null ? "" : v).replace(/[<>"'`&\\]/g, "").slice(0, maxLen);
+    }
+
+    // 只允許 http(s)、mailto、tel；沒寫協定的當成網址補 https://；其他（如 javascript:）一律擋掉
+    function safeExternalUrl(raw) {
+      const u = String(raw || "").trim();
+      if (!u) return "";
+      if (/^(https?:|mailto:|tel:)/i.test(u)) return u;
+      if (/^[a-z][a-z0-9+.\-]*:/i.test(u)) return "";
+      return "https://" + u.replace(/^\/+/, "");
+    }
+
+    function sanitizeTripData(t) {
+      if (!t || typeof t !== "object") return t;
+      t.id = safeIdOr(t.id, "trip_");
+      if (t.shareCode != null && !/^[A-Z0-9]{4,12}$/.test(String(t.shareCode))) t.shareCode = "";
+      (t.days || []).forEach(d => {
+        ["sunrise", "sunset"].forEach(k => { if (d[k] != null && !TIME_RE.test(String(d[k]))) d[k] = ""; });
+        (d.items || []).forEach(it => {
+          if (!it || typeof it !== "object") return;
+          it.id = safeIdOr(it.id, "item_");
+          if (it.startTime != null && it.startTime !== "" && !TIME_RE.test(String(it.startTime))) it.startTime = "09:00";
+          if (it.endTime != null && it.endTime !== "" && !TIME_RE.test(String(it.endTime))) it.endTime = "";
+          if (it.endDayOffset != null) it.endDayOffset = Math.max(-3, Math.min(3, parseInt(it.endDayOffset, 10) || 0));
+          if (it.currency != null) it.currency = stripMarkup(it.currency, 8);
+          if (it.mood != null) it.mood = stripMarkup(it.mood, 16);
+          if (Array.isArray(it.photos)) {
+            it.photos = it.photos.filter(p => p && typeof p === "object");
+            it.photos.forEach(p => {
+              if (p.dataUrl != null && !(typeof p.dataUrl === "string" && p.dataUrl.startsWith("data:image/"))) delete p.dataUrl;
+              if (p.pid != null && !SAFE_ID_RE.test(String(p.pid))) delete p.pid;
+              if (p.cloudPath != null && !/^[A-Za-z0-9_\-\/.]{1,200}$/.test(String(p.cloudPath))) delete p.cloudPath;
+            });
+          }
+        });
+      });
+      return t;
+    }
+
+    function sanitizeAppStateData() {
+      (appState.trips || []).forEach(sanitizeTripData);
+      appState.customEmojis = (appState.customEmojis || []).map(e => stripMarkup(e, 16)).filter(Boolean);
+      if (appState.userAvatarDataUrl && !String(appState.userAvatarDataUrl).startsWith("data:image/")) appState.userAvatarDataUrl = "";
+      if (appState.activeTripId != null && !SAFE_ID_RE.test(String(appState.activeTripId))) appState.activeTripId = "";
     }
 
     function getActiveTrip() {
@@ -3128,11 +3208,12 @@
           : "";
 
         let urlHtml = "";
-        if (item.url && item.url.trim()) {
+        const safeHref = safeExternalUrl(item.url);
+        if (safeHref) {
           const label = (item.urlLabel && item.urlLabel.trim()) ? item.urlLabel.trim() : item.url.trim();
           urlHtml = `
             <div class="url-chip-row">
-              <a class="url-chip" href="${escapeHtml(item.url.trim())}" target="_blank" rel="noopener noreferrer">
+              <a class="url-chip" href="${escapeHtml(safeHref)}" target="_blank" rel="noopener noreferrer">
                 🔗 ${escapeHtml(label)}
               </a>
             </div>`;
@@ -3771,8 +3852,14 @@
 
       if (sbClient && currentCloudUser && tripToDelete.shareCode) {
         try {
-          await sbClient.from("trips").delete().eq("id", tripToDelete.id);
-          await sbClient.from("user_journals").delete().eq("trip_id", tripToDelete.id);
+          if (tripToDelete.ownerId === currentCloudUser.id) {
+            // 擁有者：先刪所有人的手札（刪完行程後權限就查不到了），再刪行程
+            await sbClient.from("user_journals").delete().eq("trip_id", tripToDelete.id);
+            await sbClient.from("trips").delete().eq("id", tripToDelete.id);
+          } else {
+            // 旅伴：只退出（刪自己的手札），不動別人的行程
+            await sbClient.from("user_journals").delete().eq("trip_id", tripToDelete.id).eq("user_id", currentCloudUser.id);
+          }
           await removeTripPhotosFromCloud(tripToDelete.id);
         } catch (e) {
           console.warn("Delete cloud trip failed:", e);
@@ -3899,10 +3986,28 @@
       ctx.restore();
     }
 
+    const loadedScriptPromises = {};
+    function loadScriptOnce(src) {
+      if (!loadedScriptPromises[src]) {
+        loadedScriptPromises[src] = new Promise((resolve, reject) => {
+          const el = document.createElement("script");
+          el.src = src;
+          el.onload = resolve;
+          el.onerror = () => { delete loadedScriptPromises[src]; reject(new Error("load failed: " + src)); };
+          document.head.appendChild(el);
+        });
+      }
+      return loadedScriptPromises[src];
+    }
+
     async function ensureWorldAtlasLoaded() {
       if (worldLandGeoJSON) return worldLandGeoJSON;
       try {
-        const res = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json");
+        // d3-geo 依賴 d3-array，必須依序載入
+        await loadScriptOnce("https://cdn.jsdelivr.net/npm/d3-array@3.2.5");
+        await loadScriptOnce("https://cdn.jsdelivr.net/npm/d3-geo@3.1.2");
+        await loadScriptOnce("https://cdn.jsdelivr.net/npm/topojson-client@3.1.0");
+        const res = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/land-110m.json");
         const topo = await res.json();
         worldLandGeoJSON = topojson.feature(topo, topo.objects.land);
         return worldLandGeoJSON;
@@ -5749,6 +5854,8 @@
           const parsed = JSON.parse(ev.target.result);
           if (parsed && Array.isArray(parsed.trips)) {
             appState = Object.assign(appState, parsed);
+            appState.trips = (appState.trips || []).map(normalizeTrip).filter(Boolean);
+            sanitizeAppStateData();
             saveAppState();
             renderAll();
             alert("成功匯入旅行備份！");
@@ -5766,7 +5873,8 @@
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     }
 
     function drawRoundedRectPath(ctx, x, y, w, h, r) {
@@ -5872,6 +5980,28 @@ function initSupabaseClient() {
       closeModalBackdrop("cloudModal");
     }
 
+    // 成員清單：優先用資料庫函式 get_trip_members（只回傳名稱/Email，不外洩私人手札）；尚未建立函式時退回舊查詢
+    async function fetchTripMembers(tripId) {
+      const rpc = await sbClient.rpc("get_trip_members", { p_trip_id: tripId });
+      if (!rpc.error && Array.isArray(rpc.data)) {
+        return {
+          data: rpc.data.map(r => ({ ...r, journal_data: { userDisplayName: r.display_name || "" } })),
+          error: null
+        };
+      }
+      return await sbClient.from("user_journals").select("user_id, user_email, updated_at").eq("trip_id", tripId);
+    }
+
+    // 用邀請碼找行程：優先用資料庫函式 get_trip_by_share_code（不需要開放「所有人可讀全部行程」）
+    async function fetchTripByShareCode(code) {
+      const rpc = await sbClient.rpc("get_trip_by_share_code", { p_code: code });
+      if (!rpc.error) {
+        const row = Array.isArray(rpc.data) ? rpc.data[0] : rpc.data;
+        return { data: row || null, error: row ? null : { message: "not found" } };
+      }
+      return await sbClient.from("trips").select("*").eq("share_code", code).single();
+    }
+
     function isUserTripAdmin(trip, user) {
       if (!trip || !user) return false;
       if (!trip.ownerId || trip.ownerId === user.id) return true;
@@ -5937,10 +6067,7 @@ function initSupabaseClient() {
         return;
       }
 
-      const { data, error } = await sbClient
-        .from("user_journals")
-        .select("user_id, user_email, updated_at")
-        .eq("trip_id", trip.id);
+      const { data, error } = await fetchTripMembers(trip.id);
 
       if (error || !data) {
         if (countEl1) countEl1.textContent = "👥 尚未讀取到旅伴資料";
@@ -6386,7 +6513,15 @@ function initSupabaseClient() {
       const btn = document.getElementById("publishTripBtn");
       btn.textContent = "上傳中...";
 
-      if (!trip.shareCode) trip.shareCode = generateSixCharShareCode();
+      if (!trip.shareCode) {
+        // 第一次發佈：預設旅程的 ID 是 trip_1，每個人都一樣，會撞到別人的行程，所以換成唯一 ID
+        if (!/^trip_[a-z0-9]{8,}/i.test(trip.id) || /^trip_\d{1,4}$/.test(trip.id)) {
+          const newTripId = "trip_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+          if (appState.activeTripId === trip.id) appState.activeTripId = newTripId;
+          trip.id = newTripId;
+        }
+        trip.shareCode = generateSixCharShareCode();
+      }
       if (!trip.ownerId) trip.ownerId = currentCloudUser.id;
 
       const masterPayload = buildCleanMasterTripPayload(trip);
@@ -6394,7 +6529,7 @@ function initSupabaseClient() {
 
       const { error: tripErr } = await sbClient.from("trips").upsert({
         id: trip.id,
-        owner_id: currentCloudUser.id,
+        owner_id: trip.ownerId || currentCloudUser.id,   // 共同管理員發佈時不能把擁有者換成自己
         share_code: trip.shareCode,
         title: trip.title,
         payload: masterPayload,
@@ -6446,11 +6581,7 @@ function initSupabaseClient() {
       const code = document.getElementById("joinShareCodeInput").value.trim().toUpperCase();
       if (code.length < 4) return alert("請輸入 6 碼邀請碼");
 
-      const { data: tripRow, error } = await sbClient
-        .from("trips")
-        .select("*")
-        .eq("share_code", code)
-        .single();
+      const { data: tripRow, error } = await fetchTripByShareCode(code);
 
       if (error || !tripRow) {
         return alert("找不到此邀請碼的行程，請確認拼寫是否正確。");
@@ -6463,7 +6594,8 @@ function initSupabaseClient() {
         .eq("trip_id", tripRow.id)
         .maybeSingle();
 
-      const mergedTrip = mergeMasterWithPersonalJournal(tripRow.payload, journalRow ? journalRow.journal_data : null);
+      const mergedTrip = sanitizeTripData(normalizeTrip(mergeMasterWithPersonalJournal(tripRow.payload, journalRow ? journalRow.journal_data : null)));
+      if (!mergedTrip) return alert("此行程資料格式不正確，無法加入。");
       mergedTrip.ownerId = tripRow.owner_id;
       mergedTrip.shareCode = tripRow.share_code;
 
@@ -6527,7 +6659,7 @@ function initSupabaseClient() {
           const localIdx = appState.trips.findIndex(t => t.id === row.id);
           const localPriv = localIdx !== -1 ? extractPersonalJournalFromTrip(appState.trips[localIdx]) : null;
           if (!row.payload || typeof row.payload !== "object") return;
-          const merged = normalizeTrip(mergeMasterWithPersonalJournal(row.payload, (jRec && jRec.journal_data) || localPriv));
+          const merged = sanitizeTripData(normalizeTrip(mergeMasterWithPersonalJournal(row.payload, (jRec && jRec.journal_data) || localPriv)));
           if (!merged) return;
           merged.ownerId = row.owner_id;
           merged.shareCode = row.share_code;
@@ -6799,21 +6931,23 @@ function initSupabaseClient() {
         container.innerHTML = `<div style="font-size:12px; color:var(--sub);">請先登入並發佈共用行程以檢視成員。</div>`;
         return;
       }
-      const { data } = await sbClient.from("user_journals").select("user_id, user_email, updated_at").eq("trip_id", trip.id);
+      const { data } = await fetchTripMembers(trip.id);
       const list = data || [];
       countLbl.textContent = `已加入成員 (${list.length})`;
       trip.coAdmins = Array.isArray(trip.coAdmins) ? trip.coAdmins : [];
       const isMeOwner = (trip.ownerId === currentCloudUser.id);
 
+      tripAdminMemberRows = list;
       container.innerHTML = list.map((row, i) => {
+        const safeUid = String(row.user_id || "").replace(/[^A-Za-z0-9_-]/g, "");
         const isOwner = (row.user_id === trip.ownerId);
         const isCoAdmin = trip.coAdmins.includes(row.user_id);
         const emailText = escapeHtml(row.user_email || `旅人 #${i + 1}`);
         const badge = isOwner ? `<span style="color:var(--ink);font-weight:800;">[管理員]</span>` : (isCoAdmin ? `<span style="color:#0284C7;font-weight:800;">[共同管理員]</span>` : "");
         const actions = (isMeOwner && !isOwner) ? `
           <div style="display:flex; gap:4px;">
-            <button type="button" class="mini-btn" style="padding:3px 7px; font-size:11px;" onclick="toggleCoAdminRole('${row.user_id}')">${isCoAdmin ? "取消管理員" : "設為管理員"}</button>
-            <button type="button" class="mini-btn delete-btn" style="padding:3px 7px; font-size:11px;" onclick="removeTripMember('${row.user_id}', '${emailText}')">移除</button>
+            <button type="button" class="mini-btn" style="padding:3px 7px; font-size:11px;" onclick="toggleCoAdminRole('${safeUid}')">${isCoAdmin ? "取消管理員" : "設為管理員"}</button>
+            <button type="button" class="mini-btn delete-btn" style="padding:3px 7px; font-size:11px;" onclick="removeTripMember('${safeUid}')">移除</button>
           </div>` : "";
         return `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border); font-size:12.5px;">
           <div>${emailText} ${badge}</div>
@@ -6835,7 +6969,10 @@ function initSupabaseClient() {
       renderTripAdminMembersList();
     }
 
-    async function removeTripMember(targetUserId, label) {
+    let tripAdminMemberRows = [];
+    async function removeTripMember(targetUserId) {
+      const memberRow = tripAdminMemberRows.find(r => r.user_id === targetUserId);
+      const label = (memberRow && memberRow.user_email) || "這位成員";
       if (!confirm(`確定要將「${label}」從此旅程移除嗎？`)) return;
       const trip = getActiveTrip();
       await sbClient.from("user_journals").delete().eq("trip_id", trip.id).eq("user_id", targetUserId);

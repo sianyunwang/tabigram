@@ -1390,6 +1390,21 @@
     #shareModal.story-fullscreen .story-canvas { max-width: min(100%, calc((100dvh - 96px) * 0.5625)); }
     #shareModal.story-fullscreen .story-gesture-hint { display: block; }
     #shareModal.story-fullscreen .story-expand-btn { top: 0; right: 0; background: var(--ink); padding: 9px 16px; font-size: 14px; }
+
+    /* 倒數卡片配色 */
+    .cd-swatch-panel { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px 12px; margin-top: 14px; }
+    .cd-swatch-label { font-size: 12.5px; font-weight: 800; color: var(--sub); }
+    .cd-swatch-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .cd-swatch {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.15);
+      cursor: pointer; padding: 0;
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,0.0);
+      transition: transform 0.12s ease;
+    }
+    .cd-swatch:active { transform: scale(0.92); }
+    .cd-swatch.selected { outline: 3px solid var(--accent); outline-offset: 2px; }
+    .cd-random-btn { grid-column: 1 / -1; justify-content: center; padding: 8px; }
   </style>
 </head>
 <body>
@@ -2130,9 +2145,15 @@
         <button class="pill-btn" onclick="closeModalBackdrop('countdownShareModal')">✕</button>
       </div>
       <div style="text-align:center;">
-        <img id="countdownSharePreview" alt="倒數卡片預覽" style="width:100%; max-width:280px; aspect-ratio:9/16; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.18); background:var(--border);" />
+        <img id="countdownSharePreview" alt="倒數卡片預覽" style="width:100%; max-width:min(280px, calc((100dvh - 400px) * 0.5625)); min-width:180px; aspect-ratio:9/16; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.18); background:var(--border);" />
       </div>
-      <div class="csv-hint" style="text-align:center; margin-top:8px;">卡片顏色跟著分享卡片的「外框／內卡」設定</div>
+      <div class="cd-swatch-panel">
+        <div class="cd-swatch-label">底色</div>
+        <div class="cd-swatch-row" id="cdOuterSwatches"></div>
+        <div class="cd-swatch-label">資訊卡</div>
+        <div class="cd-swatch-row" id="cdInnerSwatches"></div>
+        <button type="button" class="pill-btn cd-random-btn" onclick="randomizeCountdownColors()">🎲 隨機配色</button>
+      </div>
       <button type="button" class="pill-btn primary" style="width:100%; justify-content:center; padding:11px; margin-top:12px;" onclick="exportCountdownShareCard()">⬇️ 儲存 / 分享圖片</button>
     </div>
   </div>
@@ -8631,8 +8652,7 @@ function initSupabaseClient() {
       canvas.width = W;
       canvas.height = H;
       const ctx = canvas.getContext("2d");
-      const outer = OUTER_SWATCHES.find(s => s.id === appState.outerSwatchId) || OUTER_SWATCHES[0];
-      const inner = INNER_SWATCHES.find(s => s.id === appState.innerSwatchId) || INNER_SWATCHES[0];
+      const { outer, inner } = getCountdownSwatches();
       const accent = getComputedStyle(document.body).getPropertyValue("--accent").trim() || "#C84B31";
 
       ctx.fillStyle = outer.bg;
@@ -8716,12 +8736,59 @@ function initSupabaseClient() {
       return canvas;
     }
 
-    async function openCountdownShare() {
+    // 倒數卡片有自己的配色（預設沿用行程分享卡片的設定），改這裡不會影響行程分享卡片
+    function getCountdownSwatches() {
+      const outer = OUTER_SWATCHES.find(s => s.id === appState.countdownOuterId)
+        || OUTER_SWATCHES.find(s => s.id === appState.outerSwatchId) || OUTER_SWATCHES[0];
+      const inner = INNER_SWATCHES.find(s => s.id === appState.countdownInnerId)
+        || INNER_SWATCHES.find(s => s.id === appState.innerSwatchId) || INNER_SWATCHES[0];
+      return { outer, inner };
+    }
+
+    function renderCountdownSwatchPickers() {
+      const { outer, inner } = getCountdownSwatches();
+      const chip = (sw, kind, selected) =>
+        `<button type="button" class="cd-swatch ${selected ? "selected" : ""}" style="background:${sw.bg};"
+           title="${escapeHtml(sw.name)}" aria-label="${escapeHtml(sw.name)}" aria-pressed="${selected}"
+           onclick="setCountdownSwatch('${kind}', '${sw.id}')"></button>`;
+      const o = document.getElementById("cdOuterSwatches");
+      const i = document.getElementById("cdInnerSwatches");
+      if (o) o.innerHTML = OUTER_SWATCHES.map(sw => chip(sw, "outer", sw.id === outer.id)).join("");
+      if (i) i.innerHTML = INNER_SWATCHES.map(sw => chip(sw, "inner", sw.id === inner.id)).join("");
+    }
+
+    async function refreshCountdownSharePreview() {
       const canvas = await drawCountdownShareCanvas();
-      if (!canvas) return;
+      if (!canvas) return false;
       countdownShareCanvas = canvas;
       const img = document.getElementById("countdownSharePreview");
       if (img) img.src = canvas.toDataURL("image/jpeg", 0.9);
+      renderCountdownSwatchPickers();
+      return true;
+    }
+
+    async function setCountdownSwatch(kind, id) {
+      if (kind === "outer" && OUTER_SWATCHES.some(s => s.id === id)) appState.countdownOuterId = id;
+      if (kind === "inner" && INNER_SWATCHES.some(s => s.id === id)) appState.countdownInnerId = id;
+      saveAppState();
+      await refreshCountdownSharePreview();
+    }
+
+    async function randomizeCountdownColors() {
+      const { outer, inner } = getCountdownSwatches();
+      let o, i, tries = 0;
+      do {
+        o = OUTER_SWATCHES[Math.floor(Math.random() * OUTER_SWATCHES.length)];
+        i = INNER_SWATCHES[Math.floor(Math.random() * INNER_SWATCHES.length)];
+      } while (o.id === outer.id && i.id === inner.id && ++tries < 20);   // 一定換成不同的組合
+      appState.countdownOuterId = o.id;
+      appState.countdownInnerId = i.id;
+      saveAppState();
+      await refreshCountdownSharePreview();
+    }
+
+    async function openCountdownShare() {
+      if (!(await refreshCountdownSharePreview())) return;
       openModalBackdrop("countdownShareModal");
     }
 

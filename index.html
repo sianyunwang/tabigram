@@ -312,12 +312,16 @@
         display: grid;
         grid-template-columns: minmax(0, 1.8fr) minmax(320px, 1fr);
         grid-template-areas:
+          "countdown budget"
           "weather budget"
           "timeline budget";
-        grid-template-rows: auto 1fr;
+        grid-template-rows: auto auto 1fr;
         gap: 0 32px;
         padding: 18px 28px 48px;
         align-items: start;
+      }
+      #tripCountdownCard {
+        grid-area: countdown;
       }
       #stickyWeatherCard {
         grid-area: weather;
@@ -1291,6 +1295,101 @@
       .csv-prev-money { grid-column: 3; }
       .csv-guide-row { grid-template-columns: 82px 1fr; }
     }
+    /* 倒數計時卡片 */
+    .trip-countdown-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 12px 14px 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    }
+    .cd-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "big main share"; align-items: center; column-gap: 14px; }
+    .cd-big-wrap { grid-area: big; display: flex; align-items: baseline; gap: 4px; }
+    .cd-main { grid-area: main; }
+    .cd-share { grid-area: share; }
+    .cd-big { font-family: var(--display); font-size: 38px; line-height: 1; color: var(--accent); letter-spacing: -0.01em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .trip-countdown-card[data-mode="soon"] .cd-big { font-family: var(--mono); font-weight: 800; font-size: 30px; }
+    .trip-countdown-card[data-mode="post"] .cd-big { color: var(--green); }
+    .cd-big-unit { font-family: var(--mono); font-weight: 800; font-size: 13px; color: var(--sub); }
+    .cd-main { flex: 1; min-width: 0; }
+    .cd-line1 { font-weight: 900; font-size: 14px; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cd-line2 { font-size: 12.5px; color: var(--sub); margin-top: 3px; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .cd-link { cursor: pointer; color: var(--ink); text-decoration: underline; text-decoration-color: var(--border); text-underline-offset: 3px; }
+    .cd-share { flex-shrink: 0; padding: 6px 12px; font-size: 12px; }
+    .cd-bar { height: 5px; border-radius: 999px; background: rgba(0,0,0,0.07); margin-top: 10px; overflow: hidden; }
+    .cd-bar > i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 999px; transition: width 0.6s ease; }
+    .cd-now-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-right: 6px; vertical-align: 1px; animation: cdPulse 1.6s ease-in-out infinite; }
+    @keyframes cdPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    @media (prefers-reduced-motion: reduce) { .cd-now-dot { animation: none; } .cd-bar > i { transition: none; } }
+    @media (max-width: 600px) {
+      /* 手機：大數字和分享鈕一列，文字獨立一列、可換行，倒數時間才不會被截掉 */
+      .cd-row { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "big share" "main main"; row-gap: 8px; }
+      .cd-line1, .cd-line2 { white-space: normal; }
+      .cd-big { font-size: 32px; }
+      .trip-countdown-card[data-mode="soon"] .cd-big { font-size: 28px; }
+    }
+
+    /* 網頁 App 化：一般文字不能反白、長按不跳出選單；輸入框維持可選取 */
+    body {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+    input, textarea, select, [contenteditable="true"] {
+      -webkit-user-select: text;
+      user-select: text;
+      -webkit-touch-callout: default;
+    }
+    #countdownSharePreview { -webkit-touch-callout: default; }  /* 倒數卡片可長按存圖 */
+
+    /* 限動編輯畫布：預設盡量放大，又讓下方設定還看得到 */
+    .share-preview-stage { position: relative; }
+    .story-canvas {
+      width: 100%;
+      max-width: min(340px, calc((100dvh - 300px) * 0.5625));
+      min-width: min(240px, 100%);
+      height: auto;
+      aspect-ratio: 9 / 16;
+      border-radius: 12px;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.22);
+      touch-action: none;
+      cursor: grab;
+      display: inline-block;
+    }
+    .story-expand-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 2;
+      border: none;
+      background: rgba(25,25,25,0.78);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 6px 11px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .story-gesture-hint { display: none; font-size: 12px; color: var(--sub); margin-top: 8px; }
+    /* 放大編輯：只留畫布，畫布撐滿整個螢幕 */
+    #shareModal.story-fullscreen { padding: 0 !important; }
+    #shareModal.story-fullscreen .modal-sheet {
+      max-width: none !important;
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      border-radius: 0;
+      padding: max(env(safe-area-inset-top, 0px), 12px) 10px max(env(safe-area-inset-bottom, 0px), 12px) !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    #shareModal.story-fullscreen .modal-sheet > *:not(.share-preview-stage) { display: none !important; }
+    #shareModal.story-fullscreen .share-preview-stage { background: transparent; padding: 0; margin: 0; }
+    #shareModal.story-fullscreen .story-canvas { max-width: min(100%, calc((100dvh - 96px) * 0.5625)); }
+    #shareModal.story-fullscreen .story-gesture-hint { display: block; }
+    #shareModal.story-fullscreen .story-expand-btn { top: 0; right: 0; background: var(--ink); padding: 9px 16px; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -1342,6 +1441,13 @@
             <button class="dropdown-item" onclick="openCsvImportModal(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
               試算表匯入 / 範本
             </button>
+            <button class="dropdown-item" onclick="exportBackupJSON(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
+              備份到這台裝置
+            </button>
+            <button class="dropdown-item" onclick="document.getElementById('backupImportInput').click(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
+              從備份檔還原
+            </button>
+            <input type="file" id="backupImportInput" accept=".json,application/json" style="display:none;" onchange="importBackupJSON(event)" />
             <div style="border-top: 1px dashed var(--border); margin: 4px 6px; padding-top: 6px; display: flex; align-items: center; justify-content: space-between; padding-left: 6px; padding-right: 4px;">
               <span style="font-size: 11.5px; font-weight: 700; color: var(--sub);">Theme</span>
               <select class="theme-select-pill" id="uiThemeSelect" onchange="setUiMaterialTheme(this.value)" style="padding: 4px 22px 4px 9px; font-size: 11.5px;">
@@ -1362,6 +1468,9 @@
   <!-- Main Content -->
   <main class="main-container">
     <!-- Sticky Day & Real-time Open-Meteo Weather Bar -->
+    <!-- 倒數計時（出發前 / 旅途中）-->
+    <section class="trip-countdown-card" id="tripCountdownCard" style="display:none;" aria-live="off"></section>
+
     <section class="day-weather-card" id="stickyWeatherCard">
       <!-- 長天數 (>14天) 週次 / 日期快速跳轉器 -->
       <div id="longTripJumpBar" style="display:none; align-items:center; justify-content:space-between; gap:6px; margin-bottom:8px; padding-bottom:6px; border-bottom:1px dashed var(--border);">
@@ -1642,7 +1751,9 @@
 
       <!-- Live Interactive Canvas Always Visible at Top -->
       <div class="share-preview-stage">
-        <canvas id="storyCanvas" width="1080" height="1920" style="width:100%; max-width:235px; height:auto; border-radius:12px; box-shadow:0 10px 26px rgba(0,0,0,0.22); touch-action:none; cursor:grab; display:inline-block; aspect-ratio: 9/16;"></canvas>
+        <button type="button" class="story-expand-btn" id="storyExpandBtn" onclick="toggleStoryFullscreen()">⤢ 放大編輯</button>
+        <canvas id="storyCanvas" class="story-canvas" width="1080" height="1920"></canvas>
+        <div class="story-gesture-hint">拖曳移動・紅色圓鈕旋轉・角落圓點縮放・雙指也可以縮放旋轉</div>
       </div>
 
       <!-- Compact Control Deck -->
@@ -1811,7 +1922,7 @@
       <!-- 狀態 A：尚未登入 (訪客模式) -->
       <div id="cloudLoggedOutBox" class="form-card">
         <div style="font-size:13px; color:var(--sub); line-height:1.5; margin-bottom:12px;">
-          登入後可將本機行程備份至雲端，並透過 6 碼邀請碼與旅伴共享行程表（你的私人備註、心情印章、拍立得與額外消費將獨立保存，絕不被覆蓋）。
+          登入後行程會備份到雲端，也能用邀請碼和旅伴共享。
         </div>
         <label class="form-label">Email</label>
         <input type="email" class="form-input" id="cloudEmailInput" placeholder="name@example.com" autocomplete="email" style="margin-bottom:10px; padding:10px;" />
@@ -1821,7 +1932,7 @@
           <button type="button" id="pwSignInBtn" onclick="cloudSignInWithPassword()" style="flex:1; padding:12px; background:var(--ink); color:#FFFFFF; border:none; border-radius:10px; font-weight:900; font-size:14px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.15);">登入</button>
           <button type="button" id="pwSignUpBtn" onclick="cloudSignUpWithPassword()" style="flex:1; padding:12px; background:transparent; color:var(--ink); border:1.5px solid var(--ink); border-radius:10px; font-weight:900; font-size:14px; cursor:pointer;">註冊新帳號</button>
         </div>
-        <div style="font-size:11.5px; color:var(--sub); line-height:1.5; margin-top:8px;">第一次使用請按「註冊新帳號」。請記好密碼，忘記密碼目前無法自行重設。</div>
+        <div style="font-size:11.5px; color:var(--sub); line-height:1.5; margin-top:8px;">第一次使用請先註冊。密碼忘記無法重設，請記好。</div>
 
         
       </div>
@@ -2008,6 +2119,21 @@
       <div style="margin-top:12px;">
         <button type="button" class="mini-btn" onclick="closeOnboardingModal()">先略過，稍後設定</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 倒數分享卡片 -->
+  <div class="modal-backdrop" id="countdownShareModal">
+    <div class="modal-sheet" style="max-width: 420px;">
+      <div class="modal-header">
+        <div class="modal-title">⏳ 分享倒數</div>
+        <button class="pill-btn" onclick="closeModalBackdrop('countdownShareModal')">✕</button>
+      </div>
+      <div style="text-align:center;">
+        <img id="countdownSharePreview" alt="倒數卡片預覽" style="width:100%; max-width:280px; aspect-ratio:9/16; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.18); background:var(--border);" />
+      </div>
+      <div class="csv-hint" style="text-align:center; margin-top:8px;">卡片顏色跟著分享卡片的「外框／內卡」設定</div>
+      <button type="button" class="pill-btn primary" style="width:100%; justify-content:center; padding:11px; margin-top:12px;" onclick="exportCountdownShareCard()">⬇️ 儲存 / 分享圖片</button>
     </div>
   </div>
 
@@ -2242,10 +2368,47 @@
       "CDG": { name: "PARIS CDG", lat: 49.0097, lng: 2.5479 }
     };
 
+    // 路線代表色：名稱裡含有某個關鍵字就套用該顏色；比對時「越長、越精確的關鍵字越優先」，
+    // 例如「中央・總武線」會先對到黃色，而不會被較短的「中央線」吃掉。
+    // JR 東日本色碼來源：Wikipedia「Module:Adjacent stations/JR East」
     const TRANSIT_LINE_COLORS = [
-      { keys: ["淡水信義", "紅線", "丸ノ内", "丸之內", "御堂筋", "中央線", "京葉"], color: "#E3002C" },
-      { keys: ["板南", "藍線", "東西線", "東海道", "四つ橋", "台鐵", "臺鐵", "橫須賀", "新幹線"], color: "#0070BD" },
-      { keys: ["松山新店", "綠線", "山手", "千代田", "埼京", "江ノ電", "江之電", "奈良"], color: "#008659" },
+      // ---------- JR 東日本 ----------
+      { keys: ["山手", "yamanote"], color: "#B1CB39" },
+      { keys: ["京濱東北", "京浜東北", "根岸", "keihin"], color: "#1DAED1" },
+      { keys: ["中央線快速", "中央快速", "中央線(快速)", "中央線（快速）", "青梅", "五日市", "chuo rapid"], color: "#DD6935" },
+      { keys: ["中央線", "chuo"], color: "#DD6935" },
+      { keys: ["中央・總武", "中央・総武", "中央總武", "中央総武", "總武線各", "総武線各", "chuo-sobu"], color: "#F2D01F" },
+      { keys: ["中央本線"], color: "#0074BE" },
+      { keys: ["武藏野", "武蔵野", "musashino"], color: "#EB5A28" },
+      { keys: ["京葉", "keiyo"], color: "#D01827" },
+      { keys: ["埼京", "saikyo"], color: "#14A676" },
+      { keys: ["八高", "hachiko"], color: "#A09D94" },
+      { keys: ["川越線", "kawagoe"], color: "#A09D94" },
+      { keys: ["東海道線", "東海道本線", "上野東京", "伊東線", "tokaido"], color: "#F0862B" },
+      { keys: ["橫須賀", "横須賀", "總武快速", "総武快速", "總武線快速", "総武線快速", "總武線(快速)", "総武線(快速)", "yokosuka"], color: "#1069B4" },
+      { keys: ["總武本線", "総武本線"], color: "#000080" },
+      { keys: ["湘南新宿", "shonan"], color: "#DB2027" },
+      { keys: ["宇都宮", "高崎", "utsunomiya", "takasaki"], color: "#F18E41" },
+      { keys: ["常磐線快速", "常磐快速", "常磐線(快速)", "常磐線（快速）", "joban rapid"], color: "#1DAF7E" },
+      { keys: ["常磐線各", "常磐各", "常磐線(各", "常磐線（各", "joban local"], color: "#868587" },
+      { keys: ["常磐", "水戶線", "水戸線", "joban", "mito"], color: "#006ACD" },
+      { keys: ["成田線", "narita line"], color: "#00BA6E" },
+      { keys: ["內房", "内房", "uchibo"], color: "#00BFFF" },
+      { keys: ["外房", "sotobo"], color: "#FF4500" },
+      { keys: ["東金", "togane"], color: "#F15A22" },
+      { keys: ["南武", "鶴見線", "nambu", "tsurumi"], color: "#F2D01F" },
+      { keys: ["橫濱線", "横浜線", "橫浜線", "yokohama line"], color: "#B1CB39" },
+      { keys: ["相模線", "sagami"], color: "#00898B" },
+      { keys: ["兩毛", "両毛", "ryomo"], color: "#FFD400" },
+      { keys: ["日光線", "nikko"], color: "#880022" },
+      { keys: ["上越線", "joetsu line"], color: "#00ADD9" },
+      { keys: ["東北新幹線", "tohoku shinkansen"], color: "#41934C" },
+      { keys: ["上越新幹線", "joetsu shinkansen"], color: "#F58D79" },
+      { keys: ["北陸新幹線", "hokuriku shinkansen"], color: "#800080" },
+      // ---------- 台灣、其他日本路線（沿用原本設定）----------
+      { keys: ["淡水信義", "紅線", "丸ノ内", "丸之內", "御堂筋"], color: "#E3002C" },
+      { keys: ["板南", "藍線", "東西線", "四つ橋", "台鐵", "臺鐵", "新幹線"], color: "#0070BD" },
+      { keys: ["松山新店", "綠線", "千代田", "江ノ電", "江之電", "奈良"], color: "#008659" },
       { keys: ["中和新蘆", "橘線", "銀座線", "東武", "高鐵"], color: "#F8B61C" },
       { keys: ["有楽町", "有樂町"], color: "#C1A470" },
       { keys: ["日比谷"], color: "#9CA3AF" },
@@ -2255,6 +2418,10 @@
       { keys: ["新北投"], color: "#FD92A3" },
       { keys: ["JR"], color: "#0070BD" }
     ];
+    // 攤平成「關鍵字 → 顏色」並依長度由長到短排序（同長度維持上面的順序）
+    const TRANSIT_LINE_COLOR_INDEX = TRANSIT_LINE_COLORS
+      .flatMap((rule, ri) => rule.keys.map(k => ({ key: k.toLowerCase(), color: rule.color, ri })))
+      .sort((a, b) => (b.key.length - a.key.length) || (a.ri - b.ri));
 
     const TIMEZONES = [
       { id: "Asia/Taipei", label: "Asia/Taipei (UTC+8 台灣)" },
@@ -2628,8 +2795,6 @@
     /*************************************************************************
      * 3. UI MATERIAL THEMES (Simple / Silvre + Gyroscope)
      *************************************************************************/
-    let gyroInitialized = false;
-    let smoothMetalDeg = 135;
 
     function setUiMaterialTheme(themeId) {
       if (themeId !== "metallic" && themeId !== "lilac") themeId = "clean";
@@ -2710,9 +2875,9 @@
     function getLineBrandColor(lineName, idx = 0, customColor = "") {
       if (customColor && customColor.startsWith("#")) return customColor;
       if (!lineName) return ["#0070BD", "#E3002C", "#F8B61C", "#008659"][idx % 4];
-      for (const rule of TRANSIT_LINE_COLORS) {
-        if (rule.keys.some(k => lineName.includes(k))) return rule.color;
-      }
+      const name = String(lineName).toLowerCase();
+      const hit = TRANSIT_LINE_COLOR_INDEX.find(e => name.includes(e.key));
+      if (hit) return hit.color;
       return ["#0070BD", "#E3002C", "#F8B61C", "#008659"][idx % 4];
     }
 
@@ -2924,6 +3089,7 @@
       renderHeaderAndTabs();
       renderDayWeatherBar();
       renderTimelineCards();
+      renderTripCountdown();
       syncStickyHeaderOffset();
       const isWideRwd = window.matchMedia("(min-width: 900px)").matches;
       if (isWideRwd || document.getElementById("budgetView").style.display !== "none") {
@@ -2940,19 +3106,16 @@
       }
 
       const tmBtn = document.getElementById("travelModeBtn");
-      const addTopBtn = document.getElementById("addTopBtn");
       if (appState.travelLockMode) {
         if (tmBtn) {
           tmBtn.textContent = "🔒";
           tmBtn.className = "pill-btn travel-mode-on"; // 維持原本的反綠
         }
-        if (addTopBtn) addTopBtn.style.display = "none";
       } else {
         if (tmBtn) {
           tmBtn.textContent = "🔓";
           tmBtn.className = "pill-btn accent-outline"; // 編輯中顯示橘紅色
         }
-        if (addTopBtn) addTopBtn.style.display = "inline-flex";
       }
 
       const bar = document.getElementById("tripTabsBar");
@@ -3086,12 +3249,6 @@
       renderAll();
     }
 
-    function toggleHomeTzCompare() {
-      appState.showHomeTz = !appState.showHomeTz;
-      saveAppState();
-      renderAll();
-    }
-
     function convertTimeBetweenTz(timeHHMM, fromTz, toTz) {
       if (!timeHHMM || !fromTz || !toTz) return null;
       if (fromTz === toTz) return null;
@@ -3193,7 +3350,7 @@
         container.innerHTML = `
           <div class="timeline-card" style="text-align:center; padding:32px 16px; color:var(--sub);">
             <div style="font-size:15px; font-weight:800; margin-bottom:6px;">此日尚無行程卡片</div>
-            <div style="font-size:13px;">點擊底部「＋」開始策展你的旅途時刻</div>
+            <div style="font-size:13px;">點擊底部「＋」加入新行程</div>
           </div>`;
         return;
       }
@@ -3452,11 +3609,9 @@
     function initFormSelectors() {
       const startTzSel = document.getElementById("fStartTz");
       const endTzSel = document.getElementById("fEndTz");
-      const tmHomeTzSel = document.getElementById("tmHomeTzSelect");
       const tzOptionsHtml = TIMEZONES.map(t => `<option value="${t.id}">${t.label}</option>`).join("");
       startTzSel.innerHTML = tzOptionsHtml;
       endTzSel.innerHTML = tzOptionsHtml;
-      if (tmHomeTzSel) tmHomeTzSel.innerHTML = tzOptionsHtml;
 
       let hhHtml = "";
       for (let h = 0; h < 24; h++) {
@@ -3959,6 +4114,7 @@
      *************************************************************************/
     let isTimetableCompactMode = false;
     let transitMapUnlocked = false;
+    let transitMapHitBox = null;   // 地鐵圖實際畫出的範圍（版面座標），用來判斷有沒有點到
     let roadPhotoUnlocked = false;
     let transitRouteTransform = { x: 0, y: 0, scale: 1.0 };
     let roadtripEditorialState = {
@@ -4198,6 +4354,7 @@
     }
 
     function closeShareModal() {
+      toggleStoryFullscreen(false);
       closeModalBackdrop("shareModal");
     }
 
@@ -4380,6 +4537,42 @@
       return Math.hypot(px - xx, py - yy);
     }
 
+    // 貼紙控制點：位置在貼紙自己的座標系；畫的大小不隨貼紙縮放（永遠好按）
+    function getStickerHandleGeom(stk) {
+      const sc = stk.scale || 1;
+      if (stk.type === "polaroid") {
+        const hw = 155, hh = 184;
+        return { sc, corners: [[-hw, -hh], [hw, -hh], [-hw, hh], [hw, hh]], top: [0, -hh], rot: [0, -hh - 78 / sc] };
+      }
+      const r = 68;
+      return { sc, corners: [[0, -r], [r, 0], [0, r], [-r, 0]], top: [0, -r], rot: [0, -r - 70 / sc] };
+    }
+
+    function stickerLocalToCanvas(stk, lx, ly) {
+      const sc = stk.scale || 1, c = Math.cos(stk.rot || 0), sn = Math.sin(stk.rot || 0);
+      return { x: stk.x + (lx * c - ly * sn) * sc, y: stk.y + (lx * sn + ly * c) * sc };
+    }
+
+    function drawStickerHandles(ctx, stk) {
+      const g = getStickerHandleGeom(stk);
+      const k = 1 / g.sc;                 // 抵銷貼紙縮放
+      ctx.save();
+      ctx.strokeStyle = "#C84B31";
+      ctx.lineWidth = 4 * k;
+      ctx.beginPath(); ctx.moveTo(g.top[0], g.top[1]); ctx.lineTo(g.rot[0], g.rot[1]); ctx.stroke();
+      ctx.fillStyle = "#FFFFFF";
+      g.corners.forEach(([hx, hy]) => { ctx.beginPath(); ctx.arc(hx, hy, 20 * k, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); });
+      // 旋轉鈕：實心紅圓 + 白色迴轉箭頭
+      ctx.fillStyle = "#C84B31";
+      ctx.beginPath(); ctx.arc(g.rot[0], g.rot[1], 30 * k, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#FFFFFF";
+      ctx.lineWidth = 5 * k;
+      ctx.beginPath(); ctx.arc(g.rot[0], g.rot[1], 15 * k, -Math.PI * 0.15, Math.PI * 1.35); ctx.stroke();
+      const ax = g.rot[0] + 15 * k * Math.cos(-Math.PI * 0.15), ay = g.rot[1] + 15 * k * Math.sin(-Math.PI * 0.15);
+      ctx.beginPath(); ctx.moveTo(ax + 7 * k, ay - 2 * k); ctx.lineTo(ax, ay + 8 * k); ctx.lineTo(ax - 8 * k, ay - 3 * k); ctx.stroke();
+      ctx.restore();
+    }
+
     function drawAllStoryStickers(ctx) {
       storyStickerLayers.forEach(stk => {
         ctx.save();
@@ -4419,19 +4612,9 @@
 
           if (stk.id === activeStickerId) {
             ctx.strokeStyle = "#C84B31";
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 4 / (stk.scale || 1);
             ctx.strokeRect(-pW / 2, -pH / 2, pW, pH);
-            
-            // Handles
-            ctx.fillStyle = "#FFFFFF";
-            [
-              [-pW/2, -pH/2], [pW/2, -pH/2], [-pW/2, pH/2], [pW/2, pH/2]
-            ].forEach(([hx, hy]) => {
-              ctx.beginPath(); ctx.arc(hx, hy, 16, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-            });
-            // Rotate Handle
-            ctx.beginPath(); ctx.moveTo(0, -pH/2); ctx.lineTo(0, -pH/2 - 40); ctx.stroke();
-            ctx.beginPath(); ctx.arc(0, -pH/2 - 40, 16, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+            drawStickerHandles(ctx, stk);
           }
         } else if (stk.type === "emoji") {
           ctx.font = "105px sans-serif";
@@ -4441,19 +4624,11 @@
 
           if (stk.id === activeStickerId) {
             ctx.strokeStyle = "#C84B31";
-            ctx.lineWidth = 3.5;
+            ctx.lineWidth = 3.5 / (stk.scale || 1);
             ctx.beginPath();
             ctx.arc(0, 0, 68, 0, Math.PI * 2);
             ctx.stroke();
-            // Emoji Handles
-            ctx.fillStyle = "#FFFFFF";
-            const hR = 68;
-            [[0, -hR], [hR, 0], [0, hR], [-hR, 0]].forEach(([hx, hy]) => {
-               ctx.beginPath(); ctx.arc(hx, hy, 14, 0, Math.PI*2); ctx.fill(); ctx.stroke();
-            });
-            // Rotate Handle
-            ctx.beginPath(); ctx.moveTo(0, -hR); ctx.lineTo(0, -hR - 35); ctx.stroke();
-            ctx.beginPath(); ctx.arc(0, -hR - 35, 14, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+            drawStickerHandles(ctx, stk);
           }
         }
         ctx.restore();
@@ -4760,6 +4935,14 @@
       }));
 
       const stationScreenPts = stationRawPtIndices.map(idx => screenPts[idx]);
+      {
+        const pad = 70;   // 站名標籤會超出線條，留一點邊
+        const xs = screenPts.map(p => p.x), ys = screenPts.map(p => p.y);
+        transitMapHitBox = {
+          x0: Math.max(cardX + 16, Math.min(...xs) - pad), y0: Math.max(legendY + 14, Math.min(...ys) - pad),
+          x1: Math.min(cardX + cardW - 16, Math.max(...xs) + pad), y1: Math.min(cardY + cardH - 16, Math.max(...ys) + pad)
+        };
+      }
 
       ctx.save();
       drawRoundedRectPath(ctx, cardX + 16, legendY + 14, cardW - 32, cardY + cardH - legendY - 30, 20);
@@ -5439,7 +5622,9 @@
           ctx.save();
           ctx.strokeStyle = "#C84B31";
           ctx.lineWidth = 4;
-          drawRoundedRectPath(ctx, mainX + 16, mainY + 110, mainW - 32, mainH - 126, 20);
+          ctx.setLineDash([14, 10]);
+          const hb = transitMapHitBox || { x0: mainX + 16, y0: mainY + 110, x1: mainX + mainW - 16, y1: mainY + mainH - 16 };
+          drawRoundedRectPath(ctx, hb.x0, hb.y0, hb.x1 - hb.x0, hb.y1 - hb.y0, 20);
           ctx.stroke();
           ctx.restore();
         }
@@ -5612,6 +5797,31 @@
         };
       }
 
+      // 控制點的觸控範圍：約一個指尖（30 CSS px），換算成畫布座標
+      function handleHitRadius() {
+        const r = canvas.getBoundingClientRect();
+        return 30 * (canvas.width / Math.max(1, r.width));
+      }
+
+      function hitStickerHandle(stk, pt) {
+        const g = getStickerHandleGeom(stk);
+        const R = handleHitRadius();
+        const rp = stickerLocalToCanvas(stk, g.rot[0], g.rot[1]);
+        if (Math.hypot(pt.x - rp.x, pt.y - rp.y) <= R) return "rotate";
+        for (const [hx, hy] of g.corners) {
+          const cp = stickerLocalToCanvas(stk, hx, hy);
+          if (Math.hypot(pt.x - cp.x, pt.y - cp.y) <= R * 0.85) return "scale";
+        }
+        return null;
+      }
+
+      // 旋轉靠近 0°/90°/180°/270° 時自動吸附（5° 以內）
+      function snapRotation(a) {
+        const step = Math.PI / 2;
+        const nearest = Math.round(a / step) * step;
+        return Math.abs(a - nearest) < (5 * Math.PI / 180) ? nearest : a;
+      }
+
       function hitSticker(cx, cy) {
         for (let i = storyStickerLayers.length - 1; i >= 0; i--) {
           const s = storyStickerLayers[i];
@@ -5631,6 +5841,16 @@
         const inMainFrame = (cpt.x >= 84 && cpt.x <= 996 && cpt.y >= 195 && cpt.y <= 1235);
 
         if (pointers.size === 1) {
+          const active = storyStickerLayers.find(s => s.id === activeStickerId);
+          const handle = active ? hitStickerHandle(active, pt) : null;
+          if (handle) {
+            mode = handle === "rotate" ? "stickerRotate" : "stickerScale";
+            canDragCurrentTarget = true;
+            initScale = active.scale || 1;
+            initDist = Math.hypot(pt.x - active.x, pt.y - active.y) || 1;
+            renderStoryCanvas();
+            return;
+          }
           const hit = hitSticker(pt.x, pt.y);
           if (hit) {
             mode = "sticker";
@@ -5645,7 +5865,10 @@
               document.getElementById("sharePolaroidCaption").value = hit.caption || "";
             }
             startOffset = { x: pt.x - hit.x, y: pt.y - hit.y };
-          } else if (tpl === "transit" && inMainFrame) {
+          } else if (tpl === "transit" && inMainFrame && (transitMapUnlocked || (transitMapHitBox
+              && cpt.x >= transitMapHitBox.x0 && cpt.x <= transitMapHitBox.x1
+              && cpt.y >= transitMapHitBox.y0 && cpt.y <= transitMapHitBox.y1))) {
+            // 只有點到地鐵圖本身才會選取；選取後在框內任何位置都能拖曳
             activeStickerId = null;
             roadPhotoUnlocked = false;
             canDragCurrentTarget = true;
@@ -5695,7 +5918,18 @@
         pointers.set(e.pointerId, pt);
 
         if (pointers.size === 1 && canDragCurrentTarget) {
-          if (mode === "sticker") {
+          if (mode === "stickerRotate" || mode === "stickerScale") {
+            const stk = storyStickerLayers.find(s => s.id === activeStickerId);
+            if (stk) {
+              if (mode === "stickerRotate") {
+                stk.rot = snapRotation(Math.atan2(pt.y - stk.y, pt.x - stk.x) + Math.PI / 2);
+              } else {
+                const d = Math.hypot(pt.x - stk.x, pt.y - stk.y) || 1;
+                stk.scale = Math.max(0.35, Math.min(2.5, initScale * d / initDist));
+              }
+              renderStoryCanvas();
+            }
+          } else if (mode === "sticker") {
             const stk = storyStickerLayers.find(s => s.id === activeStickerId);
             if (stk) {
               stk.x = pt.x - startOffset.x;
@@ -5723,7 +5957,7 @@
             const stk = storyStickerLayers.find(s => s.id === activeStickerId);
             if (stk) {
               stk.scale = Math.max(0.35, Math.min(2.5, initScale * ratio));
-              stk.rot = initRot + (ang - initAngle);
+              stk.rot = snapRotation(initRot + (ang - initAngle));
               renderStoryCanvas();
             }
           } else if (mode === "transitRoute" && transitMapUnlocked) {
@@ -5912,40 +6146,79 @@
       closeModalBackdrop("archiveModal");
     }
 
-    async function shareOrSaveArchiveImage() {
-      const canvas = document.getElementById("archiveCanvas");
-      await shareCanvasViaNativeOrDownload(canvas, `tabigram-archive-${Date.now()}.png`);
-    }
-
-    function exportBackupJSON() {
-      const blob = new Blob([JSON.stringify(appState, null, 2)], { type: "application/json" });
+    // ---------- 備份：把所有旅行（含照片）存成一個 .json 檔 ----------
+    async function exportBackupJSON() {
+      try { await resolveMissingCloudPhotos(); } catch (e) {}   // 先把只在雲端的照片抓回來，備份才完整
+      const { lastCloudUserId, ...rest } = appState;
+      const backup = { _tabigramBackup: 1, exportedAt: new Date().toISOString(), ...rest };
+      const json = JSON.stringify(backup);
+      const filename = `tabigram-backup-${cdLocalDateStr()}.json`;
+      const blob = new Blob([json], { type: "application/json" });
+      let photoCount = 0;
+      forEachStoredPhoto(p => { if (p.dataUrl) photoCount++; });
+      try {
+        const file = new File([blob], filename, { type: "application/json" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: "TABIGRAM 備份" });
+          return;
+        }
+      } catch (e) {
+        if (e && e.name === "AbortError") return;   // 使用者在分享選單按了取消
+      }
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `tabigram-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = filename;
       a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+      alert(`已下載備份檔：${appState.trips.length} 趟旅行、${photoCount} 張照片（${(blob.size / 1048576).toFixed(1)} MB）`);
     }
 
+    // ---------- 還原：依旅程合併，不會清掉備份檔裡沒有的旅行 ----------
     function importBackupJSON(e) {
-      const file = e.target.files[0];
+      const file = e.target.files && e.target.files[0];
+      e.target.value = "";
       if (!file) return;
       const reader = new FileReader();
       reader.onload = (ev) => {
-        try {
-          const parsed = JSON.parse(ev.target.result);
-          if (parsed && Array.isArray(parsed.trips)) {
-            appState = Object.assign(appState, parsed);
-            appState.trips = (appState.trips || []).map(normalizeTrip).filter(Boolean);
-            sanitizeAppStateData();
-            saveAppState();
-            renderAll();
-            alert("成功匯入旅行備份！");
-          }
-        } catch (err) {
-          alert("JSON 檔案格式不正確。");
+        let parsed;
+        try { parsed = JSON.parse(ev.target.result); } catch (err) {
+          alert("這不是有效的備份檔（.json 格式不正確）。");
+          return;
         }
+        if (!parsed || !Array.isArray(parsed.trips) || parsed.trips.length === 0) {
+          alert("備份檔裡沒有找到任何旅行。");
+          return;
+        }
+        const incoming = parsed.trips.map(t => sanitizeTripData(normalizeTrip(t))).filter(Boolean);
+        const existingIds = new Set(appState.trips.map(t => t.id));
+        const replaced = incoming.filter(t => existingIds.has(t.id));
+        const added = incoming.filter(t => !existingIds.has(t.id));
+        const names = incoming.slice(0, 6).map(t => `・${t.title}`).join("\n") + (incoming.length > 6 ? `\n…等 ${incoming.length} 趟` : "");
+        const msg = `備份檔裡有 ${incoming.length} 趟旅行：\n${names}\n\n`
+          + `新增 ${added.length} 趟` + (replaced.length ? `，以備份版本取代 ${replaced.length} 趟（同一趟旅行目前的內容會被覆蓋）` : "")
+          + `。\n其他現有旅行不會受影響。要還原嗎？`;
+        if (!confirm(msg)) return;
+
+        incoming.forEach(t => {
+          const idx = appState.trips.findIndex(x => x.id === t.id);
+          if (idx !== -1) appState.trips[idx] = t;
+          else appState.trips.push(t);
+        });
+        const restoredIds = new Set(incoming.map(t => t.id));
+        appState.deletedTripIds = (appState.deletedTripIds || []).filter(id => !restoredIds.has(id));
+        if (Array.isArray(parsed.customEmojis)) {
+          appState.customEmojis = Array.from(new Set([...(appState.customEmojis || []), ...parsed.customEmojis]));
+        }
+        sanitizeAppStateData();
+        appState.activeTripId = (added[0] || incoming[0]).id;   // 優先切到新加入的旅行
+        appState.activeDayIndex = 0;
+        saveAppState();          // 照片會自動搬進 IndexedDB
+        renderAll();
+        refreshRealtimeWeather(false);
+        alert(`✅ 已還原 ${incoming.length} 趟旅行。`);
       };
+      reader.onerror = () => alert("讀不到這個檔案。");
       reader.readAsText(file);
-      e.target.value = "";
     }
 
     function escapeHtml(str) {
@@ -6283,80 +6556,6 @@ function initSupabaseClient() {
         alert("註冊時發生錯誤：" + (e && e.message ? e.message : e));
       } finally {
         setPasswordButtonsBusy(false);
-      }
-    }
-
-    async function sendCloudEmailOtp() {
-      initSupabaseClient();
-      const email = document.getElementById("cloudEmailInput").value.trim();
-      if (!email) return alert("請輸入 Email 信箱");
-      
-      const btn = document.getElementById("sendOtpBtn");
-      if (btn.disabled) return; // 防止重複連點
-      
-      btn.disabled = true;
-      btn.textContent = "寄送中...";
-      
-      const { error } = await sbClient.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: window.location.origin + window.location.pathname
-        }
-      });
-      
-      btn.disabled = false;
-      btn.textContent = "📧 傳送登入驗證碼";
-      
-      if (error) {
-        if (error.message.includes("rate limit")) {
-          alert("⚠️ 寄送頻率過快（Supabase 免費版保護機制）。請稍候 5～10 分鐘後再試，或直接使用已登入其他裝置的瀏覽器連線。");
-        } else {
-          alert("寄送失敗：" + error.message);
-        }
-      } else {
-        pendingOtpEmail = email;
-        const box = document.getElementById("cloudOtpCodeBox");
-        if (box) box.style.display = "block";
-        const inp = document.getElementById("cloudOtpCodeInput");
-        if (inp) { inp.value = ""; inp.focus(); }
-        alert("📩 登入信已寄出！\n請到信箱查看信中的驗證碼，回到這個畫面輸入即可登入。\n（若是在桌面 App 使用，請輸入驗證碼，不要點信中的連結。）");
-      }
-    }
-
-    // 以信中的驗證碼登入：全程留在目前的視窗（桌面 App 也適用），不依賴瀏覽器跳轉
-    let pendingOtpEmail = "";
-    async function verifyCloudEmailCode() {
-      initSupabaseClient();
-      const emailInp = document.getElementById("cloudEmailInput");
-      const email = (pendingOtpEmail || (emailInp ? emailInp.value.trim() : "")).trim();
-      const codeInp = document.getElementById("cloudOtpCodeInput");
-      const token = codeInp ? codeInp.value.replace(/\s+/g, "") : "";
-      if (!email) return alert("請先輸入 Email 並寄送驗證信");
-      if (!/^\d{6,10}$/.test(token)) return alert("請輸入信中的數字驗證碼");
-
-      const btn = document.getElementById("verifyOtpBtn");
-      if (btn.disabled) return;
-      btn.disabled = true;
-      btn.textContent = "驗證中...";
-
-      try {
-        const { data, error } = await sbClient.auth.verifyOtp({ email, token, type: "email" });
-        if (error) {
-          alert("驗證失敗：" + (error.message || "驗證碼錯誤或已過期") + "\n請確認驗證碼，或重新寄送一封。");
-          return;
-        }
-        if (data && data.session) {
-          currentCloudUser = data.session.user;
-          pendingOtpEmail = "";
-          if (codeInp) codeInp.value = "";
-          const box = document.getElementById("cloudOtpCodeBox");
-          if (box) box.style.display = "none";
-          updateCloudButtonBadge();
-          renderCloudModalUI();
-        }
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "✅ 驗證並登入";
       }
     }
 
@@ -6814,7 +7013,6 @@ function initSupabaseClient() {
       }
       const dropdownCloudBtn = document.getElementById("dropdownCloudBtn");
       const dropdownProfileBtn = document.getElementById("dropdownProfileBtn");
-      const menuBtn = document.getElementById("menuToggleBtn");
       const avatarImg = document.getElementById("headerUserAvatarImg");
       if (!dropdownCloudBtn) return;
 
@@ -6936,6 +7134,15 @@ function initSupabaseClient() {
       currentShareItem.transitLegs[legIdx].customColor = hexColor;
       saveAppState();
       renderStoryCanvas();
+    }
+
+    function toggleStoryFullscreen(force) {
+      const modal = document.getElementById("shareModal");
+      const btn = document.getElementById("storyExpandBtn");
+      if (!modal) return;
+      const on = typeof force === "boolean" ? force : !modal.classList.contains("story-fullscreen");
+      modal.classList.toggle("story-fullscreen", on);
+      if (btn) btn.textContent = on ? "完成" : "⤢ 放大編輯";
     }
 
     function bringSelectedStickerToFront() {
@@ -7145,28 +7352,15 @@ function initSupabaseClient() {
         if (!document.hidden) updateSolarTrackDots();
       }, 5000);
       setInterval(safeAutoRefreshTimeline, 30000);
+      setInterval(() => tickTripCountdown(false), 1000);
       document.addEventListener("visibilitychange", () => {
         if (!document.hidden) {
           updateSolarTrackDots();
           safeAutoRefreshTimeline();
+          tickTripCountdown(true);
         }
       });
     });
-    async function quickSaveCloudOrLocal() {
-      saveAppState();
-      if (currentCloudUser) {
-        const trip = getActiveTrip();
-        if (trip && trip.shareCode && isUserTripAdmin(trip, currentCloudUser)) {
-          await publishActiveTripToCloud();
-          return;
-        } else if (trip && trip.shareCode) {
-          await syncMyJournalToCloud();
-          return;
-        }
-      }
-      alert("💾 本機進度已安全儲存！");
-    }
-
     /*************************************************************************
      * 14. STAGE 3 & STAGE 4 EXTENSIONS
      *     - Day Theme & Location Weather Sync (#18, #19)
@@ -8184,6 +8378,368 @@ function initSupabaseClient() {
         try { await geocodeStationOnline(name, tz); } catch (e) {}
         await new Promise(r => setTimeout(r, 1100));
       }
+    }
+
+    /*************************************************************************
+     * 倒數計時
+     * - 出發前：D-23 → 明天出發 → 最後 24 小時精準倒數到第一個行程
+     * - 旅途中：DAY 2 / 3、進行中的行程還剩多久、下一個行程還有多久
+     * - 每個行程都用「它自己的時區」換算成絕對時間，台灣手機看東京行程也不會差一小時
+     *************************************************************************/
+    const cdTzFormatterCache = {};
+    function getTzOffsetMinutes(epoch, tz) {
+      try {
+        let f = cdTzFormatterCache[tz];
+        if (!f) {
+          f = cdTzFormatterCache[tz] = new Intl.DateTimeFormat("en-US", {
+            timeZone: tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit",
+            hour: "2-digit", minute: "2-digit", second: "2-digit"
+          });
+        }
+        const p = {};
+        f.formatToParts(new Date(epoch)).forEach(x => { p[x.type] = x.value; });
+        const asUtc = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour % 24, +p.minute, +p.second);
+        return Math.round((asUtc - Math.floor(epoch / 1000) * 1000) / 60000);
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    // 「某時區的某日某時」→ 絕對時間（毫秒）
+    function zonedTimeToEpoch(dateStr, dayOffset, hhmm, tz) {
+      const [y, m, d] = String(dateStr || "").split("-").map(Number);
+      if (!y || !m || !d) return NaN;
+      const [h, mi] = String(hhmm || "00:00").split(":").map(Number);
+      const guess = Date.UTC(y, m - 1, d + (dayOffset || 0), h || 0, mi || 0);
+      let t = guess - getTzOffsetMinutes(guess, tz) * 60000;
+      t = guess - getTzOffsetMinutes(t, tz) * 60000;   // 第二次修正，處理夏令時間交界
+      return t;
+    }
+
+    function buildTripSchedule(trip) {
+      const list = [];
+      const fallbackTz = trip.homeTz || "Asia/Taipei";
+      (trip.days || []).forEach((day, dIdx) => (day.items || []).forEach(it => {
+        if (!it || it.status === "cancelled") return;
+        const sTz = it.startTz || fallbackTz;
+        const eTz = it.endTz || sTz;
+        const start = zonedTimeToEpoch(trip.startDate, dIdx, it.startTime || "09:00", sTz);
+        let end = zonedTimeToEpoch(trip.startDate, dIdx + (it.endDayOffset || 0), it.endTime || it.startTime || "10:00", eTz);
+        if (!isFinite(start)) return;
+        if (!(end > start)) end += 86400000;           // 結束早於開始又沒標隔天 → 當作隔天
+        if (!(end > start)) end = start + 3600000;
+        list.push({ item: it, dayIdx: dIdx, start, end });
+      }));
+      list.sort((a, b) => a.start - b.start);
+      return list;
+    }
+
+    function cdLocalDateStr(t = new Date()) {
+      return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, "0")}-${String(t.getDate()).padStart(2, "0")}`;
+    }
+
+    function cdCalendarDaysBetween(a, b) {
+      const [y1, m1, d1] = a.split("-").map(Number);
+      const [y2, m2, d2] = b.split("-").map(Number);
+      return Math.round((Date.UTC(y2, m2 - 1, d2) - Date.UTC(y1, m1 - 1, d1)) / 86400000);
+    }
+
+    function formatCountdownSpan(ms) {
+      const s = Math.max(0, Math.floor(ms / 1000));
+      const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+      if (d >= 1) return `${d} 天 ${h} 小時`;
+      if (h >= 1) return `${h} 小時 ${m} 分`;
+      if (m >= 1) return `${m} 分 ${String(sec).padStart(2, "0")} 秒`;
+      return `${sec} 秒`;
+    }
+
+    function formatCountdownClock(ms) {
+      const s = Math.max(0, Math.floor(ms / 1000));
+      const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+      return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+    }
+
+    const CD_TYPE_ICON = { spot: "📍", transit: "🚃", flight: "✈️", roadtrip: "🚗" };
+
+    let countdownState = { tripId: null, schedule: [], signature: "" };
+
+    // 算出目前要顯示的內容（每秒呼叫，只用快取好的行程表，很輕）
+    function computeCountdownView(trip, schedule, now = Date.now()) {
+      if (!trip || !/^\d{4}-\d{2}-\d{2}$/.test(trip.startDate || "")) return null;
+      if (!schedule.length) return null;   // 還沒排任何行程（例如剛建立的空白旅行）就不顯示
+      const daysCount = Math.max(1, (trip.days || []).length);
+      const tz0 = (schedule[0] && schedule[0].item.startTz) || trip.homeTz || "Asia/Taipei";
+      const tzLast = (schedule.length && (schedule[schedule.length - 1].item.endTz || schedule[schedule.length - 1].item.startTz)) || tz0;
+      const tripStart = schedule.length ? schedule[0].start : zonedTimeToEpoch(trip.startDate, 0, "00:00", tz0);
+      const lastDayEnd = zonedTimeToEpoch(trip.startDate, daysCount, "00:00", tzLast);
+      const tripEnd = Math.max(lastDayEnd, ...schedule.map(e => e.end));
+      const today = cdLocalDateStr(new Date(now));
+      const first = schedule[0] || null;
+
+      // ---------- 出發前 ----------
+      if (now < tripStart) {
+        const daysLeft = cdCalendarDaysBetween(today, trip.startDate);
+        const msLeft = tripStart - now;
+        const fromDate = trip.countdownFrom && /^\d{4}-\d{2}-\d{2}$/.test(trip.countdownFrom) ? trip.countdownFrom : today;
+        const total = Math.max(1, cdCalendarDaysBetween(fromDate, trip.startDate));
+        const firstLabel = first ? `${CD_TYPE_ICON[first.item.type] || "📍"} ${first.item.title || "第一個行程"}` : "還沒有安排行程";
+        const dateLabel = getDayFormattedDateString(trip.startDate, 0);
+        if (msLeft <= 86400000 && first) {
+          return {
+            mode: "soon", signature: `soon|${first.item.id}`,
+            big: formatCountdownClock(msLeft), bigUnit: "",
+            line1: `即將出發：${trip.title}`,
+            line2: `${firstLabel} · ${first.item.startTime || "09:00"} 開始`,
+            pct: Math.min(1, Math.max(0, 1 - msLeft / 86400000)),
+            share: { number: msLeft >= 3600000 ? String(Math.floor(msLeft / 3600000)) : String(Math.max(1, Math.ceil(msLeft / 60000))), unit: msLeft >= 3600000 ? "小時後出發" : "分鐘後出發" }
+          };
+        }
+        if (daysLeft <= 1) {
+          return {
+            mode: "pre", signature: "pre1",
+            big: "D-1", bigUnit: "",
+            line1: `明天出發！${trip.title}`,
+            line2: `${dateLabel} · 還有 ${formatCountdownSpan(msLeft)}`,
+            pct: Math.min(1, Math.max(0, 1 - 1 / total)),
+            share: { number: "1", unit: "天後出發" }
+          };
+        }
+        return {
+          mode: "pre", signature: "pre",
+          big: `D-${daysLeft}`, bigUnit: "",
+          line1: trip.title,
+          line2: `${dateLabel} 出發 · ${firstLabel}`,
+          pct: Math.min(1, Math.max(0, 1 - daysLeft / Math.max(total, daysLeft))),
+          share: { number: String(daysLeft), unit: "天後出發" }
+        };
+      }
+
+      // ---------- 旅途中 ----------
+      if (now <= tripEnd) {
+        const todayIdx = Math.min(daysCount - 1, Math.max(0, cdCalendarDaysBetween(trip.startDate, today)));
+        const current = schedule.find(e => e.start <= now && now < e.end && e.item.status !== "done");
+        const next = schedule.find(e => e.start > now && e.item.status !== "done");
+        let line1 = "", line2 = "", target = null;
+        if (current) line1 = `進行中：${current.item.title} · 還剩 ${formatCountdownSpan(current.end - now)}`;
+        if (next) {
+          const rel = next.dayIdx === todayIdx ? "" : (next.dayIdx === todayIdx + 1 ? "明天 " : `DAY ${String(next.dayIdx + 1).padStart(2, "0")} `);
+          line2 = `下一個：${CD_TYPE_ICON[next.item.type] || "📍"} ${next.item.title} · ${formatCountdownSpan(next.start - now)}後（${rel}${next.item.startTime || "09:00"}）`;
+          target = { dayIdx: next.dayIdx, itemId: next.item.id };
+        } else {
+          line2 = "接下來沒有行程了，好好休息 🌙";
+        }
+        if (!line1) line1 = next && next.dayIdx === todayIdx ? "現在是空檔時間" : "今天的行程都結束了";
+        return {
+          mode: "during", signature: `during|${current ? current.item.id : ""}|${next ? next.item.id : ""}|${todayIdx}`,
+          big: `DAY ${todayIdx + 1}`, bigUnit: `/ ${daysCount}`,
+          line1, line2, live: !!current, target,
+          pct: Math.min(1, Math.max(0, (now - tripStart) / Math.max(1, tripEnd - tripStart))),
+          share: { number: String(todayIdx + 1), unit: `/ ${daysCount} 天`, during: true }
+        };
+      }
+
+      // ---------- 結束後（3 天內顯示，之後自動隱藏）----------
+      if (now - tripEnd < 3 * 86400000) {
+        return {
+          mode: "post", signature: "post",
+          big: "✓", bigUnit: "",
+          line1: `${trip.title} 旅程結束`,
+          line2: `共 ${daysCount} 天，辛苦了！記得回顧照片和花費。`,
+          pct: 1
+        };
+      }
+      return null;
+    }
+
+    // 行程有變動時（renderAll）重算行程表並重畫卡片
+    function renderTripCountdown() {
+      const box = document.getElementById("tripCountdownCard");
+      if (!box) return;
+      const trip = getActiveTrip();
+      if (trip && trip.startDate && !trip.countdownFrom) {
+        trip.countdownFrom = cdLocalDateStr();
+        saveAppState();
+      }
+      countdownState = { tripId: trip ? trip.id : null, schedule: trip ? buildTripSchedule(trip) : [], signature: "" };
+      tickTripCountdown(true);
+    }
+
+    function tickTripCountdown(force) {
+      const box = document.getElementById("tripCountdownCard");
+      if (!box) return;
+      if (!force && document.hidden) return;
+      const trip = getActiveTrip();
+      if (!trip || trip.id !== countdownState.tripId) {
+        if (!force) renderTripCountdown();
+        return;
+      }
+      const view = computeCountdownView(trip, countdownState.schedule);
+      if (!view) {
+        if (box.style.display !== "none") box.style.display = "none";
+        countdownState.signature = "";
+        return;
+      }
+      box.style.display = "block";
+      box.dataset.mode = view.mode;
+      if (force || view.signature !== countdownState.signature) {
+        countdownState.signature = view.signature;
+        box.innerHTML = `
+          <div class="cd-row">
+            <div class="cd-big-wrap">
+              <span class="cd-big" data-cd="big"></span><span class="cd-big-unit" data-cd="unit"></span>
+            </div>
+            <div class="cd-main">
+              <div class="cd-line1">${view.live ? '<span class="cd-now-dot"></span>' : ""}<span data-cd="l1"></span></div>
+              <div class="cd-line2 ${view.target ? "cd-link" : ""}" data-cd="l2" ${view.target ? 'role="button" tabindex="0" onclick="jumpToCountdownTarget()"' : ""}></div>
+            </div>
+            ${view.share ? '<button type="button" class="pill-btn cd-share" onclick="openCountdownShare()" title="分享倒數卡片">分享</button>' : ""}
+          </div>
+          <div class="cd-bar"><i data-cd="bar"></i></div>`;
+        countdownState.target = view.target || null;
+      }
+      const set = (k, v) => { const el = box.querySelector(`[data-cd="${k}"]`); if (el && el.textContent !== v) el.textContent = v; };
+      set("big", view.big);
+      set("unit", view.bigUnit || "");
+      set("l1", view.line1);
+      set("l2", view.line2);
+      const bar = box.querySelector('[data-cd="bar"]');
+      if (bar) bar.style.width = `${Math.round(view.pct * 1000) / 10}%`;
+      countdownState.target = view.target || null;
+    }
+
+    function jumpToCountdownTarget() {
+      const t = countdownState.target;
+      if (!t) return;
+      appState.activeDayIndex = t.dayIdx;
+      saveAppState();
+      renderAll();
+      requestAnimationFrame(() => {
+        const card = document.getElementById(`card_${t.itemId}`);
+        if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
+
+    // ---------- 倒數分享卡片（1080 × 1920，限時動態尺寸）----------
+    let countdownShareCanvas = null;
+
+    async function drawCountdownShareCanvas() {
+      const trip = getActiveTrip();
+      const view = computeCountdownView(trip, countdownState.schedule);
+      if (!view || !view.share) return null;
+      try {
+        await Promise.all([
+          document.fonts.load("400 300px 'Dela Gothic One'"),
+          document.fonts.load("900 80px 'Noto Sans TC'"),
+          document.fonts.load("700 40px 'JetBrains Mono'")
+        ]);
+      } catch (e) {}
+      const W = 1080, H = 1920;
+      const canvas = document.createElement("canvas");
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext("2d");
+      const outer = OUTER_SWATCHES.find(s => s.id === appState.outerSwatchId) || OUTER_SWATCHES[0];
+      const inner = INNER_SWATCHES.find(s => s.id === appState.innerSwatchId) || INNER_SWATCHES[0];
+      const accent = getComputedStyle(document.body).getPropertyValue("--accent").trim() || "#C84B31";
+
+      ctx.fillStyle = outer.bg;
+      ctx.fillRect(0, 0, W, H);
+
+      // 頂部：品牌與今天日期
+      ctx.fillStyle = outer.text;
+      ctx.globalAlpha = 0.75;
+      ctx.font = "700 34px 'JetBrains Mono', monospace";
+      ctx.textBaseline = "alphabetic";
+      ctx.textAlign = "left";
+      ctx.fillText("TABIGRAM", 84, 140);
+      ctx.textAlign = "right";
+      ctx.fillText(cdLocalDateStr().replace(/-/g, "."), W - 84, 140);
+      ctx.globalAlpha = 1;
+
+      // 標籤
+      ctx.textAlign = "center";
+      ctx.font = "700 40px 'JetBrains Mono', monospace";
+      ctx.fillStyle = accent;
+      ctx.fillText(view.share.during ? "ON THE ROAD" : "COUNTDOWN", W / 2, 420);
+
+      // 大數字（太長時自動縮小）
+      ctx.fillStyle = outer.text;
+      let size = 420;
+      ctx.font = `400 ${size}px 'Dela Gothic One', sans-serif`;
+      while (ctx.measureText(view.share.number).width > W - 160 && size > 160) {
+        size -= 20;
+        ctx.font = `400 ${size}px 'Dela Gothic One', sans-serif`;
+      }
+      ctx.fillText(view.share.number, W / 2, 820);
+      ctx.font = "900 72px 'Noto Sans TC', sans-serif";
+      ctx.fillText(view.share.during ? `DAY ${view.share.unit}` : view.share.unit, W / 2, 940);
+
+      // 旅行名稱（最多兩行）
+      ctx.font = "900 64px 'Noto Sans TC', sans-serif";
+      const title = trip.title || "我的旅行";
+      const lines = [];
+      let cur = "";
+      for (const ch of title) {
+        if (ctx.measureText(cur + ch).width > W - 200) { lines.push(cur); cur = ch; } else cur += ch;
+      }
+      if (cur) lines.push(cur);
+      lines.slice(0, 2).forEach((ln, i) => ctx.fillText(ln, W / 2, 1090 + i * 84));
+
+      // 票券資訊卡
+      const cardX = 96, cardY = 1290, cardW = W - 192, cardH = 420;
+      drawCardPaperTexture(ctx, cardX, cardY, cardW, cardH, 36, inner.bg, appState.paperTexture);
+      const daysCount = Math.max(1, (trip.days || []).length);
+      const startLabel = getDayFormattedDateString(trip.startDate, 0);
+      const endLabel = getDayFormattedDateString(trip.startDate, daysCount - 1);
+      const city = ((trip.days || [])[0] || {}).location || "";
+      const flight = countdownState.schedule.find(e => e.item.type === "flight");
+      const rows = [
+        ["出發", startLabel],
+        ["回程", daysCount > 1 ? endLabel : startLabel]
+      ];
+      if (!flight || !city) rows.push(["天數", `${daysCount} 天`]);
+      if (city) rows.push(["目的地", city]);
+      if (flight) rows.push(["航班", `${flight.item.depIata || ""} ✈ ${flight.item.arrIata || ""} ${flight.item.flightNo || ""}`.trim()]);
+      ctx.textAlign = "left";
+      rows.slice(0, 4).forEach(([k, v], i) => {
+        const y = cardY + 92 + i * 72;
+        ctx.fillStyle = inner.text;
+        ctx.globalAlpha = 0.55;
+        ctx.font = "700 32px 'Noto Sans TC', sans-serif";
+        ctx.fillText(k, cardX + 56, y);
+        ctx.globalAlpha = 1;
+        ctx.font = "900 38px 'Noto Sans TC', sans-serif";
+        ctx.textAlign = "right";
+        ctx.fillText(v, cardX + cardW - 56, y);
+        ctx.textAlign = "left";
+      });
+      // 進度條
+      const barY = cardY + cardH - 56;
+      drawRoundedRect(ctx, cardX + 56, barY, cardW - 112, 16, 8, "rgba(0,0,0,0.08)");
+      drawRoundedRect(ctx, cardX + 56, barY, Math.max(16, (cardW - 112) * view.pct), 16, 8, accent);
+
+      ctx.textAlign = "center";
+      ctx.fillStyle = outer.text;
+      ctx.globalAlpha = 0.6;
+      ctx.font = "700 30px 'Noto Sans TC', sans-serif";
+      ctx.fillText(view.share.during ? "旅行進行中" : "期待出發中", W / 2, 1830);
+      ctx.globalAlpha = 1;
+      return canvas;
+    }
+
+    async function openCountdownShare() {
+      const canvas = await drawCountdownShareCanvas();
+      if (!canvas) return;
+      countdownShareCanvas = canvas;
+      const img = document.getElementById("countdownSharePreview");
+      if (img) img.src = canvas.toDataURL("image/jpeg", 0.9);
+      openModalBackdrop("countdownShareModal");
+    }
+
+    async function exportCountdownShareCard() {
+      const canvas = countdownShareCanvas || await drawCountdownShareCanvas();
+      if (!canvas) return;
+      await shareCanvasViaNativeOrDownload(canvas, `tabigram-countdown-${cdLocalDateStr()}.png`);
     }
 
   </script>

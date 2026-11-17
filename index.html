@@ -1733,6 +1733,11 @@
     .wn-list { list-style: none; margin: 0; padding: 0; }
     .wn-list li { padding: 11px 0; border-top: 1px dashed var(--border); font-size: 13.5px; color: var(--sub); line-height: 1.6; }
     .wn-list b { display: block; color: var(--ink); font-size: 15px; margin-bottom: 1px; }
+
+    /* 封測標示：主標題右上方的 .beta（點一下打開意見回饋） */
+    .beta-tag { display: inline-block; vertical-align: super; margin-left: 1px; padding: 0; border: 0; background: none; font-family: var(--mono); font-weight: 800; font-size: 10.5px; letter-spacing: .02em; line-height: 1; color: var(--accent); cursor: pointer; position: relative; top: -2px; }
+    .beta-tag.ld-beta { font-size: 13px; top: -10px; cursor: default; }
+    .app-header .beta-tag { margin-left: -9px; align-self: flex-start; margin-top: 2px; vertical-align: baseline; top: 0; }
 </style>
 </head>
 <body>
@@ -1743,7 +1748,7 @@
         <div class="ld-top"><button type="button" class="ld-link" onclick="landingAction('login')">登入</button></div>
         <div class="ld-mid">
           <div class="tg-ring ld-ring" role="img" aria-label="TabigrAm 圓形標誌"></div>
-          <h1 class="ld-word">TabigrAm</h1>
+          <h1 class="ld-word">TabigrAm<span class="beta-tag ld-beta" aria-label="封測版">.beta</span></h1>
           <p class="ld-tag">把旅程排好，把回憶收好。</p>
         </div>
         <div class="ld-btns">
@@ -1811,7 +1816,7 @@
       <!-- 左側：Logo + 品牌字 + 新增按鈕 -->
       <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
         
-        <span style="font-family: 'Dela Gothic One', sans-serif; font-size: 19px; letter-spacing: 1px; margin-right: 2px;">TabigrAm</span>
+        <span style="font-family: 'Dela Gothic One', sans-serif; font-size: 19px; letter-spacing: 1px; margin-right: 2px;">TabigrAm</span><button type="button" class="beta-tag" onclick="openFeedback()" title="封測版：歡迎回報問題">.beta</button>
         
       </div>
 

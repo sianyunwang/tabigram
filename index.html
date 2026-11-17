@@ -1720,6 +1720,8 @@
     .guide-steps small { display: block; color: var(--sub); font-size: 12.5px; }
     .guide-actions { display: grid; gap: 8px; }
     .guide-actions .pill-btn { justify-content: center; padding: 11px; min-height: 44px; }
+    .guide-warn { background: var(--accent-soft); color: var(--ink) !important; border-radius: 12px; padding: 10px 12px; font-size: 13px !important; line-height: 1.65; }
+    .guide-warn b { color: var(--accent); }
     .guide-prompt { background: var(--card2, #F4F1EA); border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.6; margin-bottom: 10px; white-space: pre-wrap; }
 
     .mem-pick-wrap { position: relative; }
@@ -1742,6 +1744,250 @@
     /* 地圖按鈕：已設定 Google 地圖連結時，文字變品牌色＋右上角小圓點（不加字，避免擁擠） */
     .footer-text-btn.map-set { color: var(--accent) !important; position: relative; }
     .footer-text-btn.map-set::after { content: ""; position: absolute; top: 3px; right: 1px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+    /* ---------- 右上角：編輯鎖、選單 ---------- */
+    .icon-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); color: var(--ink); display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; flex: none; transition: background .15s ease, border-color .15s ease, color .15s ease; }
+    .icon-btn svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .icon-btn:active { transform: scale(.94); }
+    .lock-btn { color: var(--sub); }
+    .lock-btn.on { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+    .menu-anchor { position: relative; display: flex; align-items: center; }
+    .menu-btn svg.menu-lines { width: 20px; height: 20px; stroke-width: 2.2; }
+    .menu-btn.open { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+    .menu-btn.has-avatar { width: auto; padding: 0 9px 0 4px; gap: 4px; border-radius: 999px; }
+    .menu-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+    .menu-btn.has-avatar svg.menu-lines { width: 17px; height: 17px; }
+    .hd-menu { position: absolute; right: 0; top: calc(100% + 8px); width: 236px; max-height: calc(100dvh - 220px); overflow-y: auto; overscroll-behavior: contain; z-index: 600; padding: 6px; border-radius: 18px; background: var(--card); border: 1px solid var(--border); box-shadow: 0 16px 40px rgba(0,0,0,.16); animation: hdIn .16s ease-out; }
+    @keyframes hdIn { from { opacity: 0; transform: translateY(-4px) scale(.98); } to { opacity: 1; transform: none; } }
+    .hd-menu .dropdown-item { display: flex; align-items: center; gap: 6px; width: 100%; min-height: 40px; padding: 8px 12px; border: 0; background: none; border-radius: 11px; text-align: left; font-family: var(--sans); font-size: 14px; font-weight: 700; color: var(--ink); cursor: pointer; }
+    .hd-menu .dropdown-item:hover, .hd-menu .dropdown-item:focus-visible { background: rgba(0,0,0,.05); outline: none; }
+    .hd-menu .hd-account { font-weight: 900; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; line-height: 24px; }
+    .hd-sec { margin: 6px 6px 0; padding: 8px 6px 3px; border-top: 1px solid var(--border); font-size: 11px; font-weight: 800; letter-spacing: .12em; color: var(--sub); }
+    .hd-soon { margin-left: auto; font-size: 10.5px; font-weight: 900; color: var(--accent); }
+    .hd-prefs { margin: 6px 6px 0; padding: 8px 4px 2px; border-top: 1px solid var(--border); display: grid; gap: 8px; }
+    .hd-pref { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 800; color: var(--sub); }
+    .hd-pref .theme-select-pill { padding: 5px 24px 5px 10px; font-size: 12px; background-color: var(--card); }
+    .hd-legal { display: flex; justify-content: center; gap: 6px; padding: 10px 4px 4px; font-size: 11.5px; color: var(--sub); }
+    .hd-legal a { color: var(--sub); text-decoration: none; font-weight: 700; }
+    .hd-legal a:hover { color: var(--ink); text-decoration: underline; }
+
+    /* ---------- 卡片：我到了、心情 ---------- */
+    .card-chip-row { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+    .card-chip { display: inline-flex; align-items: center; gap: 5px; min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1px dashed var(--border); background: var(--card); color: var(--sub); font-family: var(--sans); font-size: 13px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+    .card-chip svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linejoin: round; flex: none; }
+    .checkin-chip { border-style: solid; color: var(--ink); }
+    .checkin-chip.now { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(200, 75, 49, .25); }
+    .checkin-chip.now small { font-size: 11px; font-weight: 700; opacity: .85; }
+    .checkin-chip.done { border-style: solid; border-color: transparent; background: var(--accent-soft); color: var(--accent); }
+    .checkin-chip.done svg { fill: currentColor; }
+    .checkin-chip.done svg circle { fill: var(--accent-soft); stroke: none; }
+    .mood-chip .mood-plus { font-size: 14px; line-height: 1; }
+    .mood-chip.stamped { border-style: solid; border-color: var(--accent); background: var(--accent-soft); padding: 0 10px; }
+    .mood-chip .mood-emoji { font-size: 17px; line-height: 1; }
+    .card-chip-row .emoji-popover { top: 40px; left: 0; right: auto; }
+    .done-card .card-title-row, .cancelled-card .card-title-row { padding-right: 104px; }
+
+    /* ---------- 當日回顧 ---------- */
+    .day-recap { background: var(--card); border: 1px solid var(--border); border-radius: 22px; padding: 14px 16px 16px; margin-bottom: 14px; position: relative; overflow: hidden; }
+    .day-recap::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--accent); }
+    .dr-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    .dr-kicker { font-family: var(--mono); font-size: 12px; font-weight: 800; letter-spacing: .08em; color: var(--accent); }
+    .dr-date { font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--sub); }
+    .dr-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+    .dr-stats div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .dr-stats b { font-family: var(--mono); font-size: 19px; font-weight: 800; color: var(--ink); line-height: 1.15; overflow-wrap: anywhere; }
+    .dr-stats b small { font-size: 12px; color: var(--sub); font-weight: 700; }
+    .dr-stats .dr-spend b { font-size: 14px; line-height: 1.35; }
+    .dr-stats span { font-size: 11.5px; font-weight: 700; color: var(--sub); }
+    .dr-moods { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 12px; font-size: 20px; line-height: 1.2; }
+    .dr-photos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 12px; }
+    .dr-photos img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; cursor: pointer; display: block; }
+    .dr-tip { margin: 12px 0 0; font-size: 12.5px; color: var(--sub); line-height: 1.6; }
+
+    /* ---------- 拍立得：直接在照片上調整 ---------- */
+    .polaroid-hint { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 14px; background: var(--card2, #F4F1EA); font-size: 12.5px; color: var(--sub); line-height: 1.5; }
+    .polaroid-hint b { display: block; color: var(--ink); font-size: 13.5px; }
+
+    /* ---------- 所在城市查不到時 ---------- */
+    .day-city-wrap.warn, html[data-mode="dark"] body .day-city-wrap.warn { border: 1.5px dashed var(--accent) !important; }
+
+    /* ---------- 提示訊息 ---------- */
+    .app-toast { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 16px); transform: translateX(-50%); z-index: 2400; width: max-content; max-width: calc(100vw - 32px); background: var(--ink); color: var(--bg); border-radius: 16px; padding: 11px 16px; font-weight: 800; font-size: 13.5px; line-height: 1.55; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,.25); animation: hdIn .18s ease-out; cursor: pointer; }
+
+    /* ---------- 深色模式：白字白底修正（底部列、＋、編號圓圈等） ---------- */
+    html[data-mode="dark"] body .dock-tab { color: var(--sub); }
+    html[data-mode="dark"] body :is(.dock-tab.active, .footer-corner-toggle.expanded, .share-tool-tab.active, .offline-pill, .story-expand-btn) {
+      background: var(--ink) !important; color: var(--bg) !important; border-color: var(--ink) !important;
+    }
+    html[data-mode="dark"] body .floating-add-circle { background: var(--accent) !important; color: var(--bg) !important; border-color: transparent !important; }
+    html[data-mode="dark"] body :is(.step-circle, .now-badge) { color: var(--bg) !important; }
+    html[data-mode="dark"] body .checkin-chip.now { color: var(--bg); box-shadow: none; }
+    html[data-mode="dark"] body .card-chip { background: var(--card2); }
+    html[data-mode="dark"] body .checkin-chip.done { background: var(--accent-soft); border-color: transparent; }
+    html[data-mode="dark"] body .checkin-chip.now { background: var(--accent); border-color: var(--accent); }
+    html[data-mode="dark"] body .card-footer { border-top-color: var(--border); }
+    html[data-mode="dark"] body .hd-menu .dropdown-item:hover { background: rgba(255,255,255,.06); }
+    html[data-mode="dark"] body .day-recap { background: var(--card) !important; }
+
+    /* ---------- 深色模式 × Silver：深色陽極氧化金屬（石墨鈦） ---------- */
+    html[data-mode="dark"] body.theme-metallic {
+      --bg: #0C0F14 !important; --card: #1A1F27 !important; --card2: #232A34;
+      --ink: #E4E9F0 !important; --sub: #8E99A9 !important; --border: #2D3541 !important;
+      --accent: #5BC0EB !important; --accent-soft: #10303E !important;
+    }
+    html[data-mode="dark"] body.theme-metallic::before {
+      display: block !important;
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px),
+        linear-gradient(var(--metal-deg), #0A0D11 0%, #1B212A 38%, #0E1217 68%, #181E26 100%);
+    }
+    html[data-mode="dark"] body.theme-metallic { background: transparent !important; }
+    html[data-mode="dark"] body.theme-metallic :is(.app-header, .day-weather-card, .bottom-dock) {
+      background: linear-gradient(var(--metal-deg), rgba(62,71,84,0.86) 0%, rgba(32,38,47,0.84) 48%, rgba(22,27,34,0.88) 52%, rgba(48,56,68,0.84) 100%) !important;
+      border-color: rgba(255,255,255,0.10) !important;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.14) !important;
+    }
+    html[data-mode="dark"] body.theme-metallic :is(.timeline-card, .day-recap) {
+      background: linear-gradient(var(--metal-deg), #242B35 0%, #1A1F27 46%, #161A21 54%, #20262F 100%) !important;
+      border-color: rgba(255,255,255,0.08) !important;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+    }
+    html[data-mode="dark"] body.theme-metallic .timeline-card.now-active { border-color: var(--accent) !important; }
+    html[data-mode="dark"] body.theme-metallic .checkin-chip.now { box-shadow: 0 0 0 1px rgba(91,192,235,.4), 0 4px 14px rgba(91,192,235,.25); }
+
+    /* ---------- 深色模式 × Lilac：深紫夜空＋薰衣草 ---------- */
+    html[data-mode="dark"] body.theme-lilac {
+      --bg: #130E22 !important; --card: #1F1833 !important; --card2: #2A2144;
+      --ink: #EFE9FB !important; --sub: #A99CC8 !important; --border: #382D55 !important;
+      --accent: #C3A6FF !important; --accent-soft: #2E2350 !important;
+    }
+    html[data-mode="dark"] body.theme-lilac::before {
+      display: block !important;
+      background: radial-gradient(circle at 15% 8%, #33245A 0%, #1B1430 46%, #0E0A19 100%);
+    }
+    html[data-mode="dark"] body.theme-lilac { background: transparent !important; }
+    html[data-mode="dark"] body.theme-lilac :is(.app-header, .day-weather-card, .bottom-dock) {
+      background: rgba(36, 27, 60, 0.78) !important;
+      border-color: rgba(195, 166, 255, 0.14) !important;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+    }
+    html[data-mode="dark"] body.theme-lilac :is(.timeline-card, .day-recap) {
+      background: var(--card) !important;
+      border-color: rgba(195, 166, 255, 0.12) !important;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.32) !important;
+    }
+    html[data-mode="dark"] body.theme-lilac .timeline-card.now-active { border-color: var(--accent) !important; box-shadow: 0 0 0 1px rgba(195,166,255,.25), 0 10px 28px rgba(110,70,220,.28) !important; }
+
+    /* ---------- 站牌（參考各地實際站牌重畫，不使用官方標誌檔） ---------- */
+    .rsign { --s: 30px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; flex: none; box-sizing: border-box;
+      width: var(--s); height: var(--s); font-family: 'Barlow Semi Condensed', 'Roboto Condensed', 'Arial Narrow', var(--sans); font-weight: 700; line-height: .92; color: #191919; background: #fff; letter-spacing: -.01em; }
+    .rsign .c { font-size: calc(var(--s) * .27); }
+    .rsign .n { font-size: calc(var(--s) * .42); margin-top: calc(var(--s) * .01); }
+    .rsign.only .c { font-size: calc(var(--s) * .4); }
+    .rsign .t { font-family: var(--sans); font-weight: 900; font-size: calc(var(--s) * .3); line-height: 1; white-space: nowrap; letter-spacing: 0; }
+    .rsign.metro { border-radius: 50%; border: calc(var(--s) * .12) solid var(--c); }
+    .rsign.jr { border-radius: calc(var(--s) * .2); border: calc(var(--s) * .11) solid var(--c); }
+    .rsign.pvt { border-radius: calc(var(--s) * .32); border: calc(var(--s) * .11) solid var(--c); }
+    .rsign.fillc { border-radius: 50%; background: var(--c); color: var(--fg); }
+    .rsign.fillr { width: calc(var(--s) * 1.24); border-radius: calc(var(--s) * .22); background: var(--c); color: var(--fg); }
+    .rsign.shin { width: auto; min-width: calc(var(--s) * 1.24); padding: 0 calc(var(--s) * .16); border-radius: calc(var(--s) * .18); border: calc(var(--s) * .08) solid var(--c); color: var(--c); }
+    .rsign.lbl { width: auto; min-width: calc(var(--s) * 1.24); padding: 0 calc(var(--s) * .16); }
+    html[data-mode="dark"] body .rsign.metro, html[data-mode="dark"] body .rsign.jr, html[data-mode="dark"] body .rsign.pvt, html[data-mode="dark"] body .rsign.shin { background: #fff; }
+
+    /* ---------- 車站選擇 ---------- */
+    .pick-entry { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 46px; margin-bottom: 8px; border: 1.5px solid var(--ink); border-radius: 14px; background: var(--ink); color: var(--bg); font-family: var(--sans); font-weight: 900; font-size: 15px; cursor: pointer; }
+    .pick-entry small { font-weight: 700; opacity: .7; font-size: 12px; }
+    .rp-sheet { max-width: 460px !important; }
+    .rp-regions { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 -2px 10px; padding: 0 2px; }
+    .rp-regions::-webkit-scrollbar { display: none; }
+    .rp-regions button { flex: none; border: 1px solid var(--border); background: var(--card); color: var(--sub); border-radius: 999px; padding: 6px 13px; font: 800 13px var(--sans); cursor: pointer; }
+    .rp-regions button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+    .rp-ctx { background: var(--card2, #F4F1EA); border-radius: 14px; padding: 9px 12px; font-size: 12.5px; color: var(--sub); margin-bottom: 10px; line-height: 1.6; }
+    .rp-ctx b { color: var(--ink); }
+    .rp-step { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 12px; margin-bottom: 10px; }
+    .rp-step-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; font-size: 12.5px; font-weight: 800; color: var(--sub); }
+    .rp-step-h .val { font-size: 17px; font-weight: 900; color: var(--ink); }
+    .rp-step-h button { border: 0; background: none; color: var(--accent); font: 800 13px var(--sans); cursor: pointer; white-space: nowrap; }
+    .rp-step.done { padding: 10px 12px; }
+    .rp-step.done .rp-step-h { margin: 0; }
+    .rp-sugs { display: grid; gap: 6px; }
+    .rp-sug { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 1px solid var(--border); background: var(--card); color: var(--ink); border-radius: 14px; padding: 9px 11px; cursor: pointer; font-family: var(--sans); }
+    .rp-sug.hot { border: 1.5px solid var(--accent); background: var(--accent-soft); }
+    .rp-sug .signs { display: flex; flex-wrap: wrap; gap: 3px; flex: none; max-width: 100px; }
+    .rp-sug .name { font-size: 16px; font-weight: 900; display: block; line-height: 1.35; }
+    .rp-sug .aka { font-size: 11.5px; font-weight: 700; display: block; line-height: 1.4; }
+    .rp-sug .why { font-size: 11.5px; color: var(--sub); font-weight: 600; display: block; line-height: 1.4; }
+    .rp-sug .go { margin-left: auto; font-size: 18px; color: var(--sub); }
+    .rp-more { width: 100%; margin-top: 8px; border: 1px dashed var(--border); background: none; color: var(--sub); border-radius: 12px; padding: 10px; font: 800 13px var(--sans); cursor: pointer; }
+    .rp-grp { font-size: 11.5px; font-weight: 800; color: var(--sub); letter-spacing: .06em; margin: 12px 2px 6px; }
+    .rp-lines { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px 4px; }
+    .rp-line { display: flex; flex-direction: column; align-items: center; gap: 5px; border: 0; background: none; cursor: pointer; padding: 5px 0; font-family: var(--sans); border-radius: 12px; color: var(--ink); }
+    .rp-line small { font-size: 10.5px; font-weight: 700; line-height: 1.25; text-align: center; overflow-wrap: anywhere; }
+    .rp-line .hint { font-size: 9.5px; font-weight: 800; color: #B23A20; margin-top: -3px; }
+    .rp-line .hint.gate { color: #9A5B00; }
+    .rp-line.on { background: var(--card2, #F4F1EA); }
+    .rp-strip-h { display: flex; align-items: center; gap: 8px; margin: 14px 2px 4px; font-size: 13.5px; font-weight: 900; }
+    .rp-strip-h em { font-style: normal; color: var(--sub); font-weight: 600; font-size: 11.5px; margin-left: auto; }
+    .rp-strip { overflow-x: auto; scroll-snap-type: x proximity; margin: 0 -12px; padding: 2px 12px 8px; scrollbar-width: none; }
+    .rp-strip::-webkit-scrollbar { display: none; }
+    .rp-strip-in { display: flex; width: max-content; }
+    .rp-st { width: 46px; display: flex; flex-direction: column; align-items: center; border: 0; background: none; cursor: pointer; padding: 0; scroll-snap-align: center; font-family: var(--sans); color: var(--ink); }
+    .rp-st .tag { height: 16px; font-size: 10px; font-weight: 900; color: var(--sub); white-space: nowrap; }
+    .rp-st .rail { position: relative; width: 100%; height: 26px; display: flex; align-items: center; justify-content: center; }
+    .rp-st .rail::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 6px; margin-top: -3px; background: var(--lc); }
+    .rp-st:first-child .rail::before { left: 50%; }
+    .rp-st:last-child .rail::before { right: 50%; }
+    .rp-strip.loop .rp-st:first-child .rail::before { left: 0; }
+    .rp-strip.loop .rp-st:last-child .rail::before { right: 0; }
+    .rp-st .dot { position: relative; z-index: 1; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 3.5px solid var(--lc); }
+    .rp-st.xf .dot { width: 18px; height: 18px; border-color: #191919; }
+    .rp-st.from .dot { background: var(--ink); border-color: var(--ink); transform: scale(1.3); }
+    .rp-st .rsign { --s: 28px; margin-top: 6px; }
+    .rp-st .nm { writing-mode: vertical-rl; text-orientation: upright; font-size: 12.5px; font-weight: 700; letter-spacing: .02em; margin-top: 6px; min-height: 64px; }
+    .rp-st.from .nm { font-weight: 900; }
+    .rp-st .xmini { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
+    .rp-st .xmini i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); display: block; }
+    .rp-route { width: 100%; text-align: left; border: 1.5px solid var(--accent); background: var(--accent-soft); color: var(--ink); border-radius: 16px; padding: 10px 12px; cursor: pointer; font-family: var(--sans); }
+    .rp-route .rt { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .rp-route .rt b { font-size: 16px; font-weight: 900; }
+    .rp-route .rt span { font-size: 11.5px; font-weight: 800; color: var(--accent); white-space: nowrap; }
+    .rp-route .why { font-size: 11.5px; color: var(--sub); font-weight: 600; margin-bottom: 6px; }
+    .rp-leg { display: flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 800; padding: 3px 0; }
+    .rp-leg .rsign { --s: 24px; }
+    .rp-leg small { color: var(--sub); font-weight: 700; margin-left: auto; white-space: nowrap; font-size: 11.5px; }
+    .rp-xfer { display: flex; align-items: center; gap: 6px; margin: 1px 0 1px 11px; padding: 2px 0 2px 12px; border-left: 2px dotted #B9B3A8; font-size: 12px; font-weight: 800; }
+    .rp-xt { display: inline-flex; align-items: center; border-radius: 999px; padding: 1px 8px; font-size: 11px; font-weight: 900; white-space: nowrap; }
+    .rp-xt.same { background: #E3F3E8; color: #16803C; }
+    .rp-xt.gate { background: #FFF1D6; color: #9A5B00; }
+    .rp-xt.walk { background: #FBE3DD; color: #B23A20; }
+    .rp-end { width: 100%; border: 0; border-radius: 999px; background: var(--ink); color: var(--bg); font: 900 15px var(--sans); padding: 12px; cursor: pointer; }
+    #feedbackModal { z-index: 2300; }   /* 從編輯視窗裡打開回報時要蓋在上面 */
+    .rp-report { display: block; width: 100%; margin-top: 6px; border: 0; background: none; color: var(--sub); font: 700 12.5px var(--sans); text-decoration: underline; cursor: pointer; padding: 8px; }
+    .fb-context { background: var(--card2, #F4F1EA); border-radius: 12px; padding: 9px 11px; margin-bottom: 8px; font-size: 12px; color: var(--sub); white-space: pre-wrap; line-height: 1.55; max-height: 140px; overflow: auto; }
+    .fb-context b { display: block; color: var(--ink); font-size: 12px; margin-bottom: 2px; }
+    .rp-note { font-size: 11px; color: var(--sub); text-align: center; margin: 10px 0 0; }
+    .rp-msg { text-align: center; color: var(--sub); font-size: 13.5px; padding: 24px 8px; }
+
+    /* ---------- 機場選擇 ---------- */
+    .ap-entry { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .ap-box { border: 1.5px solid var(--border); background: var(--card); border-radius: 14px; padding: 8px 10px; text-align: left; cursor: pointer; font-family: var(--sans); color: var(--ink); min-height: 58px; }
+    .ap-box b { display: block; font: 800 20px var(--mono); letter-spacing: .04em; }
+    .ap-box span { font-size: 11.5px; color: var(--sub); font-weight: 700; }
+    .ap-box.empty b { color: var(--sub); opacity: .5; }
+    .ap-arrow { font-size: 18px; color: var(--sub); }
+    .ap-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+    .ap-tabs button { border: 1.5px solid var(--border); background: var(--card); color: var(--sub); border-radius: 14px; padding: 8px; font-family: var(--sans); font-weight: 800; font-size: 12px; cursor: pointer; text-align: left; }
+    .ap-tabs button b { display: block; font: 800 18px var(--mono); color: var(--ink); }
+    .ap-tabs button.on { border-color: var(--accent); background: var(--accent-soft); }
+    .ap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .ap-btn { border: 1px solid var(--border); background: var(--card); color: var(--ink); border-radius: 12px; padding: 7px 4px; cursor: pointer; font-family: var(--sans); text-align: center; }
+    .ap-btn b { display: block; font: 800 16px var(--mono); }
+    .ap-btn span { font-size: 11px; font-weight: 700; color: var(--sub); line-height: 1.3; display: block; }
+    .ap-btn.hot { border-color: var(--accent); background: var(--accent-soft); }
+    .ap-btn.sel { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+    .ap-btn.sel span { color: var(--bg); opacity: .8; }
+    .ap-own { display: flex; gap: 6px; margin-top: 12px; }
+    .ap-own input { flex: 1; text-transform: uppercase; }
 </style>
 </head>
 <body>
@@ -1771,11 +2017,12 @@
         </div>
         <ol class="ld-list">
           <li><span class="n">01</span><div><b>一天一天排清楚</b>時間、地點、交通、花費一目了然。用電腦也能編輯，還能用試算表一次匯入整趟行程。</div></li>
-          <li><span class="n">02</span><div><b>路線圖分享卡</b>把搭過的地鐵、電車路線，做成可以發限動的路線圖卡片。</div></li>
-          <li><span class="n">03</span><div><b>和旅伴一起編</b>輸入 6 碼邀請碼就能加入。大家看同一份行程，私人筆記和照片各自保存。</div></li>
-          <li><span class="n">04</span><div><b>旅途中不用再翻</b>現在在哪個行程、下一站幾點，打開就知道。沒有網路也看得到行程。</div></li>
-          <li><span class="n">05</span><div><b>足跡與完成章</b>按「我到了」記下走過的地方。旅程結束蓋一枚章，收進旅程回憶。</div></li>
-          <li><span class="n">06</span><div><b>請 AI 幫你檢查</b>一鍵匯出行程，交給 ChatGPT、Claude 或 Gemini 檢查轉乘時間和動線。</div></li>
+          <li><span class="n">02</span><div><b>點車站，不用打字</b>從前後行程猜你在哪一站上車、要去哪，轉乘自動排好，連要不要出站轉乘都標清楚。台灣捷運、高鐵、台鐵，東京、大阪京都、首爾、舊金山、紐約都能用。機場也是點一下就好。</div></li>
+          <li><span class="n">03</span><div><b>路線圖分享卡</b>把搭過的地鐵、電車路線，用真實的路線顏色做成可以發限動的路線圖卡片。</div></li>
+          <li><span class="n">04</span><div><b>和旅伴一起編</b>輸入 6 碼邀請碼就能加入。大家看同一份行程，私人筆記和照片各自保存。</div></li>
+          <li><span class="n">05</span><div><b>旅途中不用再翻</b>現在在哪個行程、下一站幾點，打開就知道。沒有網路也看得到行程。</div></li>
+          <li><span class="n">06</span><div><b>足跡、當日回顧與完成章</b>按「我到了」記下走過的地方，每天結束有一張回顧。旅程結束蓋一枚章，收進旅程回憶。</div></li>
+          <li><span class="n">07</span><div><b>請 AI 幫你檢查</b>一鍵匯出行程，交給 ChatGPT、Claude 或 Gemini 檢查轉乘時間和動線。</div></li>
         </ol>
         <button type="button" class="ld-guide-link" onclick="openGuide()">第一次用？看使用教學 →</button>
       </section>
@@ -1827,85 +2074,61 @@
       <!-- 右側：編輯鎖、快速儲存鈕、漢堡選單 (等高垂直置中對齊) -->
       <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
         <span id="cloudSyncStatusBadge" style="font-size:11.5px; font-weight:800; color:var(--sub); padding:0 4px; display:none; align-items:center; gap:4px;">☁️ <span id="syncText">已同步</span></span>
-        <button class="pill-btn accent-outline" id="travelModeBtn" onclick="toggleTravelLockMode()" style="height: 34px; padding: 0 11px; display: inline-flex; align-items: center; justify-content: center; line-height: 1;">🔓</button>
+        <button type="button" class="icon-btn lock-btn" id="travelModeBtn" onclick="toggleTravelLockMode()" aria-label="編輯中，點一下鎖定" title="編輯中，點一下鎖定"></button>
 
-        <!-- 右上角整合型下拉選單按鈕 -->
-        <div style="position: relative; display: flex; align-items: center;">
-          <button class="pill-btn" id="menuToggleBtn" onclick="toggleHeaderDropdown()" style="height: 34px; padding: 0 12px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; font-weight: 700; font-size: 15px; line-height: 1;">
-            <img id="headerUserAvatarImg" src="" style="display:none; width:18px; height:18px; border-radius:50%; object-fit:cover;" />
-            <span style="display:inline-block; transform: translateY(-0.5px);">☰</span>
+        <!-- 右上角選單 -->
+        <div class="menu-anchor">
+          <button type="button" class="icon-btn menu-btn" id="menuToggleBtn" onclick="toggleHeaderDropdown()" aria-label="選單" aria-expanded="false" aria-controls="headerDropdownMenu">
+            <img id="headerUserAvatarImg" class="menu-avatar" src="" alt="" style="display:none;" />
+            <svg class="menu-lines" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 8.5h15M4.5 15.5h9"/></svg>
           </button>
 
-          <!-- 下拉選單內容 (預設隱藏) -->
-          <div id="headerDropdownMenu" style="display: none; position: absolute; right: 0; top: calc(100% + 8px); background: rgba(255,255,255,0.96); backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px); border: 1.5px solid var(--border); border-radius: 14px; box-shadow: 0 12px 30px rgba(0,0,0,0.14); width: 184px; z-index: 600; overflow: hidden; padding: 6px;">
-            <button class="dropdown-item" id="dropdownCloudBtn" onclick="openCloudModal(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 9px 12px; font-size: 13px; font-weight: 800; cursor: pointer; border-radius: 8px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-              登入
-            </button>
-            <button class="dropdown-item" id="dropdownProfileBtn" onclick="openProfileModal(); toggleHeaderDropdown();" style="display: none; width: 100%; text-align: left; background: none; border: none; padding: 9px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              個人設定
-            </button>
-            <button class="dropdown-item" onclick="openTripManager(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 9px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              我的旅程
-            </button>
-            <button class="dropdown-item" id="dropdownTripAdminBtn" onclick="openTripAdminModal(); toggleHeaderDropdown();" style="display: none; width: 100%; text-align: left; background: none; border: none; padding: 9px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              管理旅行
-            </button>
-            <button class="dropdown-item" onclick="openMemories(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 9px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              旅程回憶
-            </button>
-            <button class="dropdown-item" onclick="openArchiveModalWithEmail(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 9px 12px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              主題商店 <span style="font-size:10.5px; color:var(--accent); font-weight:900;">即將推出</span>
-            </button>
-            <div style="border-top: 1px dashed var(--border); margin: 4px 6px;"></div>
-            <button class="dropdown-item" onclick="exportTripMarkdownForAI(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              匯出 AI 健檢 (.md)
-            </button>
-            <button class="dropdown-item" onclick="openCsvImportModal(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              試算表匯入 / 範本
-            </button>
-            <button class="dropdown-item" onclick="exportBackupJSON(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              備份到這台裝置
-            </button>
-            <button class="dropdown-item" onclick="document.getElementById('backupImportInput').click(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              從備份檔還原
-            </button>
+          <div id="headerDropdownMenu" class="hd-menu" style="display: none;">
+            <button class="dropdown-item hd-account" id="dropdownCloudBtn" onclick="openCloudModal(); toggleHeaderDropdown();">登入</button>
+            <button class="dropdown-item" id="dropdownProfileBtn" onclick="openProfileModal(); toggleHeaderDropdown();" style="display: none;">個人設定</button>
+
+            <div class="hd-sec">旅程</div>
+            <button class="dropdown-item" onclick="openTripManager(); toggleHeaderDropdown();">我的旅程</button>
+            <button class="dropdown-item" id="dropdownTripAdminBtn" onclick="openTripAdminModal(); toggleHeaderDropdown();" style="display: none;">管理旅行</button>
+            <button class="dropdown-item" onclick="openMemories(); toggleHeaderDropdown();">旅程回憶</button>
+            <button class="dropdown-item" onclick="openArchiveModalWithEmail(); toggleHeaderDropdown();">主題商店 <span class="hd-soon">即將推出</span></button>
+
+            <div class="hd-sec">工具</div>
+            <button class="dropdown-item" onclick="openCsvImportModal(); toggleHeaderDropdown();">試算表匯入 / 範本</button>
+            <button class="dropdown-item" onclick="exportTripMarkdownForAI(); toggleHeaderDropdown();">匯出給 AI 健檢</button>
+            <button class="dropdown-item" onclick="exportBackupJSON(); toggleHeaderDropdown();">備份到這台裝置 <span class="hd-soon" id="backupAgeLabel"></span></button>
+            <button class="dropdown-item" onclick="document.getElementById('backupImportInput').click(); toggleHeaderDropdown();">從備份檔還原</button>
             <input type="file" id="backupImportInput" accept=".json,application/json" style="display:none;" onchange="importBackupJSON(event)" />
-            <button class="dropdown-item a2hs-menu-item" onclick="openA2hsGuide(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              加到主畫面
-            </button>
-            <button class="dropdown-item" onclick="openWhatsNew(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              更新內容
-            </button>
-            <button class="dropdown-item" onclick="openGuide(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              使用教學
-            </button>
-            <button class="dropdown-item" onclick="openFeedback(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              意見回饋
-            </button>
-            <button class="dropdown-item" onclick="showLanding(); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              關於 TabigrAm
-            </button>
-            <button class="dropdown-item" onclick="window.open('privacy.html', '_blank', 'noopener'); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              隱私權政策
-            </button>
-            <button class="dropdown-item" onclick="window.open('terms.html', '_blank', 'noopener'); toggleHeaderDropdown();" style="width: 100%; text-align: left; background: none; border: none; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; border-radius: 8px; color: var(--ink);">
-              服務條款
-            </button>
-            <div style="border-top: 1px dashed var(--border); margin: 4px 6px; padding-top: 6px; display: flex; align-items: center; justify-content: space-between; padding-left: 6px; padding-right: 4px;">
-              <span style="font-size: 11.5px; font-weight: 700; color: var(--sub);">風格</span>
-              <select class="theme-select-pill" id="uiThemeSelect" onchange="setUiMaterialTheme(this.value)" style="padding: 4px 22px 4px 9px; font-size: 11.5px;">
-                <option value="clean">Simple</option>
-                <option value="metallic">Silver</option>
-                <option value="lilac">Lilac</option>
-              </select>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 4px 2px 6px;">
-              <span style="font-size: 11.5px; font-weight: 700; color: var(--sub);">外觀</span>
-              <div class="mode-switch" role="group" aria-label="外觀">
-                <button type="button" data-mode="auto" onclick="setColorMode('auto')">自動</button>
-                <button type="button" data-mode="light" onclick="setColorMode('light')">淺色</button>
-                <button type="button" data-mode="dark" onclick="setColorMode('dark')">深色</button>
+            <button class="dropdown-item a2hs-menu-item" onclick="openA2hsGuide(); toggleHeaderDropdown();">加到主畫面</button>
+
+            <div class="hd-sec">說明</div>
+            <button class="dropdown-item" onclick="openGuide(); toggleHeaderDropdown();">使用教學</button>
+            <button class="dropdown-item" onclick="openWhatsNew(); toggleHeaderDropdown();">更新內容</button>
+            <button class="dropdown-item" onclick="openFeedback(); toggleHeaderDropdown();">意見回饋</button>
+            <button class="dropdown-item" onclick="showLanding(); toggleHeaderDropdown();">關於 TabigrAm</button>
+
+            <div class="hd-prefs">
+              <div class="hd-pref">
+                <span>風格</span>
+                <select class="theme-select-pill" id="uiThemeSelect" onchange="setUiMaterialTheme(this.value)">
+                  <option value="clean">Simple</option>
+                  <option value="metallic">Silver</option>
+                  <option value="lilac">Lilac</option>
+                </select>
               </div>
+              <div class="hd-pref">
+                <span>外觀</span>
+                <div class="mode-switch" role="group" aria-label="外觀">
+                  <button type="button" data-mode="auto" onclick="setColorMode('auto')">自動</button>
+                  <button type="button" data-mode="light" onclick="setColorMode('light')">淺色</button>
+                  <button type="button" data-mode="dark" onclick="setColorMode('dark')">深色</button>
+                </div>
+              </div>
+            </div>
+            <div class="hd-legal">
+              <a href="privacy.html" target="_blank" rel="noopener" onclick="toggleHeaderDropdown()">隱私權政策</a>
+              <span aria-hidden="true">·</span>
+              <a href="terms.html" target="_blank" rel="noopener" onclick="toggleHeaderDropdown()">服務條款</a>
             </div>
           </div>
         </div>
@@ -2001,6 +2224,7 @@
           <button type="button" class="fb-cat" data-cat="love" onclick="pickFeedbackCat('love')">我很喜歡</button>
           <button type="button" class="fb-cat" data-cat="other" onclick="pickFeedbackCat('other')">其他</button>
         </div>
+        <div class="fb-context" id="feedbackContext" style="display:none;"></div>
         <textarea class="form-input" id="feedbackMessageInput" rows="4" maxlength="2000" placeholder="想說什麼都可以，一句話也很好" style="resize:vertical;"></textarea>
         <input type="email" class="form-input" id="feedbackEmailInput" placeholder="Email（選填，需要回覆時才填）" autocomplete="email" style="margin-top:8px;" />
         <button type="button" class="pill-btn primary" id="feedbackSubmitBtn" style="width:100%; justify-content:center; padding:11px; margin-top:10px;" onclick="sendFeedback()">送出</button>
@@ -2053,7 +2277,9 @@
       </div>
       <div class="guide-tabs" role="tablist">
         <button type="button" class="guide-tab" data-g="start" onclick="openGuide('start')">開始使用</button>
+        <button type="button" class="guide-tab" data-g="rail" onclick="openGuide('rail')">選車站・機場</button>
         <button type="button" class="guide-tab" data-g="csv" onclick="openGuide('csv')">試算表匯入</button>
+        <button type="button" class="guide-tab" data-g="backup" onclick="openGuide('backup')">備份資料</button>
         <button type="button" class="guide-tab" data-g="ai" onclick="openGuide('ai')">AI 健檢</button>
         <button type="button" class="guide-tab" data-g="desktop" onclick="openGuide('desktop')">電腦版</button>
         <button type="button" class="guide-tab" data-g="share" onclick="openGuide('share')">旅伴與分享</button>
@@ -2065,10 +2291,41 @@
         <p>不用登入也能用，資料會先存在這台裝置。想跟旅伴共用或換手機時，再登入就好。</p>
         <ol class="guide-steps">
           <li><div><b>建立旅程</b><small>上方「＋ 新增旅行」，點旅程名稱可以改名字和出發日期。</small></div></li>
-          <li><div><b>加入行程</b><small>按右下角黑色的「＋」，選類型（交通、景點、餐廳…），填時間和地點。</small></div></li>
+          <li><div><b>加入行程</b><small>按右下角黑色的「＋」，選類型（交通、景點、餐廳…），填時間和地點。交通可以按「點選車站」，不用打字。</small></div></li>
           <li><div><b>出發後</b><small>打開 App 就會顯示現在在哪個行程、下一站幾點。到了可以按定位圖示打卡。</small></div></li>
         </ol>
+        <p class="guide-warn"><b>記得備份：</b>沒登入時，行程只存在這台裝置。清除瀏覽器資料或換手機就會不見，建議登入，或定期「備份到這台裝置」。</p>
         <div class="guide-actions"><button type="button" class="pill-btn" onclick="openGuide('csv')">行程很多？用試算表一次匯入 →</button></div>
+      </section>
+
+      <section class="guide-panel" data-g="rail">
+        <h3>點車站、點機場，不用打字</h3>
+        <p>新增「交通」行程時，按黑色的「點選車站」。</p>
+        <ol class="guide-steps">
+          <li><div><b>選上車站</b><small>App 會從前一個行程找附近的車站；旅行當天也可以按「用我的位置」。「原宿」和「明治神宮前」這種同一個地方的車站會合成一張卡。</small></div></li>
+          <li><div><b>點一下排好的走法</b><small>知道下一個行程要去哪，就會排好轉乘最少的走法，點一下所有欄位都填好。</small></div></li>
+          <li><div><b>想自己選也可以</b><small>點路線標誌，在路線圖上點下車站。到站後 App 會問要不要再轉乘。</small></div></li>
+        </ol>
+        <p>換車方式會自動標示：<b>同站轉乘</b>（不用出閘門）、<b>出閘門再進站</b>（不同公司）、<b>站外步行</b>（要走到另一個站）。後兩種會自動勾「需站外轉乘／跨系統」。</p>
+        <p>目前有：台灣（台北、新北、桃園、台中、高雄捷運、高鐵、台鐵）、東京（含近郊私鐵、新幹線）、大阪・京都、首爾、舊金山、紐約。路線資料第一次使用時才下載，之後沒網路也能用。</p>
+        <p><b>航班</b>：按出發、抵達的大方塊，點城市就好，不用記機場代號。</p>
+        <p class="guide-warn"><b>幫我們把資料變準：</b>走過發現換車方式、步行時間或站名不對，在「選車站」最下面按「告訴我們」，會自動附上你看到的路線，寫一句哪裡不對就好。</p>
+        <p style="font-size:12px;">車站資料 © OpenStreetMap contributors；台鐵：臺鐵開放資料。步行時間、轉乘建議是估算，實際請以現場指標為準。</p>
+      </section>
+
+      <section class="guide-panel" data-g="backup">
+        <h3>別讓行程不見</h3>
+        <p>行程存在哪裡，看你有沒有登入：</p>
+        <ol class="guide-steps">
+          <li><div><b>登入（最推薦）</b><small>登入後行程自動同步到雲端，換手機、換電腦登入同一個帳號就回來了。</small></div></li>
+          <li><div><b>備份到這台裝置</b><small>選單 →「備份到這台裝置」，會存一個備份檔。可以傳到雲端硬碟或 LINE 給自己保管。</small></div></li>
+          <li><div><b>從備份檔還原</b><small>換手機時，選單 →「從備份檔還原」，選剛才的檔案。</small></div></li>
+        </ol>
+        <p class="guide-warn"><b>只存在這台裝置的東西：</b>沒登入時的所有行程，以及「旅程回憶」裡上傳的精選照片。清除瀏覽器資料、換手機前，記得先備份。</p>
+        <div class="guide-actions">
+          <button type="button" class="pill-btn primary" onclick="closeModalBackdrop('guideModal'); openCloudModal();">登入</button>
+          <button type="button" class="pill-btn" onclick="exportBackupJSON()">現在備份</button>
+        </div>
       </section>
 
       <section class="guide-panel" data-g="csv">
@@ -2132,6 +2389,16 @@
   </div>
 
   <!-- 電腦版第一次打開的提示 -->
+  <!-- 備份提醒：沒登入、或很久沒備份時出現 -->
+  <div class="a2hs-card" id="backupTipCard" role="dialog" aria-label="備份提醒">
+    <div class="tg-ring" aria-hidden="true"></div>
+    <p id="backupTipText"></p>
+    <div class="a2hs-actions">
+      <button type="button" class="go" id="backupTipGo"></button>
+      <button type="button" class="later" onclick="snoozeBackupTip()">之後再說</button>
+    </div>
+  </div>
+
   <div class="a2hs-card" id="desktopTipCard" role="dialog" aria-label="電腦版提示">
     <div class="tg-ring" aria-hidden="true"></div>
     <p><b>在電腦上排行程更快</b>可以用 Excel／Google 試算表一次匯入整趟行程，也能一鍵請 AI 幫你檢查。</p>
@@ -2243,6 +2510,7 @@
 
         <!-- Transit / Ferry Multi-Leg Builder -->
         <div id="transitFieldsBox" style="display:none; margin-top:10px;">
+          <button type="button" class="pick-entry" onclick="openRailPicker()">點選車站 <small>不用打字，轉乘自動排好</small></button>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <span style="font-size:12.5px; font-weight:800;">🚃 路線分段</span>
             <button type="button" class="mini-btn" onclick="addTransitLegRow()">＋ 新增轉乘段</button>
@@ -2252,7 +2520,12 @@
 
         <!-- Flight Fields -->
         <div id="flightFieldsBox" style="display:none; margin-top:10px;">
-          <div class="form-row-2">
+          <div class="ap-entry">
+            <button type="button" class="ap-box empty" id="apDepBox" onclick="openAirportPicker('dep')"></button>
+            <span class="ap-arrow" aria-hidden="true">→</span>
+            <button type="button" class="ap-box empty" id="apArrBox" onclick="openAirportPicker('arr')"></button>
+          </div>
+          <div class="form-row-2" style="display:none;">
             <div>
               <label class="form-label">出發機場 IATA</label>
               <input type="text" class="form-input" id="fDepIata" placeholder="TPE" style="text-transform:uppercase;" />
@@ -2352,6 +2625,10 @@
             <label class="form-label">預定費用 / 票價</label>
             <input type="number" class="form-input" id="fCost" placeholder="0" />
           </div>
+        </div>
+        <div style="margin-top:8px;">
+          <label class="form-label">費用名目</label>
+          <input type="text" class="form-input" id="fCostLabel" maxlength="30" placeholder="這筆錢花在什麼？例如：門票、車資、住宿（選填）" />
         </div>
 
         <div style="margin-top:10px; background:#FAF8F4; padding:10px; border-radius:12px; border:1px dashed var(--border);">
@@ -2554,18 +2831,14 @@
 
           <!-- Polaroid Frame Sliders -->
           <div id="polaroidControlsBox" style="display:none;">
-            <div class="compact-slider-row">
-              <span>相片縮放</span>
-              <input type="range" id="photoZoomRange" min="1" max="2.6" step="0.05" value="1" oninput="renderStoryCanvas()" />
+            <div class="polaroid-hint">
+              <span><b>直接在上面的照片調整</b>單指拖曳移動・兩指縮放</span>
+              <button type="button" class="mini-btn" onclick="resetPolaroidPhoto()">重設</button>
             </div>
-            <div class="compact-slider-row">
-              <span>水平移動</span>
-              <input type="range" id="photoPanXRange" min="-150" max="150" step="2" value="0" oninput="renderStoryCanvas()" />
-            </div>
-            <div class="compact-slider-row">
-              <span>垂直移動</span>
-              <input type="range" id="photoPanYRange" min="-150" max="150" step="2" value="0" oninput="renderStoryCanvas()" />
-            </div>
+            <!-- 照片位置與大小（手勢調整時更新，不顯示） -->
+            <input type="hidden" id="photoZoomRange" value="1" />
+            <input type="hidden" id="photoPanXRange" value="0" />
+            <input type="hidden" id="photoPanYRange" value="0" />
           </div>
         </div>
 
@@ -3102,7 +3375,7 @@
     // JR 東日本色碼來源：Wikipedia「Module:Adjacent stations/JR East」
     const TRANSIT_LINE_COLORS = [
       // ---------- JR 東日本 ----------
-      { keys: ["山手", "yamanote"], color: "#B1CB39" },
+      { keys: ["山手", "山の手", "yamanote"], color: "#B1CB39" },
       { keys: ["京濱東北", "京浜東北", "根岸", "keihin"], color: "#1DAED1" },
       { keys: ["中央線快速", "中央快速", "中央線(快速)", "中央線（快速）", "青梅", "五日市", "chuo rapid"], color: "#DD6935" },
       { keys: ["中央線", "chuo"], color: "#DD6935" },
@@ -3466,6 +3739,7 @@
           if (it.endDayOffset != null) it.endDayOffset = Math.max(-3, Math.min(3, parseInt(it.endDayOffset, 10) || 0));
           if (it.currency != null) it.currency = stripMarkup(it.currency, 8);
           if (it.mood != null) it.mood = stripMarkup(it.mood, 16);
+          if (it.costLabel != null) it.costLabel = stripMarkup(it.costLabel, 30);
           if (it.mapUrl != null) it.mapUrl = /^https:\/\//i.test(String(it.mapUrl)) ? String(it.mapUrl).slice(0, 500) : "";
           if (it.checkin != null) {
             const c = it.checkin;
@@ -3649,13 +3923,51 @@
       return null;
     }
 
-    function getLineBrandColor(lineName, idx = 0, customColor = "") {
+    // 國家名稱：範圍太大，天氣抓的是國土中心，不準
+    const COUNTRY_NAMES = new Set(["日本", "台灣", "臺灣", "韓國", "南韓", "北韓", "美國", "泰國", "越南", "中國", "大陸", "馬來西亞", "印尼", "菲律賓", "柬埔寨", "寮國", "緬甸", "印度", "英國", "法國", "德國", "義大利", "西班牙", "葡萄牙", "瑞士", "荷蘭", "奧地利", "捷克", "希臘", "土耳其", "澳洲", "紐西蘭", "加拿大", "墨西哥", "冰島", "芬蘭", "挪威", "瑞典", "丹麥",
+      "japan", "taiwan", "korea", "south korea", "usa", "us", "united states", "america", "thailand", "vietnam", "china", "malaysia", "indonesia", "philippines", "uk", "united kingdom", "england", "france", "germany", "italy", "spain", "portugal", "switzerland", "australia", "new zealand", "canada", "mexico", "iceland"]);
+    // 當日「所在城市」查座標：ok / broad（國家）/ notfound / offline
+    async function geocodeDayLocation(name) {
+      const clean = normalizeStationName(name);
+      if (!clean) return { status: "notfound" };
+      if (COUNTRY_NAMES.has(clean.toLowerCase())) return { status: "broad" };
+      const sync = lookupStationCoordSync(clean);
+      if (sync) return { status: "ok", coord: sync };
+      appState.dayLocCache = appState.dayLocCache || {};
+      const hit = appState.dayLocCache[clean];
+      if (hit) return hit;
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=zh-TW,en&q=${encodeURIComponent(clean)}`);
+        if (!res.ok) return { status: "offline" };
+        const data = await res.json();
+        if (!Array.isArray(data) || !data.length) return { status: "notfound" };
+        const r = data[0];
+        const out = (r.addresstype === "country" || Number(r.place_rank) <= 4)
+          ? { status: "broad" }
+          : { status: "ok", coord: { lat: +(+r.lat).toFixed(4), lng: +(+r.lon).toFixed(4) } };
+        const keys = Object.keys(appState.dayLocCache);
+        if (keys.length > 80) delete appState.dayLocCache[keys[0]];
+        appState.dayLocCache[clean] = out;
+        saveAppState();
+        return out;
+      } catch (e) {
+        return { status: "offline" };
+      }
+    }
+
+    function getLineBrandColor(lineName, idx = 0, customColor = "", fallbackText = "") {
       if (customColor && customColor.startsWith("#")) return customColor;
-      if (!lineName) return ["#0070BD", "#E3002C", "#F8B61C", "#008659"][idx % 4];
-      const name = String(lineName).toLowerCase();
-      const hit = TRANSIT_LINE_COLOR_INDEX.find(e => name.includes(e.key));
-      if (hit) return hit.color;
+      // 先看路線欄；沒對到再看行程標題、副標題（例如路線欄空白、只在標題寫「搭山手線」）
+      for (const t of [lineName, fallbackText]) {
+        if (!t) continue;
+        const name = String(t).toLowerCase();
+        const hit = TRANSIT_LINE_COLOR_INDEX.find(e => name.includes(e.key));
+        if (hit) return hit.color;
+      }
       return ["#0070BD", "#E3002C", "#F8B61C", "#008659"][idx % 4];
+    }
+    function lineColorHint(item, legs) {
+      return legs && legs.length === 1 && item ? `${item.subtitle || ""} ${item.title || ""} ${item.note || ""}` : "";
     }
 
     function formatCoordString(lat, lng) {
@@ -3729,10 +4041,18 @@
       let coord = null;
       if (day.location && day.location.trim()) {
         const locName = day.location.trim();
-        coord = lookupStationCoordSync(locName);
-        if (!coord) {
-          coord = await geocodeStationOnline(locName, trip.homeTz);
+        const r = await geocodeDayLocation(locName);
+        if (r.status === "ok") coord = r.coord;
+        else if (manualClick && r.status === "broad") {
+          showToast(`「${locName}」是國家，範圍太大，天氣會不準。請改填城市，例如：東京、大阪、首爾。這次先用行程裡的地點抓天氣。`, 5200);
+        } else if (manualClick && r.status === "notfound") {
+          showToast(`找不到「${locName}」這個地方。可以改用城市全名或英文試試（例如 Kyoto）。這次先用行程裡的地點抓天氣。`, 5200);
         }
+        const wrap = document.querySelector(".day-city-wrap");
+        if (wrap) wrap.classList.toggle("warn", r.status === "broad" || r.status === "notfound");
+      } else {
+        const wrap = document.querySelector(".day-city-wrap");
+        if (wrap) wrap.classList.remove("warn");
       }
       if (!coord) {
         coord = detectDayTargetCoord(day, trip);
@@ -3884,16 +4204,13 @@
       }
 
       const tmBtn = document.getElementById("travelModeBtn");
-      if (appState.travelLockMode) {
-        if (tmBtn) {
-          tmBtn.textContent = "🔒";
-          tmBtn.className = "pill-btn travel-mode-on"; // 維持原本的反綠
-        }
-      } else {
-        if (tmBtn) {
-          tmBtn.textContent = "🔓";
-          tmBtn.className = "pill-btn accent-outline"; // 編輯中顯示橘紅色
-        }
+      if (tmBtn) {
+        const locked = !!appState.travelLockMode;
+        tmBtn.className = "icon-btn lock-btn" + (locked ? " on" : "");
+        tmBtn.innerHTML = locked ? LOCK_ICON_CLOSED : LOCK_ICON_OPEN;
+        const tip = locked ? "已鎖定（旅途中防誤觸），點一下解鎖" : "編輯中，點一下鎖定";
+        tmBtn.title = tip;
+        tmBtn.setAttribute("aria-label", tip);
       }
 
       const bar = document.getElementById("tripTabsBar");
@@ -4157,6 +4474,9 @@
 
       const allEmojis = [...DEFAULT_MOOD_EMOJIS, ...(appState.customEmojis || [])];
 
+      const recapHtml = dayRecapHTML(trip, appState.activeDayIndex || 0);
+      if (recapHtml) container.insertAdjacentHTML("beforeend", recapHtml);
+
       day.items.forEach((item, idx) => {
         const card = document.createElement("div");
         card.id = `card_${item.id}`;
@@ -4203,7 +4523,7 @@
 
           financeHtml = `
             <div class="card-finance-box">
-              ${baseCost > 0 ? `<div class="finance-line"><strong>預定費用</strong><strong>${cur} ${baseCost.toLocaleString()}</strong></div>` : ""}
+              ${baseCost > 0 ? `<div class="finance-line"><strong>${escapeHtml(item.costLabel || "預定費用")}</strong><strong>${cur} ${baseCost.toLocaleString()}</strong></div>` : ""}
               ${extraLines}
               ${extras.length > 0 ? `<div class="finance-line" style="border-top:1px solid var(--border); margin-top:4px; padding-top:4px;"><strong>合計支出</strong><strong style="color:var(--ink);">${cur} ${(baseCost + extraSum).toLocaleString()}</strong></div>` : ""}
             </div>`;
@@ -4259,11 +4579,6 @@
             </div>
 
             <div class="status-btns">
-              <button type="button" class="mood-stamp-btn ${item.mood ? "stamped" : ""}" title="心情貼圖" onclick="toggleEmojiPopover(event, '${item.id}')">
-                ${item.mood ? escapeHtml(item.mood) : "❤️"}
-              </button>
-              ${popoverHtml}
-              ${(item.checkin || isActiveDayToday()) ? `<button class="status-btn pin-btn ${item.checkin ? "checked" : ""}" onclick="checkInItem('${item.id}')" title="${item.checkin ? "已記下位置" : "我到了：記下現在的位置"}" aria-label="${item.checkin ? "已打卡" : "我到了"}"><svg viewBox="0 0 24 24" fill="${item.checkin ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 22s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12z"/><circle cx="12" cy="10" r="2.6" fill="${item.checkin ? "#fff" : "none"}"/></svg></button>` : ""}
               <button class="status-btn ${isDone ? "active-done" : ""}" onclick="toggleItemStatus('${item.id}', 'done')">完成</button>
               <button class="status-btn ${isCancel ? "active-cancel" : ""}" onclick="toggleItemStatus('${item.id}', 'cancelled')">取消</button>
               ${isDone ? `<span class="ink-seal-badge ${shouldAnimateStamp ? 'animate-thud' : ''}">COMPLETED ✓</span>` : ""}
@@ -4276,6 +4591,7 @@
               <h3 class="card-title">${escapeHtml(item.title || "未命名行程")}</h3>
             </div>
             ${subText ? `<div class="card-subtitle">${escapeHtml(subText)}</div>` : ""}
+            ${cardChipsHtml(item, isNow, isCancel, popoverHtml)}
             ${noteHtml}
             ${urlHtml}
             ${financeHtml}
@@ -4393,7 +4709,7 @@
       const item = day.items.find(i => i.id === itemId);
       if (!item) return;
       const pinned = safeExternalUrl(item.mapUrl);
-      if (pinned) { window.open(pinned, "_blank", "noopener"); return; }
+      if (pinned) { openMapLink(pinned, null); return; }
       let query = item.title;
       if (item.type === "transit" && item.transitLegs && item.transitLegs.length > 0) {
         const lastLeg = item.transitLegs[item.transitLegs.length - 1];
@@ -4403,7 +4719,24 @@
       } else if (item.subtitle) {
         query = `${item.title} ${item.subtitle}`;
       }
-      window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, "_blank", "noopener");
+      openMapLink(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, query);
+    }
+    // iPhone 主畫面 App 用網址打開地圖時，會先跳出一個瀏覽器視窗再轉到 Google 地圖 App，
+    // 回來時那個視窗變成一片白。改成直接呼叫 Google 地圖 App；沒裝 App 才用網頁版。
+    function openMapLink(httpsUrl, query) {
+      const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      if (!(ios && isStandaloneApp())) { window.open(httpsUrl, "_blank", "noopener"); return; }
+      const appUrl = query != null
+        ? `comgooglemaps://?q=${encodeURIComponent(query)}`
+        : `comgooglemapsurl://${httpsUrl.replace(/^https?:\/\//i, "")}`;
+      let left = false;
+      const onHide = () => { if (document.visibilityState === "hidden") left = true; };
+      document.addEventListener("visibilitychange", onHide);
+      setTimeout(() => {
+        document.removeEventListener("visibilitychange", onHide);
+        if (!left) location.href = httpsUrl;
+      }, 1400);
+      location.href = appUrl;
     }
 
     /*************************************************************************
@@ -4445,6 +4778,9 @@
       const container = document.getElementById("transitLegsContainer");
       const div = document.createElement("div");
       div.className = "leg-item";
+      div.dataset.color = leg.customColor || "";
+      div.dataset.fromNo = leg.fromNo || "";
+      div.dataset.toNo = leg.toNo || "";
       div.innerHTML = `
         <div class="leg-grid">
           <input type="text" class="form-input leg-from" placeholder="上車站 / 碼頭" value="${escapeHtml(leg.from || "")}" />
@@ -4503,6 +4839,7 @@
         document.getElementById("fSubtitle").value = item.subtitle || "";
         document.getElementById("fDepIata").value = item.depIata || "";
         document.getElementById("fArrIata").value = item.arrIata || "";
+        renderAirportEntry();
         document.getElementById("fFlightNo").value = item.flightNo || "";
         document.getElementById("fGateSeat").value = item.gateSeat || "";
         document.getElementById("fRoadFrom").value = item.roadFrom || "";
@@ -4525,6 +4862,7 @@
 
         document.getElementById("fCurrency").value = item.currency || "NT$";
         document.getElementById("fCost").value = item.cost || "";
+        document.getElementById("fCostLabel").value = item.costLabel || "";
         document.getElementById("fNote").value = item.note || "";
         document.getElementById("fUrl").value = item.url || "";
         document.getElementById("fUrlLabel").value = item.urlLabel || "";
@@ -4551,6 +4889,7 @@
         document.getElementById("fSubtitle").value = "";
         document.getElementById("fDepIata").value = "";
         document.getElementById("fArrIata").value = "";
+        renderAirportEntry();
         document.getElementById("fFlightNo").value = "";
         document.getElementById("fGateSeat").value = "";
         document.getElementById("fRoadFrom").value = "";
@@ -4574,6 +4913,7 @@
 
         document.getElementById("fCurrency").value = inheritedCurrency;
         document.getElementById("fCost").value = "";
+        document.getElementById("fCostLabel").value = "";
         document.getElementById("fNote").value = "";
         document.getElementById("fUrl").value = "";
         document.getElementById("fUrlLabel").value = "";
@@ -4720,6 +5060,7 @@
 
       const currency = document.getElementById("fCurrency").value;
       const cost = Number(document.getElementById("fCost").value) || 0;
+      const costLabel = document.getElementById("fCostLabel").value.trim().slice(0, 30);
       const note = document.getElementById("fNote").value;
       const url = document.getElementById("fUrl").value.trim();
       const urlLabel = document.getElementById("fUrlLabel").value.trim();
@@ -4733,7 +5074,11 @@
           const line = row.querySelector(".leg-line").value.trim();
           const trainNo = row.querySelector(".leg-train").value.trim();
           const isOutTransfer = row.querySelector(".leg-out-transfer").checked;
-          if (from || to) transitLegs.push({ from, to, line, trainNo, isOutTransfer });
+          const extra = {};
+          if (row.dataset.color) extra.customColor = row.dataset.color;
+          if (row.dataset.fromNo) extra.fromNo = row.dataset.fromNo;
+          if (row.dataset.toNo) extra.toNo = row.dataset.toNo;
+          if (from || to) transitLegs.push({ from, to, line, trainNo, isOutTransfer, ...extra });
         });
       }
       // 地圖座標改成存檔後在背景查詢（不再讓「儲存」卡住 1～2 秒）
@@ -4767,6 +5112,7 @@
         endTime,
         currency,
         cost,
+        costLabel,
         extraExpenses,
         note,
         url,
@@ -5591,7 +5937,7 @@
 
       let legendY = cardY + 54;
       legs.forEach((leg, i) => {
-        const col = getLineBrandColor(leg.line, i, leg.customColor);
+        const col = getLineBrandColor(leg.line, i, leg.customColor, lineColorHint(item, legs));
         drawRoundedRect(ctx, cardX + 46, legendY - 22, 18, 28, 6, col);
         ctx.fillStyle = innerSwatch.text;
         ctx.font = "700 24px 'Noto Sans TC', sans-serif";
@@ -5612,7 +5958,7 @@
 
       let lastKnownCoord = detectDayTargetCoord(getActiveDay(), getActiveTrip());
       legs.forEach((leg, i) => {
-        const col = getLineBrandColor(leg.line, i, leg.customColor);
+        const col = getLineBrandColor(leg.line, i, leg.customColor, lineColorHint(item, legs));
         let cFrom = lookupStationCoordSync(leg.from);
         if (cFrom) lastKnownCoord = cFrom;
         else cFrom = { lat: lastKnownCoord.lat + 0.015, lng: lastKnownCoord.lng + 0.015 };
@@ -6687,6 +7033,13 @@
             roadPhotoUnlocked = true;
             mode = "roadPhoto";
             startOffset = { x: pt.x / lay.s - roadtripEditorialState.photoX, y: pt.y / lay.s - roadtripEditorialState.photoY };
+          } else if (tpl === "polaroid" && inMainFrame) {
+            activeStickerId = null;
+            transitMapUnlocked = false;
+            roadPhotoUnlocked = false;
+            canDragCurrentTarget = true;
+            mode = "polaroidPhoto";
+            startOffset = polaroidPanStart(pt);
           } else {
             mode = null;
             canDragCurrentTarget = false;
@@ -6713,6 +7066,9 @@
             mode = "roadPhoto";
             canDragCurrentTarget = true;
             initScale = roadtripEditorialState.photoScale || 1;
+          } else if (tpl === "polaroid" && mode === "polaroidPhoto") {
+            canDragCurrentTarget = true;
+            initScale = parseFloat(document.getElementById("photoZoomRange").value) || 1;
           }
         }
       });
@@ -6751,6 +7107,13 @@
             roadtripEditorialState.photoX = pt.x / ls - startOffset.x;
             roadtripEditorialState.photoY = pt.y / ls - startOffset.y;
             renderStoryCanvas();
+          } else if (mode === "polaroidPhoto") {
+            const ls = getStoryLayout(canvas.width).s;
+            const clamp = v => Math.max(-300, Math.min(300, v));
+            // 畫面上照片移動的距離 = 拉桿數值 × 2.5（見拍立得繪製）
+            document.getElementById("photoPanXRange").value = clamp(startOffset.px + (pt.x - startOffset.x) / ls / 2.5);
+            document.getElementById("photoPanYRange").value = clamp(startOffset.py + (pt.y - startOffset.y) / ls / 2.5);
+            schedulePolaroidRender();
           }
         } else if (pointers.size === 2 && canDragCurrentTarget) {
           const pts = Array.from(pointers.values());
@@ -6771,12 +7134,17 @@
           } else if (mode === "roadtrip" || (mode === "roadPhoto" && roadPhotoUnlocked)) {
             roadtripEditorialState.photoScale = Math.max(0.5, Math.min(3.0, initScale * ratio));
             renderStoryCanvas();
+          } else if (mode === "polaroidPhoto") {
+            document.getElementById("photoZoomRange").value = Math.max(1, Math.min(3, initScale * ratio));
+            schedulePolaroidRender();
           }
         }
       });
 
       const endPtr = (e) => {
         pointers.delete(e.pointerId);
+        // 兩指放開剩一指：從現在的位置繼續拖，不會跳一下
+        if (pointers.size === 1 && mode === "polaroidPhoto") startOffset = polaroidPanStart(Array.from(pointers.values())[0]);
         if (pointers.size === 0) {
           mode = null;
           canDragCurrentTarget = false;
@@ -6804,8 +7172,34 @@
           e.preventDefault();
           roadtripEditorialState.photoScale = Math.max(0.5, Math.min(3.0, roadtripEditorialState.photoScale * factor));
           renderStoryCanvas();
+        } else if (tpl === "polaroid") {
+          e.preventDefault();
+          const z = document.getElementById("photoZoomRange");
+          z.value = Math.max(1, Math.min(3, (parseFloat(z.value) || 1) * factor));
+          schedulePolaroidRender();
         }
       }, { passive: false });
+    }
+
+    function polaroidPanStart(pt) {
+      return {
+        x: pt.x, y: pt.y,
+        px: parseFloat(document.getElementById("photoPanXRange").value) || 0,
+        py: parseFloat(document.getElementById("photoPanYRange").value) || 0
+      };
+    }
+    // 拖曳時每一格畫面只重畫一次，手指移動才跟得上
+    let polaroidRenderQueued = false;
+    function schedulePolaroidRender() {
+      if (polaroidRenderQueued) return;
+      polaroidRenderQueued = true;
+      requestAnimationFrame(() => { polaroidRenderQueued = false; renderStoryCanvas(); });
+    }
+    function resetPolaroidPhoto() {
+      document.getElementById("photoZoomRange").value = 1;
+      document.getElementById("photoPanXRange").value = 0;
+      document.getElementById("photoPanYRange").value = 0;
+      renderStoryCanvas();
     }
 
     /*************************************************************************
@@ -6849,6 +7243,7 @@
             itemBreakdownRows.push({
               dayNum: dIdx + 1,
               title: item.title,
+              costLabel: item.costLabel || "",
               cur,
               base,
               extras,
@@ -6879,7 +7274,7 @@
             <span>DAY 0${r.dayNum} · ${escapeHtml(r.title)}</span>
             <span style="font-family:var(--mono);">${r.cur} ${r.sum.toLocaleString()}</span>
           </div>
-          ${r.base > 0 ? `<div style="font-size:12px; color:var(--sub);">預定費用：${r.cur} ${r.base.toLocaleString()}</div>` : ""}
+          ${r.base > 0 ? `<div style="font-size:12px; color:var(--sub);">${escapeHtml(r.costLabel || "預定費用")}：${r.cur} ${r.base.toLocaleString()}</div>` : ""}
           ${r.extras.map(ex => `<div style="font-size:12px; color:var(--sub);">＋ ${escapeHtml(ex.name)}：${r.cur} ${Number(ex.amount).toLocaleString()}</div>`).join("")}
         </div>
       `).join("");
@@ -6957,6 +7352,8 @@
       const { lastCloudUserId, profileStash, profileId, ...rest } = appState;
       const backup = { _tabigramBackup: 1, exportedAt: new Date().toISOString(), ...rest };
       const json = JSON.stringify(backup);
+      appState.lastBackupAt = Date.now(); saveAppState(); updateBackupAgeLabel();
+      document.getElementById("backupTipCard").classList.remove("show");
       const filename = `tabigram-backup-${cdLocalDateStr()}.json`;
       const blob = new Blob([json], { type: "application/json" });
       let photoCount = 0;
@@ -7849,18 +8246,23 @@ function initSupabaseClient() {
       } catch (e) {}
     }
     // 控制右上角選單的展開與收合
+    const LOCK_ICON_OPEN = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9.5" rx="2.4"/><path d="M8.5 11V8a3.5 3.5 0 0 1 6.8-1.2"/></svg>';
+    const LOCK_ICON_CLOSED = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9.5" rx="2.4"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg>';
     function toggleHeaderDropdown() {
       const menu = document.getElementById("headerDropdownMenu");
       if (!menu) return;
-      menu.style.display = menu.style.display === "block" ? "none" : "block";
+      const open = menu.style.display !== "block";
+      menu.style.display = open ? "block" : "none";
+      const btn = document.getElementById("menuToggleBtn");
+      if (btn) { btn.setAttribute("aria-expanded", open ? "true" : "false"); btn.classList.toggle("open", open); }
     }
 
     // 點擊畫面其他地方自動收起選單
     window.addEventListener("click", (e) => {
       const menu = document.getElementById("headerDropdownMenu");
       const btn = document.getElementById("menuToggleBtn");
-      if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
-        menu.style.display = "none";
+      if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target) && menu.style.display === "block") {
+        toggleHeaderDropdown();
       }
     });
 
@@ -7874,6 +8276,7 @@ function initSupabaseClient() {
       const dropdownProfileBtn = document.getElementById("dropdownProfileBtn");
       const avatarImg = document.getElementById("headerUserAvatarImg");
       if (!dropdownCloudBtn) return;
+      updateBackupAgeLabel();
 
       if (appState.userAvatarDataUrl && avatarImg) {
         avatarImg.src = appState.userAvatarDataUrl;
@@ -7881,6 +8284,8 @@ function initSupabaseClient() {
       } else if (avatarImg) {
         avatarImg.style.display = "none";
       }
+      const menuBtn = document.getElementById("menuToggleBtn");
+      if (menuBtn) menuBtn.classList.toggle("has-avatar", !!(appState.userAvatarDataUrl && avatarImg));
 
       if (currentCloudUser) {
         const disp = appState.userDisplayName || currentCloudUser.email;
@@ -7968,7 +8373,7 @@ function initSupabaseClient() {
         currentShareItem.transitLegs = [{
           from: currentShareItem.title.split(/to|➔|→/i)[0]?.trim() || "起點站",
           to: currentShareItem.title.split(/to|➔|→/i)[1]?.trim() || "終點站",
-          line: currentShareItem.subtitle || "鐵道路線",
+          line: currentShareItem.subtitle || "",
           trainNo: "",
           isOutTransfer: false
         }];
@@ -7976,7 +8381,7 @@ function initSupabaseClient() {
       const legs = currentShareItem.transitLegs;
       box.innerHTML = `<div style="font-size:11.5px; font-weight:800; margin-bottom:6px;">🎨 自訂各段路線顏色</div>` +
         legs.map((leg, i) => {
-          const curCol = getLineBrandColor(leg.line, i, leg.customColor);
+          const curCol = getLineBrandColor(leg.line, i, leg.customColor, lineColorHint(currentShareItem, legs));
           return `<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; font-size:12px;">
             <span>#${i + 1} ${escapeHtml(leg.line || (leg.from + "➔" + leg.to))}</span>
             <input type="color" value="${curCol}" onchange="setTransitLegCustomColor(${i}, this.value)" style="width:32px; height:24px; border:none; background:none; cursor:pointer;" />
@@ -8366,7 +8771,7 @@ function initSupabaseClient() {
           const cur = item.currency || "NT$";
           if (base + extraSum > 0 && item.status !== "cancelled") {
             totals[cur] = (totals[cur] || 0) + base + extraSum;
-            lines.push(`   - 預算／支出：${cur} ${(base + extraSum).toLocaleString()}${extraSum > 0 ? `（含額外消費 ${cur} ${extraSum.toLocaleString()}）` : ""}`);
+            lines.push(`   - 預算／支出：${cur} ${(base + extraSum).toLocaleString()}${item.costLabel ? `（${item.costLabel}）` : ""}${extraSum > 0 ? `（含額外消費 ${cur} ${extraSum.toLocaleString()}）` : ""}`);
           }
           if (item.note && item.note.trim()) {
             lines.push(`   - 備註：${item.note.trim().replace(/\n/g, " / ")}`);
@@ -8420,6 +8825,7 @@ function initSupabaseClient() {
       { key: "endTz",     header: "抵達時區",       group: "交通", hint: "跨時區的航班才需要填" },
       { key: "currency",  header: "幣別",           group: "費用", hint: "如 ¥、NT$、JPY、日圓；可不填" },
       { key: "cost",      header: "費用",           group: "費用", hint: "數字，可含逗號，如 3,070" },
+      { key: "costLabel", header: "費用名目",       group: "費用", hint: "可不填，如 門票、車資、住宿" },
       { key: "from",      header: "出發地",         group: "交通", hint: "交通：起站｜航班：機場代碼 TPE｜自駕：起點" },
       { key: "to",        header: "目的地",         group: "交通", hint: "交通：迄站｜航班：機場代碼 NRT｜自駕：終點" },
       { key: "route",     header: "路線/航班/公路", group: "交通", hint: "交通：JR山手線｜航班：BR198｜自駕：國道134號" },
@@ -8447,6 +8853,7 @@ function initSupabaseClient() {
       endTz: ["抵達時區", "結束時區", "arrivaltimezone"],
       currency: ["幣別", "貨幣", "currency"],
       cost: ["費用", "預定費用", "價格", "金額", "票價", "cost", "price"],
+      costLabel: ["費用名目", "名目", "費用項目", "費用說明", "costlabel", "costitem"],
       from: ["出發地", "起點", "起站", "出發站", "出發機場", "from"],
       to: ["目的地", "終點", "迄站", "抵達站", "抵達機場", "to"],
       route: ["路線航班公路", "路線航班編號公路", "路線", "航班", "航班編號", "公路", "line", "route", "flight", "flightno"],
@@ -8526,10 +8933,10 @@ function initSupabaseClient() {
     const CSV_EXAMPLE_ROWS = [
       { day: "1", date: "2026/12/01", type: "航班", title: "長榮 去程", start: "08:50", end: "13:15", tz: "台灣", endTz: "日本", currency: "NT$", cost: "12,500", from: "TPE", to: "NRT", route: "BR198", trainSeat: "第二航廈・座位 32A", note: "提前 2.5 小時到機場", dayTheme: "抵達東京", dayCity: "東京" },
       { type: "交通", title: "成田特快進市區", start: "14:15", end: "15:10", tz: "日本", currency: "¥", cost: "3,070", from: "成田空港", to: "東京", route: "成田特快", trainSeat: "N'EX 30號" },
-      { type: "轉乘", end: "15:45", cost: "210", from: "東京", to: "秋葉原", route: "JR山手線", trainSeat: "內環方向" },
+      { type: "轉乘", end: "15:45", cost: "210", costLabel: "車資", from: "東京", to: "秋葉原", route: "JR山手線", trainSeat: "內環方向" },
       { type: "景點", title: "飯店 Check-in", start: "16:00", end: "16:30", subtitle: "秋葉原", note: "先寄放行李", mapUrl: "https://www.google.com/maps/search/?api=1&query=秋葉原站" },
       { type: "景點", title: "自己去按摩", start: "20:00", end: "21:00", cost: "6,000", private: "是" },
-      { day: "2", type: "景點", title: "新宿御苑賞楓", start: "09:30", end: "12:00", cost: "500", subtitle: "新宿門入口", url: "https://fng.or.jp/shinjuku/", urlLabel: "官網", mapUrl: "https://www.google.com/maps/search/?api=1&query=新宿御苑+新宿門", dayTheme: "賞楓＋海邊兜風", dayCity: "東京" },
+      { day: "2", type: "景點", title: "新宿御苑賞楓", start: "09:30", end: "12:00", cost: "500", costLabel: "門票", subtitle: "新宿門入口", url: "https://fng.or.jp/shinjuku/", urlLabel: "官網", mapUrl: "https://www.google.com/maps/search/?api=1&query=新宿御苑+新宿門", dayTheme: "賞楓＋海邊兜風", dayCity: "東京" },
       { type: "自駕", title: "湘南海岸兜風", start: "14:00", end: "16:30", cost: "2,000", from: "七里ヶ浜", to: "鎌倉高校前", route: "國道134號", stops: "江之島、稻村崎", note: "傍晚看富士山夕陽" },
       { type: "景點", title: "新宿居酒屋", start: "22:30", end: "00:30", nextDay: "是", cost: "4,000", subtitle: "思い出横丁" },
       { day: "3", type: "航班", title: "長榮 回程", start: "17:30", end: "20:40", tz: "日本", endTz: "台灣", currency: "NT$", from: "NRT", to: "TPE", route: "BR197", dayCity: "東京" }
@@ -9023,6 +9430,7 @@ function initSupabaseClient() {
           endTime,
           currency,
           cost: costParsed.amount || 0,
+          costLabel: (get(cols, "costLabel") || "").slice(0, 30),
           extraExpenses: [],
           note,
           url,
@@ -9723,7 +10131,7 @@ function initSupabaseClient() {
       const date = formatStampDate(trip);
       document.getElementById("tsArcText").textContent = stampArcText(trip);
       document.getElementById("tsTitle").textContent = trip.title || "我的旅程";
-      document.getElementById("tsSub").textContent = `${days} 天的旅程完成了！已經收進「旅程回憶」，隨時可以回去看。`;
+      document.getElementById("tsSub").textContent = `${days} 天的旅程完成了！已經收進「旅程回憶」，隨時可以回去看。` + (currentCloudUser ? "" : "記得登入或備份，回憶才不會因為換手機不見。");
       const stampEl = ov.querySelector(".ts-stamp");
       if (stampEl) stampEl.style.setProperty("--rot", `${stampParams(trip.id).rot}deg`);
       const card = ov.querySelector(".ts-card");
@@ -10264,10 +10672,17 @@ function initSupabaseClient() {
 
     // ---------- 意見回饋（存進 Supabase 的 feedback 表）----------
     let feedbackCat = "";
-    function openFeedback() {
-      feedbackCat = "";
-      document.querySelectorAll(".fb-cat").forEach(b => b.classList.remove("on"));
+    let feedbackCtx = "";
+    // opts：{ cat, context（會附在訊息後面一起送出）, placeholder }
+    function openFeedback(opts = {}) {
+      feedbackCat = opts.cat || "";
+      feedbackCtx = opts.context || "";
+      document.querySelectorAll(".fb-cat").forEach(b => b.classList.toggle("on", b.dataset.cat === feedbackCat));
       document.getElementById("feedbackMessageInput").value = "";
+      document.getElementById("feedbackMessageInput").placeholder = opts.placeholder || "想說什麼都可以，一句話也很好";
+      const ctxEl = document.getElementById("feedbackContext");
+      ctxEl.style.display = feedbackCtx ? "block" : "none";
+      ctxEl.innerHTML = feedbackCtx ? `<b>會一起送出的資訊</b>${escapeHtml(feedbackCtx)}` : "";
       document.getElementById("feedbackEmailInput").value = currentCloudUser ? (currentCloudUser.email || "") : "";
       document.getElementById("feedbackForm").style.display = "block";
       document.getElementById("feedbackDone").style.display = "none";
@@ -10290,7 +10705,7 @@ function initSupabaseClient() {
       btn.disabled = true; btn.textContent = "送出中…";
       const { error } = await sbClient.from("feedback").insert({
         category: feedbackCat,
-        message: msg.slice(0, 2000),
+        message: (feedbackCtx ? `${msg}\n\n──\n${feedbackCtx}` : msg).slice(0, 2000),
         email: email || null,
         user_id: currentCloudUser ? currentCloudUser.id : null,
         page_info: `${navigator.userAgent}`.slice(0, 300)
@@ -10386,6 +10801,86 @@ function initSupabaseClient() {
       const [y, m, d] = trip.startDate.split("-").map(Number);
       return cdLocalDateStr(new Date(y, m - 1, d + (appState.activeDayIndex || 0))) === cdLocalDateStr();
     }
+    // 卡片內容下方的一排小按鈕：「我到了」（只在行程當天）＋心情
+    const PIN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.5s6.8-5.9 6.8-11.6a6.8 6.8 0 1 0-13.6 0c0 5.7 6.8 11.6 6.8 11.6z"/><circle cx="12" cy="9.9" r="2.5"/></svg>';
+    function cardChipsHtml(item, isNow, isCancel, popoverHtml) {
+      let checkin = "";
+      if (item.checkin) {
+        const t = new Date(item.checkin.t || 0);
+        const hm = isNaN(t) || !item.checkin.t ? "" : ` ${String(t.getHours()).padStart(2, "0")}:${String(t.getMinutes()).padStart(2, "0")}`;
+        checkin = `<button type="button" class="card-chip checkin-chip done" onclick="checkInItem('${item.id}')" title="已記下位置，會畫在足跡地圖上；點一下可以移除">${PIN_SVG}<span>已到達${hm}</span></button>`;
+      } else if (!isCancel && isActiveDayToday()) {
+        checkin = `<button type="button" class="card-chip checkin-chip${isNow ? " now" : ""}" onclick="checkInItem('${item.id}')" title="記下現在的位置，旅程結束後畫成足跡地圖">${PIN_SVG}<span>我到了</span>${isNow ? `<small>記下足跡</small>` : ""}</button>`;
+      }
+      const mood = `<button type="button" class="card-chip mood-chip${item.mood ? " stamped" : ""}" onclick="toggleEmojiPopover(event, '${item.id}')" title="幫這個行程蓋一個心情章" aria-label="心情">${item.mood ? `<span class="mood-emoji">${escapeHtml(item.mood)}</span>` : `<span class="mood-plus" aria-hidden="true">＋</span><span>心情</span>`}</button>`;
+      return `<div class="card-chip-row">${checkin}${mood}${popoverHtml}</div>`;
+    }
+    // ---------- 當日回顧 ----------
+    function tripDayDateStr(trip, idx) {
+      if (!trip || !/^\d{4}-\d{2}-\d{2}$/.test(trip.startDate || "")) return "";
+      const [y, m, d] = trip.startDate.split("-").map(Number);
+      return cdLocalDateStr(new Date(y, m - 1, d + idx));
+    }
+    // 結算時間：當天最後一個行程結束後（全部完成或取消也算）
+    function isDayWrapped(trip, idx) {
+      const day = trip && trip.days && trip.days[idx];
+      const items = ((day && day.items) || []).filter(i => i && i.status !== "cancelled");
+      if (!items.length) return false;
+      const ds = tripDayDateStr(trip, idx), today = cdLocalDateStr();
+      if (!ds || ds > today) return false;
+      if (ds < today) return true;
+      if (items.every(i => i.status === "done")) return true;
+      if (items.some(i => (i.endDayOffset || 0) > 0)) return false;
+      let last = items[0], lastEnd = -1;
+      items.forEach(i => {
+        const st = hhmmToMinutes(i.startTime || "09:00");
+        let en = hhmmToMinutes(i.endTime || i.startTime || "10:00");
+        if (en < st) en = st;
+        if (en >= lastEnd) { lastEnd = en; last = i; }
+      });
+      const now = hhmmToMinutes(getCurrentTimeHHMMInTz(last.startTz || trip.homeTz || "Asia/Taipei"));
+      return now > lastEnd;
+    }
+    function dayRecapHTML(trip, idx) {
+      if (!isDayWrapped(trip, idx)) return "";
+      const day = trip.days[idx];
+      const items = day.items.filter(i => i && i.status !== "cancelled");
+      const done = items.filter(i => i.status === "done").length;
+      const checkins = items.filter(i => i.checkin).length;
+      const pts = tripFootprintPoints(trip).filter(p => p.dayIdx === idx);
+      let km = 0;
+      for (let i = 1; i < pts.length; i++) km += haversineKm(pts[i - 1], pts[i]);
+      const spend = {};
+      items.forEach(i => {
+        const sum = (Number(i.cost) || 0) + (Array.isArray(i.extraExpenses) ? i.extraExpenses.reduce((a, e) => a + (Number(e.amount) || 0), 0) : 0);
+        if (sum > 0) { const c = i.currency || "NT$"; spend[c] = (spend[c] || 0) + sum; }
+      });
+      const spendTxt = Object.entries(spend).map(([c, v]) => `${c}${v.toLocaleString()}`).join(" ＋ ") || "—";
+      const kmTxt = km <= 0 ? "—" : (km < 10 ? km.toFixed(1) : Math.round(km).toLocaleString());
+      const moods = items.filter(i => i.mood).map(i => `<span title="${escapeHtml(i.title || "")}">${escapeHtml(i.mood)}</span>`).join("");
+      const photos = [];
+      items.forEach(i => (i.photos || []).forEach((p, pIdx) => { if (p && p.dataUrl && photos.length < 4) photos.push({ src: p.dataUrl, id: i.id, pIdx }); }));
+      const ds = tripDayDateStr(trip, idx);
+      const dateTxt = ds ? `${Number(ds.slice(5, 7))}/${Number(ds.slice(8, 10))}` : "";
+      const isToday = ds === cdLocalDateStr();
+      return `
+        <section class="day-recap" aria-label="當日回顧">
+          <div class="dr-head">
+            <span class="dr-kicker">DAY ${String(idx + 1).padStart(2, "0")} · ${isToday ? "今日回顧" : "當日回顧"}</span>
+            <span class="dr-date">${dateTxt}</span>
+          </div>
+          <div class="dr-stats">
+            <div><b>${done}<small>/${items.length}</small></b><span>完成行程</span></div>
+            <div><b>${checkins}</b><span>打卡地點</span></div>
+            <div><b>${kmTxt}</b><span>公里</span></div>
+            <div class="dr-spend"><b>${escapeHtml(spendTxt)}</b><span>花費</span></div>
+          </div>
+          ${moods ? `<div class="dr-moods" aria-label="今天的心情">${moods}</div>` : ""}
+          ${photos.length ? `<div class="dr-photos">${photos.map(p => `<img src="${p.src}" alt="" loading="lazy" onclick="openShareModal('${p.id}', ${p.pIdx})">`).join("")}</div>` : ""}
+          ${!checkins && !moods && !photos.length ? `<p class="dr-tip">明天到每個地方時按「我到了」、蓋個心情章，回顧會更豐富。</p>` : ""}
+        </section>`;
+    }
+
     function findActiveDayItem(itemId) {
       const day = getActiveDay();
       return day ? day.items.find(i => i.id === itemId) : null;
@@ -10636,11 +11131,530 @@ function initSupabaseClient() {
       saveAppState();
       document.getElementById("a2hsCard").classList.remove("show");
     }
-    function showA2hsToast(text) {
+
+    /*************************************************************************
+     * 車站選擇（不用打字）：猜上車站 → 自動排轉乘 → 也能在路線圖上自己點
+     * 資料：deploy/rail/<地區>.json（© OpenStreetMap contributors；台鐵：臺鐵開放資料）
+     *************************************************************************/
+    const RAIL_REGIONS = [
+      { id: "taiwan", label: "台灣", tz: ["Asia/Taipei"] },
+      { id: "tokyo", label: "東京", tz: ["Asia/Tokyo"] },
+      { id: "kansai", label: "大阪・京都", tz: [] },
+      { id: "seoul", label: "首爾", tz: ["Asia/Seoul"] },
+      { id: "sf", label: "舊金山", tz: ["America/Los_Angeles"] },
+      { id: "nyc", label: "紐約", tz: ["America/New_York"] },
+    ];
+    const railData = {};
+    let RP = null;
+
+    // 繁中字和日文漢字互通（「澀谷」對得到「渋谷」）
+    const RAIL_KANJI = { "澀": "渋", "澤": "沢", "驛": "駅", "廣": "広", "濱": "浜", "櫻": "桜", "黑": "黒", "惠": "恵", "戶": "戸", "邊": "辺", "關": "関", "藏": "蔵", "鐵": "鉄", "龍": "竜", "齋": "斎", "國": "国", "學": "学", "會": "会", "條": "条", "圓": "円", "邊": "辺", "臺": "台", "壽": "寿", "鶯": "鴬", "條": "条", "淺": "浅", "淚": "涙", "繩": "縄", "團": "団", "賣": "売", "讀": "読", "區": "区", "濟": "済", "營": "営", "驗": "験", "缽": "鉢", "圖": "図", "兩": "両", "樂": "楽", "與": "与", "萬": "万", "實": "実", "發": "発", "縣": "県", "寫": "写", "絲": "糸", "雞": "鶏", "氣": "気", "東京車站": "東京" };
+    function railNorm(n) {
+      let s = String(n || "").replace(/〈.*?〉|[（(].*?[)）]/g, "").replace(/\s+/g, "").toLowerCase();
+      s = s.replace(/^(京成|京急|モノレール|地下鉄|東武|西武|京王|小田急|阪急|阪神|京阪|近鉄|南海|jr)/, "");
+      s = s.replace(/[澀澤驛廣濱櫻黑惠戶邊關藏鐵龍齋國學會條圓臺壽淺繩團賣讀區濟營圖兩樂萬實發縣]/g, ch => RAIL_KANJI[ch] || ch);
+      return s.replace("台北車站", "台北").replace(/ヶ/g, "ケ").replace(/(駅|站|station)$/, "");
+    }
+    function railMeters(a, b) {
+      if (a.lat == null || b.lat == null) return null;
+      const p = Math.PI / 180, x = (b.lng - a.lng) * p * Math.cos((a.lat + b.lat) * p / 2), y = (b.lat - a.lat) * p;
+      return 6371000 * Math.hypot(x, y);
+    }
+    async function loadRail(id) {
+      if (railData[id]) return railData[id];
+      const res = await fetch(`rail/${id}.json`, { cache: "default" });
+      if (!res.ok) throw new Error("no data");
+      const d = await res.json();
+      d.lines.forEach(L => {
+        L.st = L.st.map(a => ({ n: a[0], no: a[1], lat: a[2], lng: a[3], cl: a[4], alt: a[5] || "" }));
+      });
+      d.byCl = new Map();
+      d.lines.forEach(L => L.st.forEach((s, i) => {
+        if (!d.byCl.has(s.cl)) d.byCl.set(s.cl, []);
+        d.byCl.get(s.cl).push({ L, s, i });
+      }));
+      // 站名索引（長的先比對，避免「新宿三丁目」被「新宿」吃掉）
+      const seen = new Map();
+      d.lines.forEach(L => L.st.forEach(s => {
+        // 「台北101/世貿」也拆成「台北101」「世貿」
+        [s.n, s.alt, ...String(s.n).split(/[\/・]/)].filter(Boolean).forEach(nm => {
+          const k = railNorm(nm);
+          if (k.length >= 2 && !seen.has(k)) seen.set(k, s);
+          // 「明治神宮前」也對得到「明治神宮」
+          const k2 = k.replace(/前$/, "");
+          if (k2 !== k && k2.length >= 3 && !seen.has(k2)) seen.set(k2, s);
+        });
+      }));
+      d.names = [...seen.entries()].sort((a, b) => b[0].length - a[0].length);
+      railData[id] = d;
+      return d;
+    }
+    function railFg(hex) {
+      const h = String(hex || "#888888").replace("#", "");
+      const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+      return (r * 299 + g * 587 + b * 114) / 1000 > 170 ? "#191919" : "#fff";
+    }
+    // 站牌：路線＋站號；沒有站號就只畫路線標誌
+    function railSign(L, no, size) {
+      const st = `--c:${L.c};--fg:${railFg(L.c)};${size ? `--s:${size}px;` : ""}`;
+      const word = L.g === "台鐵" ? "台鐵" : L.g === "台灣高鐵" ? "高鐵" : L.sg === "shin" ? L.n.replace("新幹線", "") : (!L.code ? L.n.replace(/線$/, "").slice(0, 3) : "");
+      if (!no || L.sg === "shin") {
+        if (word) return `<span class="rsign ${L.sg === "shin" ? "shin" : L.sg} only${["metro", "jr", "pvt", "fillc"].includes(L.sg) ? "" : " lbl"}" style="${st}${["metro", "jr", "pvt", "fillc"].includes(L.sg) ? "" : ""}"><span class="t">${escapeHtml(word)}</span></span>`;
+        return `<span class="rsign ${L.sg} only" style="${st}"><span class="c">${escapeHtml(L.code)}</span></span>`;
+      }
+      let code = L.code, num = no;
+      const m = /^([A-Za-z]+)(.*)$/.exec(no);
+      if (m) { code = m[1]; num = m[2]; }
+      if (!code && L.g === "台中捷運") code = "G";
+      return `<span class="rsign ${L.sg}" style="${st}"><span class="c">${escapeHtml(code)}</span><span class="n">${escapeHtml(num)}</span></span>`;
+    }
+    function railStName(s) { return RP && RP.region === "seoul" && s.alt ? s.alt : s.n; }
+    // 換車方式：同站轉乘／出閘門再進站／站外步行
+    function railXfer(La, sa, Lb, sb) {
+      const d = railMeters(sa, sb), same = railNorm(sa.n) === railNorm(sb.n);
+      if (same && La.g === Lb.g && (d == null || d < 450)) return { k: "same", t: "同站轉乘" };
+      if (same && (d == null || d < 350)) return { k: "gate", t: "出閘門再進站" };
+      // 步行時間：直線距離 ×1.3（實際路線會繞）÷ 每分鐘 70 公尺
+      const min = d == null ? 0 : Math.max(3, Math.round(d * 1.3 / 70));
+      return { k: "walk", t: min ? `站外步行約 ${min} 分` : "站外步行" };
+    }
+    const railXt = x => `<span class="rp-xt ${x.k}">${x.t}</span>`;
+    function railHops(L, i, j) { const d = Math.abs(i - j); return L.loop ? Math.min(d, L.st.length - d) : d; }
+
+    // 轉乘最少的走法（最多換 2 次）
+    function railRoute(d, start, goalCl) {
+      const best = new Map([[start.s.cl, { cost: 0, legs: [] }]]);
+      let frontier = [start.s.cl];
+      for (let round = 0; round < 3 && frontier.length; round++) {
+        const next = new Set();
+        for (const cl of frontier) {
+          const cur = best.get(cl);
+          for (const m of d.byCl.get(cl) || []) {
+            const prev = cur.legs[cur.legs.length - 1];
+            if (prev && prev.L === m.L) continue;
+            const x = prev ? railXfer(prev.L, prev.to, m.L, m.s) : (m.s !== start.s ? railXfer(start.L, start.s, m.L, m.s) : null);
+            const pen = x ? (x.k === "walk" ? 30 : x.k === "gate" ? 10 : 2) : 0;
+            m.L.st.forEach((s1, j) => {
+              if (s1.cl === cl) return;
+              const h = railHops(m.L, m.i, j);
+              const cost = cur.cost + 1000 + h + pen;
+              const old = best.get(s1.cl);
+              if (!old || cost < old.cost) {
+                best.set(s1.cl, { cost, legs: [...cur.legs, { L: m.L, from: m.s, to: s1, hops: h }] });
+                next.add(s1.cl);
+              }
+            });
+          }
+        }
+        if (best.has(goalCl)) break;
+        frontier = [...next];
+      }
+      const r = best.get(goalCl);
+      return r ? r.legs : null;
+    }
+    function railLegsHtml(legs, start) {
+      let h = "";
+      legs.forEach((g, i) => {
+        if (i === 0 && start && railNorm(g.from.n) !== railNorm(start.s.n)) h += `<div class="rp-xfer">先走到 ${escapeHtml(railStName(g.from))} ${railXt(railXfer(start.L, start.s, g.L, g.from))}</div>`;
+        if (i > 0) { const p = legs[i - 1]; h += `<div class="rp-xfer">在 ${escapeHtml(railStName(p.to))} 換車 ${railXt(railXfer(p.L, p.to, g.L, g.from))}</div>`; }
+        h += `<div class="rp-leg">${railSign(g.L, g.from.no)} ${escapeHtml(railStName(g.from))} → ${escapeHtml(railStName(g.to))}<small>${escapeHtml(g.L.n)}・${g.hops} 站</small></div>`;
+      });
+      return h;
+    }
+
+    // ---------- 猜：上車站、目的地 ----------
+    // 城市名稱（台北、東京…）只在寫明「車站／站／駅」或整段剛好是站名時才算
+    const RAIL_CITY = /^(台北|台中|台南|高雄|新竹|桃園|嘉義|彰化|基隆|花蓮|台東|宜蘭|屏東|苗栗|東京|大阪|京都|横浜|名古屋|神戸|奈良|千葉|川崎|서울|부산)$/;
+    function railFindInText(d, text) {
+      const t = railNorm(text);
+      if (!t) return null;
+      for (const [k, s] of d.names) {
+        const at = t.indexOf(k);
+        if (at < 0) continue;
+        if (RAIL_CITY.test(k) && t !== k && !/^(車站|站|駅|station)/.test(t.slice(at + k.length))) continue;
+        return s;
+      }
+      return null;
+    }
+    function railNearList(d, c, n = 3, maxM = 1200) {
+      if (!c) return [];
+      const best = new Map();
+      d.lines.forEach(L => L.st.forEach(s => {
+        const m = railMeters(c, s);
+        if (m == null || m > maxM) return;
+        const cur = best.get(s.cl);
+        if (!cur || m < cur.m) best.set(s.cl, { s, m: Math.round(m) });
+      }));
+      return [...best.values()].sort((a, b) => a.m - b.m).slice(0, n);
+    }
+    // 行程地點的座標：打卡位置 → 已知站名 → 背景查詢（查到後重畫）
+    function railPlaceCoord(it) {
+      if (!it) return null;
+      const c = it.checkin || lookupStationCoordSync(it.subtitle) || lookupStationCoordSync(it.title) || (RP.geo && RP.geo[it.id]);
+      if (c) return c;
+      RP.geo = RP.geo || {}; RP.geoTry = RP.geoTry || {};
+      if (!RP.geoTry[it.id]) {
+        RP.geoTry[it.id] = true;
+        RP.pending = (RP.pending || 0) + 1;
+        const q = railPlaceQuery(it.subtitle || it.title);
+        geocodeStationOnline(q, it.startTz).then(g => g || (q.includes(" ") ? geocodeStationOnline(q.split(" ")[0], it.startTz) : null)).then(g => {
+          RP.pending--;
+          if (g) RP.geo[it.id] = g;
+          if (document.getElementById("railPickerModal").classList.contains("open")) railRender();
+        }).catch(() => { RP.pending--; railRender(); });
+      }
+      return null;
+    }
+    // 查地點時拿掉「參拜、散步、午餐」這類活動字
+    function railPlaceQuery(t) {
+      return String(t || "").replace(/(參拜|参拝|散步|散策|觀光|観光|午餐|晚餐|早餐|下午茶|購物|逛街|拜訪|打卡|參觀|見學|朝聖|集合|吃|喝|看夜景|夜景|觀景台|展望台|體驗|門票)/g, " ").replace(/\s+/g, " ").trim() || String(t || "");
+    }
+    function railNearest(d, c, maxM = 1500) {
+      if (!c) return null;
+      let best = null, bd = Infinity;
+      d.lines.forEach(L => L.st.forEach(s => { const m = railMeters(c, s); if (m != null && m < bd) { bd = m; best = s; } }));
+      return bd <= maxM ? { s: best, m: Math.round(bd) } : null;
+    }
+    function railItemText(it) {
+      if (!it) return "";
+      if (it.type === "transit" && it.transitLegs && it.transitLegs.length) return it.transitLegs[it.transitLegs.length - 1].to;
+      return `${it.title || ""} ${it.subtitle || ""} ${it.note || ""}`;
+    }
+    function railFormContext() {
+      const day = getActiveDay();
+      const h = document.getElementById("fStartHour").value, m = document.getElementById("fStartMin").value;
+      const t = hhmmToMinutes(`${h}:${m}`);
+      const items = (day.items || []).filter(i => i.id !== editingItemId && i.status !== "cancelled")
+        .map(i => ({ i, t: hhmmToMinutes(i.startTime || "09:00") })).sort((a, b) => a.t - b.t);
+      const prev = items.filter(x => x.t <= t).pop();
+      const next = items.find(x => x.t > t);
+      return { prev: prev && prev.i, next: next && next.i };
+    }
+    function railMember(d, s) { return (d.byCl.get(s.cl) || []).find(m => m.s === s); }
+    function railPlace(d, s) {
+      const mem = d.byCl.get(s.cl) || [];
+      const names = [...new Set(mem.map(m => railStName(m.s)))];
+      return { s, mem, main: railStName(s), others: names.filter(n => railNorm(n) !== railNorm(railStName(s))) };
+    }
+    function railFromSuggestions(d) {
+      const ctx = RP.ctx, out = [], seen = new Set();
+      const add = (s, why, hot) => { if (!s || seen.has(s.cl)) return; seen.add(s.cl); out.push({ s, why, hot }); };
+      if (ctx.prev) {
+        const it = ctx.prev;
+        if (it.type === "transit" && it.transitLegs && it.transitLegs.length) {
+          add(railFindInText(d, it.transitLegs[it.transitLegs.length - 1].to), `上一段交通在這裡下車`, true);
+        } else {
+          const byName = railFindInText(d, railItemText(it));
+          if (byName) add(byName, `前一個行程「${it.title || ""}」在這裡`, true);
+          railNearList(d, railPlaceCoord(it)).forEach((x, k) => add(x.s, `${k === 0 ? "離" : "也在"}「${it.title || "前一個行程"}」${k === 0 ? "最近" : "附近"}，約 ${x.m}m`, !out.length));
+        }
+      }
+      if (RP.here) add(RP.here.s, `離你現在的位置最近，約 ${RP.here.m}m`, !out.length);
+      // 這趟旅程常用的站
+      const cnt = new Map();
+      (getActiveTrip().days || []).forEach(dd => (dd.items || []).forEach(it => (it.transitLegs || []).forEach(l => {
+        [l.from, l.to].forEach(n => { const s = railFindInText(d, n); if (s) cnt.set(s, (cnt.get(s) || 0) + 1); });
+      })));
+      [...cnt.entries()].sort((a, b) => b[1] - a[1]).slice(0, 2).forEach(([s]) => add(s, "這趟旅程常用的站"));
+      return out.slice(0, 4);
+    }
+    function railTarget(d) {
+      const it = RP.ctx.next;
+      if (!it) return null;
+      const byName = railFindInText(d, railItemText(it));
+      if (byName) return { s: byName, why: `下一個行程「${it.title || ""}」` };
+      const near = railNearList(d, railPlaceCoord(it), 1)[0];
+      return near ? { s: near.s, why: `離下一個行程「${it.title || ""}」最近，約 ${near.m}m` } : null;
+    }
+    function railGuessRegion() {
+      const trip = getActiveTrip(), day = getActiveDay();
+      const loc = `${day.location || ""} ${trip.title || ""}`;
+      if (/大阪|京都|神戶|神戸|奈良|關西|関西|osaka|kyoto/i.test(loc)) return "kansai";
+      if (/東京|橫濱|横浜|tokyo/i.test(loc)) return "tokyo";
+      if (/首爾|서울|seoul/i.test(loc)) return "seoul";
+      if (/舊金山|san francisco/i.test(loc)) return "sf";
+      if (/紐約|new york/i.test(loc)) return "nyc";
+      const tz = document.getElementById("fStartTz").value || trip.homeTz;
+      const hit = RAIL_REGIONS.find(r => r.tz.includes(tz));
+      return (appState.railRegionByTrip || {})[trip.id] || (hit ? hit.id : "taiwan");
+    }
+
+    // ---------- 打開、畫面 ----------
+    async function openRailPicker() {
+      ensureRailFont();
+      RP = { region: railGuessRegion(), from: null, legs: [], pickLine: null, browse: false, browseLine: null, done: false, here: null, ctx: railFormContext() };
+      openModalBackdrop("railPickerModal");
+      await railSwitchRegion(RP.region);
+    }
+    function ensureRailFont() {
+      if (document.getElementById("railFontLink")) return;
+      const l = document.createElement("link");
+      l.id = "railFontLink"; l.rel = "stylesheet";
+      l.href = "https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@700&display=swap";
+      document.head.appendChild(l);
+    }
+    async function railSwitchRegion(id) {
+      RP.region = id; RP.from = null; RP.legs = []; RP.pickLine = null; RP.browse = false; RP.browseLine = null; RP.here = null;
+      appState.railRegionByTrip = appState.railRegionByTrip || {};
+      appState.railRegionByTrip[getActiveTrip().id] = id;
+      document.getElementById("rpRegions").innerHTML = RAIL_REGIONS.map(r => `<button type="button" class="${r.id === id ? "on" : ""}" onclick="railSwitchRegion('${r.id}')">${r.label}</button>`).join("");
+      document.getElementById("rpBody").innerHTML = `<div class="rp-msg">載入路線資料中…</div>`;
+      try { await loadRail(id); } catch (e) {
+        document.getElementById("rpBody").innerHTML = `<div class="rp-msg">這個地區的資料還沒準備好，或是現在沒有網路。<br>可以先關掉，用手動輸入。</div>`;
+        return;
+      }
+      if (RP.region === id) railRender();
+    }
+    function railUseHere() {
+      if (!("geolocation" in navigator)) return;
+      showLogoLoader("定位中…");
+      navigator.geolocation.getCurrentPosition(pos => {
+        hideLogoLoader();
+        const near = railNearest(railData[RP.region], { lat: pos.coords.latitude, lng: pos.coords.longitude }, 3000);
+        if (!near) { showToast("附近 3 公里內找不到這個地區的車站"); return; }
+        RP.here = near; railRender();
+      }, () => { hideLogoLoader(); showToast("沒有取得定位，可以改用「照路線找」"); }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 });
+    }
+    function railPlaceCard(d, s, why, hot, act) {
+      const p = railPlace(d, s);
+      const uniq = p.mem.filter((m, i) => p.mem.findIndex(x => x.L === m.L) === i).slice(0, 6);
+      return `<button type="button" class="rp-sug${hot ? " hot" : ""}" onclick="${act}"><span class="signs">${uniq.map(m => railSign(m.L, m.s.no, 24)).join("")}</span><span><span class="name">${escapeHtml(p.main)}</span>${p.others.length ? `<span class="aka">同一個地方：${escapeHtml(p.others.join("、"))}</span>` : ""}${why ? `<span class="why">${escapeHtml(why)}</span>` : ""}</span><span class="go">›</span></button>`;
+    }
+    function railLineGrid(d, onPick, sel, list, atS) {
+      const groups = [];
+      (list ? list.map(m => m.L) : d.lines).forEach(L => { let g = groups.find(x => x[0] === L.g); if (!g) groups.push(g = [L.g, []]); if (!g[1].includes(L)) g[1].push(L); });
+      return groups.map(([g, ls]) => `<div class="rp-grp">${escapeHtml(g)}</div><div class="rp-lines">` + ls.map((L, idx) => {
+        let hint = "";
+        if (list && atS) {
+          const m = list.find(x => x.L === L);
+          const base = RP.legs.length ? RP.legs[RP.legs.length - 1] : null;
+          const x = base ? railXfer(base.L, base.to, L, m.s) : (m.s !== atS.s ? railXfer(atS.L, atS.s, L, m.s) : null);
+          if (x && x.k === "walk") hint = `<span class="hint">走到${escapeHtml(railStName(m.s))}</span>`;
+          else if (x && x.k === "gate") hint = `<span class="hint gate">出閘門</span>`;
+        }
+        return `<button type="button" class="rp-line${sel === L.k ? " on" : ""}" onclick="${onPick}(${d.lines.indexOf(L)})">${railSign(L, "", 38)}<small>${escapeHtml(L.n)}</small>${hint}</button>`;
+      }).join("") + `</div>`).join("");
+    }
+    function railStrip(d, L, fromS, role) {
+      const fi = fromS ? L.st.indexOf(fromS) : -1;
+      const li = d.lines.indexOf(L);
+      const cells = L.st.map((s, i) => {
+        let cls = "rp-st", tag = "";
+        const xl = [...new Map((d.byCl.get(s.cl) || []).filter(m => m.L !== L).map(m => [m.L.k, m.L])).values()].slice(0, 4);
+        if (xl.length) cls += " xf";
+        if (s === fromS) { cls += " from"; tag = "上車"; }
+        else if (role === "to" && fi >= 0) { const dd = railHops(L, i, fi); if (dd <= 6) tag = `${dd} 站`; }
+        return `<button type="button" class="${cls}" onclick="railPickStation(${li}, ${i}, '${role}')"><span class="tag">${tag}</span><span class="rail"><i class="dot"></i></span>${s.no ? railSign(L, s.no) : ""}<span class="nm">${escapeHtml(railStName(s))}</span>${xl.length ? `<span class="xmini">${xl.map(x => `<i style="--c:${x.c}"></i>`).join("")}</span>` : ""}</button>`;
+      }).join("");
+      return `<div class="rp-strip-h">${railSign(L, "", 22)} ${escapeHtml(L.n)}<em>${L.loop ? "環狀線・" : ""}黑框＝可轉乘</em></div>
+        <div class="rp-strip${L.loop ? " loop" : ""}"><div class="rp-strip-in" style="--lc:${L.c}">${cells}</div></div>`;
+    }
+    function railRender() {
+      const d = railData[RP.region];
+      if (!d) return;
+      const ctx = RP.ctx;
+      let h = (ctx.prev || ctx.next) ? `<div class="rp-ctx">${ctx.prev ? `前一個行程：<b>${escapeHtml(ctx.prev.title || "")}</b>` : ""}${ctx.prev && ctx.next ? "<br>" : ""}${ctx.next ? `下一個行程：<b>${escapeHtml(ctx.next.title || "")}</b>` : ""}</div>` : "";
+
+      if (!RP.from) {
+        const sugs = railFromSuggestions(d);
+        h += `<div class="rp-step"><div class="rp-step-h"><span>從哪裡上車？</span>${isActiveDayToday() ? `<button type="button" onclick="railUseHere()">用我的位置</button>` : ""}</div><div class="rp-sugs">` +
+          sugs.map((x, i) => railPlaceCard(d, x.s, x.why, x.hot, `railSetFrom(${i})`)).join("") + (RP.pending ? `<div class="rp-msg" style="padding:10px;">正在找附近的車站…</div>` : "") + `</div>`;
+        RP._sugs = sugs;
+        if (!RP.browse) h += `<button type="button" class="rp-more" onclick="RP.browse=true;railRender()">${sugs.length ? "都不是？" : ""}照路線找</button>`;
+        else { h += railLineGrid(d, "railBrowseLine", RP.browseLine); if (RP.browseLine != null) h += railStrip(d, d.lines[RP.browseLine], null, "from"); }
+        h += `</div>`;
+      } else {
+        h += `<div class="rp-step done"><div class="rp-step-h"><span>上車 <span class="val">${escapeHtml(railStName(RP.from.s))}</span></span><button type="button" onclick="RP.from=null;RP.legs=[];RP.pickLine=null;railRender()">改</button></div></div>`;
+        const here = RP.legs.length ? { L: RP.legs[RP.legs.length - 1].L, s: RP.legs[RP.legs.length - 1].to } : RP.from;
+        if (!RP.legs.length) {
+          const tg = railTarget(d);
+          h += `<div class="rp-step"><div class="rp-step-h"><span>到哪一站？</span></div>`;
+          if (tg && tg.s.cl !== RP.from.s.cl) {
+            const route = railRoute(d, RP.from, tg.s.cl);
+            if (route) {
+              RP._route = route;
+              const n = route.length - 1;
+              h += `<button type="button" class="rp-route" onclick="RP.legs=RP._route.slice();railFinish()"><div class="rt"><b>${escapeHtml(railStName(route[route.length - 1].to))}</b><span>${n ? `轉乘 ${n} 次` : "直達"}・點一下全部填好</span></div><div class="why">${escapeHtml(tg.why)}</div>${railLegsHtml(route, RP.from)}</button>`;
+            }
+          }
+          h += `<div class="rp-grp" style="margin-top:14px;">或自己選：從 ${escapeHtml(railStName(RP.from.s))} 搭</div>`;
+        } else {
+          h += `<div class="rp-step"><div class="rp-step-h"><span>目前的走法</span><button type="button" onclick="RP.legs.pop();RP.pickLine=null;railRender()">退一步</button></div>${railLegsHtml(RP.legs, RP.from)}</div>`;
+          h += `<div class="rp-step"><div class="rp-step-h"><span>到了 ${escapeHtml(railStName(here.s))}，要再轉乘嗎？</span></div><button type="button" class="rp-end" onclick="railFinish()">不用，就到這裡</button><div class="rp-grp" style="margin-top:12px;">在 ${escapeHtml(railStName(here.s))} 可以換</div>`;
+        }
+        const used = RP.legs.length ? RP.legs[RP.legs.length - 1].L : null;
+        const list = (d.byCl.get(here.s.cl) || []).filter(m => m.L !== used).filter((m, i, a) => a.findIndex(x => x.L === m.L) === i);
+        RP._list = list;
+        h += railLineGrid(d, "railPickLine", RP.pickLine != null ? d.lines[RP.pickLine].k : null, list, here);
+        if (RP.pickLine != null) {
+          const m = list.find(x => x.L === d.lines[RP.pickLine]);
+          if (m) h += railStrip(d, m.L, m.s, "to");
+        }
+        h += `</div>`;
+      }
+      h += `<button type="button" class="rp-report" onclick="railReport()">車站、路線或轉乘方式不對？告訴我們</button>`;
+      const body = document.getElementById("rpBody");
+      body.innerHTML = h;
+      body.querySelectorAll(".rp-strip").forEach(el => {
+        const t = el.querySelector(".rp-st.from");
+        if (t) el.scrollLeft = t.offsetLeft - el.clientWidth / 2 + 23;
+      });
+    }
+    function railSetFrom(i) { const s = RP._sugs[i].s; railSetFromStation(railMember(railData[RP.region], s)); }
+    function railSetFromStation(m) { RP.from = { L: m.L, s: m.s }; RP.browse = false; RP.browseLine = null; RP.legs = []; RP.pickLine = null; railRender(); }
+    function railBrowseLine(li) { RP.browseLine = li; railRender(); }
+    function railPickLine(li) { RP.pickLine = li; railRender(); }
+    function railPickStation(li, si, role) {
+      const d = railData[RP.region], L = d.lines[li], s = L.st[si];
+      if (role === "from") return railSetFromStation({ L, s });
+      const m = RP._list.find(x => x.L === L);
+      if (!m || m.s === s) return;
+      RP.legs.push({ L, from: m.s, to: s, hops: railHops(L, L.st.indexOf(m.s), si) });
+      RP.pickLine = null;
+      railRender();
+    }
+    // 回報車站資料錯誤：自動附上地區、車站、路線、App 判斷的換車方式
+    function railReport() {
+      const reg = (RAIL_REGIONS.find(r => r.id === RP.region) || {}).label || RP.region;
+      const d = railData[RP.region];
+      const lines = [`[車站資料] 地區：${reg}（資料版本 ${d && d.built || "?"}）`];
+      if (RP.from) {
+        const p = railPlace(d, RP.from.s);
+        lines.push(`上車：${railStName(RP.from.s)}（${RP.from.L.n}）` + (p.others.length ? `，App 認為同一個地方：${p.others.join("、")}` : ""));
+      }
+      const legs = RP.legs.length ? RP.legs : (RP._route || []);
+      legs.forEach((g, i) => {
+        if (i === 0 && RP.from && railNorm(g.from.n) !== railNorm(RP.from.s.n)) lines.push(`  先走到 ${railStName(g.from)}：${railXfer(RP.from.L, RP.from.s, g.L, g.from).t}`);
+        if (i > 0) lines.push(`  換車：${railStName(legs[i - 1].to)} → ${railXfer(legs[i - 1].L, legs[i - 1].to, g.L, g.from).t}`);
+        lines.push(`  ${g.L.n}：${railStName(g.from)} → ${railStName(g.to)}（${g.hops} 站）`);
+      });
+      if (!RP.from && RP.browseLine != null && d) lines.push(`正在看：${d.lines[RP.browseLine].n}`);
+      closeModalBackdrop("railPickerModal");
+      openFeedback({ cat: "bug", context: lines.join("\n"), placeholder: "哪裡不對？例如：這兩站其實不用出站、要走 15 分鐘不是 5 分鐘、站名寫錯、少了某條線…" });
+    }
+
+    // 填回表單：每一段一列，換車要出閘門或走出去的段落自動勾「需站外轉乘／跨系統」
+    function railFinish() {
+      const legs = RP.legs;
+      if (!legs.length) return;
+      const box = document.getElementById("transitLegsContainer");
+      box.querySelectorAll(".leg-item").forEach(row => {
+        if (!row.querySelector(".leg-from").value.trim() && !row.querySelector(".leg-to").value.trim()) row.remove();
+      });
+      appState.geoCache = appState.geoCache || {};
+      legs.forEach((g, i) => {
+        const x = i > 0 ? railXfer(legs[i - 1].L, legs[i - 1].to, g.L, g.from) : (railNorm(g.from.n) !== railNorm(RP.from.s.n) ? railXfer(RP.from.L, RP.from.s, g.L, g.from) : null);
+        addTransitLegRow({
+          from: railStName(g.from), to: railStName(g.to),
+          line: g.L.g === "台鐵" ? `台鐵${g.L.n}` : g.L.n,
+          trainNo: "", isOutTransfer: !!(x && x.k !== "same"),
+          customColor: g.L.c, fromNo: g.from.no || "", toNo: g.to.no || ""
+        });
+        [g.from, g.to].forEach(s => { if (s.lat != null) appState.geoCache[normalizeStationName(railStName(s))] = { lat: s.lat, lng: s.lng }; });
+      });
+      const title = document.getElementById("fTitle");
+      if (!title.value.trim()) title.value = `${railStName(legs[0].from)} → ${railStName(legs[legs.length - 1].to)}`;
+      saveAppState();
+      closeModalBackdrop("railPickerModal");
+      showToast(`已填好 ${legs.length} 段${legs.length > 1 ? `，轉乘 ${legs.length - 1} 次` : ""}`);
+    }
+
+    /*************************************************************************
+     * 機場選擇（點選，不用記代號）
+     *************************************************************************/
+    const AIRPORT_PICKS = [
+      ["台灣", [["TPE", "桃園", 25.0797, 121.2342], ["TSA", "松山", 25.0697, 121.5525], ["KHH", "高雄", 22.5771, 120.35], ["RMQ", "台中", 24.2647, 120.6206], ["TNN", "台南", 22.9504, 120.2057], ["HUN", "花蓮", 24.0231, 121.6178], ["TTT", "台東", 22.755, 121.1017], ["MZG", "澎湖", 23.5687, 119.6282], ["KNH", "金門", 24.4279, 118.3592], ["LZN", "馬祖南竿", 26.1598, 119.9582]]],
+      ["日本", [["NRT", "東京成田", 35.7719, 140.3929], ["HND", "東京羽田", 35.5494, 139.7798], ["KIX", "大阪關西", 34.432, 135.2304], ["ITM", "大阪伊丹", 34.7855, 135.4382], ["UKB", "神戶", 34.6328, 135.2239], ["NGO", "名古屋中部", 34.8584, 136.8054], ["FUK", "福岡", 33.5859, 130.4507], ["CTS", "札幌新千歲", 42.7752, 141.6923], ["OKA", "沖繩那霸", 26.1958, 127.6458], ["SDJ", "仙台", 38.1397, 140.917], ["HIJ", "廣島", 34.4361, 132.9194], ["OKJ", "岡山", 34.7569, 133.8553], ["TAK", "高松", 34.2142, 134.0156], ["KMJ", "熊本", 32.8373, 130.8551], ["KOJ", "鹿兒島", 31.8034, 130.7194], ["KMQ", "小松", 36.3946, 136.4067], ["HKD", "函館", 41.77, 140.822], ["AOJ", "青森", 40.7347, 140.6908], ["ISG", "石垣", 24.3964, 124.2451], ["SHI", "宮古下地島", 24.8267, 125.1447], ["FSZ", "靜岡", 34.7961, 138.1894], ["KIJ", "新潟", 37.9559, 139.1207]]],
+      ["韓國", [["ICN", "首爾仁川", 37.4602, 126.4407], ["GMP", "首爾金浦", 37.5583, 126.7906], ["PUS", "釜山", 35.1795, 128.9382], ["CJU", "濟州", 33.5113, 126.4929], ["TAE", "大邱", 35.8941, 128.6589]]],
+      ["港澳・中國", [["HKG", "香港", 22.308, 113.9185], ["MFM", "澳門", 22.1496, 113.5916], ["PVG", "上海浦東", 31.1443, 121.8083], ["SHA", "上海虹橋", 31.1979, 121.3363], ["PEK", "北京首都", 40.0799, 116.6031], ["PKX", "北京大興", 39.5098, 116.4105], ["CAN", "廣州", 23.3924, 113.2988], ["SZX", "深圳", 22.6393, 113.8107], ["XMN", "廈門", 24.5440, 118.1277]]],
+      ["東南亞", [["BKK", "曼谷蘇凡納布", 13.69, 100.7501], ["DMK", "曼谷廊曼", 13.9126, 100.6067], ["CNX", "清邁", 18.7668, 98.9626], ["HKT", "普吉島", 8.1132, 98.3169], ["SIN", "新加坡", 1.3644, 103.9915], ["KUL", "吉隆坡", 2.7456, 101.7099], ["MNL", "馬尼拉", 14.5086, 121.0194], ["CEB", "宿霧", 10.3075, 123.9794], ["SGN", "胡志明市", 10.8188, 106.6519], ["HAN", "河內", 21.2187, 105.8042], ["DAD", "峴港", 16.0439, 108.1994], ["CXR", "芽莊", 11.9982, 109.2194], ["PQC", "富國島", 10.1698, 103.9931], ["DPS", "峇里島", -8.7482, 115.1675], ["CGK", "雅加達", -6.1256, 106.6559]]],
+      ["美國・加拿大", [["LAX", "洛杉磯", 33.9416, -118.4085], ["SFO", "舊金山", 37.6213, -122.379], ["SEA", "西雅圖", 47.4502, -122.3088], ["JFK", "紐約甘迺迪", 40.6413, -73.7781], ["EWR", "紐華克", 40.6895, -74.1745], ["ORD", "芝加哥", 41.9742, -87.9073], ["BOS", "波士頓", 42.3656, -71.0096], ["LAS", "拉斯維加斯", 36.084, -115.1537], ["IAH", "休士頓", 29.9902, -95.3368], ["DFW", "達拉斯", 32.8998, -97.0403], ["ONT", "安大略", 34.056, -117.6012], ["HNL", "檀香山", 21.3187, -157.9225], ["KOA", "夏威夷可那", 19.7388, -156.0456], ["OGG", "茂宜島", 20.8986, -156.4305], ["YVR", "溫哥華", 49.1967, -123.1815], ["YYZ", "多倫多", 43.6777, -79.6248]]],
+      ["歐洲", [["LHR", "倫敦希斯洛", 51.47, -0.4543], ["CDG", "巴黎戴高樂", 49.0097, 2.5479], ["AMS", "阿姆斯特丹", 52.3105, 4.7683], ["FRA", "法蘭克福", 50.0379, 8.5622], ["MUC", "慕尼黑", 48.3537, 11.775], ["VIE", "維也納", 48.1103, 16.5697], ["PRG", "布拉格", 50.1008, 14.26], ["ZRH", "蘇黎世", 47.4582, 8.5555], ["FCO", "羅馬", 41.8003, 12.2389], ["MXP", "米蘭", 45.6306, 8.7281], ["BCN", "巴塞隆納", 41.2974, 2.0833], ["MAD", "馬德里", 40.4983, -3.5676], ["IST", "伊斯坦堡", 41.2753, 28.7519], ["HEL", "赫爾辛基", 60.3172, 24.9633], ["CPH", "哥本哈根", 55.618, 12.656], ["KEF", "冰島", 63.985, -22.6056]]],
+      ["大洋洲", [["SYD", "雪梨", -33.9399, 151.1753], ["MEL", "墨爾本", -37.669, 144.841], ["BNE", "布里斯本", -27.3842, 153.1175], ["AKL", "奧克蘭", -37.0082, 174.785], ["GUM", "關島", 13.4834, 144.7959], ["ROR", "帛琉", 7.3673, 134.5442]]],
+    ];
+    const AIRPORT_ZH = {};
+    AIRPORT_PICKS.forEach(([, list]) => list.forEach(([c, zh, lat, lng]) => {
+      AIRPORT_ZH[c] = zh;
+      if (!AIRPORT_COORDS[c]) AIRPORT_COORDS[c] = { name: zh, lat, lng };
+    }));
+    let AP = { side: "dep", group: null };
+    function airportLabel(code) { return AIRPORT_ZH[code] || (AIRPORT_COORDS[code] && AIRPORT_COORDS[code].name) || ""; }
+    function renderAirportEntry() {
+      ["Dep", "Arr"].forEach(k => {
+        const code = document.getElementById(`f${k}Iata`).value.trim().toUpperCase();
+        const box = document.getElementById(`ap${k}Box`);
+        if (!box) return;
+        box.classList.toggle("empty", !code);
+        box.innerHTML = `<b>${escapeHtml(code || "---")}</b><span>${code ? escapeHtml(airportLabel(code) || "自訂代號") : (k === "Dep" ? "點選出發機場" : "點選抵達機場")}</span>`;
+      });
+    }
+    function openAirportPicker(side) {
+      AP = { side, group: null };
+      openModalBackdrop("airportPickerModal");
+      document.getElementById("apOwnCode").value = "";
+      renderAirportPicker();
+    }
+    function airportSuggestions() {
+      const trip = getActiveTrip();
+      const cnt = {};
+      (appState.trips || []).forEach(t => (t.days || []).forEach(d => (d.items || []).forEach(i => {
+        if (i.type !== "flight") return;
+        [i.depIata, i.arrIata].forEach(c => { if (c) cnt[c.toUpperCase()] = (cnt[c.toUpperCase()] || 0) + 1; });
+      })));
+      const out = [];
+      const add = c => { if (c && !out.includes(c)) out.push(c); };
+      if (AP.side === "dep") {
+        // 前一班飛機降落的機場
+        const ctx = railFormContext();
+        const prevFlight = [...(getActiveDay().items || [])].filter(i => i.type === "flight" && i.id !== editingItemId).pop();
+        if (prevFlight) add((prevFlight.arrIata || "").toUpperCase());
+        Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]).forEach(add);
+        ["TPE", "TSA", "KHH", "RMQ"].forEach(add);
+      } else {
+        const tz = document.getElementById("fEndTz") ? document.getElementById("fEndTz").value : "";
+        const byTz = { "Asia/Tokyo": ["NRT", "HND", "KIX"], "Asia/Seoul": ["ICN", "GMP", "PUS"], "Asia/Bangkok": ["BKK", "DMK"], "Asia/Singapore": ["SIN"], "Asia/Hong_Kong": ["HKG"], "America/Los_Angeles": ["LAX", "SFO"], "America/New_York": ["JFK", "EWR"], "Pacific/Honolulu": ["HNL"], "Europe/London": ["LHR"], "Europe/Paris": ["CDG"] }[tz] || [];
+        byTz.forEach(add);
+        Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]).forEach(add);
+      }
+      const other = document.getElementById(AP.side === "dep" ? "fArrIata" : "fDepIata").value.trim().toUpperCase();
+      return out.filter(c => c && c !== other).slice(0, 6);
+    }
+    function renderAirportPicker() {
+      const dep = document.getElementById("fDepIata").value.trim().toUpperCase();
+      const arr = document.getElementById("fArrIata").value.trim().toUpperCase();
+      document.getElementById("apTabs").innerHTML = ["dep", "arr"].map(sd => {
+        const c = sd === "dep" ? dep : arr;
+        return `<button type="button" class="${AP.side === sd ? "on" : ""}" onclick="AP.side='${sd}';renderAirportPicker()">${sd === "dep" ? "出發" : "抵達"}<b>${escapeHtml(c || "---")}</b>${escapeHtml(c ? airportLabel(c) : "")}</button>`;
+      }).join("");
+      const cur = AP.side === "dep" ? dep : arr;
+      const btn = (c, hot) => `<button type="button" class="ap-btn${hot ? " hot" : ""}${c === cur ? " sel" : ""}" onclick="pickAirport('${c}')"><b>${c}</b><span>${escapeHtml(airportLabel(c))}</span></button>`;
+      const sug = airportSuggestions();
+      let h = sug.length ? `<div class="rp-grp">常用</div><div class="ap-grid">${sug.map(c => btn(c, true)).join("")}</div>` : "";
+      h += `<div class="rp-regions" style="margin-top:12px;">${AIRPORT_PICKS.map(([g], i) => `<button type="button" class="${AP.group === i ? "on" : ""}" onclick="AP.group=${i};renderAirportPicker()">${g}</button>`).join("")}</div>`;
+      if (AP.group != null) h += `<div class="ap-grid">${AIRPORT_PICKS[AP.group][1].map(([c]) => btn(c)).join("")}</div>`;
+      document.getElementById("apBody").innerHTML = h;
+    }
+    function pickAirport(code) {
+      document.getElementById(AP.side === "dep" ? "fDepIata" : "fArrIata").value = code;
+      renderAirportEntry();
+      const other = document.getElementById(AP.side === "dep" ? "fArrIata" : "fDepIata").value.trim();
+      if (AP.side === "dep" && !other) { AP.side = "arr"; AP.group = null; renderAirportPicker(); return; }
+      closeModalBackdrop("airportPickerModal");
+    }
+    function apUseOwn() {
+      const c = document.getElementById("apOwnCode").value.trim().toUpperCase();
+      if (!/^[A-Z]{3}$/.test(c)) { showToast("機場代號是 3 個英文字母，例如 NRT"); return; }
+      pickAirport(c);
+    }
+
+    function showA2hsToast(text) { showToast(text, 2600); }
+    function showToast(text, ms = 3200) {
+      document.querySelectorAll(".app-toast").forEach(el => el.remove());
       const t = document.createElement("div");
-      t.className = "a2hs-toast"; t.setAttribute("role", "status"); t.textContent = text;
+      t.className = "app-toast"; t.setAttribute("role", "status"); t.textContent = text;
+      t.onclick = () => t.remove();
       document.body.appendChild(t);
-      setTimeout(() => t.remove(), 2600);
+      setTimeout(() => t.remove(), ms);
     }
     const A2HS_SVG = {
       iosBar: `<svg viewBox="0 0 300 120"><rect x="12" y="34" width="276" height="56" rx="28" fill="#fff"/><circle cx="46" cy="62" r="17" fill="none" stroke="#C84B31" stroke-width="4"/><g stroke="#191919" stroke-width="2.6" stroke-linecap="round"><path d="M38 56h16M38 62h16M38 68h16"/></g><text x="150" y="68" font-size="15" font-weight="700" text-anchor="middle" fill="#191919">tabigram.info</text><g fill="none" stroke="#9A958C" stroke-width="2.4" stroke-linecap="round"><rect x="234" y="52" width="16" height="16" rx="3"/><path d="M268 53v18M268 53l-5 5M268 53l5 5"/></g><text x="46" y="112" font-size="12" font-weight="800" text-anchor="middle" fill="#C84B31">點這裡</text></svg>`,
@@ -10751,6 +11765,42 @@ function initSupabaseClient() {
       appState.desktopTipDone = true; saveAppState();
       document.getElementById("desktopTipCard").classList.remove("show");
     }
+    // ---------- 備份提醒 ----------
+    function updateBackupAgeLabel() {
+      const el = document.getElementById("backupAgeLabel");
+      if (!el) return;
+      const t = appState.lastBackupAt;
+      if (!t) { el.textContent = currentCloudUser ? "" : "還沒備份"; return; }
+      const d = Math.floor((Date.now() - t) / 86400000);
+      el.textContent = d <= 0 ? "今天" : `${d} 天前`;
+      el.style.color = d > 30 ? "" : "var(--sub)";
+    }
+    function snoozeBackupTip() {
+      appState.backupTipSnooze = Date.now() + 7 * 86400000; saveAppState();
+      document.getElementById("backupTipCard").classList.remove("show");
+    }
+    function maybeShowBackupTip() {
+      updateBackupAgeLabel();
+      if ((appState.backupTipSnooze || 0) > Date.now()) return;
+      if (document.documentElement.classList.contains("landing-open") || document.querySelector(".modal-backdrop.open")) return;
+      if (document.querySelector(".a2hs-card.show")) return;
+      if (!tripsHaveContent(appState.trips || [])) return;
+      const text = document.getElementById("backupTipText"), go = document.getElementById("backupTipGo");
+      const hasLocalPhotos = Object.values(appState.memoryPhotos || {}).some(l => l && l.length);
+      const old = !appState.lastBackupAt || Date.now() - appState.lastBackupAt > 30 * 86400000;
+      if (!currentCloudUser) {
+        text.innerHTML = "<b>記得登入或備份</b>現在行程只存在這台裝置，清除瀏覽器資料或換手機就會不見。登入後會自動存到雲端。";
+        go.textContent = "登入";
+        go.onclick = () => { document.getElementById("backupTipCard").classList.remove("show"); openCloudModal(); };
+      } else if (hasLocalPhotos && old) {
+        text.innerHTML = "<b>精選照片記得備份</b>「旅程回憶」上傳的照片只存在這台裝置，偶爾備份一份，換手機也帶得走。";
+        go.textContent = "現在備份";
+        go.onclick = () => exportBackupJSON();
+      } else return;
+      document.getElementById("backupTipCard").classList.add("show");
+    }
+    window.addEventListener("load", () => setTimeout(maybeShowBackupTip, 9000));
+
     window.addEventListener("load", () => {
       setTimeout(() => {
         if (appState.desktopTipDone || !detectPlatform().desktop || isStandaloneApp()) return;
@@ -10787,6 +11837,7 @@ function initSupabaseClient() {
         }
         saveAppState();
         renderMemoryPickGrid();
+        showToast("照片存在這台裝置。換手機前，記得用選單的「備份到這台裝置」備份一份。", 4200);
       };
       inp.click();
     }
@@ -10803,17 +11854,17 @@ function initSupabaseClient() {
     // 更新公告：改版時只要修改 WHATS_NEW（版本號換新，內容換新），老朋友打開會看到一次
     // =====================================================================
     const WHATS_NEW = {
-      version: "2026.11.17",
-      date: "2026.11.17",
+      version: "2026.11.18b",
+      date: "2026.11.18",
       items: [
-        ["旅程回憶與完成章", "旅程結束後自動收進「旅程回憶」，蓋上一枚完成章，可以挑 3 張精選照片、分享完成卡。"],
-        ["足跡地圖", "行程當天可以按定位圖示打卡，回憶頁會畫出整趟旅程的路線。位置只有你看得到。"],
-        ["深色模式", "跟著手機自動切換，也可以在選單最下方的「外觀」自己選。"],
-        ["路線圖分享卡更準了", "地鐵、電車行程不會再被誤判成船票。你換過的模板也會被記住。"],
-        ["Google 地圖連結", "行程可以貼上 Google 地圖的分享連結，卡片上的「地圖」會直接打開那個地點。試算表範本也多了這一欄。"],
-        ["使用教學", "選單裡的「使用教學」：試算表匯入、請 AI 健檢行程、電腦版、和旅伴一起編。"],
-        ["加到主畫面、離線也能看", "加到主畫面後打開更快，沒有網路也看得到行程。"],
-        ["意見回饋", "選單裡的「意見回饋」，有任何想法都歡迎告訴我們。"]
+        ["點選車站，轉乘自動排好", "新增交通時按「點選車站」：App 會從前後行程猜上車站和目的地，排好轉乘，連要不要出閘門、走出站都標好。台灣（含高鐵、台鐵）、東京、大阪京都、首爾、舊金山、紐約。"],
+        ["點選機場", "航班不用記機場代號，點城市就好。"],
+        ["備份提醒", "沒登入時，行程只存在這台裝置。App 會提醒你登入或備份；選單的「備份到這台裝置」也會顯示上次備份是幾天前。"],
+        ["當日回顧", "每天最後一個行程結束後，當天最上方會出現回顧：完成幾個行程、打卡幾個地點、走了幾公里、花了多少。"],
+        ["「我到了」更好找", "行程當天，卡片下方會有「我到了」按鈕，按下去記下位置，旅程結束後畫成足跡地圖。心情章也搬到旁邊。"],
+        ["拍立得照片直接調整", "分享拍立得時，直接在照片上單指拖曳、兩指縮放。"],
+        ["費用名目", "預定費用可以寫上是什麼錢，例如門票、車資、住宿。"],
+        ["深色模式", "跟著手機自動切換，也可以在選單的「外觀」自己選。Silver 是深色金屬、Lilac 是深紫夜空。"]
       ]
     };
     function openWhatsNew() {
@@ -10857,5 +11908,33 @@ function initSupabaseClient() {
       return /^https:\/\//i.test(safe) ? safe.slice(0, 500) : "";
     }
 </script>
+  <!-- 車站選擇（不用打字） -->
+  <div class="modal-backdrop" id="railPickerModal">
+    <div class="modal-sheet rp-sheet">
+      <div class="modal-header">
+        <div class="modal-title">選車站</div>
+        <button class="pill-btn" onclick="closeModalBackdrop('railPickerModal')">✕</button>
+      </div>
+      <div class="rp-regions" id="rpRegions"></div>
+      <div id="rpBody"></div>
+      <p class="rp-note">車站資料 © OpenStreetMap contributors・台鐵：臺鐵開放資料</p>
+    </div>
+  </div>
+
+  <!-- 機場選擇 -->
+  <div class="modal-backdrop" id="airportPickerModal">
+    <div class="modal-sheet rp-sheet">
+      <div class="modal-header">
+        <div class="modal-title">選機場</div>
+        <button class="pill-btn" onclick="closeModalBackdrop('airportPickerModal')">✕</button>
+      </div>
+      <div class="ap-tabs" id="apTabs"></div>
+      <div id="apBody"></div>
+      <div class="ap-own">
+        <input type="text" class="form-input" id="apOwnCode" maxlength="3" placeholder="清單沒有？輸入 3 碼代號" />
+        <button type="button" class="mini-btn" onclick="apUseOwn()">使用</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

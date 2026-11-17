@@ -1518,8 +1518,11 @@
     .ld-top { display: flex; justify-content: flex-end; }
     .ld-link { background: none; border: 1.5px solid var(--ink); border-radius: 999px; padding: 6px 14px; font-family: var(--sans); font-weight: 700; font-size: 13px; color: var(--ink); cursor: pointer; min-height: 36px; }
     .ld-mid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px 0; }
-    .ld-ring { width: min(190px, 48vw); aspect-ratio: 1; color: var(--ink); animation: tgSpin 18s linear infinite; }
-    .ld-word { font-family: var(--display); font-size: 36px; letter-spacing: .01em; margin: 22px 0 6px; line-height: 1.1; }
+    .ld-ring { width: min(104px, 28vw); aspect-ratio: 1; color: var(--ink); animation: tgSpin 18s linear infinite; }
+    .ld-word { font-family: var(--display); font-size: 32px; letter-spacing: .01em; margin: 14px 0 6px; line-height: 1.1; }
+    .ld-sample { margin: 18px 0 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .ld-sample img { display: block; height: min(40svh, 340px); width: auto; aspect-ratio: 9 / 16; border-radius: 14px; box-shadow: 0 14px 34px rgba(0,0,0,.18); transform: rotate(-2.5deg); }
+    .ld-sample figcaption { font-size: 12px; color: var(--sub); }
     .ld-tag { color: var(--sub); font-size: 15.5px; margin: 0; text-wrap: balance; }
     .ld-btns { display: grid; gap: 10px; }
     .ld-btn { display: block; width: 100%; border-radius: 999px; padding: 14px; min-height: 50px; font-family: var(--sans); font-weight: 900; font-size: 16px; cursor: pointer; }
@@ -1797,6 +1800,24 @@
     .footer-text-btn.map-set { color: var(--accent) !important; position: relative; }
     .footer-text-btn.map-set::after { content: ""; position: absolute; top: 3px; right: 1px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 
+    /* 第一次使用：個人設定引導 */
+    .profile-welcome { background: var(--accent-soft); border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; font-size: 13px; line-height: 1.6; color: var(--ink); }
+    .profile-welcome b { display: block; font-size: 14.5px; margin-bottom: 4px; }
+    .profile-welcome ul { margin: 0 0 8px; padding-left: 0; list-style: none; }
+    .profile-welcome li { margin: 4px 0; color: var(--sub); }
+    .profile-welcome li span { display: inline-block; font-weight: 800; color: var(--ink); margin-right: 6px; }
+    html[data-mode="dark"] body .profile-welcome { background: #2A2420; }
+
+    /* 新增行程：更多選項 */
+    .tz-hint { font-size: 11.5px; color: var(--sub); margin: 6px 2px 0; line-height: 1.5; }
+    .tz-hint button { border: 0; background: none; padding: 0; font: inherit; color: var(--accent); font-weight: 800; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+    .more-toggle { width: 100%; display: flex; align-items: center; gap: 8px; margin-top: 14px; padding: 11px 12px; border: 1px dashed var(--border); border-radius: 12px; background: transparent; color: var(--ink); font: inherit; cursor: pointer; text-align: left; }
+    .more-toggle span { font-size: 13.5px; font-weight: 800; flex: none; }
+    .more-toggle small { font-size: 11.5px; color: var(--sub); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .more-toggle i { font-style: normal; color: var(--sub); transition: transform .2s; }
+    .more-toggle.open i { transform: rotate(180deg); }
+    #fMoreBox { padding-top: 4px; }
+
     /* ---------- 右上角：編輯鎖、選單 ---------- */
     .icon-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); color: var(--ink); display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; flex: none; transition: background .15s ease, border-color .15s ease, color .15s ease; }
     .icon-btn svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -2073,6 +2094,10 @@
           <div class="tg-ring ld-ring" role="img" aria-label="TabigrAm 圓形標誌"></div>
           <h1 class="ld-word">TabigrAm<span class="beta-tag ld-beta" aria-label="封測版">.beta</span></h1>
           <p class="ld-tag">把旅程排好，把回憶收好。</p>
+          <figure class="ld-sample">
+            <img src="sample-route-card.jpg" width="450" height="800" alt="路線圖分享卡範例：中目黑搭日比谷線到銀座，轉銀座線到淺草" loading="eager" decoding="async" />
+            <figcaption>搭過的路線，自動畫成可以發限動的卡片</figcaption>
+          </figure>
         </div>
         <div class="ld-btns">
           <button type="button" class="ld-btn dark" onclick="landingAction('start')">開始規劃旅程</button>
@@ -2089,12 +2114,12 @@
           <div class="bar"><i></i></div>
         </div>
         <ol class="ld-list">
-          <li><span class="n">01</span><div><b>一天一天排清楚</b>時間、地點、交通、花費一目了然。用電腦也能編輯，還能用試算表一次匯入整趟行程。</div></li>
-          <li><span class="n">02</span><div><b>點車站，不用打字</b>從前後行程猜你在哪一站上車、要去哪，轉乘自動排好，連要不要出站轉乘都標清楚。台灣捷運、高鐵、台鐵，東京、大阪京都、首爾、舊金山、紐約都能用。機場也是點一下就好。</div></li>
-          <li><span class="n">03</span><div><b>路線圖分享卡</b>把搭過的地鐵、電車路線，用真實的路線顏色做成可以發限動的路線圖卡片。</div></li>
-          <li><span class="n">04</span><div><b>和旅伴一起編</b>輸入 6 碼邀請碼就能加入。大家看同一份行程，私人筆記和照片各自保存。</div></li>
-          <li><span class="n">05</span><div><b>旅途中不用再翻</b>現在在哪個行程、下一站幾點，打開就知道。沒有網路也看得到行程。</div></li>
-          <li><span class="n">06</span><div><b>足跡、當日回顧與完成章</b>按「我到了」記下走過的地方，每天結束有一張回顧。旅程結束蓋一枚章，收進旅程回憶。</div></li>
+          <li><span class="n">01</span><div><b>路線圖分享卡</b>把搭過的地鐵、電車路線，用真實的路線顏色做成可以發限動的路線圖卡片。</div></li>
+          <li><span class="n">02</span><div><b>足跡、當日回顧與完成章</b>按「我到了」記下走過的地方，每天結束有一張回顧。旅程結束蓋一枚章，收進旅程回憶。</div></li>
+          <li><span class="n">03</span><div><b>一天一天排清楚</b>時間、地點、交通、花費一目了然。用電腦也能編輯，還能用試算表一次匯入整趟行程。</div></li>
+          <li><span class="n">04</span><div><b>點車站，不用打字</b>從前後行程猜你在哪一站上車、要去哪，轉乘自動排好，連要不要出站轉乘都標清楚。台灣捷運、高鐵、台鐵，東京、大阪京都、首爾、舊金山、紐約都能用。機場也是點一下就好。</div></li>
+          <li><span class="n">05</span><div><b>和旅伴一起編</b>輸入 6 碼邀請碼就能加入。大家看同一份行程，私人筆記和照片各自保存。</div></li>
+          <li><span class="n">06</span><div><b>旅途中不用再翻</b>現在在哪個行程、下一站幾點，打開就知道。沒有網路也看得到行程。</div></li>
           <li><span class="n">07</span><div><b>請 AI 幫你檢查</b>一鍵匯出行程，交給 ChatGPT、Claude 或 Gemini 檢查轉乘時間和動線。</div></li>
         </ol>
         <button type="button" class="ld-guide-link" onclick="openGuide()">第一次用？看使用教學 →</button>
@@ -2577,12 +2602,6 @@
         <label class="form-label">行程標題</label>
         <input type="text" class="form-input" id="fTitle" placeholder="" />
 
-        <!-- Spot Fields -->
-        <div id="spotFieldsBox">
-          <label class="form-label">副標題 / 地點</label>
-          <input type="text" class="form-input" id="fSubtitle" placeholder="" />
-        </div>
-
         <!-- Transit / Ferry Multi-Leg Builder -->
         <div id="transitFieldsBox" style="display:none; margin-top:10px;">
           <button type="button" class="pick-entry" onclick="openRailPicker()">點選車站 <small>不用打字，轉乘自動排好</small></button>
@@ -2648,12 +2667,8 @@
           </div>
         </div>
 
-        <!-- Precision 1-Minute Time & Timezone -->
+        <!-- 時間（時區收在「更多選項」，會自動判斷） -->
         <div class="form-row-2 mobile-stack" style="margin-top:10px;">
-          <div>
-            <label class="form-label">開始時區</label>
-            <select class="form-select" id="fStartTz"></select>
-          </div>
           <div>
             <label class="form-label">開始時間</label>
             <div class="time-select-group">
@@ -2661,13 +2676,6 @@
               <span>:</span>
               <select class="form-select" id="fStartMin"></select>
             </div>
-          </div>
-        </div>
-
-        <div class="form-row-2 mobile-stack" style="margin-top:8px;">
-          <div>
-            <label class="form-label">結束時區</label>
-            <select class="form-select" id="fEndTz"></select>
           </div>
           <div>
             <label class="form-label">結束時間</label>
@@ -2684,6 +2692,29 @@
             </div>
           </div>
         </div>
+        <div id="fTzHint" class="tz-hint"></div>
+
+        <button type="button" class="more-toggle" id="fMoreToggle" onclick="toggleItemMore()">
+          <span>更多選項</span><small>地點、時區、費用、備註、地圖、相片</small><i aria-hidden="true">▾</i>
+        </button>
+        <div id="fMoreBox" style="display:none;">
+        <!-- Spot Fields -->
+        <div id="spotFieldsBox">
+          <label class="form-label">副標題 / 地點</label>
+          <input type="text" class="form-input" id="fSubtitle" placeholder="" />
+        </div>
+
+
+          <div class="form-row-2 mobile-stack" style="margin-top:10px;">
+            <div>
+              <label class="form-label">開始時區</label>
+              <select class="form-select" id="fStartTz" onchange="updateTzHint()"></select>
+            </div>
+            <div>
+              <label class="form-label">結束時區</label>
+              <select class="form-select" id="fEndTz" onchange="updateTzHint()"></select>
+            </div>
+          </div>
 
         <!-- Base Budget & Extra Expenses Manager -->
         <div class="form-row-2" style="margin-top:10px;">
@@ -2737,16 +2768,18 @@
         <label class="form-label">上傳相片</label>
         <input type="file" class="form-input" id="fPhotosInput" accept="image/*" multiple onchange="handleFormPhotosUpload(event)" />
         <div class="card-photos-strip" id="formPhotosPreview"></div>
-      </div>
 
-      <div style="margin-top:10px; margin-bottom:12px; display:flex; justify-content:flex-end;">
+      <div style="margin-top:10px; display:flex; justify-content:flex-end;">
           <label style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:800; cursor:pointer;">
             <input type="checkbox" id="fIsPrivate" style="width:16px; height:16px; accent-color:var(--ink);" />
             🔒 私人行程 (僅自己可見，不發佈給旅伴)
           </label>
       </div>
-      <div id="fPrivateHint" style="display:none; margin:-6px 0 12px; font-size:12px; color:var(--sub); text-align:right;"></div>
-      <div style="display:flex; gap:10px;">
+      <div id="fPrivateHint" style="display:none; margin:4px 0 0; font-size:12px; color:var(--sub); text-align:right;"></div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:12px;">
         <button class="pill-btn primary" style="flex:1; justify-content:center; padding:12px;" onclick="saveItineraryItem()">儲存行程卡片</button>
       </div>
     </div>
@@ -3162,8 +3195,18 @@
   <div class="modal-backdrop" id="profileModal">
     <div class="modal-sheet" style="max-width: 440px;">
       <div class="modal-header">
-        <div class="modal-title">個人設定</div>
+        <div class="modal-title" id="profileModalTitle">個人設定</div>
         <button class="pill-btn" onclick="closeProfileModal()">✕</button>
+      </div>
+
+      <div class="profile-welcome" id="profileWelcome" style="display:none;">
+        <b>歡迎！先花 10 秒設定一下</b>
+        <ul>
+          <li><span>名字、大頭貼</span>和旅伴一起編行程時，大家看得出是誰排的。</li>
+          <li><span>time zone</span>選你住的地方。倒數、提醒都以這裡的時間為準。</li>
+          <li><span>show time zone</span>打開後，出國時卡片會同時顯示家鄉時間，方便和家人聯絡。</li>
+        </ul>
+        <button type="button" class="ld-link" style="min-height:30px; padding:4px 12px; font-size:12px;" onclick="closeProfileModal()">之後再說</button>
       </div>
 
       <div class="form-card">
@@ -4310,24 +4353,46 @@
       return map[tz] || map["Asia/Taipei"];
     }
 
+    // 回傳座標＋地名（地名顯示在天氣旁，讓人知道是哪裡的天氣）
     function detectDayTargetCoord(day, trip) {
+      const withLabel = (c, label) => ({ lat: c.lat, lng: c.lng, label: String(label || "").trim() });
       for (const item of day.items) {
         if (item.type === "transit" && item.transitLegs && item.transitLegs.length > 0) {
-          const c = lookupStationCoordSync(item.transitLegs[0].from) || lookupStationCoordSync(item.transitLegs[0].to);
-          if (c) return c;
+          const l0 = item.transitLegs[0];
+          const a = lookupStationCoordSync(l0.from);
+          if (a) return withLabel(a, l0.from);
+          const b = lookupStationCoordSync(l0.to);
+          if (b) return withLabel(b, l0.to);
         }
         if (item.type === "roadtrip" && item.roadFrom) {
-          const c = lookupStationCoordSync(item.roadFrom) || lookupStationCoordSync(item.roadTo);
-          if (c) return c;
+          const a = lookupStationCoordSync(item.roadFrom);
+          if (a) return withLabel(a, item.roadFrom);
+          const b = lookupStationCoordSync(item.roadTo);
+          if (b) return withLabel(b, item.roadTo);
         }
         if (item.type === "flight" && item.depIata && AIRPORT_COORDS[item.depIata.toUpperCase()]) {
-          return AIRPORT_COORDS[item.depIata.toUpperCase()];
+          const code = item.depIata.toUpperCase();
+          return withLabel(AIRPORT_COORDS[code], (typeof airportLabel === "function" && airportLabel(code)) || code);
         }
-        const byTitle = lookupStationCoordSync(item.title) || lookupStationCoordSync(item.subtitle);
-        if (byTitle) return byTitle;
+        const t = lookupStationCoordSync(item.title);
+        if (t) return withLabel(t, item.title);
+        const sb = lookupStationCoordSync(item.subtitle);
+        if (sb) return withLabel(sb, item.subtitle);
       }
       const tz = (day.items[0] && day.items[0].startTz) || trip.homeTz || "Asia/Taipei";
-      return getDefaultCoordForTz(tz);
+      const d = getDefaultCoordForTz(tz);
+      const known = d !== getDefaultCoordForTz("__none__") || tz === "Asia/Taipei";
+      return withLabel(d, tzDisplayName(known ? tz : "Asia/Taipei").split(/[、（]/)[0]);
+    }
+
+    function weatherBadgeText(day) {
+      const w = day.weatherText || "";
+      if (!w) return "☀️ 載入氣象中...";
+      const place = (day.location && day.location.trim()) || day.weatherPlace || "";
+      if (!place) return w;
+      const m = w.match(/^(\S+)\s+\S+\s+(.+)$/);   // 「☀️ 晴朗 19°C / 9°C」→ 圖示＋溫度
+      const short = place.length > 8 ? place.slice(0, 8) + "…" : place;
+      return m ? `${m[1]} ${short} ${m[2]}` : `${short} ${w}`;
     }
 
     function weatherCodeToText(code) {
@@ -4377,6 +4442,9 @@
       }
       if (!coord) {
         coord = detectDayTargetCoord(day, trip);
+        day.weatherPlace = coord.label || "";
+      } else {
+        day.weatherPlace = "";
       }
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${coord.lat}&longitude=${coord.lng}&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto&forecast_days=1`;
 
@@ -4658,7 +4726,9 @@
       if (locInp) locInp.value = day.location || "";
       updateDayCityHint();
 
-      document.getElementById("weatherBadge").textContent = day.weatherText || "☀️ 載入氣象中...";
+      const wb = document.getElementById("weatherBadge");
+      wb.textContent = weatherBadgeText(day);
+      wb.title = ((day.location && day.location.trim()) || day.weatherPlace) ? `${(day.location && day.location.trim()) || day.weatherPlace} 的天氣${!day.location ? "（依行程地點判斷，可在「所在城市」改）" : ""}` : "";
       document.getElementById("sunriseLabel").textContent = `日出 ${day.sunrise || "06:15"}`;
       document.getElementById("sunsetLabel").textContent = `日落 ${day.sunset || "17:30"}`;
 
@@ -5285,10 +5355,22 @@
         }
 
         formTempPhotos = Array.isArray(item.photos) ? [...item.photos] : [];
+        const hasMore = !!(item.subtitle || Number(item.cost) || item.costLabel || (item.extraExpenses || []).length || item.note
+          || item.mapUrl || item.url || (item.photos || []).length || item.isPrivate);
+        toggleItemMore(hasMore);
       } else {
+        toggleItemMore(false);
         const prevItem = day.items.length > 0 ? day.items[day.items.length - 1] : null;
-        const inheritedTz = prevItem ? (prevItem.endTz || prevItem.startTz) : (trip.homeTz || "Asia/Taipei");
-        const inheritedCurrency = prevItem ? (prevItem.currency || "NT$") : (inheritedTz === "Asia/Tokyo" ? "¥" : "NT$");
+        // 這天還沒有行程：看當天城市，再看前一天最後一個行程，最後才用家鄉時區
+        let earlier = null;
+        for (let di = appState.activeDayIndex - 1; di >= 0 && !earlier; di--) {
+          const its = (trip.days[di] && trip.days[di].items) || [];
+          if (its.length) earlier = its[its.length - 1];
+        }
+        const cityTz = day.location ? parseCsvTz(day.location) : null;
+        const inheritedTz = prevItem ? (prevItem.endTz || prevItem.startTz)
+          : (cityTz || (earlier && (earlier.endTz || earlier.startTz)) || trip.homeTz || "Asia/Taipei");
+        const inheritedCurrency = prevItem ? (prevItem.currency || "NT$") : (CSV_TZ_DEFAULT_CURRENCY[inheritedTz] || (earlier && earlier.currency) || "NT$");
 
         document.getElementById("fType").value = "spot";
         document.getElementById("fTitle").value = "";
@@ -5331,8 +5413,42 @@
       }
 
       onTypeChange();
+      updateTzHint();
       renderFormPhotosPreview();
       openModalBackdrop("itemModal");
+    }
+
+    function toggleItemMore(force) {
+      const box = document.getElementById("fMoreBox");
+      const btn = document.getElementById("fMoreToggle");
+      const open = typeof force === "boolean" ? force : box.style.display === "none";
+      box.style.display = open ? "block" : "none";
+      btn.classList.toggle("open", open);
+    }
+    function openTzOptions() {
+      toggleItemMore(true);
+      const sel = document.getElementById("fStartTz");
+      sel.scrollIntoView({ block: "center", behavior: "smooth" });
+      setTimeout(() => sel.focus(), 300);
+    }
+    function updateTzHint() {
+      const el = document.getElementById("fTzHint");
+      if (!el) return;
+      const a = document.getElementById("fStartTz").value, b = document.getElementById("fEndTz").value;
+      const nm = (tz) => `${tzDisplayName(tz)}（${tzOffsetLabel(tz)}）`;
+      el.innerHTML = (a && b && a !== b ? `開始依 ${escapeHtml(nm(a))}、結束依 ${escapeHtml(nm(b))} 時間` : `依 ${escapeHtml(nm(a || b))} 時間`)
+        + ` · <button type="button" onclick="openTzOptions()">改時區</button>`;
+    }
+    // 自動把時區換成選到的車站、機場所在地
+    function autoSetItemTz(startTz, endTz, why) {
+      const sSel = document.getElementById("fStartTz"), eSel = document.getElementById("fEndTz");
+      const before = sSel.value + "|" + eSel.value;
+      if (startTz) setTzSelectValue(sSel, startTz);
+      if (endTz) setTzSelectValue(eSel, endTz);
+      updateTzHint();
+      const cur = document.getElementById("fCurrency");
+      if (startTz && cur && !document.getElementById("fCost").value && CSV_TZ_DEFAULT_CURRENCY[startTz]) cur.value = CSV_TZ_DEFAULT_CURRENCY[startTz];
+      return before !== sSel.value + "|" + eSel.value;
     }
 
     function closeItemModal() {
@@ -9302,6 +9418,7 @@ function initSupabaseClient() {
       renderCloudModalUI();
       resolveMissingCloudPhotos();
       alert(`🎉 成功加入「${mergedTrip.title}」！`);
+      maybeShowProfileSetup();
     }
 
     // Auto-pull updates on login/reload while preserving personal memories
@@ -9549,7 +9666,21 @@ function initSupabaseClient() {
       }
     }
 
-    function openProfileModal() {
+    // 第一次建立或加入旅行後，帶使用者設定名字、照片、時區（只出現一次）
+    function maybeShowProfileSetup() {
+      if (appState.profileSetupSeen) return;
+      appState.profileSetupSeen = true;
+      saveAppState();
+      if (appState.userDisplayName) return; // 已經設定過名字的老朋友不打擾
+      setTimeout(() => openProfileModal(true), 450);
+    }
+
+    function openProfileModal(welcome) {
+      welcome = welcome === true;
+      const wEl = document.getElementById("profileWelcome");
+      if (wEl) wEl.style.display = welcome ? "block" : "none";
+      const tEl = document.getElementById("profileModalTitle");
+      if (tEl) tEl.textContent = welcome ? "設定個人資料" : "個人設定";
       const sel = document.getElementById("profileDefaultHomeTzSelect");
       if (sel && !sel.innerHTML) {
         sel.innerHTML = buildTzOptionsHtml();
@@ -9713,6 +9844,7 @@ function initSupabaseClient() {
       const trip = getActiveTrip();
       trip.title = title;
       trip.startDate = startDate;
+      setTimeout(maybeShowProfileSetup, 200);
       const endDate = document.getElementById("onboardTripEndInput").value;
       if (endDate) {
         const want = Math.min(120, cdCalendarDaysBetween(startDate, endDate) + 1);
@@ -10101,6 +10233,13 @@ function initSupabaseClient() {
 
     // 常見機場 → 時區（航班沒填時區時自動判斷）
     const CSV_AIRPORT_TZ = {
+      TNN: "Asia/Taipei", HUN: "Asia/Taipei", TTT: "Asia/Taipei", MZG: "Asia/Taipei", KNH: "Asia/Taipei", LZN: "Asia/Taipei",
+      UKB: "Asia/Tokyo", OKJ: "Asia/Tokyo", TAK: "Asia/Tokyo", KMQ: "Asia/Tokyo", HKD: "Asia/Tokyo", AOJ: "Asia/Tokyo", ISG: "Asia/Tokyo", SHI: "Asia/Tokyo", FSZ: "Asia/Tokyo", KIJ: "Asia/Tokyo",
+      TAE: "Asia/Seoul", PVG: "Asia/Shanghai", SHA: "Asia/Shanghai", PEK: "Asia/Shanghai", PKX: "Asia/Shanghai", CAN: "Asia/Shanghai", SZX: "Asia/Shanghai", XMN: "Asia/Shanghai",
+      KUL: "Asia/Kuala_Lumpur", MNL: "Asia/Manila", CEB: "Asia/Manila", SGN: "Asia/Ho_Chi_Minh", HAN: "Asia/Bangkok", DAD: "Asia/Ho_Chi_Minh", CXR: "Asia/Ho_Chi_Minh", PQC: "Asia/Ho_Chi_Minh",
+      DPS: "Asia/Makassar", CGK: "Asia/Jakarta", ONT: "America/Los_Angeles", YVR: "America/Vancouver", YYZ: "America/Toronto",
+      PRG: "Europe/Prague", MXP: "Europe/Rome", BCN: "Europe/Madrid", MAD: "Europe/Madrid", IST: "Europe/Istanbul", HEL: "Europe/Helsinki", CPH: "Europe/Copenhagen", KEF: "Atlantic/Reykjavik",
+      DXB: "Asia/Dubai", DOH: "Asia/Qatar", AUH: "Asia/Dubai", SYD: "Australia/Sydney", MEL: "Australia/Melbourne", BNE: "Australia/Brisbane", AKL: "Pacific/Auckland", GUM: "Pacific/Guam", ROR: "Pacific/Palau",
       TPE: "Asia/Taipei", TSA: "Asia/Taipei", KHH: "Asia/Taipei", RMQ: "Asia/Taipei",
       NRT: "Asia/Tokyo", HND: "Asia/Tokyo", KIX: "Asia/Tokyo", ITM: "Asia/Tokyo", NGO: "Asia/Tokyo", FUK: "Asia/Tokyo",
       CTS: "Asia/Tokyo", OKA: "Asia/Tokyo", SDJ: "Asia/Tokyo", HIJ: "Asia/Tokyo", KMJ: "Asia/Tokyo", KOJ: "Asia/Tokyo",
@@ -12382,6 +12521,7 @@ function initSupabaseClient() {
       { id: "sf", label: "舊金山", tz: ["America/Los_Angeles"] },
       { id: "nyc", label: "紐約", tz: ["America/New_York"] },
     ];
+    const RAIL_REGION_TZ = { taiwan: "Asia/Taipei", tokyo: "Asia/Tokyo", kansai: "Asia/Tokyo", seoul: "Asia/Seoul", sf: "America/Los_Angeles", nyc: "America/New_York" };
     const railData = {};
     let RP = null;
 
@@ -12449,15 +12589,30 @@ function initSupabaseClient() {
     }
     function railStName(s) { return RP && RP.region === "seoul" && s.alt ? s.alt : s.n; }
     // 換車方式：同站轉乘／出閘門再進站／站外步行
+    // 特急、新幹線的真正營運公司（同公司在站內就能轉乘，不用出站）
+    function railOp(L) {
+      if (L.g === "機場特急") {
+        if (/成田エクスプレス/.test(L.n)) return "JR東日本";
+        if (/はるか/.test(L.n)) return "JR西日本";
+        if (/スカイライナー/.test(L.n)) return "京成";
+        if (/ラピート/.test(L.n)) return "南海";
+      }
+      if (L.g === "新幹線") return /山陽/.test(L.n) ? "JR西日本" : "JR東日本"; // 東海道新幹線也在 JR 站內轉乘
+      return L.g;
+    }
     function railXfer(La, sa, Lb, sb) {
       const d = railMeters(sa, sb), same = railNorm(sa.n) === railNorm(sb.n);
-      if (same && La.g === Lb.g && (d == null || d < 450)) return { k: "same", t: "同站轉乘" };
+      if (same && railOp(La) === railOp(Lb) && (d == null || d < 450)) return { k: "same", t: "同站轉乘" };
       if (same && (d == null || d < 350)) return { k: "gate", t: "出閘門再進站" };
       // 步行時間：直線距離 ×1.3（實際路線會繞）÷ 每分鐘 70 公尺
       const min = d == null ? 0 : Math.max(3, Math.round(d * 1.3 / 70));
       return { k: "walk", t: min ? `站外步行約 ${min} 分` : "站外步行" };
     }
     const railXt = x => `<span class="rp-xt ${x.k}">${x.t}</span>`;
+    // 特急、新幹線、高鐵要另外買票、班次少：短距離不該優先推薦。
+    // 加一段固定成本（約等於多坐 10 幾站），長距離或能省下轉乘時還是會選它
+    const RAIL_PREMIUM = { "機場特急": 12, "新幹線": 16, "台灣高鐵": 10 };
+    function railPremium(L) { return RAIL_PREMIUM[L.g] || 0; }
     function railHops(L, i, j) { const d = Math.abs(i - j); return L.loop ? Math.min(d, L.st.length - d) : d; }
 
     // 轉乘最少的走法（最多換 2 次）
@@ -12476,7 +12631,7 @@ function initSupabaseClient() {
             m.L.st.forEach((s1, j) => {
               if (s1.cl === cl) return;
               const h = railHops(m.L, m.i, j);
-              const cost = cur.cost + w.leg + h + pen;
+              const cost = cur.cost + w.leg + h + pen + railPremium(m.L);
               const old = best.get(s1.cl);
               if (!old || cost < old.cost) {
                 best.set(s1.cl, { cost, legs: [...cur.legs, { L: m.L, from: m.s, to: s1, hops: h }] });
@@ -12825,9 +12980,11 @@ function initSupabaseClient() {
       });
       const title = document.getElementById("fTitle");
       if (!title.value.trim()) title.value = `${railStName(legs[0].from)} → ${railStName(legs[legs.length - 1].to)}`;
+      const rtz = RAIL_REGION_TZ[RP.region];
+      const tzChanged = rtz ? autoSetItemTz(rtz, rtz) : false;
       saveAppState();
       closeModalBackdrop("railPickerModal");
-      showToast(`已填好 ${legs.length} 段${legs.length > 1 ? `，轉乘 ${legs.length - 1} 次` : ""}`);
+      showToast(`已填好 ${legs.length} 段${legs.length > 1 ? `，轉乘 ${legs.length - 1} 次` : ""}${tzChanged ? `；時區改成${tzDisplayName(rtz)}（${tzOffsetLabel(rtz)}）` : ""}`);
     }
 
     /*************************************************************************
@@ -12929,6 +13086,8 @@ function initSupabaseClient() {
       }
       document.getElementById(AP.side === "dep" ? "fDepIata" : "fArrIata").value = code;
       renderAirportEntry();
+      const apTz = CSV_AIRPORT_TZ[code];
+      if (apTz) autoSetItemTz(AP.side === "dep" ? apTz : null, AP.side === "dep" ? null : apTz);
       const other = document.getElementById(AP.side === "dep" ? "fArrIata" : "fDepIata").value.trim();
       if (AP.side === "dep" && !other) { AP.side = "arr"; AP.group = null; renderAirportPicker(); return; }
       closeModalBackdrop("airportPickerModal");
@@ -13146,9 +13305,13 @@ function initSupabaseClient() {
     // 更新公告：改版時只要修改 WHATS_NEW（版本號換新，內容換新），老朋友打開會看到一次
     // =====================================================================
     const WHATS_NEW = {
-      version: "2026.11.18d",
+      version: "2026.11.18e",
       date: "2026.11.18",
       items: [
+        ["轉乘建議更合理", "短距離不會再建議搭成田特快、新幹線等要另外買票的特急；搭 N'EX、はるか 和 JR 之間轉乘，也正確標成站內轉乘。"],
+        ["時區自動切換", "用「點選車站」選了東京、首爾、紐約等地的車站，或點選機場，卡片的時區會自動換成當地，倒數不會再差一小時。"],
+        ["新增行程更簡單", "新增行程只先問類型、標題、時間；地點、時區、費用、備註、地圖、相片收在「更多選項」。"],
+        ["天氣旁顯示地點", "沒填「所在城市」時，天氣旁會寫是哪裡的天氣（例如「東京 19°C / 9°C」）。"],
         ["旅行預算", "建立旅行時可以填總預算。「清單/預算」會用圓環和長條圖顯示用了多少、還剩多少、每天花多少；其他幣別依當天匯率換算。"],
         ["選擇地圖 App", "個人設定可以選按「地圖」時用 Google 地圖、Apple 地圖，或每次問我。地圖連結也可以貼任何地圖 App 的分享連結。"],
         ["全球時區", "時區選單改成全世界的時區，常用的在最上面，其他依洲分類。"],

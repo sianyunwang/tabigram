@@ -1738,6 +1738,10 @@
     .beta-tag { display: inline-block; vertical-align: super; margin-left: 1px; padding: 0; border: 0; background: none; font-family: var(--mono); font-weight: 800; font-size: 10.5px; letter-spacing: .02em; line-height: 1; color: var(--accent); cursor: pointer; position: relative; top: -2px; }
     .beta-tag.ld-beta { font-size: 13px; top: -10px; cursor: default; }
     .app-header .beta-tag { margin-left: -9px; align-self: flex-start; margin-top: 2px; vertical-align: baseline; top: 0; }
+
+    /* 地圖按鈕：已設定 Google 地圖連結時，文字變品牌色＋右上角小圓點（不加字，避免擁擠） */
+    .footer-text-btn.map-set { color: var(--accent) !important; position: relative; }
+    .footer-text-btn.map-set::after { content: ""; position: absolute; top: 3px; right: 1px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 </style>
 </head>
 <body>
@@ -4291,7 +4295,7 @@
               ${!appState.travelLockMode ? `<button class="footer-text-btn" onclick="openItemModal('${item.id}')">編輯</button>` : ""}
               <button class="footer-text-btn" onclick="triggerQuickPhotoUpload('${item.id}', false)">照片</button>
               <button class="footer-text-btn" onclick="toggleQuickExpenseDrawer('${item.id}')">消費</button>
-              <button class="footer-text-btn" onclick="openExternalGoogleMap('${item.id}')" title="${item.mapUrl ? "打開已儲存的地點" : "用行程名稱搜尋地點"}">${item.mapUrl ? "地圖・已設定" : "地圖"}</button>
+              <button class="footer-text-btn ${item.mapUrl ? "map-set" : ""}" onclick="openExternalGoogleMap('${item.id}')" title="${item.mapUrl ? "打開已儲存的地點" : "用行程名稱搜尋地點"}" aria-label="${item.mapUrl ? "地圖（已設定地點）" : "地圖"}">地圖</button>
               <button class="footer-text-btn share-text" onclick="openShareModal('${item.id}', 0)">分享</button>
               ${!appState.travelLockMode ? `<button class="footer-text-btn delete-text" onclick="deleteItineraryItem('${item.id}')">刪除</button>` : ""}
             </div>

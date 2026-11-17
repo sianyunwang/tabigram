@@ -2361,6 +2361,10 @@
         <label class="form-label">備註</label>
         <textarea class="form-textarea sharp-tl" id="fNote" placeholder="輸入記事內容..."></textarea>
 
+        <label class="form-label" style="margin-top:8px;">Google 地圖連結</label>
+        <input type="url" class="form-input" id="fMapUrl" placeholder="貼上 Google 地圖的分享連結（選填）" inputmode="url" />
+        <div style="font-size:11.5px; color:var(--sub); margin:4px 2px 0; line-height:1.5;">在 Google 地圖點「分享」→「複製連結」貼上。填了之後，卡片上的「地圖」會直接打開這個地點。</div>
+
         <div class="form-row-2 mobile-stack" style="margin-top:8px;">
           <div>
             <label class="form-label">相關網址</label>
@@ -3458,6 +3462,7 @@
           if (it.endDayOffset != null) it.endDayOffset = Math.max(-3, Math.min(3, parseInt(it.endDayOffset, 10) || 0));
           if (it.currency != null) it.currency = stripMarkup(it.currency, 8);
           if (it.mood != null) it.mood = stripMarkup(it.mood, 16);
+          if (it.mapUrl != null) it.mapUrl = /^https:\/\//i.test(String(it.mapUrl)) ? String(it.mapUrl).slice(0, 500) : "";
           if (it.checkin != null) {
             const c = it.checkin;
             const ok = c && typeof c === "object" && isFinite(c.lat) && isFinite(c.lng) && Math.abs(c.lat) <= 90 && Math.abs(c.lng) <= 180;
@@ -4286,7 +4291,7 @@
               ${!appState.travelLockMode ? `<button class="footer-text-btn" onclick="openItemModal('${item.id}')">編輯</button>` : ""}
               <button class="footer-text-btn" onclick="triggerQuickPhotoUpload('${item.id}', false)">照片</button>
               <button class="footer-text-btn" onclick="toggleQuickExpenseDrawer('${item.id}')">消費</button>
-              <button class="footer-text-btn" onclick="openExternalGoogleMap('${item.id}')">地圖</button>
+              <button class="footer-text-btn" onclick="openExternalGoogleMap('${item.id}')" title="${item.mapUrl ? "打開已儲存的地點" : "用行程名稱搜尋地點"}">${item.mapUrl ? "地圖・已設定" : "地圖"}</button>
               <button class="footer-text-btn share-text" onclick="openShareModal('${item.id}', 0)">分享</button>
               ${!appState.travelLockMode ? `<button class="footer-text-btn delete-text" onclick="deleteItineraryItem('${item.id}')">刪除</button>` : ""}
             </div>
@@ -4383,6 +4388,8 @@
       const day = getActiveDay();
       const item = day.items.find(i => i.id === itemId);
       if (!item) return;
+      const pinned = safeExternalUrl(item.mapUrl);
+      if (pinned) { window.open(pinned, "_blank", "noopener"); return; }
       let query = item.title;
       if (item.type === "transit" && item.transitLegs && item.transitLegs.length > 0) {
         const lastLeg = item.transitLegs[item.transitLegs.length - 1];
@@ -4392,7 +4399,7 @@
       } else if (item.subtitle) {
         query = `${item.title} ${item.subtitle}`;
       }
-      window.location.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+      window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, "_blank", "noopener");
     }
 
     /*************************************************************************
@@ -4517,6 +4524,7 @@
         document.getElementById("fNote").value = item.note || "";
         document.getElementById("fUrl").value = item.url || "";
         document.getElementById("fUrlLabel").value = item.urlLabel || "";
+        document.getElementById("fMapUrl").value = item.mapUrl || "";
 
         if (Array.isArray(item.transitLegs) && item.transitLegs.length > 0) {
           item.transitLegs.forEach(l => addTransitLegRow(l));
@@ -4565,6 +4573,7 @@
         document.getElementById("fNote").value = "";
         document.getElementById("fUrl").value = "";
         document.getElementById("fUrlLabel").value = "";
+        document.getElementById("fMapUrl").value = "";
 
         addTransitLegRow();
         formTempPhotos = [];
@@ -4710,6 +4719,7 @@
       const note = document.getElementById("fNote").value;
       const url = document.getElementById("fUrl").value.trim();
       const urlLabel = document.getElementById("fUrlLabel").value.trim();
+      const mapUrl = extractMapUrl(document.getElementById("fMapUrl").value);
 
       const transitLegs = [];
       if (type === "transit") {
@@ -4757,6 +4767,7 @@
         note,
         url,
         urlLabel,
+        mapUrl,
         transitLegs,
         photos: formTempPhotos,
         status: existingItem ? (existingItem.status || "normal") : "normal",
@@ -8414,6 +8425,7 @@ function initSupabaseClient() {
       { key: "note",      header: "備註",           group: "其他", hint: "任何提醒" },
       { key: "url",       header: "網址",           group: "其他", hint: "https://…" },
       { key: "urlLabel",  header: "網址名稱",       group: "其他", hint: "可不填，如 官網、訂位" },
+      { key: "mapUrl",    header: "Google地圖連結", group: "其他", hint: "可不填；貼 Google 地圖的分享連結，卡片的「地圖」會直接打開" },
       { key: "private",   header: "私人行程",       group: "其他", hint: "填「是」只有自己看得到" },
       { key: "dayTheme",  header: "當日主題",       group: "每日", hint: "每天填在任一列就好" },
       { key: "dayCity",   header: "所在城市",       group: "每日", hint: "每天填一次，用來抓天氣" }
@@ -8440,6 +8452,7 @@ function initSupabaseClient() {
       note: ["備註", "說明", "note", "notes", "memo"],
       url: ["網址", "連結", "url", "link"],
       urlLabel: ["網址名稱", "連結名稱", "urllabel"],
+      mapUrl: ["google地圖連結", "google地圖", "googlemap", "googlemaps", "地圖連結", "地圖網址", "地圖", "mapurl", "maplink", "map"],
       private: ["私人行程", "私人", "private"],
       dayTheme: ["當日主題", "主題", "重要提醒", "theme"],
       dayCity: ["所在城市", "城市", "city", "location"],
@@ -8510,9 +8523,9 @@ function initSupabaseClient() {
       { day: "1", date: "2026/12/01", type: "航班", title: "長榮 去程", start: "08:50", end: "13:15", tz: "台灣", endTz: "日本", currency: "NT$", cost: "12,500", from: "TPE", to: "NRT", route: "BR198", trainSeat: "第二航廈・座位 32A", note: "提前 2.5 小時到機場", dayTheme: "抵達東京", dayCity: "東京" },
       { type: "交通", title: "成田特快進市區", start: "14:15", end: "15:10", tz: "日本", currency: "¥", cost: "3,070", from: "成田空港", to: "東京", route: "成田特快", trainSeat: "N'EX 30號" },
       { type: "轉乘", end: "15:45", cost: "210", from: "東京", to: "秋葉原", route: "JR山手線", trainSeat: "內環方向" },
-      { type: "景點", title: "飯店 Check-in", start: "16:00", end: "16:30", subtitle: "秋葉原", note: "先寄放行李" },
+      { type: "景點", title: "飯店 Check-in", start: "16:00", end: "16:30", subtitle: "秋葉原", note: "先寄放行李", mapUrl: "https://www.google.com/maps/search/?api=1&query=秋葉原站" },
       { type: "景點", title: "自己去按摩", start: "20:00", end: "21:00", cost: "6,000", private: "是" },
-      { day: "2", type: "景點", title: "新宿御苑賞楓", start: "09:30", end: "12:00", cost: "500", subtitle: "新宿門入口", url: "https://fng.or.jp/shinjuku/", urlLabel: "官網", dayTheme: "賞楓＋海邊兜風", dayCity: "東京" },
+      { day: "2", type: "景點", title: "新宿御苑賞楓", start: "09:30", end: "12:00", cost: "500", subtitle: "新宿門入口", url: "https://fng.or.jp/shinjuku/", urlLabel: "官網", mapUrl: "https://www.google.com/maps/search/?api=1&query=新宿御苑+新宿門", dayTheme: "賞楓＋海邊兜風", dayCity: "東京" },
       { type: "自駕", title: "湘南海岸兜風", start: "14:00", end: "16:30", cost: "2,000", from: "七里ヶ浜", to: "鎌倉高校前", route: "國道134號", stops: "江之島、稻村崎", note: "傍晚看富士山夕陽" },
       { type: "景點", title: "新宿居酒屋", start: "22:30", end: "00:30", nextDay: "是", cost: "4,000", subtitle: "思い出横丁" },
       { day: "3", type: "航班", title: "長榮 回程", start: "17:30", end: "20:40", tz: "日本", endTz: "台灣", currency: "NT$", from: "NRT", to: "TPE", route: "BR197", dayCity: "東京" }
@@ -8979,6 +8992,9 @@ function initSupabaseClient() {
         const urlRaw = get(cols, "url");
         const url = safeExternalUrl(urlRaw);
         if (urlRaw && !url) warn(rowNo, `網址「${urlRaw}」不是有效的網址，已略過`);
+        const mapRaw = get(cols, "mapUrl");
+        const mapUrl = extractMapUrl(mapRaw);
+        if (mapRaw && !mapUrl) warn(rowNo, `地圖連結「${mapRaw}」不是有效的網址，已略過`);
         let isPrivate = parseCsvBool(get(cols, "private"));
         if (isPrivate === undefined) { warn(rowNo, `私人行程「${get(cols, "private")}」看不懂，當作公開`); isPrivate = false; }
         if (opts.companion) isPrivate = true;
@@ -9007,6 +9023,7 @@ function initSupabaseClient() {
           note,
           url,
           urlLabel: url ? (get(cols, "urlLabel") || "相關連結") : "",
+          mapUrl,
           transitLegs: type === "transit" ? [{ from: from || "", to: to || "", line: route || "", trainNo: trainSeat || "", isOutTransfer: false }] : [],
           photos: [],
           status: "normal",
@@ -10789,6 +10806,7 @@ function initSupabaseClient() {
         ["足跡地圖", "行程當天可以按定位圖示打卡，回憶頁會畫出整趟旅程的路線。位置只有你看得到。"],
         ["深色模式", "跟著手機自動切換，也可以在選單最下方的「外觀」自己選。"],
         ["路線圖分享卡更準了", "地鐵、電車行程不會再被誤判成船票。你換過的模板也會被記住。"],
+        ["Google 地圖連結", "行程可以貼上 Google 地圖的分享連結，卡片上的「地圖」會直接打開那個地點。試算表範本也多了這一欄。"],
         ["使用教學", "選單裡的「使用教學」：試算表匯入、請 AI 健檢行程、電腦版、和旅伴一起編。"],
         ["加到主畫面、離線也能看", "加到主畫面後打開更快，沒有網路也看得到行程。"],
         ["意見回饋", "選單裡的「意見回饋」，有任何想法都歡迎告訴我們。"]
@@ -10824,6 +10842,15 @@ function initSupabaseClient() {
       serifFontReady = new Promise(res => { link.onload = res; link.onerror = res; setTimeout(res, 4000); })
         .then(() => Promise.all([document.fonts.load("900 42px 'Noto Serif TC'"), document.fonts.load("900 42px 'Playfair Display'")]).catch(() => {}));
       return serifFontReady;
+    }
+
+    // Google 地圖連結：分享時常會連店名一起複製（例如「一蘭拉麵 https://maps.app.goo.gl/xxx」），只取出網址
+    function extractMapUrl(raw) {
+      const m = String(raw || "").match(/https?:\/\/[^\s<>"']+/i);
+      const u = m ? m[0] : String(raw || "").trim();
+      if (!u) return "";
+      const safe = safeExternalUrl(u);
+      return /^https:\/\//i.test(safe) ? safe.slice(0, 500) : "";
     }
 </script>
 </body>

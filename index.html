@@ -1793,7 +1793,7 @@
     .beta-tag.ld-beta { font-size: 13px; top: -10px; cursor: default; }
     .app-header .beta-tag { margin-left: -9px; align-self: flex-start; margin-top: 2px; vertical-align: baseline; top: 0; }
 
-    /* 地圖按鈕：已設定 Google 地圖連結時，文字變品牌色＋右上角小圓點（不加字，避免擁擠） */
+    /* 地圖按鈕：已設定地圖連結時，文字變品牌色＋右上角小圓點（不加字，避免擁擠） */
     .footer-text-btn.map-set { color: var(--accent) !important; position: relative; }
     .footer-text-btn.map-set::after { content: ""; position: absolute; top: 3px; right: 1px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 
@@ -2523,8 +2523,10 @@
             <input type="text" class="day-meta-input" id="dayLocationInput" placeholder="所在城市" onchange="updateCurrentDayMeta('location', this.value)" />
           </div>
         </div>
+        <div id="dayCityPlaceHint" style="display:none; font-size:11px; color:var(--sub); margin:2px 0 0 2px;"></div>
         <div style="display:flex; gap:6px;">
           <button class="mini-btn" id="refreshWeatherBtn" onclick="refreshRealtimeWeather(true)">↻ 更新</button>
+          <button class="mini-btn" id="insertDayBtn" style="display:none;" onclick="openAddDaySheet()">＋ 加一天</button>
           <button class="mini-btn delete-btn" id="deleteDayBtn" style="display:none;" onclick="deleteCurrentDay()">刪除此日</button>
         </div>
       </div>
@@ -2627,11 +2629,11 @@
           <div class="form-row-2">
             <div>
               <label class="form-label">出發地</label>
-              <input type="text" class="form-input" id="fRoadFrom" placeholder="Kona / 七里ヶ浜" />
+              <input type="text" class="form-input" id="fRoadFrom" placeholder="例：台北" />
             </div>
             <div>
               <label class="form-label">目的地</label>
-              <input type="text" class="form-input" id="fRoadTo" placeholder="Hilo / 鎌倉高校前" />
+              <input type="text" class="form-input" id="fRoadTo" placeholder="例：花蓮" />
             </div>
           </div>
           <div class="form-row-2" style="margin-top:8px;">
@@ -2717,9 +2719,9 @@
         <label class="form-label">備註</label>
         <textarea class="form-textarea sharp-tl" id="fNote" placeholder="輸入記事內容..."></textarea>
 
-        <label class="form-label" style="margin-top:8px;">Google 地圖連結</label>
-        <input type="url" class="form-input" id="fMapUrl" placeholder="貼上 Google 地圖的分享連結（選填）" inputmode="url" />
-        <div style="font-size:11.5px; color:var(--sub); margin:4px 2px 0; line-height:1.5;">在 Google 地圖點「分享」→「複製連結」貼上。填了之後，卡片上的「地圖」會直接打開這個地點。</div>
+        <label class="form-label" style="margin-top:8px;">地圖連結</label>
+        <input type="url" class="form-input" id="fMapUrl" placeholder="貼上地圖的分享連結（選填）" inputmode="url" />
+        <div style="font-size:11.5px; color:var(--sub); margin:4px 2px 0; line-height:1.5;">在你慣用的地圖 App 點「分享」→「複製連結」貼上。填了之後，卡片上的「地圖」會直接打開這個地點。</div>
 
         <div class="form-row-2 mobile-stack" style="margin-top:8px;">
           <div>
@@ -2764,8 +2766,22 @@
         <input type="text" class="form-input" id="tmTitleInput" />
 
         <div style="margin-top:8px;">
-          <label class="form-label">出發日期</label>
-          <input type="date" class="form-input" id="tmStartDateInput" />
+          <div style="display:flex; gap:8px;">
+            <div style="flex:1; min-width:0;">
+              <label class="form-label">出發日期</label>
+              <input type="date" class="form-input" id="tmStartDateInput" onchange="tmSyncEndMin()" />
+            </div>
+            <div style="flex:1; min-width:0;">
+              <label class="form-label">回程日期</label>
+              <input type="date" class="form-input" id="tmEndDateInput" />
+            </div>
+          </div>
+          <label class="form-label" style="margin-top:8px;">總預算（選填）</label>
+          <div style="display:flex; gap:8px;">
+            <select class="form-select" id="tmBudgetCur" style="width:96px; flex:none;"><option value="NT$">NT$</option><option value="¥">¥</option><option value="US$">US$</option><option value="€">€</option><option value="₩">₩</option><option value="HK$">HK$</option></select>
+            <input type="number" class="form-input" id="tmBudgetInput" placeholder="不填就不顯示預算" inputmode="numeric" min="0" />
+          </div>
+          <div style="font-size:11.5px; color:var(--sub); margin-top:6px;">改回程日期會自動增減天數；要提前出發，也可以在行程頁按「＋ 加一天」。</div>
         </div>
 
         <div style="display:flex; gap:8px; margin-top:14px;">
@@ -2777,7 +2793,71 @@
       <div style="font-size:13px; font-weight:800; margin:12px 0 8px;">所有旅行分頁列表</div>
       <div id="allTripsListContainer"></div>
 
-      <button class="pill-btn primary" style="width:100%; justify-content:center; padding:13px; margin-top:10px;" onclick="createNewTripProject()">＋ 新增旅行分頁</button>
+      <button class="pill-btn primary" style="width:100%; justify-content:center; padding:13px; margin-top:10px;" onclick="openNewTripSheet()">＋ 新增旅行分頁</button>
+    </div>
+  </div>
+
+  <!-- 新增旅行 -->
+  <div class="modal-backdrop" id="newTripModal">
+    <div class="modal-sheet" style="max-width: 420px;">
+      <div class="modal-header">
+        <div class="modal-title">新增旅行</div>
+        <button class="pill-btn" onclick="closeModalBackdrop('newTripModal')">✕</button>
+      </div>
+      <div class="form-card">
+        <label class="form-label">旅行名稱</label>
+        <input type="text" class="form-input" id="ntTitleInput" placeholder="例：東京五天四夜" />
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <div style="flex:1; min-width:0;">
+            <label class="form-label">出發日期</label>
+            <input type="date" class="form-input" id="ntStartInput" onchange="ntUpdateSummary(true)" />
+          </div>
+          <div style="flex:1; min-width:0;">
+            <label class="form-label">回程日期</label>
+            <input type="date" class="form-input" id="ntEndInput" onchange="ntUpdateSummary()" />
+          </div>
+        </div>
+        <div id="ntSummary" style="font-size:13px; font-weight:800; margin-top:10px; color:var(--accent, #2B5B84);"></div>
+        <label class="form-label" style="margin-top:10px;">總預算（選填）</label>
+        <div style="display:flex; gap:8px;">
+          <select class="form-select" id="ntBudgetCur" style="width:96px; flex:none;"><option value="NT$">NT$</option><option value="¥">¥</option><option value="US$">US$</option><option value="€">€</option><option value="₩">₩</option><option value="HK$">HK$</option></select>
+          <input type="number" class="form-input" id="ntBudgetInput" placeholder="例：60000" inputmode="numeric" min="0" />
+        </div>
+        <button class="pill-btn primary" style="width:100%; justify-content:center; padding:12px; margin-top:14px;" onclick="confirmNewTrip()">建立行程</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 選地圖 App -->
+  <div class="modal-backdrop" id="mapAppModal">
+    <div class="modal-sheet" style="max-width: 380px;">
+      <div class="modal-header">
+        <div class="modal-title">用哪個地圖打開？</div>
+        <button class="pill-btn" onclick="closeModalBackdrop('mapAppModal')">✕</button>
+      </div>
+      <div id="mapAppOptions" style="display:flex; flex-direction:column; gap:8px;"></div>
+    </div>
+  </div>
+
+  <!-- 同名城市 -->
+  <div class="modal-backdrop" id="cityPickModal">
+    <div class="modal-sheet" style="max-width: 400px;">
+      <div class="modal-header">
+        <div class="modal-title" id="cityPickTitle" style="font-size:16px;">是哪一個城市？</div>
+        <button class="pill-btn" onclick="window.__cityPickResolve ? window.__cityPickResolve(null) : closeModalBackdrop('cityPickModal')">✕</button>
+      </div>
+      <div id="cityPickOptions" style="display:flex; flex-direction:column; gap:8px; max-height:60vh; overflow:auto;"></div>
+    </div>
+  </div>
+
+  <!-- 加一天 -->
+  <div class="modal-backdrop" id="addDayModal">
+    <div class="modal-sheet" style="max-width: 400px;">
+      <div class="modal-header">
+        <div class="modal-title">加一天</div>
+        <button class="pill-btn" onclick="closeModalBackdrop('addDayModal')">✕</button>
+      </div>
+      <div id="addDayOptions" style="display:flex; flex-direction:column; gap:8px;"></div>
     </div>
   </div>
 
@@ -3111,6 +3191,15 @@
           <input type="checkbox" id="profileShowHomeTzCheck" style="width:18px; height:18px;" onchange="toggleHomeTzCompareFromProfile(this.checked)" />
         </div>
 
+        <div style="margin-top:12px; padding-top:10px; border-top:1px dashed var(--border);">
+          <div style="font-size:13px; font-weight:800; margin-bottom:6px;">按「地圖」時用哪個 App</div>
+          <select class="form-select" id="profileMapAppSelect" onchange="appState.mapApp = this.value; saveAppState();">
+            <option value="google">Google 地圖</option>
+            <option value="apple">Apple 地圖</option>
+            <option value="ask">每次問我</option>
+          </select>
+        </div>
+
         <button type="button" class="pill-btn primary" style="width:100%; justify-content:center; padding:11px; margin-top:14px;" onclick="saveUserProfileSettings()">儲存個人設定</button>
         <label class="sheet-check" style="margin-top:14px; padding-top:10px; border-top:1px dashed var(--border); color:var(--ink); font-weight:800;">
           <input type="checkbox" id="profileAutoCheckinCheck" onchange="appState.checkinAuto = this.checked; saveAppState();" />
@@ -3186,8 +3275,16 @@
         <div style="font-size:13px; font-weight:900; margin-bottom:6px;">✨ 建立我自己的新旅程</div>
         <label class="form-label">旅程名稱</label>
         <input type="text" class="form-input" id="onboardTripTitleInput" placeholder="例如：東京賞櫻行" value="我的旅程" />
-        <label class="form-label">出發日期</label>
-        <input type="date" class="form-input" id="onboardTripDateInput" />
+        <div style="display:flex; gap:8px;">
+          <div style="flex:1; min-width:0;">
+            <label class="form-label">出發日期</label>
+            <input type="date" class="form-input" id="onboardTripDateInput" onchange="const e=document.getElementById('onboardTripEndInput'); e.min=this.value; if(!e.value||e.value<this.value) e.value=this.value;" />
+          </div>
+          <div style="flex:1; min-width:0;">
+            <label class="form-label">回程日期</label>
+            <input type="date" class="form-input" id="onboardTripEndInput" />
+          </div>
+        </div>
         <button type="button" class="pill-btn primary" style="width:100%; justify-content:center; padding:11px; margin-top:10px;" onclick="completeOnboardingCreateTrip()">建立旅程</button>
       </div>
 
@@ -3273,6 +3370,11 @@
           </div>
         </div>
         <div id="csvMergeInfo" class="csv-hint" style="display:none; margin-top:6px;"></div>
+        <div id="csvDupModeBox" style="display:none; margin-top:8px; font-size:13px;">
+          <div style="font-weight:800; margin-bottom:4px;">已經有的行程</div>
+          <label style="display:flex; gap:6px; align-items:flex-start; margin-bottom:4px;"><input type="radio" name="csvDupMode" value="update" checked onchange="runCsvAnalysis()" style="margin-top:3px;" /><span>用檔案的內容更新（備註、費用等改過的會換成新的；照片、打卡、心情保留）</span></label>
+          <label style="display:flex; gap:6px; align-items:flex-start;"><input type="radio" name="csvDupMode" value="skip" onchange="runCsvAnalysis()" style="margin-top:3px;" /><span>略過，不動原本的行程</span></label>
+        </div>
 
         <div id="csvPreview"></div>
       </div>
@@ -3446,6 +3548,8 @@
       "SFO": { name: "SAN FRANCISCO", lat: 37.6213, lng: -122.3790 },
       "SEA": { name: "SEATTLE TACOMA", lat: 47.4502, lng: -122.3088 },
       "JFK": { name: "NEW YORK JFK", lat: 40.6413, lng: -73.7781 },
+      "LGA": { name: "NEW YORK LAGUARDIA", lat: 40.7769, lng: -73.8740 },
+      "OKC": { name: "OKLAHOMA CITY", lat: 35.3931, lng: -97.6007 },
       "HNL": { name: "HONOLULU", lat: 21.3187, lng: -157.9225 },
       "KOA": { name: "KONA HAWAII", lat: 19.7388, lng: -156.0456 },
       "ITO": { name: "HILO HAWAII", lat: 19.7203, lng: -155.0485 },
@@ -3513,6 +3617,7 @@
       .flatMap((rule, ri) => rule.keys.map(k => ({ key: k.toLowerCase(), color: rule.color, ri })))
       .sort((a, b) => (b.key.length - a.key.length) || (a.ri - b.ri));
 
+    const FX_CODE = { "NT$": "TWD", "¥": "JPY", "US$": "USD", "€": "EUR", "₩": "KRW", "HK$": "HKD" };
     const TIMEZONES = [
       { id: "Asia/Taipei", label: "Asia/Taipei (UTC+8 台灣)" },
       { id: "Asia/Tokyo", label: "Asia/Tokyo (UTC+9 日本)" },
@@ -3526,6 +3631,86 @@
       { id: "Europe/London", label: "Europe/London (倫敦)" },
       { id: "Europe/Paris", label: "Europe/Paris (巴黎/歐洲)" }
     ];
+
+    // 全球時區：常用的放最上面，其餘依洲分組。中文名只寫旅客常去的城市，其餘顯示英文城市名
+    const TZ_ZH = {
+      "Asia/Taipei": "台北", "Asia/Tokyo": "東京", "Asia/Seoul": "首爾", "Asia/Hong_Kong": "香港", "Asia/Macau": "澳門",
+      "Asia/Shanghai": "中國（北京、上海）", "Asia/Singapore": "新加坡", "Asia/Kuala_Lumpur": "吉隆坡", "Asia/Bangkok": "曼谷",
+      "Asia/Ho_Chi_Minh": "胡志明市", "Asia/Manila": "馬尼拉", "Asia/Jakarta": "雅加達", "Asia/Makassar": "峇里島", "Asia/Kolkata": "印度",
+      "Asia/Kathmandu": "加德滿都", "Asia/Dubai": "杜拜", "Asia/Qatar": "杜哈", "Asia/Riyadh": "利雅德", "Asia/Jerusalem": "耶路撒冷",
+      "Asia/Yangon": "仰光", "Asia/Phnom_Penh": "金邊", "Asia/Vientiane": "永珍", "Asia/Colombo": "斯里蘭卡", "Asia/Ulaanbaatar": "烏蘭巴托",
+      "Asia/Almaty": "阿拉木圖", "Asia/Tashkent": "塔什干", "Asia/Tbilisi": "提比里斯", "Asia/Brunei": "汶萊", "Asia/Karachi": "喀拉蚩",
+      "Asia/Dhaka": "達卡", "Asia/Thimphu": "不丹", "Indian/Maldives": "馬爾地夫", "Indian/Mauritius": "模里西斯",
+      "Europe/London": "倫敦", "Europe/Dublin": "都柏林", "Europe/Lisbon": "里斯本", "Europe/Paris": "巴黎", "Europe/Madrid": "馬德里",
+      "Europe/Rome": "羅馬", "Europe/Berlin": "柏林", "Europe/Amsterdam": "阿姆斯特丹", "Europe/Brussels": "布魯塞爾", "Europe/Zurich": "蘇黎世",
+      "Europe/Vienna": "維也納", "Europe/Prague": "布拉格", "Europe/Budapest": "布達佩斯", "Europe/Warsaw": "華沙", "Europe/Copenhagen": "哥本哈根",
+      "Europe/Stockholm": "斯德哥爾摩", "Europe/Oslo": "奧斯陸", "Europe/Helsinki": "赫爾辛基", "Europe/Athens": "雅典", "Europe/Istanbul": "伊斯坦堡",
+      "Europe/Moscow": "莫斯科", "Europe/Reykjavik": "冰島", "Atlantic/Reykjavik": "冰島", "Europe/Monaco": "摩納哥", "Europe/Luxembourg": "盧森堡",
+      "Europe/Zagreb": "札格雷布", "Europe/Bucharest": "布加勒斯特", "Europe/Kyiv": "基輔", "Europe/Tallinn": "塔林", "Europe/Riga": "里加",
+      "Europe/Vilnius": "維爾紐斯", "Atlantic/Canary": "加那利群島", "Atlantic/Azores": "亞速群島",
+      "America/New_York": "紐約（美東）", "America/Chicago": "芝加哥（美中）", "America/Denver": "丹佛（山區）", "America/Phoenix": "鳳凰城",
+      "America/Los_Angeles": "洛杉磯、舊金山（美西）", "America/Anchorage": "安克拉治", "Pacific/Honolulu": "夏威夷", "America/Toronto": "多倫多",
+      "America/Vancouver": "溫哥華", "America/Edmonton": "愛德蒙頓", "America/Halifax": "哈利法克斯", "America/Mexico_City": "墨西哥城",
+      "America/Cancun": "坎昆", "America/Havana": "哈瓦那", "America/Bogota": "波哥大", "America/Lima": "利馬", "America/Santiago": "聖地牙哥",
+      "America/Argentina/Buenos_Aires": "布宜諾斯艾利斯", "America/Sao_Paulo": "聖保羅", "America/Panama": "巴拿馬", "America/Costa_Rica": "哥斯大黎加",
+      "America/Puerto_Rico": "波多黎各", "America/St_Johns": "紐芬蘭", "America/Guayaquil": "厄瓜多", "America/La_Paz": "拉巴斯",
+      "Pacific/Guam": "關島", "Pacific/Saipan": "塞班島", "Pacific/Palau": "帛琉", "Pacific/Auckland": "奧克蘭", "Pacific/Fiji": "斐濟",
+      "Pacific/Tahiti": "大溪地", "Pacific/Noumea": "新喀里多尼亞", "Australia/Sydney": "雪梨", "Australia/Melbourne": "墨爾本",
+      "Australia/Brisbane": "布里斯本", "Australia/Perth": "伯斯", "Australia/Adelaide": "阿德雷德", "Australia/Darwin": "達爾文", "Australia/Hobart": "荷巴特",
+      "Africa/Cairo": "開羅", "Africa/Johannesburg": "約翰尼斯堡", "Africa/Casablanca": "卡薩布蘭卡", "Africa/Nairobi": "奈洛比",
+      "Africa/Lagos": "拉哥斯", "Africa/Addis_Ababa": "阿迪斯阿貝巴", "Africa/Tunis": "突尼斯", "Africa/Accra": "阿克拉", "Indian/Reunion": "留尼旺",
+      "UTC": "UTC 世界協調時間"
+    };
+    const TZ_GROUPS = [["Asia", "亞洲"], ["Europe", "歐洲"], ["America", "美洲"], ["Pacific", "太平洋"], ["Australia", "澳洲"], ["Africa", "非洲"], ["Atlantic", "大西洋"], ["Indian", "印度洋"], ["Antarctica", "南極"]];
+    function tzOffsetMinutes(tz) {
+      try {
+        const parts = new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "longOffset" }).formatToParts(new Date());
+        const v = (parts.find(p => p.type === "timeZoneName") || {}).value || "GMT";
+        const m = v.match(/GMT([+-])(\d{1,2}):?(\d{2})?/);
+        return m ? (m[1] === "-" ? -1 : 1) * (Number(m[2]) * 60 + Number(m[3] || 0)) : 0;
+      } catch (e) { return 0; }
+    }
+    function tzOffsetLabel(tz) {
+      const o = tzOffsetMinutes(tz), a = Math.abs(o);
+      return `UTC${o < 0 ? "−" : "+"}${Math.floor(a / 60)}${a % 60 ? ":" + String(a % 60).padStart(2, "0") : ""}`;
+    }
+    function tzDisplayName(tz) {
+      return TZ_ZH[tz] || String(tz).split("/").pop().replace(/_/g, " ");
+    }
+    let _tzOptionsHtmlCache = "";
+    function buildTzOptionsHtml() {
+      if (_tzOptionsHtmlCache) return _tzOptionsHtmlCache;
+      let all = [];
+      try { all = Intl.supportedValuesOf("timeZone"); } catch (e) { all = []; }
+      const known = new Set(all);
+      TIMEZONES.forEach(t => known.add(t.id));
+      Object.keys(TZ_ZH).forEach(id => { if (all.length === 0) known.add(id); });
+      const opt = (id) => `<option value="${id}">${escapeHtml(tzDisplayName(id))}（${tzOffsetLabel(id)}）</option>`;
+      const common = TIMEZONES.map(t => t.id);
+      let html = `<optgroup label="常用">${common.map(opt).join("")}</optgroup>`;
+      const used = new Set(common);
+      TZ_GROUPS.forEach(([prefix, zh]) => {
+        const ids = [...known].filter(id => id.startsWith(prefix + "/") && !used.has(id));
+        if (!ids.length) return;
+        ids.sort((a, b) => (tzOffsetMinutes(a) - tzOffsetMinutes(b)) || tzDisplayName(a).localeCompare(tzDisplayName(b)));
+        ids.forEach(id => used.add(id));
+        html += `<optgroup label="${zh}">${ids.map(opt).join("")}</optgroup>`;
+      });
+      const rest = [...known].filter(id => !used.has(id));
+      if (rest.length) html += `<optgroup label="其他">${rest.map(opt).join("")}</optgroup>`;
+      _tzOptionsHtmlCache = html;
+      return html;
+    }
+    // 下拉選單裡沒有的時區（舊資料、別名），臨時補一個選項，避免顯示成第一個
+    function setTzSelectValue(sel, tz) {
+      if (!sel || !tz) return;
+      if (![...sel.options].some(o => o.value === tz)) {
+        const o = document.createElement("option");
+        o.value = tz; o.textContent = `${tzDisplayName(tz)}（${tzOffsetLabel(tz)}）`;
+        sel.insertBefore(o, sel.firstChild);
+      }
+      sel.value = tz;
+    }
 
     const DEFAULT_MOOD_EMOJIS = ["❤️", "✨", "☕", "🥹", "🌊", "🍜", "🛍️", "🚃", "📸", "🌙"];
 
@@ -3853,8 +4038,15 @@
       if (!t || typeof t !== "object") return t;
       t.id = safeIdOr(t.id, "trip_");
       if (t.shareCode != null && !/^[A-Z0-9]{4,12}$/.test(String(t.shareCode))) t.shareCode = "";
+      if (t.budget != null) {
+        const amt = Number(t.budget && t.budget.amount);
+        const cur = t.budget && t.budget.currency;
+        if (!(amt > 0) || !FX_CODE[cur]) delete t.budget; else t.budget = { amount: amt, currency: cur };
+      }
       (t.days || []).forEach(d => {
         ["sunrise", "sunset"].forEach(k => { if (d[k] != null && !TIME_RE.test(String(d[k]))) d[k] = ""; });
+        if (d.locationCoord != null && !(d.locationCoord && isFinite(d.locationCoord.lat) && isFinite(d.locationCoord.lng))) delete d.locationCoord;
+        if (d.locationPlace != null) d.locationPlace = stripMarkup(d.locationPlace, 120);
         (d.items || []).forEach(it => {
           if (!it || typeof it !== "object") return;
           it.id = safeIdOr(it.id, "item_");
@@ -4164,7 +4356,11 @@
       }
 
       let coord = null;
-      if (day.location && day.location.trim()) {
+      if (day.location && day.location.trim() && day.locationCoord) {
+        coord = day.locationCoord;
+        const wrap = document.querySelector(".day-city-wrap");
+        if (wrap) wrap.classList.remove("warn");
+      } else if (day.location && day.location.trim()) {
         const locName = day.location.trim();
         const r = await geocodeDayLocation(locName);
         if (r.status === "ok") coord = r.coord;
@@ -4372,7 +4568,7 @@
         const addBtn = document.createElement("button");
         addBtn.className = "trip-tab dashed";
         addBtn.textContent = "＋ 新增旅行";
-        addBtn.onclick = () => { viewingMemoryTripId = ""; createNewTripProject(); };
+        addBtn.onclick = () => { viewingMemoryTripId = ""; openNewTripSheet(); };
         bar.appendChild(addBtn);
       }
       const archivedCount = appState.trips.filter(isTripArchived).length;
@@ -4419,21 +4615,12 @@
         addDayBtn.className = "day-pill";
         addDayBtn.style.color = "#2B5B84";
         addDayBtn.textContent = "＋";
-        addDayBtn.onclick = () => {
-          trip.days.push({
-            weatherText: day.weatherText || "☀️ 晴朗 20°C",
-            sunrise: day.sunrise || "06:15",
-            sunset: day.sunset || "17:30",
-            items: []
-          });
-          appState.activeDayIndex = trip.days.length - 1;
-          saveAppState();
-          renderAll();
-          refreshRealtimeWeather(false);
-        };
+        addDayBtn.onclick = () => openAddDaySheet();
         pillsBar.appendChild(addDayBtn);
       }
 
+      const insBtn = document.getElementById("insertDayBtn");
+      if (insBtn) insBtn.style.display = !appState.travelLockMode ? "inline-flex" : "none";
       document.getElementById("deleteDayBtn").style.display = (!appState.travelLockMode && trip.days.length > 1) ? "inline-flex" : "none";
 
       const dateBadgeEl = document.getElementById("activeDayDateBadge");
@@ -4469,12 +4656,69 @@
       if (themeInp) themeInp.value = day.theme || "";
       const locInp = document.getElementById("dayLocationInput");
       if (locInp) locInp.value = day.location || "";
+      updateDayCityHint();
 
       document.getElementById("weatherBadge").textContent = day.weatherText || "☀️ 載入氣象中...";
       document.getElementById("sunriseLabel").textContent = `日出 ${day.sunrise || "06:15"}`;
       document.getElementById("sunsetLabel").textContent = `日落 ${day.sunset || "17:30"}`;
 
       updateSolarTrackDots();
+    }
+
+    function makeEmptyDay(ref) {
+      return {
+        weatherText: (ref && ref.weatherText) || "☀️ 晴朗 20°C",
+        sunrise: (ref && ref.sunrise) || "06:15",
+        sunset: (ref && ref.sunset) || "17:30",
+        location: (ref && ref.location) || "",
+        items: []
+      };
+    }
+
+    function shiftDateStr(dateStr, n) {
+      const p = String(dateStr || "").split("-").map(Number);
+      if (p.length !== 3 || p.some(isNaN)) return dateStr;
+      return cdLocalDateStr(new Date(p[0], p[1] - 1, p[2] + n));
+    }
+
+    function openAddDaySheet() {
+      const trip = getActiveTrip();
+      const i = appState.activeDayIndex;
+      const n = trip.days.length;
+      const lbl = (k) => `DAY ${String(k + 1).padStart(2, "0")}`;
+      const dt = (k) => trip.startDate ? ` · ${getDayFormattedDateString(trip.startDate, k)}` : "";
+      const opts = [];
+      if (i === 0) {
+        opts.push({ pos: "before", title: "提前一天出發", sub: trip.startDate ? `出發日改成 ${getDayFormattedDateString(trip.startDate, -1)}，原本的 DAY 01 變成 DAY 02` : "在 DAY 01 前面加一天" });
+      } else {
+        opts.push({ pos: "before", title: `加在 ${lbl(i)} 前面`, sub: `新的一天變成 ${lbl(i)}${dt(i)}，之後每天往後順延` });
+      }
+      if (i < n - 1) opts.push({ pos: "after", title: `加在 ${lbl(i)} 後面`, sub: `新的一天變成 ${lbl(i + 1)}${dt(i + 1)}，之後每天往後順延` });
+      opts.push({ pos: "end", title: "加在最後（延後回程）", sub: `新的一天是 ${lbl(n)}${dt(n)}` });
+      document.getElementById("addDayOptions").innerHTML = opts.map(o => `
+        <button type="button" class="form-card" style="text-align:left; cursor:pointer; padding:12px 14px; margin:0; border:1px solid var(--border); font:inherit; color:inherit;" onclick="insertDayAt('${o.pos}')">
+          <div style="font-size:14px; font-weight:800;">${o.title}</div>
+          <div style="font-size:12px; color:var(--sub); margin-top:3px;">${o.sub}</div>
+        </button>`).join("");
+      openModalBackdrop("addDayModal");
+    }
+
+    function insertDayAt(pos) {
+      const trip = getActiveTrip();
+      const i = appState.activeDayIndex;
+      let at;
+      if (pos === "before") at = i;
+      else if (pos === "after") at = i + 1;
+      else at = trip.days.length;
+      const ref = trip.days[Math.min(at, trip.days.length - 1)] || trip.days[i];
+      trip.days.splice(at, 0, makeEmptyDay(ref));
+      if (at === 0 && trip.startDate) trip.startDate = shiftDateStr(trip.startDate, -1);
+      appState.activeDayIndex = at;
+      closeModalBackdrop("addDayModal");
+      saveAppState(); debouncedSyncToCloud();
+      renderAll();
+      refreshRealtimeWeather(false);
+      if (typeof showToast === "function") showToast(`已加入 DAY ${String(at + 1).padStart(2, "0")}`);
     }
 
     function deleteCurrentDay() {
@@ -4844,11 +5088,45 @@
       } else if (item.subtitle) {
         query = `${item.title} ${item.subtitle}`;
       }
+      const app = appState.mapApp || "google";
+      if (app === "ask") { openMapAppChooser(query); return; }
+      openMapSearch(query, app);
+    }
+
+    function openMapSearch(query, app) {
+      if (app === "apple") {
+        const url = `https://maps.apple.com/?q=${encodeURIComponent(query)}`;
+        const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+        if (ios && isStandaloneApp()) location.href = url; else window.open(url, "_blank", "noopener");
+        return;
+      }
       openMapLink(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, query);
+    }
+
+    function openMapAppChooser(query) {
+      const box = document.getElementById("mapAppOptions");
+      const opts = [["google", "Google 地圖"], ["apple", "Apple 地圖"]];
+      box.innerHTML = opts.map(([k, n]) => `
+        <button type="button" class="form-card" data-k="${k}" style="text-align:left; cursor:pointer; padding:12px 14px; margin:0; border:1px solid var(--border); font:inherit; color:inherit; font-size:14px; font-weight:800;">${n}</button>`).join("")
+        + `<label class="sheet-check" style="margin-top:4px; font-size:12.5px;"><input type="checkbox" id="mapAppRemember" /> 記住我的選擇（之後可在個人設定修改）</label>`;
+      box.querySelectorAll("button[data-k]").forEach(b => {
+        b.onclick = () => {
+          if (document.getElementById("mapAppRemember").checked) { appState.mapApp = b.dataset.k; saveAppState(); }
+          closeModalBackdrop("mapAppModal");
+          openMapSearch(query, b.dataset.k);
+        };
+      });
+      openModalBackdrop("mapAppModal");
     }
     // iPhone 主畫面 App 用網址打開地圖時，會先跳出一個瀏覽器視窗再轉到 Google 地圖 App，
     // 回來時那個視窗變成一片白。改成直接呼叫 Google 地圖 App；沒裝 App 才用網頁版。
     function openMapLink(httpsUrl, query) {
+      if (query == null && !/(^|\.)(google\.[a-z.]+|goo\.gl)\//i.test(String(httpsUrl).replace(/^https?:\/\//i, "").split(/[?#]/)[0] + "/")) {
+        // 不是 Google 的連結（例如 Apple 地圖、Naver）：直接打開
+        const ios0 = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+        if (ios0 && isStandaloneApp()) location.href = httpsUrl; else window.open(httpsUrl, "_blank", "noopener");
+        return;
+      }
       const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
       if (!(ios && isStandaloneApp())) { window.open(httpsUrl, "_blank", "noopener"); return; }
       const appUrl = query != null
@@ -4870,7 +5148,7 @@
     function initFormSelectors() {
       const startTzSel = document.getElementById("fStartTz");
       const endTzSel = document.getElementById("fEndTz");
-      const tzOptionsHtml = TIMEZONES.map(t => `<option value="${t.id}">${t.label}</option>`).join("");
+      const tzOptionsHtml = buildTzOptionsHtml();
       startTzSel.innerHTML = tzOptionsHtml;
       endTzSel.innerHTML = tzOptionsHtml;
 
@@ -4975,8 +5253,8 @@
         document.getElementById("fRoadStops").value = item.roadStops || "";
         document.getElementById("fRoadHighway").value = item.roadHighway || "";
 
-        document.getElementById("fStartTz").value = item.startTz || trip.homeTz;
-        document.getElementById("fEndTz").value = item.endTz || item.startTz || trip.homeTz;
+        setTzSelectValue(document.getElementById("fStartTz"), item.startTz || trip.homeTz);
+        setTzSelectValue(document.getElementById("fEndTz"), item.endTz || item.startTz || trip.homeTz);
 
         const [sh, sm] = (item.startTime || "09:00").split(":");
         const [eh, em] = (item.endTime || "10:00").split(":");
@@ -5026,8 +5304,8 @@
         document.getElementById("fRoadStops").value = "";
         document.getElementById("fRoadHighway").value = "";
 
-        document.getElementById("fStartTz").value = inheritedTz;
-        document.getElementById("fEndTz").value = inheritedTz;
+        setTzSelectValue(document.getElementById("fStartTz"), inheritedTz);
+        setTzSelectValue(document.getElementById("fEndTz"), inheritedTz);
 
         const defaultStart = prevItem ? String(prevItem.endTime || "10:00") : "09:00";
         const [sh, sm] = defaultStart.split(":");
@@ -5282,6 +5560,10 @@
       const trip = getActiveTrip();
       document.getElementById("tmTitleInput").value = trip.title || "";
       document.getElementById("tmStartDateInput").value = trip.startDate || "";
+      document.getElementById("tmEndDateInput").value = trip.startDate ? shiftDateStr(trip.startDate, trip.days.length - 1) : "";
+      tmSyncEndMin();
+      document.getElementById("tmBudgetInput").value = (trip.budget && trip.budget.amount) || "";
+      document.getElementById("tmBudgetCur").value = (trip.budget && trip.budget.currency) || "NT$";
       
 
       const listEl = document.getElementById("allTripsListContainer");
@@ -5320,28 +5602,90 @@
       const trip = getActiveTrip();
       trip.title = document.getElementById("tmTitleInput").value.trim() || "未命名旅行";
       trip.startDate = document.getElementById("tmStartDateInput").value;
-      
+      const bAmt = Math.max(0, Number(document.getElementById("tmBudgetInput").value) || 0);
+      if (bAmt) trip.budget = { amount: bAmt, currency: document.getElementById("tmBudgetCur").value };
+      else delete trip.budget;
+      const endV = document.getElementById("tmEndDateInput").value;
+      if (trip.startDate && endV) {
+        const want = cdCalendarDaysBetween(trip.startDate, endV) + 1;
+        if (want < 1) { alert("回程日期不能早於出發日期。"); return; }
+        if (want > 120) { alert("一次最多 120 天。"); return; }
+        if (want > trip.days.length) {
+          const last = trip.days[trip.days.length - 1];
+          while (trip.days.length < want) trip.days.push(makeEmptyDay(last));
+        } else if (want < trip.days.length) {
+          const cut = trip.days.slice(want);
+          const filled = cut.filter(d => (d.items || []).length).length;
+          const msg = filled
+            ? `回程日期提前，會刪掉最後 ${cut.length} 天，其中 ${filled} 天已經有行程。確定要刪除嗎？`
+            : `回程日期提前，會刪掉最後 ${cut.length} 天（都是空的）。確定嗎？`;
+          if (!confirm(msg)) return;
+          trip.days.splice(want);
+          if (appState.activeDayIndex >= want) appState.activeDayIndex = want - 1;
+        }
+      }
       saveAppState(); debouncedSyncToCloud();
       closeTripManager();
       renderAll();
     }
 
-    function createNewTripProject() {
+    function tmSyncEndMin() {
+      const s0 = document.getElementById("tmStartDateInput").value;
+      const e = document.getElementById("tmEndDateInput");
+      if (e) e.min = s0 || "";
+    }
+
+    function openNewTripSheet() {
+      const today = cdLocalDateStr();
+      document.getElementById("ntTitleInput").value = "";
+      document.getElementById("ntStartInput").value = today;
+      document.getElementById("ntEndInput").value = shiftDateStr(today, 2);
+      document.getElementById("ntBudgetInput").value = "";
+      document.getElementById("ntBudgetCur").value = (getActiveTrip().budget && getActiveTrip().budget.currency) || "NT$";
+      ntUpdateSummary();
+      closeTripManager();
+      openModalBackdrop("newTripModal");
+    }
+
+    function ntUpdateSummary(startChanged) {
+      const st = document.getElementById("ntStartInput").value;
+      const enEl = document.getElementById("ntEndInput");
+      enEl.min = st || "";
+      if (startChanged && st && (!enEl.value || enEl.value < st)) enEl.value = st;
+      const out = document.getElementById("ntSummary");
+      if (!st || !enEl.value) { out.textContent = ""; return; }
+      const n = cdCalendarDaysBetween(st, enEl.value) + 1;
+      out.textContent = n < 1 ? "回程日期不能早於出發日期" : (n === 1 ? "當天來回，共 1 天" : `共 ${n} 天 ${n - 1} 夜，會自動建好 ${n} 天`);
+    }
+
+    function confirmNewTrip() {
+      const st = document.getElementById("ntStartInput").value || cdLocalDateStr();
+      const en = document.getElementById("ntEndInput").value || st;
+      const n = cdCalendarDaysBetween(st, en) + 1;
+      if (n < 1) { alert("回程日期不能早於出發日期。"); return; }
+      if (n > 120) { alert("一次最多 120 天。"); return; }
+      const bAmt = Math.max(0, Number(document.getElementById("ntBudgetInput").value) || 0);
+      createNewTripProject({ title: document.getElementById("ntTitleInput").value.trim(), startDate: st, days: n,
+        budget: bAmt ? { amount: bAmt, currency: document.getElementById("ntBudgetCur").value } : null });
+      closeModalBackdrop("newTripModal");
+    }
+
+    function createNewTripProject(opts) {
+      opts = opts || {};
       const newId = "trip_" + Date.now();
       appState.trips.push({
         id: newId,
-        title: "新的旅程",
-        startDate: cdLocalDateStr(),
+        title: opts.title || "新的旅程",
+        startDate: opts.startDate || cdLocalDateStr(),
         homeTz: "Asia/Taipei",
         checklist: [],
-        days: [
-          {
-            weatherText: "☀️ 晴朗 22°C",
-            sunrise: "06:15",
-            sunset: "17:45",
-            items: []
-          }
-        ]
+        ...(opts.budget ? { budget: opts.budget } : {}),
+        days: Array.from({ length: Math.max(1, opts.days || 1) }, () => ({
+          weatherText: "☀️ 晴朗 22°C",
+          sunrise: "06:15",
+          sunset: "17:45",
+          items: []
+        }))
       });
       appState.activeTripId = newId;
       appState.activeDayIndex = 0;
@@ -7254,8 +7598,9 @@
         ctx.fillRect(frameX, frameY, frameW, frameH);
       }
 
-      const fromStr = item.roadFrom || item.title.split(/to|➔|→/i)[0]?.trim() || "七里ヶ浜";
-      const toStr = item.roadTo || item.title.split(/to|➔|→/i)[1]?.trim() || "鎌倉高校前";
+      const _rtParts = String(item.title || "").split(/\s+to\s+|➔|→|－>|->/i).map(x => x.trim()).filter(Boolean);
+      const fromStr = item.roadFrom || (_rtParts.length > 1 ? _rtParts[0] : (item.title || "").trim()) || "出發";
+      const toStr = item.roadTo || (_rtParts.length > 1 ? _rtParts[_rtParts.length - 1] : "");
       const ink = roadtripEditorialState.color || "#FFFFFF";
       if (roadtripEditorialState.font === "serif") await ensureSerifFont();
       const fontFam = roadtripEditorialState.font === "serif"
@@ -7281,7 +7626,7 @@
       const arrowEnd = rightX - wTo - 24;
       const headLen = 20, headHalfH = 10;
 
-      if (arrowEnd - arrowStart > 34) {
+      if (toStr && arrowEnd - arrowStart > 34) {
         ctx.strokeStyle = ink;
         ctx.lineWidth = 4.5;
         ctx.lineCap = "butt";
@@ -7882,6 +8227,7 @@
             totalsByCur[cur].total += sum;
 
             itemBreakdownRows.push({
+              type: item.type,
               dayNum: dIdx + 1,
               title: item.title,
               costLabel: item.costLabel || "",
@@ -7933,6 +8279,7 @@
       el.innerHTML = `
         <div class="form-card">
           <div style="font-size:16px; font-weight:900; margin-bottom:10px;">💰 記帳與支出總覽</div>
+          ${renderBudgetOverviewHtml(trip, itemBreakdownRows)}
           ${summaryCardsHtml}
           <div style="margin-top:12px;">${detailRowsHtml}</div>
         </div>
@@ -7946,6 +8293,138 @@
           <div>${checklistHtml}</div>
         </div>
       `;
+    }
+
+    // ---------- 預算：圖表 ----------
+    let fxLoading = false;
+    function getFxRates() {
+      const c = appState.fxCache;
+      if (c && c.rates && Date.now() - c.at < 12 * 3600 * 1000) return c.rates;
+      if (!fxLoading && navigator.onLine !== false) {
+        fxLoading = true;
+        fetch("https://open.er-api.com/v6/latest/USD").then(r => r.json()).then(d => {
+          if (d && d.rates) {
+            appState.fxCache = { at: Date.now(), rates: d.rates };
+            saveAppState();
+            if (document.getElementById("budgetView").style.display !== "none" || window.innerWidth >= 1024) renderBudgetAndChecklist();
+          }
+        }).catch(() => {}).finally(() => { fxLoading = false; });
+      }
+      return c && c.rates ? c.rates : null; // 過期的匯率也先用著
+    }
+    function fxConvert(amount, fromCur, toCur, rates) {
+      if (fromCur === toCur) return amount;
+      const a = FX_CODE[fromCur], b = FX_CODE[toCur];
+      if (!rates || !a || !b || !rates[a] || !rates[b]) return null;
+      return amount / rates[a] * rates[b];
+    }
+    function fmtMoney(cur, n) { return `${cur} ${Math.round(n).toLocaleString()}`; }
+
+    function openBudgetEditor() {
+      const trip = getActiveTrip();
+      const cur = (trip.budget && trip.budget.currency) || "NT$";
+      const v = prompt(`這趟旅行的總預算（${cur}）\n要換幣別，請到「旅行管理」。清空就是不設定預算。`, (trip.budget && trip.budget.amount) || "");
+      if (v === null) return;
+      const n = Math.max(0, Number(String(v).replace(/[,\s]/g, "")) || 0);
+      if (n) trip.budget = { amount: n, currency: cur }; else delete trip.budget;
+      saveAppState(); debouncedSyncToCloud();
+      renderBudgetAndChecklist();
+    }
+
+    function renderBudgetOverviewHtml(trip, rows) {
+      const b = trip.budget;
+      if (!b || !b.amount) {
+        return `<button type="button" class="pill-btn" style="width:100%; justify-content:center; padding:11px; margin-bottom:10px; border-style:dashed;" onclick="openBudgetEditor()">＋ 設定這趟旅行的總預算，看看還剩多少</button>`;
+      }
+      const cur = b.currency || "NT$";
+      const rates = getFxRates();
+      let spent = 0, skipped = {};
+      const perDay = new Array(trip.days.length).fill(0);
+      const byType = {};
+      rows.forEach(r => {
+        const v = fxConvert(r.sum, r.cur, cur, rates);
+        if (v === null) { skipped[r.cur] = (skipped[r.cur] || 0) + r.sum; return; }
+        spent += v;
+        perDay[r.dayNum - 1] += v;
+        byType[r.type] = (byType[r.type] || 0) + v;
+      });
+      const pct = spent / b.amount;
+      const left = b.amount - spent;
+      const color = pct > 1 ? "#D64545" : pct >= 0.8 ? "#E0A100" : "var(--green)";
+      // 圓環
+      const R = 42, C = 2 * Math.PI * R;
+      const shown = Math.min(1, pct);
+      const ring = `<svg viewBox="0 0 100 100" width="112" height="112" style="flex:none; transform:rotate(-90deg);">
+        <circle cx="50" cy="50" r="${R}" fill="none" stroke="var(--border)" stroke-width="11"/>
+        <circle cx="50" cy="50" r="${R}" fill="none" stroke="${color}" stroke-width="11" stroke-linecap="round"
+          stroke-dasharray="${(C * shown).toFixed(1)} ${C.toFixed(1)}"/>
+      </svg>`;
+      // 剩下幾天、每天可以花多少
+      const today = cdLocalDateStr();
+      let daysLeft = trip.days.length;
+      if (trip.startDate) {
+        const idx = cdCalendarDaysBetween(trip.startDate, today);
+        if (idx >= trip.days.length) daysLeft = 0;
+        else if (idx > 0) daysLeft = trip.days.length - idx;
+      }
+      const perDayLeft = daysLeft > 0 && left > 0 ? left / daysLeft : 0;
+      // 每日長條
+      const maxDay = Math.max(b.amount / trip.days.length, ...perDay, 1);
+      const avg = b.amount / trip.days.length;
+      const avgPct = (avg / maxDay) * 100;
+      const bars = perDay.map((v, i) => {
+        const h = Math.max(v > 0 ? 3 : 0, (v / maxDay) * 100);
+        const over = v > avg;
+        return `<div style="flex:1; min-width:6px; display:flex; flex-direction:column; align-items:center; gap:4px;">
+          <div style="width:100%; height:84px; display:flex; align-items:flex-end;">
+            <div title="DAY ${i + 1}：${fmtMoney(cur, v)}" style="width:100%; height:${h}%; border-radius:5px 5px 2px 2px; background:${over ? "#E0A100" : "var(--ink)"}; opacity:${over ? 1 : 0.82};"></div>
+          </div>
+          <div style="font-size:10px; color:var(--sub); font-family:var(--mono);">${trip.days.length > 14 && i % 2 ? "" : i + 1}</div>
+        </div>`;
+      }).join("");
+      // 類別
+      const TYPE_NAME = { flight: "機票", transit: "交通", roadtrip: "自駕", spot: "景點、吃住、購物" };
+      const TYPE_COLOR = { flight: "#3E7CB1", transit: "#16A34A", roadtrip: "#E0A100", spot: "#C84B31" };
+      const typeKeys = Object.keys(byType).filter(k => byType[k] > 0).sort((a, c) => byType[c] - byType[a]);
+      const stack = spent > 0 ? `
+        <div style="display:flex; height:12px; border-radius:6px; overflow:hidden; margin:14px 0 6px; background:var(--border);">
+          ${typeKeys.map(k => `<div style="width:${(byType[k] / spent * 100).toFixed(2)}%; background:${TYPE_COLOR[k] || "#888"};"></div>`).join("")}
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:4px 12px; font-size:11.5px; color:var(--sub);">
+          ${typeKeys.map(k => `<span style="display:inline-flex; align-items:center; gap:5px;"><i style="width:8px; height:8px; border-radius:2px; background:${TYPE_COLOR[k] || "#888"};"></i>${TYPE_NAME[k] || k} ${Math.round(byType[k] / spent * 100)}%</span>`).join("")}
+        </div>` : "";
+      const skippedTxt = Object.keys(skipped).length
+        ? `<div style="font-size:11.5px; color:var(--sub); margin-top:8px;">${Object.entries(skipped).map(([c, v]) => fmtMoney(c, v)).join("、")} 還沒算進去（需要網路抓匯率）</div>` : "";
+      const fxNote = rows.some(r => r.cur !== cur) && rates ? `<div style="font-size:11px; color:var(--sub); margin-top:6px;">其他幣別依今天匯率換算成 ${cur}，僅供參考。</div>` : "";
+      return `
+        <div style="border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:10px; background:var(--card);">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div style="position:relative; width:112px; height:112px; flex:none;">
+              ${ring}
+              <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <div style="font-size:22px; font-weight:900; font-family:var(--mono); color:${color};">${Math.round(pct * 100)}%</div>
+                <div style="font-size:11px; color:var(--sub);">已用</div>
+              </div>
+            </div>
+            <div style="flex:1; min-width:0; font-size:13px; line-height:1.7;">
+              <div style="display:flex; justify-content:space-between; gap:6px;"><span style="color:var(--sub);">預算</span><b style="font-family:var(--mono);">${fmtMoney(cur, b.amount)}</b></div>
+              <div style="display:flex; justify-content:space-between; gap:6px;"><span style="color:var(--sub);">已花</span><b style="font-family:var(--mono);">${fmtMoney(cur, spent)}</b></div>
+              <div style="display:flex; justify-content:space-between; gap:6px;"><span style="color:var(--sub);">${left >= 0 ? "還剩" : "超出"}</span><b style="font-family:var(--mono); color:${color};">${fmtMoney(cur, Math.abs(left))}</b></div>
+              ${perDayLeft > 0 ? `<div style="font-size:11.5px; color:var(--sub); margin-top:2px;">剩 ${daysLeft} 天，每天約可花 ${fmtMoney(cur, perDayLeft)}</div>` : ""}
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
+            <div style="font-size:12.5px; font-weight:800;">每天花多少</div>
+            <div style="font-size:11px; color:var(--sub);">虛線＝平均每天預算 ${fmtMoney(cur, avg)}</div>
+          </div>
+          <div style="position:relative; margin-top:6px;">
+            <div style="position:absolute; left:0; right:0; bottom:calc(18px + ${(avgPct * 0.84).toFixed(1)}px); border-top:1.5px dashed var(--sub); opacity:0.6; pointer-events:none;"></div>
+            <div style="display:flex; gap:${trip.days.length > 14 ? 2 : 5}px; align-items:flex-end;">${bars}</div>
+          </div>
+          ${stack}
+          ${skippedTxt}${fxNote}
+          <div style="text-align:right; margin-top:8px;"><button type="button" class="mini-btn" onclick="openBudgetEditor()">修改預算</button></div>
+        </div>`;
     }
 
     function addChecklistItem() {
@@ -9073,7 +9552,7 @@ function initSupabaseClient() {
     function openProfileModal() {
       const sel = document.getElementById("profileDefaultHomeTzSelect");
       if (sel && !sel.innerHTML) {
-        sel.innerHTML = TIMEZONES.map(t => `<option value="${t.id}">${t.label}</option>`).join("");
+        sel.innerHTML = buildTzOptionsHtml();
       }
       document.getElementById("profileAccountEmailText").textContent = currentCloudUser ? currentCloudUser.email : "本機訪客模式";
       const ac = document.getElementById("profileAutoCheckinCheck");
@@ -9081,8 +9560,10 @@ function initSupabaseClient() {
       const dz = document.getElementById("profileDangerZone");
       if (dz) dz.style.display = currentCloudUser ? "block" : "none";
       document.getElementById("profileDisplayNameInput").value = appState.userDisplayName || "";
-      if (sel) sel.value = appState.defaultHomeTz || getActiveTrip().homeTz || "Asia/Taipei";
+      if (sel) setTzSelectValue(sel, appState.defaultHomeTz || getActiveTrip().homeTz || "Asia/Taipei");
       document.getElementById("profileShowHomeTzCheck").checked = !!appState.showHomeTz;
+      const mapSel = document.getElementById("profileMapAppSelect");
+      if (mapSel) mapSel.value = appState.mapApp || "google";
       const box = document.getElementById("profileAvatarPreviewBox");
       if (appState.userAvatarDataUrl) {
         box.innerHTML = `<img src="${appState.userAvatarDataUrl}" style="width:100%;height:100%;object-fit:cover;" />`;
@@ -9232,6 +9713,12 @@ function initSupabaseClient() {
       const trip = getActiveTrip();
       trip.title = title;
       trip.startDate = startDate;
+      const endDate = document.getElementById("onboardTripEndInput").value;
+      if (endDate) {
+        const want = Math.min(120, cdCalendarDaysBetween(startDate, endDate) + 1);
+        const last = trip.days[trip.days.length - 1];
+        while (want > trip.days.length) trip.days.push(makeEmptyDay(last));
+      }
       saveAppState();
       closeOnboardingModal();
       renderAll();
@@ -9286,15 +9773,88 @@ function initSupabaseClient() {
      *     - AI Health-Check Markdown Export (#15)
      *     - Standard CSV Template & One-Click Import (#16)
      *************************************************************************/
-    function updateCurrentDayMeta(field, val) {
+    async function updateCurrentDayMeta(field, val) {
       const day = getActiveDay();
       if (!day) return;
       day[field] = (val || "").trim();
+      if (field === "location") {
+        delete day.locationCoord; delete day.locationPlace;
+      }
       saveAppState();
       debouncedSyncToCloud();
       if (field === "location") {
+        if (day.location) {
+          const picked = await askWhichCity(day.location);
+          if (picked) {
+            day.locationCoord = { lat: picked.lat, lng: picked.lng };
+            day.locationPlace = picked.place;
+            saveAppState(); debouncedSyncToCloud();
+            updateDayCityHint();
+          }
+        }
         refreshRealtimeWeather(true);
       }
+    }
+
+    function updateDayCityHint() {
+      const day = getActiveDay();
+      const el = document.getElementById("dayLocationInput");
+      if (el) el.title = (day && day.locationPlace) ? day.locationPlace : "";
+      const hint = document.getElementById("dayCityPlaceHint");
+      if (hint) {
+        hint.textContent = (day && day.locationPlace) ? day.locationPlace : "";
+        hint.style.display = (day && day.locationPlace) ? "block" : "none";
+      }
+    }
+
+    // 同名城市（例如 Portland 在美國有兩個、San Jose 在美國和哥斯大黎加）：列出來讓使用者選
+    async function askWhichCity(name) {
+      const clean = normalizeStationName(name);
+      if (!clean || COUNTRY_NAMES.has(clean.toLowerCase())) return null;
+      if (lookupStationCoordSync(clean)) return null; // App 內建的城市、車站，直接用
+      let data;
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=15&addressdetails=1&accept-language=zh-TW,en&featureType=settlement&q=${encodeURIComponent(clean)}`);
+        if (!res.ok) return null;
+        data = await res.json();
+      } catch (e) { return null; }
+      if (!Array.isArray(data) || !data.length) return null;
+      // OSM 中文名常寫成「俄勒冈州;俄勒岡州」：挑繁體那個
+      const SIMP = /[国兰冈亚尔罗萨维达纳华马东湾泽龙门广卫鲁兹乔伦顿县区汉滨岛凯诺丽莱贝圣尼丁瓦图哥伊纽约齐]/g;
+      const pickZh = (v) => {
+        const parts = String(v || "").split(";").map(x => x.trim()).filter(Boolean);
+        if (parts.length < 2) return parts[0] || "";
+        return parts.slice().sort((x, y) => ((x.match(SIMP) || []).length - (y.match(SIMP) || []).length))[0];
+      };
+      const seen = new Set();
+      const cands = [];
+      data.forEach(r => {
+        const a = {};
+        Object.keys(r.address || {}).forEach(k => { a[k] = pickZh(r.address[k]); });
+        r.name = pickZh(r.name);
+        const country = a.country || "";
+        const region = a.state || a.province || a.region || a.county || "";
+        const key = `${country}|${region}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        const cityName = a.city || a.town || a.village || a.municipality || r.name || clean;
+        const place = [cityName, region, country].filter((x, i, arr) => x && arr.indexOf(x) === i).join("，");
+        cands.push({ lat: +(+r.lat).toFixed(4), lng: +(+r.lon).toFixed(4), place, sub: [region, country].filter(Boolean).join("，") || place, title: cityName });
+      });
+      if (cands.length === 1) return cands[0];
+      return new Promise(resolve => {
+        const box = document.getElementById("cityPickOptions");
+        document.getElementById("cityPickTitle").textContent = `有好幾個「${clean}」，是哪一個？`;
+        box.innerHTML = cands.slice(0, 8).map((c, i) => `
+          <button type="button" class="form-card" data-i="${i}" style="text-align:left; cursor:pointer; padding:12px 14px; margin:0; border:1px solid var(--border); font:inherit; color:inherit;">
+            <div style="font-size:14px; font-weight:800;">${escapeHtml(c.title)}</div>
+            <div style="font-size:12px; color:var(--sub); margin-top:3px;">${escapeHtml(c.sub)}</div>
+          </button>`).join("");
+        const done = (v) => { closeModalBackdrop("cityPickModal"); window.__cityPickResolve = null; resolve(v); };
+        window.__cityPickResolve = done;
+        box.querySelectorAll("button[data-i]").forEach(b => { b.onclick = () => done(cands[+b.dataset.i]); });
+        openModalBackdrop("cityPickModal");
+      });
     }
 
     function toggleCardFooterDrawer(e, itemId) {
@@ -9476,7 +10036,7 @@ function initSupabaseClient() {
       { key: "note",      header: "備註",           group: "其他", hint: "任何提醒" },
       { key: "url",       header: "網址",           group: "其他", hint: "https://…" },
       { key: "urlLabel",  header: "網址名稱",       group: "其他", hint: "可不填，如 官網、訂位" },
-      { key: "mapUrl",    header: "Google地圖連結", group: "其他", hint: "可不填；貼 Google 地圖的分享連結，卡片的「地圖」會直接打開" },
+      { key: "mapUrl",    header: "地圖連結", group: "其他", hint: "可不填；貼地圖 App 的分享連結，卡片的「地圖」會直接打開" },
       { key: "private",   header: "私人行程",       group: "其他", hint: "填「是」只有自己看得到" },
       { key: "dayTheme",  header: "當日主題",       group: "每日", hint: "每天填在任一列就好" },
       { key: "dayCity",   header: "所在城市",       group: "每日", hint: "每天填一次，用來抓天氣" }
@@ -9549,6 +10109,7 @@ function initSupabaseClient() {
       CNX: "Asia/Bangkok", HKT: "Asia/Bangkok", HNL: "Pacific/Honolulu", OGG: "Pacific/Honolulu", KOA: "Pacific/Honolulu",
       LAX: "America/Los_Angeles", SFO: "America/Los_Angeles", SEA: "America/Los_Angeles", LAS: "America/Los_Angeles",
       JFK: "America/New_York", EWR: "America/New_York", LGA: "America/New_York", BOS: "America/New_York",
+      OKC: "America/Chicago", DFW: "America/Chicago", IAH: "America/Chicago", ORD: "America/Chicago",
       LHR: "Europe/London", LGW: "Europe/London", CDG: "Europe/Paris", ORY: "Europe/Paris", FRA: "Europe/Paris",
       AMS: "Europe/Paris", MUC: "Europe/Paris", FCO: "Europe/Paris", ZRH: "Europe/Paris", VIE: "Europe/Paris"
     };
@@ -9738,7 +10299,15 @@ function initSupabaseClient() {
       const exact = TIMEZONES.find(t => t.id.toLowerCase() === s.toLowerCase());
       if (exact) return exact.id;
       const m = csvMatchAlias(s, CSV_TZ_ALIASES);
-      return m || undefined;
+      if (m) return m;
+      // 任何正式時區名稱（如 Europe/Rome），或中文城市名（如 羅馬）
+      try {
+        const all = Intl.supportedValuesOf("timeZone");
+        const hit = all.find(id => id.toLowerCase() === s.toLowerCase());
+        if (hit) return hit;
+      } catch (e) {}
+      const zh = Object.keys(TZ_ZH).find(id => TZ_ZH[id] === s || TZ_ZH[id].split(/[（）、]/).includes(s));
+      return zh || undefined;
     }
 
     function parseCsvCurrency(v) {
@@ -9883,10 +10452,15 @@ function initSupabaseClient() {
         ? (opts.targetTrip && opts.targetTrip.startDate) || opts.baseDate
         : (minDate || opts.baseDate);
 
-      const existingKeys = new Set();
+      // 同一天、同開始時間、同標題 = 同一筆行程。可以選「用檔案更新」或「略過」
+      const existingKeys = new Map();
       if (opts.mode === "merge" && opts.targetTrip) {
-        (opts.targetTrip.days || []).forEach((d, i) => (d.items || []).forEach(it => existingKeys.add(`${i + 1}|${it.startTime}|${it.title}`)));
+        (opts.targetTrip.days || []).forEach((d, i) => (d.items || []).forEach(it => {
+          const k = `${i + 1}|${it.startTime}|${String(it.title || "").trim()}`;
+          if (!existingKeys.has(k)) existingKeys.set(k, it.id);
+        }));
       }
+      let updates = 0;
 
       const entries = [];
       const dayMeta = {};
@@ -10021,7 +10595,14 @@ function initSupabaseClient() {
           else { title = "未命名行程"; warn(rowNo, "標題空白，暫時命名為「未命名行程」"); }
         }
 
-        if (opts.mode === "merge" && existingKeys.has(`${day}|${startTime}|${title}`)) { duplicates++; continue; }
+        let replaceId = null;
+        const dupKey = `${day}|${startTime}|${String(title).trim()}`;
+        if (opts.mode === "merge" && existingKeys.has(dupKey)) {
+          if (opts.dupMode === "skip") { duplicates++; continue; }
+          replaceId = existingKeys.get(dupKey);
+          existingKeys.delete(dupKey); // 檔案裡同一筆出現兩次時，第二筆當新的
+          updates++;
+        }
 
         // ---- 幣別、費用 ----
         let currency = parseCsvCurrency(get(cols, "currency"));
@@ -10084,14 +10665,14 @@ function initSupabaseClient() {
           isPrivate: !!isPrivate,
           createdBy: opts.userId || undefined
         };
-        entries.push({ day, item, rowNo });
+        entries.push({ day, item, rowNo, replaceId });
         lastItemByDay[day] = item;
         if (type === "transit") lastTransitByDay[day] = item;
         else delete lastTransitByDay[day];
       }
 
       const maxDay = entries.reduce((m, e) => Math.max(m, e.day), 0);
-      return { entries, dayMeta, warnings, duplicates, baseDate, minDate, maxDay, legacy, unknownHeaders, colCount: Object.keys(colMap).length };
+      return { entries, dayMeta, warnings, duplicates, updates, baseDate, minDate, maxDay, legacy, unknownHeaders, colCount: Object.keys(colMap).length };
     }
 
     // ---------- 匯入畫面 ----------
@@ -10105,7 +10686,8 @@ function initSupabaseClient() {
         baseDate: (document.getElementById("csvStartDate") || {}).value || cdLocalDateStr(),
         homeTz: (targetTrip && targetTrip.homeTz) || "Asia/Taipei",
         companion: mode === "merge" && isTripCompanionView(targetTrip),
-        userId: uid
+        userId: uid,
+        dupMode: (document.querySelector('input[name="csvDupMode"]:checked') || {}).value || "update"
       };
     }
 
@@ -10114,11 +10696,13 @@ function initSupabaseClient() {
       const newFields = document.getElementById("csvNewTripFields");
       const mergeInfo = document.getElementById("csvMergeInfo");
       if (newFields) newFields.style.display = opts.mode === "new" ? "grid" : "none";
+      const dupBox = document.getElementById("csvDupModeBox");
+      if (dupBox) dupBox.style.display = opts.mode === "merge" ? "block" : "none";
       if (mergeInfo) {
         mergeInfo.style.display = opts.mode === "merge" ? "block" : "none";
         if (opts.mode === "merge") {
           const t = getActiveTrip();
-          mergeInfo.textContent = `會加到「${t.title}」，天數從這趟旅行的第一天（${t.startDate || "未設定"}）開始算；同一天、同時間、同標題的行程會略過，不會重複。`
+          mergeInfo.textContent = `會加到「${t.title}」，天數從這趟旅行的第一天（${t.startDate || "未設定"}）開始算；同一天、同開始時間、同標題的行程算同一筆。`
             + (opts.companion ? "你是旅伴，匯入的行程會存成私人行程。" : "");
         }
       }
@@ -10154,6 +10738,7 @@ function initSupabaseClient() {
       if (result.legacy) notes.push("偵測到舊版格式，已自動對應欄位");
       if (result.unknownHeaders.length) notes.push(`這些欄位看不懂，已略過：${result.unknownHeaders.join("、")}`);
       if (result.duplicates) notes.push(`${result.duplicates} 筆跟目前旅行重複，已略過`);
+      if (result.updates) notes.push(`${result.updates} 筆是已經有的行程，會用檔案的內容更新`);
 
       const warnHtml = result.warnings.length ? `
         <div class="csv-warn-box">
@@ -10263,7 +10848,20 @@ function initSupabaseClient() {
       while (trip.days.length < result.maxDay) {
         trip.days.push({ weatherText: "☀️ 晴朗 22°C", sunrise: "06:15", sunset: "17:45", items: [] });
       }
-      result.entries.forEach(({ day, item }) => trip.days[day - 1].items.push(item));
+      const KEEP_ON_UPDATE = ["id", "photos", "mood", "status", "extraExpenses", "createdBy"];
+      result.entries.forEach(({ day, item, replaceId }) => {
+        if (replaceId) {
+          for (const d of trip.days) {
+            const old = (d.items || []).find(it => it.id === replaceId);
+            if (old) {
+              Object.keys(item).forEach(k => { if (!KEEP_ON_UPDATE.includes(k)) old[k] = item[k]; });
+              item.id = old.id;
+              return;
+            }
+          }
+        }
+        trip.days[day - 1].items.push(item);
+      });
       Object.keys(result.dayMeta).forEach(d => {
         const day = trip.days[Number(d) - 1];
         if (!day) return;
@@ -10282,7 +10880,8 @@ function initSupabaseClient() {
       renderAll();
       refreshRealtimeWeather(false);
       geocodeImportedPlaces(result.entries.map(e => e.item));
-      alert(`✅ 已匯入 ${result.entries.length} 筆行程到「${trip.title}」` + (result.warnings.length ? `\n有 ${result.warnings.length} 個地方用了預設值，可以打開卡片再確認。` : ""));
+      const nUpd = result.entries.filter(e => e.replaceId).length;
+      alert(`✅ 已匯入 ${result.entries.length - nUpd} 筆新行程${nUpd ? `、更新 ${nUpd} 筆` : ""}到「${trip.title}」` + (result.warnings.length ? `\n有 ${result.warnings.length} 個地方用了預設值，可以打開卡片再確認。` : ""));
     }
 
     // 匯入後在背景補上地圖座標（OpenStreetMap 規定每秒最多查一次）
@@ -12240,7 +12839,7 @@ function initSupabaseClient() {
       ["韓國", [["ICN", "首爾仁川", 37.4602, 126.4407], ["GMP", "首爾金浦", 37.5583, 126.7906], ["PUS", "釜山", 35.1795, 128.9382], ["CJU", "濟州", 33.5113, 126.4929], ["TAE", "大邱", 35.8941, 128.6589]]],
       ["港澳・中國", [["HKG", "香港", 22.308, 113.9185], ["MFM", "澳門", 22.1496, 113.5916], ["PVG", "上海浦東", 31.1443, 121.8083], ["SHA", "上海虹橋", 31.1979, 121.3363], ["PEK", "北京首都", 40.0799, 116.6031], ["PKX", "北京大興", 39.5098, 116.4105], ["CAN", "廣州", 23.3924, 113.2988], ["SZX", "深圳", 22.6393, 113.8107], ["XMN", "廈門", 24.5440, 118.1277]]],
       ["東南亞", [["BKK", "曼谷蘇凡納布", 13.69, 100.7501], ["DMK", "曼谷廊曼", 13.9126, 100.6067], ["CNX", "清邁", 18.7668, 98.9626], ["HKT", "普吉島", 8.1132, 98.3169], ["SIN", "新加坡", 1.3644, 103.9915], ["KUL", "吉隆坡", 2.7456, 101.7099], ["MNL", "馬尼拉", 14.5086, 121.0194], ["CEB", "宿霧", 10.3075, 123.9794], ["SGN", "胡志明市", 10.8188, 106.6519], ["HAN", "河內", 21.2187, 105.8042], ["DAD", "峴港", 16.0439, 108.1994], ["CXR", "芽莊", 11.9982, 109.2194], ["PQC", "富國島", 10.1698, 103.9931], ["DPS", "峇里島", -8.7482, 115.1675], ["CGK", "雅加達", -6.1256, 106.6559]]],
-      ["美國・加拿大", [["LAX", "洛杉磯", 33.9416, -118.4085], ["SFO", "舊金山", 37.6213, -122.379], ["SEA", "西雅圖", 47.4502, -122.3088], ["JFK", "紐約甘迺迪", 40.6413, -73.7781], ["EWR", "紐華克", 40.6895, -74.1745], ["ORD", "芝加哥", 41.9742, -87.9073], ["BOS", "波士頓", 42.3656, -71.0096], ["LAS", "拉斯維加斯", 36.084, -115.1537], ["IAH", "休士頓", 29.9902, -95.3368], ["DFW", "達拉斯", 32.8998, -97.0403], ["ONT", "安大略", 34.056, -117.6012], ["HNL", "檀香山", 21.3187, -157.9225], ["KOA", "夏威夷可那", 19.7388, -156.0456], ["OGG", "茂宜島", 20.8986, -156.4305], ["YVR", "溫哥華", 49.1967, -123.1815], ["YYZ", "多倫多", 43.6777, -79.6248]]],
+      ["美國・加拿大", [["LAX", "洛杉磯", 33.9416, -118.4085], ["SFO", "舊金山", 37.6213, -122.379], ["SEA", "西雅圖", 47.4502, -122.3088], ["JFK", "紐約甘迺迪", 40.6413, -73.7781], ["LGA", "紐約拉瓜迪亞", 40.7769, -73.874], ["EWR", "紐華克", 40.6895, -74.1745], ["ORD", "芝加哥", 41.9742, -87.9073], ["BOS", "波士頓", 42.3656, -71.0096], ["LAS", "拉斯維加斯", 36.084, -115.1537], ["IAH", "休士頓", 29.9902, -95.3368], ["DFW", "達拉斯", 32.8998, -97.0403], ["OKC", "奧克拉荷馬市", 35.3931, -97.6007], ["ONT", "安大略", 34.056, -117.6012], ["HNL", "檀香山", 21.3187, -157.9225], ["KOA", "夏威夷可那", 19.7388, -156.0456], ["OGG", "茂宜島", 20.8986, -156.4305], ["YVR", "溫哥華", 49.1967, -123.1815], ["YYZ", "多倫多", 43.6777, -79.6248]]],
       ["歐洲", [["LHR", "倫敦希斯洛", 51.47, -0.4543], ["CDG", "巴黎戴高樂", 49.0097, 2.5479], ["AMS", "阿姆斯特丹", 52.3105, 4.7683], ["FRA", "法蘭克福", 50.0379, 8.5622], ["MUC", "慕尼黑", 48.3537, 11.775], ["VIE", "維也納", 48.1103, 16.5697], ["PRG", "布拉格", 50.1008, 14.26], ["ZRH", "蘇黎世", 47.4582, 8.5555], ["FCO", "羅馬", 41.8003, 12.2389], ["MXP", "米蘭", 45.6306, 8.7281], ["BCN", "巴塞隆納", 41.2974, 2.0833], ["MAD", "馬德里", 40.4983, -3.5676], ["IST", "伊斯坦堡", 41.2753, 28.7519], ["HEL", "赫爾辛基", 60.3172, 24.9633], ["CPH", "哥本哈根", 55.618, 12.656], ["KEF", "冰島", 63.985, -22.6056]]],
       ["中東", [["DXB", "杜拜", 25.2532, 55.3657], ["DOH", "杜哈", 25.2731, 51.6081], ["AUH", "阿布達比", 24.433, 54.6511]]],
       ["大洋洲", [["SYD", "雪梨", -33.9399, 151.1753], ["MEL", "墨爾本", -37.669, 144.841], ["BNE", "布里斯本", -27.3842, 153.1175], ["AKL", "奧克蘭", -37.0082, 174.785], ["GUM", "關島", 13.4834, 144.7959], ["ROR", "帛琉", 7.3673, 134.5442]]],
@@ -12547,9 +13146,16 @@ function initSupabaseClient() {
     // 更新公告：改版時只要修改 WHATS_NEW（版本號換新，內容換新），老朋友打開會看到一次
     // =====================================================================
     const WHATS_NEW = {
-      version: "2026.11.18b",
+      version: "2026.11.18d",
       date: "2026.11.18",
       items: [
+        ["旅行預算", "建立旅行時可以填總預算。「清單/預算」會用圓環和長條圖顯示用了多少、還剩多少、每天花多少；其他幣別依當天匯率換算。"],
+        ["選擇地圖 App", "個人設定可以選按「地圖」時用 Google 地圖、Apple 地圖，或每次問我。地圖連結也可以貼任何地圖 App 的分享連結。"],
+        ["全球時區", "時區選單改成全世界的時區，常用的在最上面，其他依洲分類。"],
+        ["同名城市會問你", "「所在城市」填了同名的地方（例如 Portland、San Jose），會列出來讓你選是哪一個，天氣才會對。"],
+        ["CSV 重新匯入會更新", "匯入到目前旅行時，已經有的行程（同一天、同時間、同標題）可以選用檔案內容更新，改過備註、費用也會套用；照片、打卡、心情保留。"],
+        ["建立行程直接選日期", "新增旅行時選好出發、回程日期，天數自動建好，不用一直按「＋」。旅行管理也可以改回程日期。"],
+        ["隨時加一天", "按「＋ 加一天」，可以提前一天出發，或加在任何一天的前面、後面，原本排好的行程會自動往後順延。"],
         ["點選車站，轉乘自動排好", "新增交通時按「點選車站」：點上車站、點下車站，TabigrAm 會給你幾種走法（轉乘最少、站數最少、不用出站），點一下就填好。台灣（含高鐵、台鐵）、東京、大阪京都、首爾、舊金山、紐約。"],
         ["路線圖分享卡重畫", "台北捷運、東京地鐵、山手線照官方路線圖的線形畫，轉角改成圓弧；站名、站牌可以自己選要不要顯示。也新增成田、關西機場的特急。"],
         ["分享編輯頁改版", "預覽放大到整個畫面，儲存在右上角；下面只有版型、配色、內容、貼圖 4 個按鈕，點了直接選。"],

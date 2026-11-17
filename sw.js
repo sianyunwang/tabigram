@@ -3,7 +3,7 @@
 // - 字型與程式元件（Google Fonts、jsDelivr）：先用存好的，背景再更新
 // - 雲端資料、天氣、地圖座標：不存，直接連線（離線時 App 會先把變更存在裝置上）
 // 改了這個檔案或想強制更新時，把 CACHE 的版本號加 1
-const CACHE = "tabigram-v12";
+const CACHE = "tabigram-v13";
 const CORE = ["./", "index.html", "privacy.html", "terms.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "logo-ring.png", "favicon.png"];
 const ASSET_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "unpkg.com"];
 

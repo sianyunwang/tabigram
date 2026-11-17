@@ -1352,6 +1352,58 @@
     #shareModal.story-fullscreen .story-gesture-hint { display: block; }
     #shareModal.story-fullscreen .story-expand-btn { top: 0; right: 0; background: var(--ink); padding: 9px 16px; font-size: 14px; }
 
+    /* ===== 限動編輯（新版）===== */
+    .ed-top, .ed-dock { display: none; }
+    #shareModal.ed-mode { padding: 0 !important; background: #0E0F12; backdrop-filter: none; }
+    #shareModal.ed-mode .modal-sheet { max-width: 560px !important; width: 100%; height: 100%; max-height: 100%; border-radius: 0; border: 0; padding: 0 !important; background: #0E0F12; display: flex; flex-direction: column; overflow: hidden; box-shadow: none; }
+    #shareModal.ed-mode .modal-sheet > .modal-header, #shareModal.ed-mode .modal-sheet > .form-card, #shareModal.ed-mode .ed-old, #shareModal.ed-mode .story-expand-btn, #shareModal.ed-mode .story-gesture-hint { display: none !important; }
+    #shareModal.ed-mode .ed-top { display: flex; justify-content: space-between; align-items: center; padding: max(env(safe-area-inset-top, 0px), 10px) 14px 8px; flex: none; }
+    .ed-x { width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(255,255,255,.14); color: #fff; font-size: 16px; font-weight: 900; cursor: pointer; }
+    .ed-save { border: 0; border-radius: 999px; background: #fff; color: #191919; font: 900 14.5px var(--sans); padding: 10px 18px; cursor: pointer; }
+    #shareModal.ed-mode .share-preview-stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 4px 14px 10px; margin: 0; background: transparent !important; border: 0 !important; }
+    #shareModal.ed-mode .story-canvas { height: 100%; width: auto; max-width: 100%; max-height: 100%; min-width: 0; border-radius: 14px; box-shadow: 0 12px 34px rgba(0,0,0,.45); }
+    #shareModal.ed-mode .ed-dock { display: block; flex: none; background: var(--card); border-radius: 22px 22px 0 0; padding: 12px 10px max(env(safe-area-inset-bottom, 0px), 10px); }
+    .ed-panel { min-height: 96px; display: flex; flex-direction: column; justify-content: center; gap: 8px; margin-bottom: 8px; }
+    .ed-row { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; padding: 2px 2px 4px; align-items: flex-start; }
+    .ed-row::-webkit-scrollbar { display: none; }
+    .ed-wrap { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .ed-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; border-top: 1px solid var(--border); padding-top: 8px; }
+    .ed-tab { display: flex; flex-direction: column; align-items: center; gap: 3px; border: 0; background: none; font: 800 12px var(--sans); color: var(--sub); cursor: pointer; padding: 2px 0; }
+    .ed-tab i { width: 34px; height: 30px; border-radius: 10px; background: var(--card2, #F1EDE4); display: grid; place-items: center; font-style: normal; color: var(--ink); }
+    .ed-tab i svg { width: 17px; height: 17px; fill: currentColor; }
+    .ed-tab i b { font: 900 14px var(--sans); }
+    .ed-tab.on { color: var(--ink); }
+    .ed-tab.on i { background: var(--ink); color: var(--bg); }
+    .ed-tpl { flex: none; border: 0; background: none; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: var(--sans); }
+    .ed-tpl small, .ed-sw small { font-size: 11px; font-weight: 800; color: var(--sub); white-space: nowrap; }
+    .ed-tpl-card { width: 54px; height: 72px; border-radius: 10px; padding: 5px; display: flex; flex-direction: column; gap: 4px; border: 2.5px solid transparent; }
+    .ed-tpl-card > span { flex: 1; border-radius: 5px; display: block; }
+    .ed-tpl-card > span svg { width: 100%; height: 100%; display: block; }
+    .ed-tpl-card i { height: 11px; border-radius: 3px; display: block; }
+    .ed-tpl.on .ed-tpl-card { border-color: var(--accent); }
+    .ed-tpl.on small, .ed-sw.on small { color: var(--ink); }
+    .ed-sw { flex: none; border: 0; background: none; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 56px; font-family: var(--sans); }
+    .ed-sw span { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; border: 1px solid rgba(0,0,0,.12); box-shadow: 0 0 0 3px var(--card), 0 0 0 3px transparent; font-weight: 900; color: var(--sub); }
+    .ed-sw.on span { box-shadow: 0 0 0 3px var(--card), 0 0 0 5.5px var(--accent); }
+    .ed-sw.soon span { background: var(--card2, #F1EDE4); border-style: dashed; }
+    .ed-colorbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .ed-seg { display: inline-flex; border: 1.5px solid var(--border); border-radius: 999px; overflow: hidden; flex: none; }
+    .ed-seg button { border: 0; background: none; padding: 6px 12px; font: 800 12.5px var(--sans); color: var(--sub); cursor: pointer; }
+    .ed-seg button.on { background: var(--ink); color: var(--bg); }
+    .ed-random { border: 0; border-radius: 999px; background: var(--accent); color: #fff; font: 900 12.5px var(--sans); padding: 7px 14px; cursor: pointer; }
+    .ed-chip { border: 1.5px solid var(--border); background: var(--card); color: var(--ink); border-radius: 999px; padding: 6px 12px; font: 800 12.5px var(--sans); cursor: pointer; white-space: nowrap; }
+    .ed-chip.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+    .ed-chip.danger { color: #B23A20; }
+    .ed-selbar span { font-size: 12px; font-weight: 800; color: var(--sub); }
+    .ed-emoji { flex: none; width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border); background: var(--card); font-size: 21px; cursor: pointer; }
+    .ed-photo { flex: none; width: 54px; height: 54px; border-radius: 10px; border: 2.5px solid transparent; padding: 0; overflow: hidden; cursor: pointer; background: var(--card2, #F1EDE4); }
+    .ed-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ed-photo.on { border-color: var(--accent); }
+    .ed-photo.add { font-size: 22px; color: var(--sub); border: 1.5px dashed var(--border); }
+    .ed-input { flex: 1; min-width: 150px; padding: 7px 10px !important; font-size: 13px !important; }
+    .ed-note { margin: 0; font-size: 12.5px; color: var(--sub); }
+    #edLineColors #transitCustomColorsRow { margin: 0 !important; padding: 8px 4px 0 !important; max-height: 120px; overflow: auto; }
+
     /* 倒數卡片配色 */
     .cd-swatch-panel { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px 12px; margin-top: 14px; }
     .cd-swatch-label { font-size: 12.5px; font-weight: 800; color: var(--sub); }
@@ -2730,8 +2782,12 @@
   </div>
 
   <!-- Modal 3: 分享旅程 (Preview-First + Compact Single-Row Selectors + Collapsible Tool Drawers) -->
-  <div class="modal-backdrop" id="shareModal">
+  <div class="modal-backdrop ed-mode" id="shareModal">
     <div class="modal-sheet" style="max-width: 500px; padding: 14px;">
+      <div class="ed-top">
+        <button type="button" class="ed-x" onclick="closeShareModal()" aria-label="關閉">✕</button>
+        <button type="button" class="ed-save" onclick="shareOrSaveStoryImage()">儲存／分享</button>
+      </div>
       <div class="modal-header" style="margin-bottom:8px;">
         <div class="modal-title">分享旅程</div>
         <button class="pill-btn" onclick="closeShareModal()">✕</button>
@@ -2901,9 +2957,18 @@
         </div>
       </div>
 
-      <button class="pill-btn primary" style="width:100%; justify-content:center; padding:12px; font-size:14.5px;" onclick="shareOrSaveStoryImage()">
+      <button class="pill-btn primary ed-old" style="width:100%; justify-content:center; padding:12px; font-size:14.5px;" onclick="shareOrSaveStoryImage()">
         分享 / 儲存至相簿
       </button>
+      <div class="ed-dock">
+        <div class="ed-panel" id="edPanel"></div>
+        <div class="ed-tabs">
+          <button type="button" class="ed-tab" data-t="tpl" onclick="edSetTab('tpl')"><i><svg viewBox="0 0 20 20"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg></i>版型</button>
+          <button type="button" class="ed-tab" data-t="color" onclick="edSetTab('color')"><i><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="6.5"/></svg></i>配色</button>
+          <button type="button" class="ed-tab" data-t="content" onclick="edSetTab('content')"><i><b>Aa</b></i>內容</button>
+          <button type="button" class="ed-tab" data-t="sticker" onclick="edSetTab('sticker')"><i><svg viewBox="0 0 20 20"><path d="M10 2.5l1.9 5.6 5.6 1.9-5.6 1.9L10 17.5l-1.9-5.6L2.5 10l5.6-1.9z"/></svg></i>貼圖</button>
+        </div>
+      </div>
     </div>
   </div>
 <!-- Modal 5: Cloud Auth, Invite Code & Dual-Track Sync -->
@@ -5367,7 +5432,11 @@
         if (running) { again = true; return running; }
         running = (async () => {
           try { do { again = false; await orig.apply(this, args); } while (again); }
-          finally { running = null; }
+          finally {
+            running = null;
+            // 點到圖上的貼圖時，自動切到「貼圖」分頁，顯示最前／最後／刪除
+            if (typeof edRender === "function" && activeStickerId !== edLastSticker) { if (activeStickerId) edTab = "sticker"; edRender(); }
+          }
         })();
         return running;
       };
@@ -5602,6 +5671,91 @@
       renderRecentStoryEmojis();
       onShareTemplateChange();
       openModalBackdrop("shareModal");
+      edTab = "tpl"; edRender();
+    }
+
+    // ===== 限動編輯（新版版面）：上方大預覽、右上角儲存，下方 4 個分頁 =====
+    let edTab = "tpl", edColorPart = "outer", edLastSticker = null;
+    const ED_TEMPLATES = [
+      ["transit", "路線圖", '<svg viewBox="0 0 40 56"><path d="M10 12v14q0 4 4 6l12 8" fill="none" stroke="#E3002C" stroke-width="4" stroke-linecap="round"/><path d="M26 40V24" stroke="#F8B61C" stroke-width="4" stroke-linecap="round"/></svg>'],
+      ["polaroid", "拍立得", '<svg viewBox="0 0 40 56"><rect x="8" y="10" width="24" height="30" rx="2" fill="#fff"/><rect x="11" y="13" width="18" height="18" fill="#B8C4CF"/></svg>'],
+      ["flight", "登機證", '<svg viewBox="0 0 40 56"><circle cx="20" cy="22" r="10" fill="#2B5B84"/><path d="M12 22q8-8 16 0" fill="none" stroke="#F59E0B" stroke-width="2" stroke-dasharray="3 2"/></svg>'],
+      ["ferry", "船票", '<svg viewBox="0 0 40 56"><path d="M8 26q4-4 8 0t8 0 8 0" fill="none" stroke="#2B7A9B" stroke-width="3" stroke-linecap="round"/><path d="M8 33q4-4 8 0t8 0 8 0" fill="none" stroke="#2B7A9B" stroke-width="3" stroke-linecap="round"/></svg>'],
+      ["roadtrip", "公路", '<svg viewBox="0 0 40 56"><path d="M14 44L19 10M26 44L21 10" stroke="#6E6A63" stroke-width="2"/><path d="M20 40v-4M20 30v-4M20 20v-4" stroke="#F6F1E6" stroke-width="2"/></svg>'],
+    ];
+    const ED_TEXTURES = [["dots", "點點"], ["grid", "方格"], ["cross", "十字"], ["plain", "素面"]];
+    function edTexCss(t) {
+      return { dots: "radial-gradient(#9A958C 1px, transparent 1.2px) 0 0/6px 6px", grid: "linear-gradient(#C9C3B6 1px, transparent 1px) 0 0/7px 7px, linear-gradient(90deg, #C9C3B6 1px, transparent 1px) 0 0/7px 7px",
+        cross: "radial-gradient(circle, #9A958C 1.1px, transparent 1.3px) 0 0/8px 8px", plain: "none" }[t];
+    }
+    function edSetTab(t) { edTab = t; edRender(); }
+    function edRender() {
+      const panel = document.getElementById("edPanel");
+      if (!panel || !currentShareItem) return;
+      document.querySelectorAll(".ed-tab").forEach(b => b.classList.toggle("on", b.dataset.t === edTab));
+      const tpl = document.getElementById("shareTemplateSelect").value;
+      const outer = OUTER_SWATCHES.find(s => s.id === appState.outerSwatchId) || OUTER_SWATCHES[0];
+      const inner = INNER_SWATCHES.find(s => s.id === appState.innerSwatchId) || INNER_SWATCHES[0];
+      const mood = document.getElementById("shareShowMoodCheck").checked;
+      const chip = (on, label, act) => `<button type="button" class="ed-chip${on ? " on" : ""}" onclick="${act}">${on ? "✓ " : ""}${label}</button>`;
+      let h = "";
+      if (edTab === "tpl") {
+        h = `<div class="ed-row">` + ED_TEMPLATES.map(([v, n, svg]) => `<button type="button" class="ed-tpl${tpl === v ? " on" : ""}" onclick="edSetTpl('${v}')"><span class="ed-tpl-card" style="background:${swatchCss(outer)}"><span style="background:${swatchCss(inner)}">${svg}</span><i style="background:${swatchCss(inner)}"></i></span><small>${n}</small></button>`).join("") + `</div>`;
+      } else if (edTab === "color") {
+        const seg = [["outer", "背景"], ["inner", "紙卡"], ["tex", "紙紋"]].map(([k, n]) => `<button type="button" class="${edColorPart === k ? "on" : ""}" onclick="edColorPart='${k}';edRender()">${n}</button>`).join("");
+        h = `<div class="ed-colorbar"><div class="ed-seg">${seg}</div><button type="button" class="ed-random" onclick="randomStoryStyle();edRender()">隨機</button></div><div class="ed-row">`;
+        if (edColorPart === "tex") {
+          h += ED_TEXTURES.map(([t, n]) => `<button type="button" class="ed-sw${appState.paperTexture === t ? " on" : ""}" onclick="selectPaperTexture('${t}');edRender()"><span style="background:${edTexCss(t)}, ${inner.bg}"></span><small>${n}</small></button>`).join("");
+        } else {
+          const list = edColorPart === "outer" ? OUTER_SWATCHES : INNER_SWATCHES, cur = edColorPart === "outer" ? outer.id : inner.id;
+          h += list.map(sw => `<button type="button" class="ed-sw${sw.id === cur ? " on" : ""}" onclick="${edColorPart === "outer" ? "selectOuterSwatch" : "selectInnerSwatch"}('${sw.id}');edRender()"><span style="background:${swatchCss(sw)}"></span><small>${escapeHtml(sw.name)}</small></button>`).join("");
+          h += `<button type="button" class="ed-sw soon" onclick="openArchiveModalWithEmail()"><span>＋</span><small>主題包</small></button>`;
+        }
+        h += `</div>`;
+      } else if (edTab === "content") {
+        const moodChip = chip(mood, "心情印記", "edToggleMood()");
+        if (tpl === "transit") {
+          const ro = appState.routeCardOpts || {};
+          const size = document.getElementById("metroLabelModeSelect").value;
+          h = `<div class="ed-wrap">${chip(ro.names !== false, "站名", "edRouteOpt('names')")}${chip(ro.signs !== false, "站牌", "edRouteOpt('signs')")}${moodChip}
+            <span class="ed-seg">${[["24", "小"], ["30", "中"], ["36", "大"]].map(([v, n]) => `<button type="button" class="${size === v ? "on" : ""}" onclick="document.getElementById('metroLabelModeSelect').value='${v}';renderStoryCanvas();edRender()">${n}</button>`).join("")}</span>
+            <button type="button" class="ed-chip" onclick="edShowLineColors()">路線顏色</button><button type="button" class="ed-chip" onclick="resetTransitRouteTransform();edRender()">重設位置</button></div><div id="edLineColors"></div>`;
+        } else if (tpl === "polaroid") {
+          const photos = (currentShareItem.photos || []);
+          h = `<div class="ed-row">${photos.map((p, i) => `<button type="button" class="ed-photo${i === selectedSharePhotoIndex ? " on" : ""}" onclick="selectedSharePhotoIndex=${i};onShareTemplateChange();edRender()"><img src="${p.dataUrl}" alt=""></button>`).join("")}
+            <button type="button" class="ed-photo add" onclick="triggerQuickPhotoUpload(currentShareItem.id, true)">＋</button></div>
+            <div class="ed-wrap"><input class="form-input ed-input" placeholder="白邊短註…" value="${escapeHtml((photos[selectedSharePhotoIndex] || {}).caption || "")}" oninput="document.getElementById('sharePolaroidCaption').value=this.value;onPolaroidCaptionInput(this.value)">${moodChip}<button type="button" class="ed-chip" onclick="resetPolaroidPhoto()">重設照片</button></div>`;
+        } else if (tpl === "roadtrip") {
+          const st = roadtripEditorialState;
+          h = `<div class="ed-wrap"><span class="ed-seg">${[["sans", "黑體"], ["serif", "明體"]].map(([v, n]) => `<button type="button" class="${st.font === v ? "on" : ""}" onclick="setRoadtripEditorialOpt('font','${v}');edRender()">${n}</button>`).join("")}</span>
+            <span class="ed-seg">${[["#FFFFFF", "白字"], ["#141413", "黑字"]].map(([v, n]) => `<button type="button" class="${st.color === v ? "on" : ""}" onclick="setRoadtripEditorialOpt('color','${v}');edRender()">${n}</button>`).join("")}</span>
+            <span class="ed-seg">${[["bl", "座標靠左"], ["br", "座標靠右"]].map(([v, n]) => `<button type="button" class="${st.pos === v ? "on" : ""}" onclick="setRoadtripEditorialOpt('pos','${v}');edRender()">${n}</button>`).join("")}</span>
+            ${moodChip}<button type="button" class="ed-chip" onclick="resetRoadtripPhotoTransform()">重設照片</button></div>
+            <input class="form-input ed-input" placeholder="目的地經緯度（可不填）" value="${escapeHtml(document.getElementById('rtCoordTextInput').value)}" oninput="document.getElementById('rtCoordTextInput').value=this.value;renderStoryCanvas()">`;
+        } else {
+          h = `<div class="ed-wrap">${moodChip}</div><p class="ed-note">這個版型的內容會自動帶入行程資料，可以直接在預覽上拖曳調整。</p>`;
+        }
+      } else if (edTab === "sticker") {
+        let recents = [];
+        try { recents = JSON.parse(localStorage.getItem("TABIGRAM_RECENT_EMOJIS") || "[]"); } catch (e) {}
+        const emojis = [...new Set([...recents, "☕", "🚃", "🍜", "🌊", "🍂", "📸", "✨", "❤️"])].slice(0, 14);
+        const act = activeStickerId ? `<div class="ed-wrap ed-selbar"><span>已選取貼圖</span><button type="button" class="ed-chip" onclick="bringSelectedStickerToFront()">移到最前</button><button type="button" class="ed-chip" onclick="sendSelectedStickerToBack()">移到最後</button><button type="button" class="ed-chip danger" onclick="removeSelectedStorySticker();edRender()">刪除</button></div>` : "";
+        h = act + `<div class="ed-row">${emojis.map(e => `<button type="button" class="ed-emoji" onclick="addEmojiStickerToStory('${escapeHtml(e)}');edRender()">${escapeHtml(e)}</button>`).join("")}
+          <button type="button" class="ed-chip" onclick="promptCustomStoryEmojiSticker()">自訂</button></div>
+          <div class="ed-wrap"><button type="button" class="ed-chip" onclick="triggerAddStickerPolaroidUpload()">＋ 拍立得照片</button>${(currentShareItem.photos || []).length ? `<button type="button" class="ed-chip" onclick="addExistingPhotoAsPolaroidSticker(${selectedSharePhotoIndex})">＋ 用這個行程的照片</button>` : ""}</div>`;
+      }
+      panel.innerHTML = h;
+      edLastSticker = activeStickerId;
+    }
+    function edSetTpl(v) { document.getElementById("shareTemplateSelect").value = v; onShareTemplateChange(); edRender(); }
+    function edToggleMood() { const c = document.getElementById("shareShowMoodCheck"); c.checked = !c.checked; renderStoryCanvas(); edRender(); }
+    function edRouteOpt(k) { const ro = appState.routeCardOpts || {}; setRouteCardOpt(k, ro[k] === false); const el = document.getElementById(k === "names" ? "routeShowNames" : "routeShowSigns"); if (el) el.checked = (appState.routeCardOpts || {})[k] !== false; edRender(); }
+    function edShowLineColors() {
+      const box = document.getElementById("edLineColors"), src = document.getElementById("transitCustomColorsRow");
+      if (!box || !src) return;
+      renderTransitCustomColorPickers();
+      box.appendChild(src);
+      src.style.display = "block";
     }
 
     function closeShareModal() {
@@ -12398,6 +12552,7 @@ function initSupabaseClient() {
       items: [
         ["點選車站，轉乘自動排好", "新增交通時按「點選車站」：點上車站、點下車站，TabigrAm 會給你幾種走法（轉乘最少、站數最少、不用出站），點一下就填好。台灣（含高鐵、台鐵）、東京、大阪京都、首爾、舊金山、紐約。"],
         ["路線圖分享卡重畫", "台北捷運、東京地鐵、山手線照官方路線圖的線形畫，轉角改成圓弧；站名、站牌可以自己選要不要顯示。也新增成田、關西機場的特急。"],
+        ["分享編輯頁改版", "預覽放大到整個畫面，儲存在右上角；下面只有版型、配色、內容、貼圖 4 個按鈕，點了直接選。"],
         ["新配色：螢光、金屬", "分享卡多了螢光桃紅、電光藍、香檳金、鏡面銀、玫瑰金、幻彩鐳射等配色，還有「隨機配色」一鍵換搭配。"],
         ["點選機場、轉機", "航班不用記機場代號，點城市就好；有轉機也可以加上，登機證會畫出轉機路線。"],
         ["備份提醒", "沒登入時，行程只存在這台裝置。App 會提醒你登入或備份；選單的「備份到這台裝置」也會顯示上次備份是幾天前。"],

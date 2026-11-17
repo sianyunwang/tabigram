@@ -1943,7 +1943,9 @@
     .rp-st.xf .dot { width: 18px; height: 18px; border-color: #191919; }
     .rp-st.from .dot { background: var(--ink); border-color: var(--ink); transform: scale(1.3); }
     .rp-st .rsign { --s: 28px; margin-top: 6px; }
-    .rp-st .nm { writing-mode: vertical-rl; text-orientation: upright; font-size: 12.5px; font-weight: 700; letter-spacing: .02em; margin-top: 6px; min-height: 64px; }
+    .rp-st .nm { writing-mode: vertical-rl; text-orientation: upright; text-align: start; font-size: 12.5px; font-weight: 700; letter-spacing: .02em; line-height: 1.15; margin-top: 6px; min-height: 64px; }
+    .rp-st .nm .tcy { text-combine-upright: all; -webkit-text-combine: horizontal; font-family: 'Barlow Semi Condensed', var(--sans); letter-spacing: 0; }
+    .rp-st .nm .side { text-orientation: mixed; }
     .rp-st.from .nm { font-weight: 900; }
     .rp-st .xmini { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
     .rp-st .xmini i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); display: block; }
@@ -1962,6 +1964,20 @@
     .rp-xt.walk { background: #FBE3DD; color: #B23A20; }
     .rp-end { width: 100%; border: 0; border-radius: 999px; background: var(--ink); color: var(--bg); font: 900 15px var(--sans); padding: 12px; cursor: pointer; }
     #feedbackModal { z-index: 2300; }   /* 從編輯視窗裡打開回報時要蓋在上面 */
+    /* 旅伴邀請碼框：淺色、深色模式都看得清楚 */
+    .code-badge { background: #FAF8F4; color: var(--ink); }
+    html[data-mode="dark"] body .code-badge { background: var(--card2) !important; border-color: var(--border) !important; }
+    html[data-mode="dark"] body .code-badge strong, html[data-mode="dark"] body .code-badge [id$="CompanionCountText"] { color: var(--ink) !important; }
+    html[data-mode="dark"] body .code-badge [id$="CompanionListText"], html[data-mode="dark"] body .code-badge span { color: var(--sub) !important; }
+    .rp-inline { grid-column: 1 / -1; margin: 2px -4px 6px; padding: 4px 4px 0; border-radius: 14px; background: var(--card2, #F4F1EA); }
+    .rp-inline .rp-strip { margin: 0; padding: 2px 8px 8px; }
+    .rp-inline .rp-strip-h { margin: 8px 8px 2px; }
+    .rp-route + .rp-route { margin-top: 8px; }
+    .rp-route.alt { border-color: var(--border); background: var(--card); }
+    .rp-route.alt .rt span { color: var(--sub); }
+    .route-toggles { display: flex; gap: 6px; }
+    .route-toggles label { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px; border: 1px solid var(--border); border-radius: 10px; padding: 5px 6px; font-size: 12px; font-weight: 800; cursor: pointer; background: var(--card); }
+    .route-toggles input { width: 15px; height: 15px; margin: 0; }
     .rp-report { display: block; width: 100%; margin-top: 6px; border: 0; background: none; color: var(--sub); font: 700 12.5px var(--sans); text-decoration: underline; cursor: pointer; padding: 8px; }
     .fb-context { background: var(--card2, #F4F1EA); border-radius: 12px; padding: 9px 11px; margin-bottom: 8px; font-size: 12px; color: var(--sub); white-space: pre-wrap; line-height: 1.55; max-height: 140px; overflow: auto; }
     .fb-context b { display: block; color: var(--ink); font-size: 12px; margin-bottom: 2px; }
@@ -1975,6 +1991,11 @@
     .ap-box span { font-size: 11.5px; color: var(--sub); font-weight: 700; }
     .ap-box.empty b { color: var(--sub); opacity: .5; }
     .ap-arrow { font-size: 18px; color: var(--sub); }
+    .ap-via { display: flex; flex-wrap: wrap; gap: 6px; margin: -2px 0 8px; }
+    .ap-via-chip { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--border); background: var(--card); border-radius: 999px; padding: 4px 6px 4px 12px; font-size: 12px; font-weight: 700; color: var(--sub); }
+    .ap-via-chip b { font: 800 14px var(--mono); color: var(--ink); }
+    .ap-via-chip button { border: 0; background: var(--card2, #F4F1EA); color: var(--sub); border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 12px; }
+    .ap-via-add { border: 1px dashed var(--border); background: none; color: var(--sub); border-radius: 999px; padding: 6px 12px; font: 800 12.5px var(--sans); cursor: pointer; }
     .ap-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
     .ap-tabs button { border: 1.5px solid var(--border); background: var(--card); color: var(--sub); border-radius: 14px; padding: 8px; font-family: var(--sans); font-weight: 800; font-size: 12px; cursor: pointer; text-align: left; }
     .ap-tabs button b { display: block; font: 800 18px var(--mono); color: var(--ink); }
@@ -2302,13 +2323,13 @@
         <h3>點車站、點機場，不用打字</h3>
         <p>新增「交通」行程時，按黑色的「點選車站」。</p>
         <ol class="guide-steps">
-          <li><div><b>選上車站</b><small>App 會從前一個行程找附近的車站；旅行當天也可以按「用我的位置」。「原宿」和「明治神宮前」這種同一個地方的車站會合成一張卡。</small></div></li>
-          <li><div><b>點一下排好的走法</b><small>知道下一個行程要去哪，就會排好轉乘最少的走法，點一下所有欄位都填好。</small></div></li>
-          <li><div><b>想自己選也可以</b><small>點路線標誌，在路線圖上點下車站。到站後 App 會問要不要再轉乘。</small></div></li>
+          <li><div><b>點上車站</b><small>App 會從前一個行程找附近的車站；旅行當天也可以按「用我的位置」。都不是的話按「照路線找」，點路線，路線圖會直接出現在下面。</small></div></li>
+          <li><div><b>點下車站</b><small>App 會從下一個行程猜你要去哪；不是的話一樣照路線找。</small></div></li>
+          <li><div><b>選一種走法</b><small>TabigrAm 會給你轉乘最少、站數最少、不用出站幾種走法，點一下所有欄位都填好。</small></div></li>
         </ol>
         <p>換車方式會自動標示：<b>同站轉乘</b>（不用出閘門）、<b>出閘門再進站</b>（不同公司）、<b>站外步行</b>（要走到另一個站）。後兩種會自動勾「需站外轉乘／跨系統」。</p>
         <p>目前有：台灣（台北、新北、桃園、台中、高雄捷運、高鐵、台鐵）、東京（含近郊私鐵、新幹線）、大阪・京都、首爾、舊金山、紐約。路線資料第一次使用時才下載，之後沒網路也能用。</p>
-        <p><b>航班</b>：按出發、抵達的大方塊，點城市就好，不用記機場代號。</p>
+        <p><b>航班</b>：按出發、抵達的大方塊，點城市就好，不用記機場代號。有轉機就按「＋ 有轉機」，最多兩次，航班編號可以寫成「CX451 / CX255」。</p>
         <p class="guide-warn"><b>幫我們把資料變準：</b>走過發現換車方式、步行時間或站名不對，在「選車站」最下面按「告訴我們」，會自動附上你看到的路線，寫一句哪裡不對就好。</p>
         <p style="font-size:12px;">車站資料 © OpenStreetMap contributors；台鐵：臺鐵開放資料。步行時間、轉乘建議是估算，實際請以現場指標為準。</p>
       </section>
@@ -2525,6 +2546,8 @@
             <span class="ap-arrow" aria-hidden="true">→</span>
             <button type="button" class="ap-box empty" id="apArrBox" onclick="openAirportPicker('arr')"></button>
           </div>
+          <div class="ap-via" id="apViaRow"></div>
+          <input type="hidden" id="fViaIata" value="" />
           <div class="form-row-2" style="display:none;">
             <div>
               <label class="form-label">出發機場 IATA</label>
@@ -2732,6 +2755,7 @@
             <option value="flight">✈️ 航跡登機證</option>
             <option value="roadtrip">🚗 公路旅行攝影誌</option>
           </select>
+          <button type="button" class="mini-btn" onclick="randomStoryStyle()" title="隨機換一組背景、紙卡、紙紋" style="white-space:nowrap; padding:7px 10px;">隨機配色</button>
           <label style="display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:800; white-space:nowrap; cursor:pointer; background:#FAF8F4; padding:7px 10px; border-radius:10px; border:1px solid var(--border);">
             <input type="checkbox" id="shareShowMoodCheck" checked onchange="renderStoryCanvas()" style="width:15px; height:15px; margin:0;" />
             心情印記
@@ -2786,17 +2810,16 @@
             </div>
             <div class="form-row-2" style="margin-bottom:8px;">
               <div>
-                <label class="form-label" style="font-size:11px; margin-bottom:2px;">站外轉乘間距</label>
-                <select class="form-select" id="metroWalkGapSelect" onchange="renderStoryCanvas()" style="padding:5px 8px; font-size:12px; font-weight:700;">
-                  <option value="45">緊湊</option>
-                  <option value="64" selected>標準</option>
-                  <option value="85">寬鬆</option>
-                </select>
+                <label class="form-label" style="font-size:11px; margin-bottom:2px;">顯示</label>
+                <div class="route-toggles">
+                  <label><input type="checkbox" id="routeShowNames" checked onchange="setRouteCardOpt('names', this.checked)" />站名</label>
+                  <label><input type="checkbox" id="routeShowSigns" checked onchange="setRouteCardOpt('signs', this.checked)" />站牌</label>
+                </div>
+                <select id="metroWalkGapSelect" style="display:none;"><option value="64" selected>64</option></select>
               </div>
               <div>
-                <label class="form-label" style="font-size:11px; margin-bottom:2px;">站名標示</label>
+                <label class="form-label" style="font-size:11px; margin-bottom:2px;">字的大小</label>
                 <select class="form-select" id="metroLabelModeSelect" onchange="renderStoryCanvas()" style="padding:5px 8px; font-size:12px; font-weight:700;">
-                  <option value="none">隱藏所有站名</option>
                   <option value="24">小字</option>
                   <option value="30" selected>標準</option>
                   <option value="36">大字</option>
@@ -2927,7 +2950,7 @@
         <!-- 目前旅程的雲端協作卡片 -->
         <div class="form-card">
           <div style="font-size:13.5px; font-weight:900; margin-bottom:6px;" id="cloudActiveTripTitle">目前專案</div>
-          <div id="cloudShareCodeBadge" style="display:none; background:#FAF8F4; border:1px dashed var(--border); padding:8px 12px; border-radius:10px; margin-bottom:10px; text-align:center;">
+          <div id="cloudShareCodeBadge" class="code-badge" style="display:none; border:1px dashed var(--border); padding:8px 12px; border-radius:10px; margin-bottom:10px; text-align:center;">
             <span style="font-size:12px; color:var(--sub);">旅伴邀請碼：</span>
             <strong id="cloudShareCodeText" style="font-family:var(--mono); font-size:18px; letter-spacing:3px; color:var(--ink);"></strong>
             <div id="cloudCompanionStatsBox" style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border); font-size:12px; color:var(--ink); text-align:left;">
@@ -3047,7 +3070,7 @@
       <!-- 雲端發佈與邀請碼卡片 (從原 cloudModal 整合) -->
       <div class="form-card">
         <div style="font-size:13.5px; font-weight:900; margin-bottom:6px;" id="adminActiveTripTitle">目前專案</div>
-        <div id="adminShareCodeBadge" style="display:none; background:#FAF8F4; border:1px dashed var(--border); padding:8px 12px; border-radius:10px; margin-bottom:10px; text-align:center;">
+        <div id="adminShareCodeBadge" class="code-badge" style="display:none; border:1px dashed var(--border); padding:8px 12px; border-radius:10px; margin-bottom:10px; text-align:center;">
           <span style="font-size:12px; color:var(--sub);">旅伴邀請碼：</span>
           <strong id="adminShareCodeText" style="font-family:var(--mono); font-size:18px; letter-spacing:3px; color:var(--ink);"></strong>
           <div id="adminCompanionStatsBox" style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border); font-size:12px; color:var(--ink); text-align:left;">
@@ -3441,20 +3464,56 @@
 
     const DEFAULT_MOOD_EMOJIS = ["❤️", "✨", "☕", "🥹", "🌊", "🍜", "🛍️", "🚃", "📸", "🌙"];
 
+    // grad：漸層（金屬、鐳射）；bg 是代表色，畫字的描邊、色票按鈕會用到
     const OUTER_SWATCHES = [
       { id: "navy", name: "深海夜藍", bg: "#111A27", text: "#F6F3EC" },
       { id: "oat", name: "暖米原紙", bg: "#EFECE4", text: "#191919" },
       { id: "kraft", name: "牛皮獵裝", bg: "#CBB592", text: "#191919" },
       { id: "moss", name: "京都苔綠", bg: "#233127", text: "#F6F3EC" },
       { id: "charcoal", name: "曜石純黑", bg: "#161616", text: "#F6F3EC" },
-      { id: "twilight", name: "暮光淡紫", bg: "#DCD3EA", text: "#241934" }
+      { id: "twilight", name: "暮光淡紫", bg: "#DCD3EA", text: "#241934" },
+      // 螢光
+      { id: "neonPink", name: "螢光桃紅", group: "螢光", bg: "#FF2E93", text: "#191919" },
+      { id: "neonLime", name: "螢光黃綠", group: "螢光", bg: "#D4FF2A", text: "#191919" },
+      { id: "neonOrange", name: "螢光橘", group: "螢光", bg: "#FF5A1F", text: "#191919" },
+      { id: "electric", name: "電光藍", group: "螢光", bg: "#2236FF", text: "#FFFFFF" },
+      // 金屬
+      { id: "gold", name: "香檳金", group: "金屬", bg: "#C9A45C", text: "#191919", grad: ["#7A5A22", "#E9D29A", "#B48A3E", "#F7E7B4", "#8C6A2E"] },
+      { id: "silver", name: "鏡面銀", group: "金屬", bg: "#C7CCD3", text: "#191919", grad: ["#7D838B", "#F2F4F7", "#AEB4BC", "#FFFFFF", "#8E949C"] },
+      { id: "rosegold", name: "玫瑰金", group: "金屬", bg: "#D9A090", text: "#191919", grad: ["#A0605A", "#F3C9B8", "#C98C80", "#FBE3D6", "#B76E6E"] },
+      { id: "gunmetal", name: "鈦金屬黑", group: "金屬", bg: "#2A2E34", text: "#F6F3EC", grad: ["#15181C", "#5C636D", "#23272D", "#7A828C", "#1B1E23"] },
+      { id: "holo", name: "幻彩鐳射", group: "金屬", bg: "#E2D6F5", text: "#191919", grad: ["#9EEBFF", "#E2C6FF", "#FFC6E3", "#FFF1B8", "#B8FFE0", "#C9D4FF"] }
     ];
 
     const INNER_SWATCHES = [
       { id: "white", name: "純白票卡", bg: "#FFFFFF", text: "#191919" },
       { id: "cream", name: "昭和奶油", bg: "#F7F3E8", text: "#191919" },
-      { id: "ice", name: "極地冰灰", bg: "#F1F5F9", text: "#0F172A" }
+      { id: "ice", name: "極地冰灰", bg: "#F1F5F9", text: "#0F172A" },
+      { id: "neonYellow", name: "螢光黃卡", group: "螢光", bg: "#F2FF5C", text: "#191919" },
+      { id: "neonPinkCard", name: "螢光粉卡", group: "螢光", bg: "#FFB3DA", text: "#191919" },
+      { id: "goldFoil", name: "金箔卡", group: "金屬", bg: "#F5E7C0", text: "#191919", grad: ["#EBD49A", "#FFF8E3", "#E2C783", "#FBF1D2"] },
+      { id: "silverFoil", name: "銀箔卡", group: "金屬", bg: "#EEF0F3", text: "#191919", grad: ["#DCE0E6", "#FFFFFF", "#CDD3DA", "#F7F8FA"] },
+      { id: "holoCard", name: "鐳射卡", group: "金屬", bg: "#EFE6FB", text: "#191919", grad: ["#D9F6FF", "#F1E2FF", "#FFE0EF", "#FFF7D6", "#DFFFF0"] }
     ];
+    const SWATCH_BY_BG = {};
+    [...OUTER_SWATCHES, ...INNER_SWATCHES].forEach(sw => { if (sw.grad) SWATCH_BY_BG[sw.bg] = sw; });
+    // 金屬感：斜向多段漸層，再加一道柔和的反光
+    function swatchPaint(ctx, sw, x, y, w, h) {
+      if (!sw || !sw.grad) return sw ? sw.bg : "#fff";
+      const g = ctx.createLinearGradient(x, y, x + w, y + h);
+      sw.grad.forEach((c, i) => g.addColorStop(i / (sw.grad.length - 1), c));
+      return g;
+    }
+    function fillSwatchBackground(ctx, sw, W, H) {
+      ctx.fillStyle = swatchPaint(ctx, sw, 0, 0, W, H);
+      ctx.fillRect(0, 0, W, H);
+      if (sw && sw.grad) {
+        const sheen = ctx.createLinearGradient(0, H * 0.15, W, H * 0.55);
+        sheen.addColorStop(0, "rgba(255,255,255,0)"); sheen.addColorStop(0.5, "rgba(255,255,255,0.28)"); sheen.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = sheen; ctx.fillRect(0, 0, W, H);
+      }
+    }
+    function swatchCss(sw) { return sw.grad ? `linear-gradient(135deg, ${sw.grad.join(", ")})` : sw.bg; }
 
     /*************************************************************************
      * 2. STATE & PERSISTENCE
@@ -3740,6 +3799,7 @@
           if (it.currency != null) it.currency = stripMarkup(it.currency, 8);
           if (it.mood != null) it.mood = stripMarkup(it.mood, 16);
           if (it.costLabel != null) it.costLabel = stripMarkup(it.costLabel, 30);
+          if (it.viaIata != null) it.viaIata = Array.isArray(it.viaIata) ? it.viaIata.map(x => String(x).toUpperCase()).filter(x => /^[A-Z]{3}$/.test(x)).slice(0, 2) : [];
           if (it.mapUrl != null) it.mapUrl = /^https:\/\//i.test(String(it.mapUrl)) ? String(it.mapUrl).slice(0, 500) : "";
           if (it.checkin != null) {
             const c = it.checkin;
@@ -4443,7 +4503,7 @@
         const trip = getActiveTrip();
         const dur = calculateTimezoneAwareDuration(item, trip);
         const durBadge = dur ? ` ⏱️ ${dur.h}H ${dur.m}M` : "";
-        return `${item.flightNo || "FLIGHT"} (${(item.depIata || "DEP").toUpperCase()} ➔ ${(item.arrIata || "ARR").toUpperCase()})${item.gateSeat ? " · " + item.gateSeat : ""}${durBadge}`;
+        return `${item.flightNo || "FLIGHT"} (${[(item.depIata || "DEP"), ...(item.viaIata || []), (item.arrIata || "ARR")].map(x => x.toUpperCase()).join(" ➔ ")})${(item.viaIata || []).length ? `・轉機 ${item.viaIata.length} 次` : ""}${item.gateSeat ? " · " + item.gateSeat : ""}${durBadge}`;
       }
       if (item.type === "roadtrip") {
         const stopsStr = item.roadStops ? ` ➔ ${item.roadStops} ➔ ` : " ➔ ";
@@ -4781,6 +4841,8 @@
       div.dataset.color = leg.customColor || "";
       div.dataset.fromNo = leg.fromNo || "";
       div.dataset.toNo = leg.toNo || "";
+      div.dataset.railRegion = leg.railRegion || "";
+      div.dataset.lineKey = leg.lineKey || "";
       div.innerHTML = `
         <div class="leg-grid">
           <input type="text" class="form-input leg-from" placeholder="上車站 / 碼頭" value="${escapeHtml(leg.from || "")}" />
@@ -4839,6 +4901,7 @@
         document.getElementById("fSubtitle").value = item.subtitle || "";
         document.getElementById("fDepIata").value = item.depIata || "";
         document.getElementById("fArrIata").value = item.arrIata || "";
+        document.getElementById("fViaIata").value = (item.viaIata || []).join(",");
         renderAirportEntry();
         document.getElementById("fFlightNo").value = item.flightNo || "";
         document.getElementById("fGateSeat").value = item.gateSeat || "";
@@ -4889,6 +4952,7 @@
         document.getElementById("fSubtitle").value = "";
         document.getElementById("fDepIata").value = "";
         document.getElementById("fArrIata").value = "";
+        document.getElementById("fViaIata").value = "";
         renderAirportEntry();
         document.getElementById("fFlightNo").value = "";
         document.getElementById("fGateSeat").value = "";
@@ -5039,6 +5103,7 @@
       const subtitle = document.getElementById("fSubtitle").value.trim();
       const depIata = document.getElementById("fDepIata").value.trim().toUpperCase();
       const arrIata = document.getElementById("fArrIata").value.trim().toUpperCase();
+      const viaIata = type === "flight" ? document.getElementById("fViaIata").value.split(",").map(x => x.trim().toUpperCase()).filter(x => /^[A-Z]{3}$/.test(x)).slice(0, 2) : [];
       const flightNo = document.getElementById("fFlightNo").value.trim();
       const gateSeat = document.getElementById("fGateSeat").value.trim();
       const roadFrom = document.getElementById("fRoadFrom").value.trim();
@@ -5078,6 +5143,8 @@
           if (row.dataset.color) extra.customColor = row.dataset.color;
           if (row.dataset.fromNo) extra.fromNo = row.dataset.fromNo;
           if (row.dataset.toNo) extra.toNo = row.dataset.toNo;
+          if (row.dataset.railRegion) extra.railRegion = row.dataset.railRegion;
+          if (row.dataset.lineKey) extra.lineKey = row.dataset.lineKey;
           if (from || to) transitLegs.push({ from, to, line, trainNo, isOutTransfer, ...extra });
         });
       }
@@ -5100,6 +5167,7 @@
         subtitle,
         depIata,
         arrIata,
+        viaIata,
         flightNo,
         gateSeat,
         roadFrom,
@@ -5275,13 +5343,13 @@
     function initSwatchDropdowns() {
       const outerSel = document.getElementById("outerPaperSelect");
       if (outerSel) {
-        outerSel.innerHTML = OUTER_SWATCHES.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+        outerSel.innerHTML = swatchOptions(OUTER_SWATCHES);
         outerSel.value = appState.outerSwatchId;
       }
 
       const innerSel = document.getElementById("innerCardSelect");
       if (innerSel) {
-        innerSel.innerHTML = INNER_SWATCHES.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+        innerSel.innerHTML = swatchOptions(INNER_SWATCHES);
         innerSel.value = appState.innerSwatchId;
       }
 
@@ -5291,6 +5359,32 @@
       }
     }
 
+    // 限動預覽：一次只畫一張，快速連點時畫完再補畫最後一次，避免兩次繪製疊在一起
+    (function () {
+      const orig = renderStoryCanvas;
+      let running = null, again = false;
+      renderStoryCanvas = function (...args) {
+        if (running) { again = true; return running; }
+        running = (async () => {
+          try { do { again = false; await orig.apply(this, args); } while (again); }
+          finally { running = null; }
+        })();
+        return running;
+      };
+    })();
+    function swatchOptions(list) {
+      const groups = [["經典", list.filter(s => !s.group)], ...[...new Set(list.filter(s => s.group).map(s => s.group))].map(g => [g, list.filter(s => s.group === g)])];
+      return groups.map(([g, ls]) => `<optgroup label="${g}">${ls.map(s => `<option value="${s.id}">${s.name}</option>`).join("")}</optgroup>`).join("");
+    }
+    // 隨機：背景、紙卡、紙紋一起換，盡量避開跟現在一樣的組合
+    function randomStoryStyle() {
+      const pick = (arr, cur) => { const c = arr.filter(x => x !== cur); return c[Math.floor(Math.random() * c.length)] || cur; };
+      appState.outerSwatchId = pick(OUTER_SWATCHES.map(s => s.id), appState.outerSwatchId);
+      appState.innerSwatchId = pick(INNER_SWATCHES.map(s => s.id), appState.innerSwatchId);
+      appState.paperTexture = pick(["dots", "grid", "cross", "plain"], appState.paperTexture);
+      try { localStorage.setItem("TABIGRAM_OUTER_SWATCH", appState.outerSwatchId); localStorage.setItem("TABIGRAM_INNER_SWATCH", appState.innerSwatchId); } catch (e) {}
+      saveAppState(); initSwatchDropdowns(); renderStoryCanvas();
+    }
     function selectOuterSwatch(id) {
       appState.outerSwatchId = id;
       localStorage.setItem("TABIGRAM_OUTER_SWATCH", id);
@@ -5319,8 +5413,14 @@
       });
     }
 
+    let storyBgPattern = null;
+    // 在已經縮放、位移過的畫布上，畫出跟整張背景對齊的顏色（漸層背景的票根缺口才不會穿幫）
+    function outerPaintAligned(ctx, sw) {
+      if (!sw.grad || !storyBgPattern) return sw.bg;
+      try { storyBgPattern.setTransform(ctx.getTransform().inverse()); return storyBgPattern; } catch (e) { return sw.bg; }
+    }
     function drawCardPaperTexture(ctx, x, y, w, h, radius, bgFill, textureMode) {
-      drawRoundedRect(ctx, x, y, w, h, radius, bgFill);
+      drawRoundedRect(ctx, x, y, w, h, radius, SWATCH_BY_BG[bgFill] ? swatchPaint(ctx, SWATCH_BY_BG[bgFill], x, y, w, h) : bgFill);
       if (!textureMode || textureMode === "plain") return;
 
       ctx.save();
@@ -5429,6 +5529,11 @@
       const day = getActiveDay();
       const item = day.items.find(i => i.id === itemId);
       if (!item) return;
+      ensureRailFont();
+      const ro = appState.routeCardOpts || {};
+      const rn = document.getElementById("routeShowNames"), rs = document.getElementById("routeShowSigns");
+      if (rn) rn.checked = ro.names !== false;
+      if (rs) rs.checked = ro.signs !== false;
       currentShareItem = item;
       selectedSharePhotoIndex = photoIdx || 0;
 
@@ -5920,8 +6025,349 @@
       return [];
     }
 
+    // 路線圖卡：找出每一段經過的所有車站（用車站資料包），畫圖時沿著真實位置走
+    let transitRailGeo = null;
+    function simplifyRoutePts(pts, tol) {
+      if (pts.length <= 2) return pts.slice();
+      const a = pts[0], b = pts[pts.length - 1];
+      let idx = -1, md = 0;
+      for (let i = 1; i < pts.length - 1; i++) {
+        const p = pts[i], L = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+        const d = Math.abs((b.x - a.x) * (a.y - p.y) - (a.x - p.x) * (b.y - a.y)) / L;
+        if (d > md) { md = d; idx = i; }
+      }
+      if (md <= tol) return [a, b];
+      return [...simplifyRoutePts(pts.slice(0, idx + 1), tol).slice(0, -1), ...simplifyRoutePts(pts.slice(idx), tol)];
+    }
+    async function prepareTransitRailGeo(item) {
+      const legs = Array.isArray(item.transitLegs) ? item.transitLegs : [];
+      transitRailGeo = { itemId: item.id, legs: legs.map(() => null), meta: legs.map(() => null) };
+      if (!legs.length) return;
+      const guess = (() => { try { return railGuessRegion(); } catch (e) { return "taiwan"; } })();
+      const order = [...new Set([...legs.map(l => l.railRegion).filter(Boolean), guess, ...RAIL_REGIONS.map(r => r.id)])];
+      for (const reg of order) {
+        if (transitRailGeo.legs.every(Boolean)) break;
+        let d;
+        try { d = await loadRail(reg); } catch (e) { continue; }
+        legs.forEach((leg, i) => {
+          if (transitRailGeo.legs[i]) return;
+          const lineName = String(leg.line || "").replace(/^台鐵/, "");
+          const cands = d.lines.filter(L => (leg.lineKey && L.k === leg.lineKey) || L.n === leg.line || L.n === lineName || (lineName && (lineName.endsWith(L.n) || L.n.endsWith(lineName))));
+          for (const L of cands.length ? cands : d.lines) {
+            const i0 = L.st.findIndex(s => railNorm(s.n) === railNorm(leg.from) || railNorm(s.alt) === railNorm(leg.from));
+            const i1 = L.st.findIndex(s => railNorm(s.n) === railNorm(leg.to) || railNorm(s.alt) === railNorm(leg.to));
+            if (i0 < 0 || i1 < 0 || i0 === i1) continue;
+            let path;
+            if (L.loop) {
+              const n = L.st.length, fwd = (i1 - i0 + n) % n;
+              path = fwd <= n - fwd ? Array.from({ length: fwd + 1 }, (_, k) => L.st[(i0 + k) % n]) : Array.from({ length: n - fwd + 1 }, (_, k) => L.st[(i0 - k + n) % n]);
+            } else path = i0 < i1 ? L.st.slice(i0, i1 + 1) : L.st.slice(i1, i0 + 1).reverse();
+            if (path.some(s => s.lat == null)) continue;
+            transitRailGeo.legs[i] = path.map(s => ({ lat: s.lat, lng: s.lng, n: s.n, no: s.no }));
+            transitRailGeo.meta[i] = { L: { c: L.c, sg: L.sg, g: L.g, code: L.code, n: L.n }, region: reg };
+            break;
+          }
+        });
+      }
+    }
+
+    // ===== 路線圖卡（官方線形）=====
+    // 線形依各營運單位路線圖整理（見 logo-test/schematic.js）；沒有整理的線用「真實地理簡化成 8 個方向」
+    // 參數（使用者 2026-11-18 定案）：轉角 18、長度壓縮 0.50、線寬 13（以 1080 寬的卡片為基準 ×1.6）
+    const ROUTE_CARD = { R: 18, C: 0.5, W: 13 };
+    // 官方路線圖的線形（依各營運單位路線圖的走向整理，非地理比例）
+    // 每條線依站號順序寫：[站號, 從上一站過來的方向]
+    // 方向：N 北、S 南、E 東、W 西、NE、NW、SE、SW；「S>E」＝這一段先往南、在兩站中間轉彎往東
+    // 分支：第一格寫分岔站（不寫方向），後面接分支各站
+    const SCHEMATIC = {
+      // ---------------- 台北捷運 ----------------
+      taiwan: [
+        // R 淡水信義線：淡水往東南，關渡後右轉往東到北投，再往東南，石牌起筆直往南，中正紀念堂後往東
+        [["R28"], ["R27", "SE"], ["R26", "S"], ["R25", "S"], ["R24", "S>E"], ["R23", "E"], ["R22", "E"], ["R21", "SE"], ["R20", "SE"], ["R19", "SE>S"],
+         ["R18", "S"], ["R17", "S"], ["R16", "S"], ["R15", "S"], ["R14", "S"], ["R13", "S"], ["R12", "S"], ["R11", "S"], ["R10", "S"], ["R09", "S"], ["R08", "S"],
+         ["R07", "S>E"], ["R06", "E"], ["R05", "E"], ["R04", "E"], ["R03", "E"], ["R02", "E"], ["R01", "E"]],
+        [["R22"], ["R22A", "NE"]],                                    // 新北投支線
+        // BL 板南線：頂埔往北，兩次往東北錯位，江子翠後往東、龍山寺後往北進西門，西門後一路往東
+        [["BL01"], ["BL02", "N"], ["BL03", "N"], ["BL04", "N"], ["BL05", "N"], ["BL06", "NE>N"], ["BL07", "N"], ["BL08", "N"], ["BL09", "NE>N"],
+         ["BL10", "N>E"], ["BL11", "E>N"], ["BL12", "N>E"], ["BL13", "E"], ["BL14", "E"], ["BL15", "E"], ["BL16", "E"], ["BL17", "E"], ["BL18", "E"],
+         ["BL19", "E"], ["BL20", "E"], ["BL21", "E"], ["BL22", "E"], ["BL23", "NE>E"]],
+        // G 松山新店線：新店往北，兩次往西北錯位，中正紀念堂後往西、小南門後往北、北門後往東
+        [["G01"], ["G02", "N"], ["G03", "N"], ["G04", "N"], ["G05", "NW>N"], ["G06", "N"], ["G07", "N"], ["G08", "NW"], ["G09", "NW>N"], ["G10", "N"],
+         ["G11", "N>W"], ["G12", "W>N"], ["G13", "N"], ["G14", "N>E"], ["G15", "E"], ["G16", "E"], ["G17", "E"], ["G18", "E"], ["G19", "E"]],
+        [["G03"], ["G03A", "W"]],                                     // 小碧潭支線
+        // O 中和新蘆線：南勢角往北，兩次往東北錯位，行天宮後往西，大橋頭分岔
+        [["O01"], ["O02", "N"], ["O03", "NE>N"], ["O04", "N"], ["O05", "NE>N"], ["O06", "N"], ["O07", "N"], ["O08", "N"], ["O09", "N"], ["O10", "N>W"],
+         ["O11", "W"], ["O12", "W"], ["O13", "W>SW"], ["O14", "SW"], ["O15", "SW"], ["O16", "SW"], ["O17", "SW"], ["O18", "SW"], ["O19", "SW"], ["O20", "SW"], ["O21", "SW>W"]],
+        [["O12"], ["O50", "N>NW"], ["O51", "NW"], ["O52", "NW"], ["O53", "NW"], ["O54", "NW"]],   // 蘆洲支線
+        // BR 文湖線：動物園往西，萬芳醫院後往北，麟光後往西北，科技大樓起往北，大直後往東，內湖後往東南再往南
+        [["BR01"], ["BR02", "W"], ["BR03", "W"], ["BR04", "W>N"], ["BR05", "N"], ["BR06", "N"], ["BR07", "NW"], ["BR08", "NW>N"], ["BR09", "N"], ["BR10", "N"],
+         ["BR11", "N"], ["BR12", "N"], ["BR13", "N"], ["BR14", "N"], ["BR15", "N>E"], ["BR16", "E"], ["BR17", "E"], ["BR18", "E"], ["BR19", "E"],
+         ["BR20", "E>SE"], ["BR21", "SE>S"], ["BR22", "S"], ["BR23", "S"], ["BR24", "S"]],
+        // Y 環狀線：大坪林往西，往西北，再往西，中和後往西北到板橋，板橋後往北
+        [["Y07"], ["Y08", "W"], ["Y09", "W>NW"], ["Y10", "NW"], ["Y11", "NW>W"], ["Y12", "W"], ["Y13", "W"], ["Y14", "NW"], ["Y15", "NW"], ["Y16", "NW"],
+         ["Y17", "NW>N"], ["Y18", "N"], ["Y19", "N"], ["Y20", "N"]],
+      ],
+      // ---------------- 東京メトロ・都営・JR 山手線 ----------------
+      tokyo: [
+        // G 銀座線
+        [["G01"], ["G02", "NE"], ["G03", "NE"], ["G04", "NE"], ["G05", "E"], ["G06", "E"], ["G07", "SE"], ["G08", "E"], ["G09", "N"], ["G10", "N"], ["G11", "N"],
+         ["G12", "N"], ["G13", "N"], ["G14", "N"], ["G15", "N"], ["G16", "N"], ["G17", "E"], ["G18", "E"], ["G19", "E"]],
+        // M 丸ノ内線
+        [["M01"], ["M02", "E"], ["M03", "E"], ["M04", "E"], ["M05", "E"], ["M06", "E"], ["M07", "E"], ["M08", "E"], ["M09", "E"], ["M10", "E"], ["M11", "E"], ["M12", "E"],
+         ["M13", "SE"], ["M14", "E"], ["M15", "E"], ["M16", "NE"], ["M17", "N"], ["M18", "N"], ["M19", "N"], ["M20", "N"], ["M21", "N"], ["M22", "W"], ["M23", "NW"], ["M24", "W"], ["M25", "W"]],
+        // H 日比谷線
+        [["H01"], ["H02", "E"], ["H03", "E"], ["H04", "NE"], ["H05", "NE"], ["H06", "NE"], ["H07", "NE>E"], ["H08", "E"], ["H09", "E"], ["H10", "E"], ["H11", "E"],
+         ["H12", "N"], ["H13", "N"], ["H14", "N"], ["H15", "N"], ["H16", "N"], ["H17", "N"], ["H18", "NW"], ["H19", "NE"], ["H20", "NE"], ["H21", "NE"], ["H22", "NE"]],
+        // T 東西線
+        [["T01"], ["T02", "E"], ["T03", "E"], ["T04", "E"], ["T05", "E"], ["T06", "E"], ["T07", "SE"], ["T08", "SE"], ["T09", "SE"], ["T10", "E"], ["T11", "E"], ["T12", "E"],
+         ["T13", "E"], ["T14", "E"], ["T15", "NE"], ["T16", "NE"], ["T17", "NE"], ["T18", "NE"], ["T19", "NE"], ["T20", "NE"], ["T21", "NE"], ["T22", "NE"], ["T23", "NE"]],
+        // C 千代田線
+        [["C01"], ["C02", "E"], ["C03", "E"], ["C04", "SE"], ["C05", "E"], ["C06", "E"], ["C07", "E"], ["C08", "NE"], ["C09", "NE"], ["C10", "N"], ["C11", "N"], ["C12", "N"],
+         ["C13", "N"], ["C14", "N"], ["C15", "N"], ["C16", "N"], ["C17", "NE"], ["C18", "E"], ["C19", "E"], ["C20", "N"]],
+        // Y 有楽町線
+        [["Y01"], ["Y02", "S"], ["Y03", "S"], ["Y04", "S"], ["Y05", "S"], ["Y06", "S"], ["Y07", "SE"], ["Y08", "SE"], ["Y09", "SE"], ["Y10", "SE"], ["Y11", "SE"], ["Y12", "SE"],
+         ["Y13", "SE"], ["Y14", "S"], ["Y15", "S"], ["Y16", "S"], ["Y17", "SE"], ["Y18", "E"], ["Y19", "E"], ["Y20", "SE"], ["Y21", "SE"], ["Y22", "E"], ["Y23", "E"], ["Y24", "E"]],
+        // Z 半蔵門線
+        [["Z01"], ["Z02", "NE"], ["Z03", "NE"], ["Z04", "E"], ["Z05", "NE"], ["Z06", "NE"], ["Z07", "SE"], ["Z08", "SE"], ["Z09", "E"], ["Z10", "NE"], ["Z11", "NE"],
+         ["Z12", "E"], ["Z13", "N"], ["Z14", "N"]],
+        // N 南北線
+        [["N01"], ["N02", "E"], ["N03", "E"], ["N04", "N"], ["N05", "NE"], ["N06", "NE"], ["N07", "NW"], ["N08", "N"], ["N09", "N"], ["N10", "N"], ["N11", "NE"],
+         ["N12", "N"], ["N13", "N"], ["N14", "N"], ["N15", "N"], ["N16", "N"], ["N17", "NW"], ["N18", "W"], ["N19", "W"]],
+        // F 副都心線
+        [["F01"], ["F02", "S"], ["F03", "S"], ["F04", "S"], ["F05", "S"], ["F06", "S"], ["F07", "SE"], ["F08", "SE"], ["F09", "SE"], ["F10", "S"], ["F11", "S"],
+         ["F12", "S"], ["F13", "S"], ["F14", "SW"], ["F15", "SW"], ["F16", "SW"]],
+        // A 浅草線
+        [["A01"], ["A02", "E"], ["A03", "E"], ["A04", "E"], ["A05", "E"], ["A06", "E"], ["A07", "E"], ["A08", "NE"], ["A09", "NE"], ["A10", "N"], ["A11", "N"],
+         ["A12", "N"], ["A13", "N"], ["A14", "N"], ["A15", "N"], ["A16", "NE>N"], ["A17", "N"], ["A18", "N"], ["A19", "E"], ["A20", "NE"]],
+        // I 三田線
+        [["I01"], ["I02", "E"], ["I03", "E"], ["I04", "NE"], ["I05", "N"], ["I06", "N"], ["I07", "N"], ["I08", "N"], ["I09", "N"], ["I10", "N"], ["I11", "N"],
+         ["I12", "N"], ["I13", "N"], ["I14", "N"], ["I15", "N"], ["I16", "NW"], ["I17", "NW"], ["I18", "NW"], ["I19", "N"], ["I20", "N"], ["I21", "N"],
+         ["I22", "W"], ["I23", "W"], ["I24", "W"], ["I25", "W"], ["I26", "W"], ["I27", "W"]],
+        // S 新宿線
+        [["S01"], ["S02", "N>E"], ["S03", "E"], ["S04", "SE"], ["S05", "E"], ["S06", "E"], ["S07", "E"], ["S08", "E"], ["S09", "E"], ["S10", "E"], ["S11", "E"],
+         ["S12", "E"], ["S13", "E"], ["S14", "E"], ["S15", "E"], ["S16", "NE"], ["S17", "NE"], ["S18", "NE"], ["S19", "NE"], ["S20", "NE"], ["S21", "N"]],
+        // E 大江戸線（環狀＋往光が丘）
+        [["E28"], ["E01", "E"], ["E02", "NE"], ["E03", "E"], ["E04", "E"], ["E05", "E"], ["E06", "SE"], ["E07", "E"], ["E08", "E"], ["E09", "E"], ["E10", "E"],
+         ["E11", "E"], ["E12", "SE"], ["E13", "S"], ["E14", "S"], ["E15", "S"], ["E16", "SW"], ["E17", "SW"], ["E18", "SW"], ["E19", "W"], ["E20", "W"],
+         ["E21", "W"], ["E22", "W"], ["E23", "NW"], ["E24", "N"], ["E25", "NW"], ["E26", "NW"], ["E27", "NW"], ["E28", "N"]],
+        [["E28"], ["E29", "W"], ["E30", "W"], ["E31", "N"], ["E32", "N"], ["E33", "N"], ["E34", "N"], ["E35", "N"], ["E36", "NW"], ["E37", "NW"], ["E38", "NW"]],
+        // JY 山手線（JR 路線圖：品川～田端 東側往北、田端～池袋 往西、池袋～大崎 往南、大崎～品川 往東南再往東）
+        [["JY01"], ["JY02", "N"], ["JY03", "N"], ["JY04", "N"], ["JY05", "N"], ["JY06", "N"], ["JY07", "N"], ["JY08", "N"], ["JY09", "N"], ["JY10", "N>W"],
+         ["JY11", "W"], ["JY12", "W"], ["JY13", "W"], ["JY14", "W>S"], ["JY15", "S"], ["JY16", "S"], ["JY17", "S"], ["JY18", "S"], ["JY19", "S"], ["JY20", "S"],
+         ["JY21", "S"], ["JY22", "S"], ["JY23", "S"], ["JY24", "S"], ["JY25", "SE>E"], ["JY26", "E>N"], ["JY27", "N"], ["JY28", "N"], ["JY29", "N"], ["JY30", "N"], ["JY01", "N"]],
+      ],
+    };
+
+    // 把上面的資料變成「從 A 站到 B 站往哪個方向」的查詢表
+    const SCHEM_DIR = { N: [0, -1], S: [0, 1], E: [1, 0], W: [-1, 0], NE: [Math.SQRT1_2, -Math.SQRT1_2], NW: [-Math.SQRT1_2, -Math.SQRT1_2], SE: [Math.SQRT1_2, Math.SQRT1_2], SW: [-Math.SQRT1_2, Math.SQRT1_2] };
+    const SCHEM_OPP = { N: "S", S: "N", E: "W", W: "E", NE: "SW", SW: "NE", NW: "SE", SE: "NW" };
+    const SCHEM_HOPS = {};
+    Object.entries(SCHEMATIC).forEach(([region, lines]) => {
+      const map = SCHEM_HOPS[region] = {};
+      lines.forEach(seq => {
+        for (let i = 1; i < seq.length; i++) {
+          const a = seq[i - 1][0], b = seq[i][0], parts = seq[i][1].split(">");
+          map[`${a}>${b}`] = parts;
+          map[`${b}>${a}`] = parts.slice().reverse().map(p => SCHEM_OPP[p]);
+        }
+      });
+    });
+
+    function routeSnapDir(vx, vy) {
+      let best = "E", bd = -Infinity;
+      Object.keys(SCHEM_DIR).forEach(k => { const d = SCHEM_DIR[k], dot = (vx * d[0] + vy * d[1]) / (Math.hypot(vx, vy) || 1); if (dot > bd) { bd = dot; best = k; } });
+      return best;
+    }
+    function routeDpKeep(pts, tol) {
+      const keep = new Set([0, pts.length - 1]);
+      (function rec(a, b) {
+        let idx = -1, md = 0;
+        for (let i = a + 1; i < b; i++) {
+          const L = Math.hypot(pts[b].x - pts[a].x, pts[b].y - pts[a].y) || 1;
+          const d = Math.abs((pts[b].x - pts[a].x) * (pts[a].y - pts[i].y) - (pts[a].x - pts[i].x) * (pts[b].y - pts[a].y)) / L;
+          if (d > md) { md = d; idx = i; }
+        }
+        if (md > tol && idx > 0) { keep.add(idx); rec(a, idx); rec(idx, b); }
+      })(0, pts.length - 1);
+      return [...keep].sort((x, y) => x - y);
+    }
+    // 一段路線 → 一串「方向＋長度」：有官方線形就照官方，沒有就用地理簡化
+    function routeLegParts(region, st) {
+      const hops = SCHEM_HOPS[region] || {};
+      let parts = [];
+      for (let i = 1; i < st.length; i++) {
+        const dirs = st[i - 1].no && st[i].no ? hops[`${st[i - 1].no}>${st[i].no}`] : null;
+        if (!dirs) { parts = null; break; }
+        dirs.forEach(d => parts.push({ d, len: 1 / dirs.length }));
+      }
+      if (!parts) {
+        parts = [];
+        const lat0 = st[0].lat * Math.PI / 180;
+        const pts = st.map(s => ({ x: s.lng * Math.cos(lat0), y: -s.lat }));
+        const ext = Math.max(...pts.map(p => p.x)) - Math.min(...pts.map(p => p.x)) + Math.max(...pts.map(p => p.y)) - Math.min(...pts.map(p => p.y));
+        const keep = routeDpKeep(pts, ext * 0.07);
+        for (let k = 1; k < keep.length; k++) {
+          const a = pts[keep[k - 1]], b = pts[keep[k]];
+          parts.push({ d: routeSnapDir(b.x - a.x, b.y - a.y), len: keep[k] - keep[k - 1] });
+        }
+      }
+      const merged = [];
+      parts.forEach(p => { const last = merged[merged.length - 1]; if (last && last.d === p.d) last.len += p.len; else merged.push({ ...p }); });
+      merged.forEach(p => { p.len = Math.max(0.55, Math.pow(p.len, ROUTE_CARD.C)); });
+      return merged;
+    }
+    function routeSignW(sg, S) { return (sg.sg === "fillr" || !sg.no || sg.sg === "shin") ? S * 1.32 : S; }
+    function drawRouteSign(ctx, sg, x, y, S) {
+      const c = sg.c, w = routeSignW(sg, S);
+      const m = /^([A-Za-z]+)(.*)$/.exec(sg.no || ""), code = m ? m[1] : (sg.code || ""), num = m ? m[2] : (sg.no || "");
+      const word = sg.g === "台鐵" ? "台鐵" : sg.g === "台灣高鐵" ? "高鐵" : (!sg.no ? (sg.code || RAIL_SHORT[sg.n] || String(sg.n || "").slice(0, 2)) : "");
+      const fgc = railFg(c);
+      ctx.save();
+      const rr = (x0, y0, ww, hh, r) => { ctx.beginPath(); ctx.roundRect(x0, y0, ww, hh, r); };
+      let col = "#191919";
+      if (word) { rr(x, y, w, S, S * 0.22); ctx.fillStyle = c; ctx.fill(); col = fgc; }
+      else if (sg.sg === "metro") { ctx.beginPath(); ctx.arc(x + S / 2, y + S / 2, S / 2 - S * 0.07, 0, 7); ctx.fillStyle = "#fff"; ctx.fill(); ctx.lineWidth = S * 0.13; ctx.strokeStyle = c; ctx.stroke(); }
+      else if (sg.sg === "jr" || sg.sg === "pvt") { rr(x + S * 0.06, y + S * 0.06, S * 0.88, S * 0.88, sg.sg === "jr" ? S * 0.16 : S * 0.28); ctx.fillStyle = "#fff"; ctx.fill(); ctx.lineWidth = S * 0.12; ctx.strokeStyle = c; ctx.stroke(); }
+      else if (sg.sg === "fillc") { ctx.beginPath(); ctx.arc(x + S / 2, y + S / 2, S / 2, 0, 7); ctx.fillStyle = c; ctx.fill(); col = fgc; }
+      else { rr(x, y, w, S, S * 0.22); ctx.fillStyle = c; ctx.fill(); col = fgc; }
+      ctx.fillStyle = col; ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+      if (word) { ctx.font = `900 ${S * 0.42}px 'Noto Sans TC', sans-serif`; ctx.fillText(word, x + w / 2, y + S * 0.66); }
+      else { ctx.font = `700 ${S * 0.3}px 'Barlow Semi Condensed','JetBrains Mono',monospace`; ctx.fillText(code, x + w / 2, y + S * 0.42); ctx.font = `700 ${S * 0.46}px 'Barlow Semi Condensed','JetBrains Mono',monospace`; ctx.fillText(num, x + w / 2, y + S * 0.86); }
+      ctx.restore();
+    }
+    // 有車站資料時畫新版路線圖卡，回傳 true；資料不足回傳 false（沿用舊畫法）
+    function drawOfficialRouteCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch) {
+      const legs = Array.isArray(item.transitLegs) ? item.transitLegs : [];
+      const geo = transitRailGeo && transitRailGeo.itemId === item.id && legs.length && transitRailGeo.legs.length === legs.length && transitRailGeo.legs.every(Boolean) ? transitRailGeo : null;
+      if (!geo) return false;
+      const k = cardW / 1080;
+      const opts = appState.routeCardOpts || { names: true, signs: true };
+      const labelMode = document.getElementById("metroLabelModeSelect")?.value || "30";
+      const showNames = opts.names !== false && labelMode !== "none", showSigns = opts.signs !== false;
+      const fs = (labelMode === "none" ? 30 : Number(labelMode)) * 1.25 * k;
+      // 每一段的線條資料
+      const L = legs.map((leg, i) => {
+        const meta = geo.meta[i] || {};
+        const line = meta.L || {};
+        const color = getLineBrandColor(leg.line, i, leg.customColor || line.c, lineColorHint(item, legs));
+        return { leg, st: geo.legs[i], region: meta.region, color, sg: { c: color, sg: line.sg, g: line.g, code: line.code, n: line.n || leg.line } };
+      });
+      // 圖例
+      let legendY = cardY + 54 * k;
+      ctx.save();
+      ctx.font = `700 ${24 * k * 1.1}px 'Noto Sans TC', sans-serif`;
+      L.forEach(l => {
+        if (showSigns) drawRouteSign(ctx, { ...l.sg, no: "" }, cardX + 46 * k, legendY - 22 * k, 30 * k);
+        else { ctx.beginPath(); ctx.roundRect(cardX + 46 * k, legendY - 22 * k, 18 * k, 28 * k, 6 * k); ctx.fillStyle = l.color; ctx.fill(); }
+        ctx.fillStyle = innerSwatch.text; ctx.textBaseline = "alphabetic";
+        ctx.fillText(`${l.leg.line || "路線"}（${l.leg.from} ➔ ${l.leg.to}）`, cardX + (showSigns ? 46 + 30 * 1.32 + 12 : 76) * k, legendY);
+        legendY += 44 * k;
+      });
+      ctx.strokeStyle = "rgba(0,0,0,0.08)"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(cardX + 46 * k, legendY + 4 * k); ctx.lineTo(cardX + cardW - 46 * k, legendY + 4 * k); ctx.stroke();
+      ctx.restore();
+      // 串起各段
+      let cur = { x: 0, y: 0 };
+      const runs = [], nodes = [];
+      L.forEach((l, li) => {
+        const parts = routeLegParts(l.region, l.st);
+        if (li > 0) {
+          const prev = runs[li - 1].parts, pd = prev[prev.length - 1].d;
+          if (SCHEM_OPP[pd] === parts[0].d) {   // 回頭走：第一段轉 45°，避免兩條線疊在一起
+            const tot = parts.reduce((a, p) => [a[0] + SCHEM_DIR[p.d][0] * p.len, a[1] + SCHEM_DIR[p.d][1] * p.len], [0, 0]);
+            const o = SCHEM_DIR[parts[0].d];
+            const cands = Object.keys(SCHEM_DIR).filter(key => Math.abs(SCHEM_DIR[key][0] * o[0] + SCHEM_DIR[key][1] * o[1] - Math.SQRT1_2) < 0.01);
+            parts[0].d = cands.sort((a, b) => (SCHEM_DIR[b][0] * tot[0] + SCHEM_DIR[b][1] * tot[1]) - (SCHEM_DIR[a][0] * tot[0] + SCHEM_DIR[a][1] * tot[1]))[0];
+          }
+        }
+        const pts = [{ ...cur }];
+        parts.forEach(p => { cur = { x: cur.x + SCHEM_DIR[p.d][0] * p.len, y: cur.y + SCHEM_DIR[p.d][1] * p.len }; pts.push({ ...cur }); });
+        runs.push({ ...l, parts, pts });
+        const a = l.st[0], b = l.st[l.st.length - 1];
+        if (li === 0) nodes.push({ p: pts[0], name: l.leg.from, signs: [{ ...l.sg, no: a.no }], color: l.color });
+        else { const last = nodes[nodes.length - 1]; last.signs.push({ ...l.sg, no: a.no }); last.transfer = true; last.walk = !!l.leg.isOutTransfer; last.outColor = l.color; }
+        nodes.push({ p: pts[pts.length - 1], name: l.leg.to, signs: [{ ...l.sg, no: b.no }], color: l.color });
+      });
+      // 放進卡片
+      const all = runs.flatMap(r => r.pts);
+      const x0 = Math.min(...all.map(p => p.x)), x1 = Math.max(...all.map(p => p.x)), y0 = Math.min(...all.map(p => p.y)), y1 = Math.max(...all.map(p => p.y));
+      const pad = 150 * k, top = legendY + 40 * k, boxW = cardW - pad * 2, boxH = cardY + cardH - pad * 0.7 - top;
+      const s = Math.min(boxW / Math.max(x1 - x0, 0.01), boxH / Math.max(y1 - y0, 0.01), 230 * k) * transitRouteTransform.scale;
+      const ox = cardX + pad + (boxW - (x1 - x0) * s) / 2 - x0 * s + transitRouteTransform.x;
+      const oy = top + (boxH - (y1 - y0) * s) / 2 - y0 * s + transitRouteTransform.y;
+      const T = p => ({ x: p.x * s + ox, y: p.y * s + oy });
+      const lw = ROUTE_CARD.W * 1.6 * k, R = ROUTE_CARD.R * 1.6 * k;
+      ctx.save();
+      ctx.beginPath(); ctx.roundRect(cardX + 16, legendY + 14 * k, cardW - 32, cardY + cardH - legendY - 30 * k, 20); ctx.clip();
+      ctx.lineCap = "round"; ctx.lineJoin = "round";
+      const segs = [];
+      runs.forEach(r => {
+        const pts = r.pts.map(T);
+        for (let i = 1; i < pts.length; i++) segs.push([pts[i - 1], pts[i]]);
+        ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 1; i < pts.length - 1; i++) {
+          const a = Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y), b = Math.hypot(pts[i + 1].x - pts[i].x, pts[i + 1].y - pts[i].y);
+          ctx.arcTo(pts[i].x, pts[i].y, pts[i + 1].x, pts[i + 1].y, Math.max(0, Math.min(R, a * 0.48, b * 0.48)));
+        }
+        ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+        ctx.strokeStyle = r.color; ctx.lineWidth = lw; ctx.stroke();
+      });
+      const xs = all.map(p => T(p).x), ys = all.map(p => T(p).y);
+      transitMapHitBox = { x0: Math.min(...xs) - 70, y0: Math.min(...ys) - 70, x1: Math.max(...xs) + 70, y1: Math.max(...ys) + 70 };
+      // 站點（沿用原本的設計）：起訖＝路線色實心圓；轉乘＝前一條線的顏色在外、下一條線的顏色在內的同心圓
+      nodes.forEach(n => {
+        const q = T(n.p);
+        if (n.transfer && n.outColor && n.outColor !== n.color) {
+          ctx.beginPath(); ctx.arc(q.x, q.y, lw * 1.05, 0, 7); ctx.fillStyle = n.color; ctx.fill();
+          ctx.beginPath(); ctx.arc(q.x, q.y, lw * 0.5, 0, 7); ctx.fillStyle = n.outColor; ctx.fill();
+        } else {
+          ctx.beginPath(); ctx.arc(q.x, q.y, lw * 0.9, 0, 7); ctx.fillStyle = n.color; ctx.fill();
+        }
+      });
+      // 站名＋站牌：試 8 個位置，避開線條和別的字
+      if (showNames || showSigns) {
+        const boxes = [];
+        const hit = bx => segs.some(([a, b]) => { for (let t = 0; t <= 20; t++) { const x = a.x + (b.x - a.x) * t / 20, y = a.y + (b.y - a.y) * t / 20; if (x > bx.x0 - lw / 2 && x < bx.x1 + lw / 2 && y > bx.y0 - lw / 2 && y < bx.y1 + lw / 2) return true; } return false; });
+        const SG = fs * 1.2;
+        nodes.forEach(n => {
+          const q = T(n.p);
+          ctx.font = `900 ${fs}px 'Noto Sans TC','Noto Sans JP',sans-serif`;
+          const sw = showSigns ? n.signs.reduce((a, sg) => a + routeSignW(sg, SG) + 6 * k, 0) : 0;
+          const tw = (showNames ? ctx.measureText(n.name).width + 4 * k : 0) + sw, th = Math.max(fs * 1.25, showSigns ? SG + 4 : 0), g = lw + 14 * k;
+          const cands = [[g, -th / 2], [-g - tw, -th / 2], [-tw / 2, -g - th], [-tw / 2, g], [g, -g - th + 8 * k], [-g - tw, -g - th + 8 * k], [g, g - 8 * k], [-g - tw, g - 8 * k]];
+          let pick = null;
+          for (const strict of [true, false]) {
+            for (const [dx, dy] of cands) {
+              const bx = { x0: q.x + dx, y0: q.y + dy, x1: q.x + dx + tw, y1: q.y + dy + th };
+              if (bx.x0 < cardX + 20 || bx.x1 > cardX + cardW - 20 || bx.y0 < legendY + 16 * k || bx.y1 > cardY + cardH - 16) continue;
+              if (boxes.some(o => !(bx.x1 < o.x0 || bx.x0 > o.x1 || bx.y1 < o.y0 || bx.y0 > o.y1))) continue;
+              if (strict && hit(bx)) continue;
+              pick = bx; break;
+            }
+            if (pick) break;
+          }
+          if (!pick) return;
+          boxes.push(pick);
+          let x = pick.x0;
+          if (showSigns) n.signs.forEach(sg => { drawRouteSign(ctx, sg, x, pick.y0 + (th - SG) / 2, SG); x += routeSignW(sg, SG) + 6 * k; });
+          if (showNames) {
+            ctx.textBaseline = "alphabetic"; ctx.lineWidth = 7 * k; ctx.strokeStyle = innerSwatch.bg; ctx.fillStyle = innerSwatch.text;
+            const ty = pick.y0 + th / 2 + fs * 0.36;
+            ctx.strokeText(n.name, x + 2 * k, ty); ctx.fillText(n.name, x + 2 * k, ty);
+          }
+        });
+      }
+      ctx.restore();
+      return true;
+    }
+    function setRouteCardOpt(key, on) {
+      appState.routeCardOpts = { names: true, signs: true, ...(appState.routeCardOpts || {}), [key]: on };
+      saveAppState(); renderStoryCanvas();
+    }
+
     function drawBeckOctilinearTransitCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch) {
       drawCardPaperTexture(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg, appState.paperTexture);
+      if (drawOfficialRouteCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch)) return;
 
       const legs = (Array.isArray(item.transitLegs) && item.transitLegs.length > 0)
         ? item.transitLegs
@@ -5989,8 +6435,40 @@
       const allHaveSchem = nodes.every(n => !!n.schem);
       const rawPts = [];
       const stationRawPtIndices = [];
+      const geo = (transitRailGeo && transitRailGeo.itemId === item.id && transitRailGeo.legs.length === legs.length && transitRailGeo.legs.every(Boolean)) ? transitRailGeo.legs : null;
 
-      if (allHaveSchem) {
+      if (geo) {
+        // 真實路線：經過每一站的實際位置，簡化成幾個轉折，再交給下面畫成 45°／90° 的地鐵圖線條
+        nodes.length = 0; segments.length = 0;
+        const lat0 = geo[0][0].lat * Math.PI / 180;
+        const proj = p => ({ x: p.lng * Math.cos(lat0) * 1000, y: -p.lat * 1000 });   // 1 單位約 111 公尺
+        const all = geo.flat().map(proj);
+        const span = Math.max(Math.max(...all.map(p => p.x)) - Math.min(...all.map(p => p.x)), Math.max(...all.map(p => p.y)) - Math.min(...all.map(p => p.y)), 1);
+        legs.forEach((leg, i) => {
+          const col = getLineBrandColor(leg.line, i, leg.customColor, lineColorHint(item, legs));
+          const simp = simplifyRoutePts(geo[i].map(proj), span * 0.06);
+          if (i === 0) {
+            nodes.push({ name: leg.from, inColor: col, outColor: col, isInStationTransfer: false });
+            rawPts.push(simp[0]); stationRawPtIndices.push(0);
+          } else {
+            const prevNode = nodes[nodes.length - 1], prevPt = rawPts[rawPts.length - 1];
+            const gap = Math.hypot(simp[0].x - prevPt.x, simp[0].y - prevPt.y);
+            if (gap < 2.2) {
+              // 同一個地方換車（例如台鐵松山↔捷運松山）：畫成一個轉乘站，不重複寫站名
+              prevNode.outColor = col;
+              prevNode.isInStationTransfer = prevNode.inColor !== col;
+            } else {
+              nodes.push({ name: leg.from, inColor: col, outColor: col, isInStationTransfer: false });
+              rawPts.push(simp[0]); stationRawPtIndices.push(rawPts.length - 1);
+              segments.push({ fromIdx: nodes.length - 2, toIdx: nodes.length - 1, type: "walk", color: innerSwatch.text });
+            }
+          }
+          for (let k = 1; k < simp.length; k++) rawPts.push(simp[k]);
+          stationRawPtIndices.push(rawPts.length - 1);
+          nodes.push({ name: leg.to, inColor: col, outColor: col, isInStationTransfer: false });
+          segments.push({ fromIdx: nodes.length - 2, toIdx: nodes.length - 1, type: "ride", color: col });
+        });
+      } else if (allHaveSchem) {
         rawPts.push({ x: nodes[0].schem.x, y: nodes[0].schem.y });
         stationRawPtIndices.push(0);
         for (let s = 0; s < segments.length; s++) {
@@ -6216,6 +6694,7 @@
 
         stationScreenPts.forEach((pt, idx) => {
           const label = nodes[idx].name;
+          if (nodes[idx].hideLabel) return;
           const tw = ctx.measureText(label).width;
           const th = fontSize;
           
@@ -6333,7 +6812,7 @@
     function drawFerryTicketCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch, outerSwatch) {
       drawCardPaperTexture(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg, appState.paperTexture);
 
-      ctx.fillStyle = outerSwatch.bg;
+      ctx.fillStyle = outerPaintAligned(ctx, outerSwatch);
       ctx.beginPath();
       ctx.arc(cardX, cardY + cardH * 0.62, 26, 0, Math.PI * 2);
       ctx.arc(cardX + cardW, cardY + cardH * 0.62, 26, 0, Math.PI * 2);
@@ -6423,6 +6902,7 @@
       const arrCode = (item.arrIata || "NRT").toUpperCase().slice(0, 4);
       const dep = AIRPORT_COORDS[depCode] || AIRPORT_COORDS["TPE"];
       const arr = AIRPORT_COORDS[arrCode] || AIRPORT_COORDS["NRT"];
+      const viaPts = (item.viaIata || []).map(c => ({ code: c, pt: AIRPORT_COORDS[c] })).filter(v => v.pt);
 
       const globeBoxX = cardX + 28;
       const globeBoxY = cardY + 28;
@@ -6482,7 +6962,7 @@
 
       const routeFeature = {
         type: "LineString",
-        coordinates: [[dep.lng, dep.lat], [arr.lng, arr.lat]]
+        coordinates: [[dep.lng, dep.lat], ...viaPts.map(v => [v.pt.lng, v.pt.lat]), [arr.lng, arr.lat]]
       };
       ctx.beginPath();
       geoPath(routeFeature);
@@ -6492,7 +6972,7 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      [[depCode, dep], [arrCode, arr]].forEach(([code, pt]) => {
+      [[depCode, dep], ...viaPts.map(v => [v.code, v.pt]), [arrCode, arr]].forEach(([code, pt]) => {
         const p = projection([pt.lng, pt.lat]);
         if (!p) return;
         ctx.beginPath();
@@ -6549,6 +7029,11 @@
       ctx.font = "34px sans-serif";
       ctx.textAlign = "center";
       ctx.fillText("✈️", centerAxis, bpTop + 72);
+      if (viaPts.length) {
+        ctx.fillStyle = "#64748B";
+        ctx.font = "800 20px 'JetBrains Mono', monospace";
+        ctx.fillText(`VIA ${viaPts.map(v => v.code).join(" · ")}`, centerAxis, bpTop + 112);
+      }
       ctx.textAlign = "left";
 
       ctx.fillStyle = "#64748B";
@@ -6559,7 +7044,7 @@
       ctx.textAlign = "left";
 
       const notchY = bpTop + 162;
-      ctx.fillStyle = outerSwatch.bg;
+      ctx.fillStyle = outerPaintAligned(ctx, outerSwatch);
       ctx.beginPath();
       ctx.arc(cardX, notchY, 22, 0, Math.PI * 2);
       ctx.arc(cardX + cardW, notchY, 22, 0, Math.PI * 2);
@@ -6583,7 +7068,8 @@
 
       ctx.fillStyle = innerSwatch.text;
       ctx.font = "800 28px 'JetBrains Mono', monospace";
-      ctx.fillText((item.flightNo || "BR198").slice(0, 9), cardX + 58, gridY + 42);
+      const fnos = String(item.flightNo || "BR198").split(/\s*[\/／,，]\s*/).filter(Boolean);
+      ctx.fillText(fnos.length > 1 ? `${fnos[0].slice(0, 7)} +${fnos.length - 1}` : fnos[0].slice(0, 9), cardX + 58, gridY + 42);
       ctx.fillText(`${item.startTime || "09:00"} → ${item.endTime || "13:00"}`, cardX + 330, gridY + 42);
       ctx.fillText((item.gateSeat || "GATE TBD").slice(0, 11), cardX + 660, gridY + 42);
 
@@ -6728,8 +7214,8 @@
       ctx.textAlign = "left";
 
       // 1. Outer Background Paper
-      ctx.fillStyle = outerSwatch.bg;
-      ctx.fillRect(0, 0, W, H);
+      fillSwatchBackground(ctx, outerSwatch, W, H);
+      storyBgPattern = (() => { try { const c = document.createElement("canvas"); c.width = W; c.height = H; fillSwatchBackground(c.getContext("2d"), outerSwatch, W, H); return ctx.createPattern(c, "no-repeat"); } catch (e) { return null; } })();
 
       // 以下內容（標題列／主視覺／票根）整體移入 IG 安全區
       const storyLay = getStoryLayout(W);
@@ -6768,6 +7254,7 @@
       const mainX = 84, mainY = 195, mainW = W - 168, mainH = 1040;
 
       if (tpl === "transit") {
+        await prepareTransitRailGeo(item);
         drawBeckOctilinearTransitCard(ctx, item, mainX, mainY, mainW, mainH, innerSwatch);
         if (transitMapUnlocked) {
           ctx.save();
@@ -9530,7 +10017,7 @@ function initSupabaseClient() {
         const rowsHtml = items.map(it => {
           if (shown++ >= 120) return "";
           let detail = "";
-          if (it.type === "flight") detail = `${it.depIata} → ${it.arrIata} ${it.flightNo}`;
+          if (it.type === "flight") detail = `${[it.depIata, ...(it.viaIata || []), it.arrIata].join(" → ")} ${it.flightNo}`;
           else if (it.type === "transit") detail = it.transitLegs.map(l => `${l.from}→${l.to}${l.line ? " " + l.line : ""}`).join(" ／ ");
           else if (it.type === "roadtrip") detail = `${it.roadFrom} → ${it.roadTo}${it.roadStops ? "（經 " + it.roadStops + "）" : ""}`;
           else detail = it.subtitle;
@@ -9933,8 +10420,7 @@ function initSupabaseClient() {
       const { outer, inner } = getCountdownSwatches();
       const accent = getComputedStyle(document.body).getPropertyValue("--accent").trim() || "#C84B31";
 
-      ctx.fillStyle = outer.bg;
-      ctx.fillRect(0, 0, W, H);
+      fillSwatchBackground(ctx, outer, W, H);
 
       // 頂部：品牌與今天日期
       ctx.fillStyle = outer.text;
@@ -10026,7 +10512,7 @@ function initSupabaseClient() {
     function renderCountdownSwatchPickers() {
       const { outer, inner } = getCountdownSwatches();
       const chip = (sw, kind, selected) =>
-        `<button type="button" class="cd-swatch ${selected ? "selected" : ""}" style="background:${sw.bg};"
+        `<button type="button" class="cd-swatch ${selected ? "selected" : ""}" style="background:${swatchCss(sw)};"
            title="${escapeHtml(sw.name)}" aria-label="${escapeHtml(sw.name)}" aria-pressed="${selected}"
            onclick="setCountdownSwatch('${kind}', '${sw.id}')"></button>`;
       const o = document.getElementById("cdOuterSwatches");
@@ -10595,8 +11081,7 @@ function initSupabaseClient() {
       const accent = getComputedStyle(document.body).getPropertyValue("--accent").trim() || "#C84B31";
       const st = tripMemoryStats(trip);
 
-      ctx.fillStyle = outer.bg;
-      ctx.fillRect(0, 0, W, H);
+      fillSwatchBackground(ctx, outer, W, H);
       // 頂部（避開限動上方約 270px）
       ctx.fillStyle = outer.text;
       ctx.globalAlpha = 0.75;
@@ -10957,7 +11442,7 @@ function initSupabaseClient() {
       (trip.days || []).forEach((d, dayIdx) => (d.items || []).forEach(it => {
         if (!it || it.status === "cancelled") return;
         if (it.checkin) { push(it.checkin, dayIdx, it, it.title, true); return; }
-        if (it.type === "flight") { push(airport(it.depIata), dayIdx, it, it.depIata, false); push(airport(it.arrIata), dayIdx, it, it.arrIata, false); }
+        if (it.type === "flight") { [it.depIata, ...(it.viaIata || []), it.arrIata].forEach(c => push(airport(c), dayIdx, it, c, false)); }
         else if (it.type === "transit" && Array.isArray(it.transitLegs)) {
           it.transitLegs.forEach((l, i) => { if (i === 0) push(lookupStationCoordSync(l.from), dayIdx, it, l.from, false); push(lookupStationCoordSync(l.to), dayIdx, it, l.to, false); });
         } else if (it.type === "roadtrip") {
@@ -11189,6 +11674,7 @@ function initSupabaseClient() {
       railData[id] = d;
       return d;
     }
+    const RAIL_SHORT = { "成田エクスプレス": "N'EX", "はるか": "はるか" };
     function railFg(hex) {
       const h = String(hex || "#888888").replace("#", "");
       const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
@@ -11197,7 +11683,7 @@ function initSupabaseClient() {
     // 站牌：路線＋站號；沒有站號就只畫路線標誌
     function railSign(L, no, size) {
       const st = `--c:${L.c};--fg:${railFg(L.c)};${size ? `--s:${size}px;` : ""}`;
-      const word = L.g === "台鐵" ? "台鐵" : L.g === "台灣高鐵" ? "高鐵" : L.sg === "shin" ? L.n.replace("新幹線", "") : (!L.code ? L.n.replace(/線$/, "").slice(0, 3) : "");
+      const word = L.g === "台鐵" ? "台鐵" : L.g === "台灣高鐵" ? "高鐵" : L.sg === "shin" ? L.n.replace("新幹線", "") : (!L.code ? (RAIL_SHORT[L.n] || L.n.replace(/線$/, "").slice(0, 3)) : "");
       if (!no || L.sg === "shin") {
         if (word) return `<span class="rsign ${L.sg === "shin" ? "shin" : L.sg} only${["metro", "jr", "pvt", "fillc"].includes(L.sg) ? "" : " lbl"}" style="${st}${["metro", "jr", "pvt", "fillc"].includes(L.sg) ? "" : ""}"><span class="t">${escapeHtml(word)}</span></span>`;
         return `<span class="rsign ${L.sg} only" style="${st}"><span class="c">${escapeHtml(L.code)}</span></span>`;
@@ -11222,10 +11708,10 @@ function initSupabaseClient() {
     function railHops(L, i, j) { const d = Math.abs(i - j); return L.loop ? Math.min(d, L.st.length - d) : d; }
 
     // 轉乘最少的走法（最多換 2 次）
-    function railRoute(d, start, goalCl) {
+    function railRoute(d, start, goalCl, w = { leg: 1000, walk: 30, gate: 10 }) {
       const best = new Map([[start.s.cl, { cost: 0, legs: [] }]]);
       let frontier = [start.s.cl];
-      for (let round = 0; round < 3 && frontier.length; round++) {
+      for (let round = 0; round < 4 && frontier.length; round++) {
         const next = new Set();
         for (const cl of frontier) {
           const cur = best.get(cl);
@@ -11233,11 +11719,11 @@ function initSupabaseClient() {
             const prev = cur.legs[cur.legs.length - 1];
             if (prev && prev.L === m.L) continue;
             const x = prev ? railXfer(prev.L, prev.to, m.L, m.s) : (m.s !== start.s ? railXfer(start.L, start.s, m.L, m.s) : null);
-            const pen = x ? (x.k === "walk" ? 30 : x.k === "gate" ? 10 : 2) : 0;
+            const pen = x ? (x.k === "walk" ? w.walk : x.k === "gate" ? w.gate : 2) : 0;
             m.L.st.forEach((s1, j) => {
               if (s1.cl === cl) return;
               const h = railHops(m.L, m.i, j);
-              const cost = cur.cost + 1000 + h + pen;
+              const cost = cur.cost + w.leg + h + pen;
               const old = best.get(s1.cl);
               if (!old || cost < old.cost) {
                 best.set(s1.cl, { cost, legs: [...cur.legs, { L: m.L, from: m.s, to: s1, hops: h }] });
@@ -11246,7 +11732,6 @@ function initSupabaseClient() {
             });
           }
         }
-        if (best.has(goalCl)) break;
         frontier = [...next];
       }
       const r = best.get(goalCl);
@@ -11382,7 +11867,7 @@ function initSupabaseClient() {
     // ---------- 打開、畫面 ----------
     async function openRailPicker() {
       ensureRailFont();
-      RP = { region: railGuessRegion(), from: null, legs: [], pickLine: null, browse: false, browseLine: null, done: false, here: null, ctx: railFormContext() };
+      RP = { region: railGuessRegion(), from: null, to: null, legs: [], browse: false, browseLine: null, here: null, ctx: railFormContext() };
       openModalBackdrop("railPickerModal");
       await railSwitchRegion(RP.region);
     }
@@ -11394,7 +11879,7 @@ function initSupabaseClient() {
       document.head.appendChild(l);
     }
     async function railSwitchRegion(id) {
-      RP.region = id; RP.from = null; RP.legs = []; RP.pickLine = null; RP.browse = false; RP.browseLine = null; RP.here = null;
+      RP.region = id; RP.from = null; RP.to = null; RP.legs = []; RP.browse = false; RP.browseLine = null; RP.here = null;
       appState.railRegionByTrip = appState.railRegionByTrip || {};
       appState.railRegionByTrip[getActiveTrip().id] = id;
       document.getElementById("rpRegions").innerHTML = RAIL_REGIONS.map(r => `<button type="button" class="${r.id === id ? "on" : ""}" onclick="railSwitchRegion('${r.id}')">${r.label}</button>`).join("");
@@ -11420,76 +11905,107 @@ function initSupabaseClient() {
       const uniq = p.mem.filter((m, i) => p.mem.findIndex(x => x.L === m.L) === i).slice(0, 6);
       return `<button type="button" class="rp-sug${hot ? " hot" : ""}" onclick="${act}"><span class="signs">${uniq.map(m => railSign(m.L, m.s.no, 24)).join("")}</span><span><span class="name">${escapeHtml(p.main)}</span>${p.others.length ? `<span class="aka">同一個地方：${escapeHtml(p.others.join("、"))}</span>` : ""}${why ? `<span class="why">${escapeHtml(why)}</span>` : ""}</span><span class="go">›</span></button>`;
     }
-    function railLineGrid(d, onPick, sel, list, atS) {
+    function railLineGrid(d, role, sel) {
       const groups = [];
-      (list ? list.map(m => m.L) : d.lines).forEach(L => { let g = groups.find(x => x[0] === L.g); if (!g) groups.push(g = [L.g, []]); if (!g[1].includes(L)) g[1].push(L); });
-      return groups.map(([g, ls]) => `<div class="rp-grp">${escapeHtml(g)}</div><div class="rp-lines">` + ls.map((L, idx) => {
-        let hint = "";
-        if (list && atS) {
-          const m = list.find(x => x.L === L);
-          const base = RP.legs.length ? RP.legs[RP.legs.length - 1] : null;
-          const x = base ? railXfer(base.L, base.to, L, m.s) : (m.s !== atS.s ? railXfer(atS.L, atS.s, L, m.s) : null);
-          if (x && x.k === "walk") hint = `<span class="hint">走到${escapeHtml(railStName(m.s))}</span>`;
-          else if (x && x.k === "gate") hint = `<span class="hint gate">出閘門</span>`;
-        }
-        return `<button type="button" class="rp-line${sel === L.k ? " on" : ""}" onclick="${onPick}(${d.lines.indexOf(L)})">${railSign(L, "", 38)}<small>${escapeHtml(L.n)}</small>${hint}</button>`;
-      }).join("") + `</div>`).join("");
+      d.lines.forEach(L => { let g = groups.find(x => x[0] === L.g); if (!g) groups.push(g = [L.g, []]); g[1].push(L); });
+      return groups.map(([g, ls]) => {
+        let h = `<div class="rp-grp">${escapeHtml(g)}</div><div class="rp-lines">`;
+        const selIdx = ls.findIndex(L => d.lines.indexOf(L) === sel);
+        const rowEnd = selIdx < 0 ? -1 : Math.min(ls.length - 1, Math.floor(selIdx / 4) * 4 + 3);
+        ls.forEach((L, idx) => {
+          const li = d.lines.indexOf(L);
+          h += `<button type="button" class="rp-line${li === sel ? " on" : ""}" onclick="railBrowseLine('${role}', ${li})">${railSign(L, "", 38)}<small>${escapeHtml(L.n)}</small></button>`;
+          // 路線圖直接出現在這一排的正下方
+          if (idx === rowEnd) h += `<div class="rp-inline">${railStrip(d, d.lines[sel], role)}</div>`;
+        });
+        return h + `</div>`;
+      }).join("");
     }
-    function railStrip(d, L, fromS, role) {
-      const fi = fromS ? L.st.indexOf(fromS) : -1;
+    // 直排站名：2～4 位數字、短英文合成一格橫寫；「/」換成直排用的全形斜線
+    function railVName(name) {
+      return String(name).replace(/\//g, "／").split(/([A-Za-z0-9]+)/).map(part => {
+        if (!/^[A-Za-z0-9]+$/.test(part)) return escapeHtml(part);
+        if (part.length >= 2 && part.length <= 4) return `<span class="tcy">${part}</span>`;
+        return part.length > 4 ? `<span class="side">${part}</span>` : part;
+      }).join("");
+    }
+    function railStrip(d, L, role) {
       const li = d.lines.indexOf(L);
+      const mark = role === "to" && RP.from ? RP.from.s : null;
       const cells = L.st.map((s, i) => {
-        let cls = "rp-st", tag = "";
+        let cls = "rp-st";
         const xl = [...new Map((d.byCl.get(s.cl) || []).filter(m => m.L !== L).map(m => [m.L.k, m.L])).values()].slice(0, 4);
         if (xl.length) cls += " xf";
-        if (s === fromS) { cls += " from"; tag = "上車"; }
-        else if (role === "to" && fi >= 0) { const dd = railHops(L, i, fi); if (dd <= 6) tag = `${dd} 站`; }
-        return `<button type="button" class="${cls}" onclick="railPickStation(${li}, ${i}, '${role}')"><span class="tag">${tag}</span><span class="rail"><i class="dot"></i></span>${s.no ? railSign(L, s.no) : ""}<span class="nm">${escapeHtml(railStName(s))}</span>${xl.length ? `<span class="xmini">${xl.map(x => `<i style="--c:${x.c}"></i>`).join("")}</span>` : ""}</button>`;
+        const isFrom = mark && s.cl === mark.cl;
+        if (isFrom) cls += " from";
+        return `<button type="button" class="${cls}" onclick="railPickStation(${li}, ${i}, '${role}')"><span class="tag">${isFrom ? "上車" : ""}</span><span class="rail"><i class="dot"></i></span>${s.no ? railSign(L, s.no) : ""}<span class="nm">${railVName(railStName(s))}</span>${xl.length ? `<span class="xmini">${xl.map(x => `<i style="--c:${x.c}"></i>`).join("")}</span>` : ""}</button>`;
       }).join("");
-      return `<div class="rp-strip-h">${railSign(L, "", 22)} ${escapeHtml(L.n)}<em>${L.loop ? "環狀線・" : ""}黑框＝可轉乘</em></div>
+      return `<div class="rp-strip-h">${railSign(L, "", 22)} ${escapeHtml(L.n)}<em>${L.loop ? "環狀線・" : ""}點站名選${role === "from" ? "上車站" : "下車站"}</em></div>
         <div class="rp-strip${L.loop ? " loop" : ""}"><div class="rp-strip-in" style="--lc:${L.c}">${cells}</div></div>`;
+    }
+    // 幾種走法：轉乘最少、站數最少、不用出站
+    function railRouteOptions(d) {
+      const variants = [
+        { tag: "轉乘最少", w: { leg: 1000, walk: 30, gate: 10 } },
+        { tag: "站數最少", w: { leg: 4, walk: 8, gate: 3 } },
+        { tag: "不用出站", w: { leg: 200, walk: 5000, gate: 900 } },
+      ];
+      const seen = new Map();
+      variants.forEach(v => {
+        const legs = railRoute(d, RP.from, RP.to.s.cl, v.w);
+        if (!legs) return;
+        const sig = legs.map(g => `${g.L.k}:${g.from.n}>${g.to.n}`).join("|");
+        if (seen.has(sig)) { seen.get(sig).tags.push(v.tag); return; }
+        seen.set(sig, { legs, tags: [v.tag] });
+      });
+      return [...seen.values()].map(r => {
+        const hops = r.legs.reduce((a, g) => a + g.hops, 0);
+        const xs = r.legs.slice(1).map((g, i) => railXfer(r.legs[i].L, r.legs[i].to, g.L, g.from));
+        const walk = xs.filter(x => x.k === "walk").length;
+        return { ...r, hops, transfers: r.legs.length - 1, walk };
+      });
     }
     function railRender() {
       const d = railData[RP.region];
       if (!d) return;
-      const ctx = RP.ctx;
-      let h = (ctx.prev || ctx.next) ? `<div class="rp-ctx">${ctx.prev ? `前一個行程：<b>${escapeHtml(ctx.prev.title || "")}</b>` : ""}${ctx.prev && ctx.next ? "<br>" : ""}${ctx.next ? `下一個行程：<b>${escapeHtml(ctx.next.title || "")}</b>` : ""}</div>` : "";
+      const ctx = RP.ctx || {};
+      const itName = it => it.title || formatItemSubtitle(it) || "未命名行程";
+      let h = (ctx.prev || ctx.next) ? `<div class="rp-ctx">${ctx.prev ? `前一個行程：<b>${escapeHtml(itName(ctx.prev))}</b>` : ""}${ctx.prev && ctx.next ? "<br>" : ""}${ctx.next ? `下一個行程：<b>${escapeHtml(itName(ctx.next))}</b>` : ""}</div>` : "";
 
+      // ① 上車站
       if (!RP.from) {
         const sugs = railFromSuggestions(d);
-        h += `<div class="rp-step"><div class="rp-step-h"><span>從哪裡上車？</span>${isActiveDayToday() ? `<button type="button" onclick="railUseHere()">用我的位置</button>` : ""}</div><div class="rp-sugs">` +
-          sugs.map((x, i) => railPlaceCard(d, x.s, x.why, x.hot, `railSetFrom(${i})`)).join("") + (RP.pending ? `<div class="rp-msg" style="padding:10px;">正在找附近的車站…</div>` : "") + `</div>`;
         RP._sugs = sugs;
-        if (!RP.browse) h += `<button type="button" class="rp-more" onclick="RP.browse=true;railRender()">${sugs.length ? "都不是？" : ""}照路線找</button>`;
-        else { h += railLineGrid(d, "railBrowseLine", RP.browseLine); if (RP.browseLine != null) h += railStrip(d, d.lines[RP.browseLine], null, "from"); }
+        h += `<div class="rp-step"><div class="rp-step-h"><span>① 從哪一站上車？</span>${isActiveDayToday() ? `<button type="button" onclick="railUseHere()">用我的位置</button>` : ""}</div><div class="rp-sugs">` +
+          sugs.map((x, i) => railPlaceCard(d, x.s, x.why, x.hot, `railSetFrom(${i})`)).join("") + (RP.pending ? `<div class="rp-msg" style="padding:10px;">正在找附近的車站…</div>` : "") + `</div>`;
+        h += RP.browse === "from" ? railLineGrid(d, "from", RP.browseLine) : `<button type="button" class="rp-more" onclick="RP.browse='from';RP.browseLine=null;railRender()">${sugs.length ? "都不是？" : ""}照路線找</button>`;
         h += `</div>`;
       } else {
-        h += `<div class="rp-step done"><div class="rp-step-h"><span>上車 <span class="val">${escapeHtml(railStName(RP.from.s))}</span></span><button type="button" onclick="RP.from=null;RP.legs=[];RP.pickLine=null;railRender()">改</button></div></div>`;
-        const here = RP.legs.length ? { L: RP.legs[RP.legs.length - 1].L, s: RP.legs[RP.legs.length - 1].to } : RP.from;
-        if (!RP.legs.length) {
-          const tg = railTarget(d);
-          h += `<div class="rp-step"><div class="rp-step-h"><span>到哪一站？</span></div>`;
-          if (tg && tg.s.cl !== RP.from.s.cl) {
-            const route = railRoute(d, RP.from, tg.s.cl);
-            if (route) {
-              RP._route = route;
-              const n = route.length - 1;
-              h += `<button type="button" class="rp-route" onclick="RP.legs=RP._route.slice();railFinish()"><div class="rt"><b>${escapeHtml(railStName(route[route.length - 1].to))}</b><span>${n ? `轉乘 ${n} 次` : "直達"}・點一下全部填好</span></div><div class="why">${escapeHtml(tg.why)}</div>${railLegsHtml(route, RP.from)}</button>`;
-            }
-          }
-          h += `<div class="rp-grp" style="margin-top:14px;">或自己選：從 ${escapeHtml(railStName(RP.from.s))} 搭</div>`;
-        } else {
-          h += `<div class="rp-step"><div class="rp-step-h"><span>目前的走法</span><button type="button" onclick="RP.legs.pop();RP.pickLine=null;railRender()">退一步</button></div>${railLegsHtml(RP.legs, RP.from)}</div>`;
-          h += `<div class="rp-step"><div class="rp-step-h"><span>到了 ${escapeHtml(railStName(here.s))}，要再轉乘嗎？</span></div><button type="button" class="rp-end" onclick="railFinish()">不用，就到這裡</button><div class="rp-grp" style="margin-top:12px;">在 ${escapeHtml(railStName(here.s))} 可以換</div>`;
-        }
-        const used = RP.legs.length ? RP.legs[RP.legs.length - 1].L : null;
-        const list = (d.byCl.get(here.s.cl) || []).filter(m => m.L !== used).filter((m, i, a) => a.findIndex(x => x.L === m.L) === i);
-        RP._list = list;
-        h += railLineGrid(d, "railPickLine", RP.pickLine != null ? d.lines[RP.pickLine].k : null, list, here);
-        if (RP.pickLine != null) {
-          const m = list.find(x => x.L === d.lines[RP.pickLine]);
-          if (m) h += railStrip(d, m.L, m.s, "to");
-        }
+        h += `<div class="rp-step done"><div class="rp-step-h"><span>上車 <span class="val">${escapeHtml(railStName(RP.from.s))}</span></span><button type="button" onclick="RP.from=null;RP.to=null;RP.browse=false;railRender()">改</button></div></div>`;
+      }
+
+      // ② 下車站
+      if (RP.from && !RP.to) {
+        const tg = railTarget(d);
+        RP._tg = tg;
+        h += `<div class="rp-step"><div class="rp-step-h"><span>② 到哪一站下車？</span></div><div class="rp-sugs">`;
+        if (tg && tg.s.cl !== RP.from.s.cl) h += railPlaceCard(d, tg.s, tg.why, true, `railSetTo()`);
+        h += (RP.pending ? `<div class="rp-msg" style="padding:10px;">正在找附近的車站…</div>` : "") + `</div>`;
+        h += RP.browse === "to" ? railLineGrid(d, "to", RP.browseLine) : `<button type="button" class="rp-more" onclick="RP.browse='to';RP.browseLine=null;railRender()">${tg ? "不是這裡？" : ""}照路線找下車站</button>`;
+        h += `</div>`;
+      } else if (RP.to) {
+        h += `<div class="rp-step done"><div class="rp-step-h"><span>下車 <span class="val">${escapeHtml(railStName(RP.to.s))}</span></span><button type="button" onclick="RP.to=null;RP.browse=false;railRender()">改</button></div></div>`;
+      }
+
+      // ③ TabigrAm 建議的走法
+      if (RP.from && RP.to) {
+        const opts = railRouteOptions(d);
+        RP._opts = opts;
+        h += `<div class="rp-step"><div class="rp-step-h"><span>③ 選一種走法</span></div>`;
+        if (!opts.length) h += `<div class="rp-msg">找不到換 3 次以內的走法。可以換一個下車站，或分成兩段交通行程。</div>`;
+        opts.forEach((o, i) => {
+          h += `<button type="button" class="rp-route${i ? " alt" : ""}" onclick="railChooseRoute(${i})"><div class="rt"><b>${o.tags.length >= 3 ? "推薦走法" : o.tags.join("・")}</b><span>${o.transfers ? `轉乘 ${o.transfers} 次` : "直達"}・${o.hops} 站${o.walk ? "・要出站走路" : ""}</span></div>${railLegsHtml(o.legs, RP.from)}</button>`;
+        });
         h += `</div>`;
       }
       h += `<button type="button" class="rp-report" onclick="railReport()">車站、路線或轉乘方式不對？告訴我們</button>`;
@@ -11499,20 +12015,21 @@ function initSupabaseClient() {
         const t = el.querySelector(".rp-st.from");
         if (t) el.scrollLeft = t.offsetLeft - el.clientWidth / 2 + 23;
       });
+      const inl = body.querySelector(".rp-inline");
+      if (inl && RP._scrollInline) { RP._scrollInline = false; inl.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
     }
-    function railSetFrom(i) { const s = RP._sugs[i].s; railSetFromStation(railMember(railData[RP.region], s)); }
-    function railSetFromStation(m) { RP.from = { L: m.L, s: m.s }; RP.browse = false; RP.browseLine = null; RP.legs = []; RP.pickLine = null; railRender(); }
-    function railBrowseLine(li) { RP.browseLine = li; railRender(); }
-    function railPickLine(li) { RP.pickLine = li; railRender(); }
+    function railSetFrom(i) { railSetFromStation(railMember(railData[RP.region], RP._sugs[i].s)); }
+    function railSetFromStation(m) { RP.from = { L: m.L, s: m.s }; RP.to = null; RP.browse = false; RP.browseLine = null; railRender(); }
+    function railSetTo() { const m = railMember(railData[RP.region], RP._tg.s); RP.to = { L: m.L, s: m.s }; RP.browse = false; railRender(); }
+    function railBrowseLine(role, li) { RP.browse = role; RP.browseLine = RP.browseLine === li ? null : li; RP._scrollInline = true; railRender(); }
     function railPickStation(li, si, role) {
       const d = railData[RP.region], L = d.lines[li], s = L.st[si];
       if (role === "from") return railSetFromStation({ L, s });
-      const m = RP._list.find(x => x.L === L);
-      if (!m || m.s === s) return;
-      RP.legs.push({ L, from: m.s, to: s, hops: railHops(L, L.st.indexOf(m.s), si) });
-      RP.pickLine = null;
-      railRender();
+      if (RP.from && s.cl === RP.from.s.cl) return showToast("上車和下車是同一個地方");
+      RP.to = { L, s }; RP.browse = false; RP.browseLine = null; railRender();
     }
+    function railChooseRoute(i) { RP.legs = RP._opts[i].legs.slice(); railFinish(); }
+
     // 回報車站資料錯誤：自動附上地區、車站、路線、App 判斷的換車方式
     function railReport() {
       const reg = (RAIL_REGIONS.find(r => r.id === RP.region) || {}).label || RP.region;
@@ -11522,7 +12039,8 @@ function initSupabaseClient() {
         const p = railPlace(d, RP.from.s);
         lines.push(`上車：${railStName(RP.from.s)}（${RP.from.L.n}）` + (p.others.length ? `，App 認為同一個地方：${p.others.join("、")}` : ""));
       }
-      const legs = RP.legs.length ? RP.legs : (RP._route || []);
+      const legs = RP.legs.length ? RP.legs : ((RP._opts && RP._opts[0] && RP._opts[0].legs) || []);
+      if (RP.to) lines.push(`下車：${railStName(RP.to.s)}（${RP.to.L.n}）`);
       legs.forEach((g, i) => {
         if (i === 0 && RP.from && railNorm(g.from.n) !== railNorm(RP.from.s.n)) lines.push(`  先走到 ${railStName(g.from)}：${railXfer(RP.from.L, RP.from.s, g.L, g.from).t}`);
         if (i > 0) lines.push(`  換車：${railStName(legs[i - 1].to)} → ${railXfer(legs[i - 1].L, legs[i - 1].to, g.L, g.from).t}`);
@@ -11548,7 +12066,7 @@ function initSupabaseClient() {
           from: railStName(g.from), to: railStName(g.to),
           line: g.L.g === "台鐵" ? `台鐵${g.L.n}` : g.L.n,
           trainNo: "", isOutTransfer: !!(x && x.k !== "same"),
-          customColor: g.L.c, fromNo: g.from.no || "", toNo: g.to.no || ""
+          customColor: g.L.c, fromNo: g.from.no || "", toNo: g.to.no || "", railRegion: RP.region, lineKey: g.L.k
         });
         [g.from, g.to].forEach(s => { if (s.lat != null) appState.geoCache[normalizeStationName(railStName(s))] = { lat: s.lat, lng: s.lng }; });
       });
@@ -11570,6 +12088,7 @@ function initSupabaseClient() {
       ["東南亞", [["BKK", "曼谷蘇凡納布", 13.69, 100.7501], ["DMK", "曼谷廊曼", 13.9126, 100.6067], ["CNX", "清邁", 18.7668, 98.9626], ["HKT", "普吉島", 8.1132, 98.3169], ["SIN", "新加坡", 1.3644, 103.9915], ["KUL", "吉隆坡", 2.7456, 101.7099], ["MNL", "馬尼拉", 14.5086, 121.0194], ["CEB", "宿霧", 10.3075, 123.9794], ["SGN", "胡志明市", 10.8188, 106.6519], ["HAN", "河內", 21.2187, 105.8042], ["DAD", "峴港", 16.0439, 108.1994], ["CXR", "芽莊", 11.9982, 109.2194], ["PQC", "富國島", 10.1698, 103.9931], ["DPS", "峇里島", -8.7482, 115.1675], ["CGK", "雅加達", -6.1256, 106.6559]]],
       ["美國・加拿大", [["LAX", "洛杉磯", 33.9416, -118.4085], ["SFO", "舊金山", 37.6213, -122.379], ["SEA", "西雅圖", 47.4502, -122.3088], ["JFK", "紐約甘迺迪", 40.6413, -73.7781], ["EWR", "紐華克", 40.6895, -74.1745], ["ORD", "芝加哥", 41.9742, -87.9073], ["BOS", "波士頓", 42.3656, -71.0096], ["LAS", "拉斯維加斯", 36.084, -115.1537], ["IAH", "休士頓", 29.9902, -95.3368], ["DFW", "達拉斯", 32.8998, -97.0403], ["ONT", "安大略", 34.056, -117.6012], ["HNL", "檀香山", 21.3187, -157.9225], ["KOA", "夏威夷可那", 19.7388, -156.0456], ["OGG", "茂宜島", 20.8986, -156.4305], ["YVR", "溫哥華", 49.1967, -123.1815], ["YYZ", "多倫多", 43.6777, -79.6248]]],
       ["歐洲", [["LHR", "倫敦希斯洛", 51.47, -0.4543], ["CDG", "巴黎戴高樂", 49.0097, 2.5479], ["AMS", "阿姆斯特丹", 52.3105, 4.7683], ["FRA", "法蘭克福", 50.0379, 8.5622], ["MUC", "慕尼黑", 48.3537, 11.775], ["VIE", "維也納", 48.1103, 16.5697], ["PRG", "布拉格", 50.1008, 14.26], ["ZRH", "蘇黎世", 47.4582, 8.5555], ["FCO", "羅馬", 41.8003, 12.2389], ["MXP", "米蘭", 45.6306, 8.7281], ["BCN", "巴塞隆納", 41.2974, 2.0833], ["MAD", "馬德里", 40.4983, -3.5676], ["IST", "伊斯坦堡", 41.2753, 28.7519], ["HEL", "赫爾辛基", 60.3172, 24.9633], ["CPH", "哥本哈根", 55.618, 12.656], ["KEF", "冰島", 63.985, -22.6056]]],
+      ["中東", [["DXB", "杜拜", 25.2532, 55.3657], ["DOH", "杜哈", 25.2731, 51.6081], ["AUH", "阿布達比", 24.433, 54.6511]]],
       ["大洋洲", [["SYD", "雪梨", -33.9399, 151.1753], ["MEL", "墨爾本", -37.669, 144.841], ["BNE", "布里斯本", -27.3842, 153.1175], ["AKL", "奧克蘭", -37.0082, 174.785], ["GUM", "關島", 13.4834, 144.7959], ["ROR", "帛琉", 7.3673, 134.5442]]],
     ];
     const AIRPORT_ZH = {};
@@ -11579,7 +12098,16 @@ function initSupabaseClient() {
     }));
     let AP = { side: "dep", group: null };
     function airportLabel(code) { return AIRPORT_ZH[code] || (AIRPORT_COORDS[code] && AIRPORT_COORDS[code].name) || ""; }
+    function getVia() { return document.getElementById("fViaIata").value.split(",").filter(Boolean); }
+    function setVia(list) { document.getElementById("fViaIata").value = list.slice(0, 2).join(","); renderAirportEntry(); }
+    function removeVia(i) { const v = getVia(); v.splice(i, 1); setVia(v); }
     function renderAirportEntry() {
+      const row = document.getElementById("apViaRow");
+      if (row) {
+        const v = getVia();
+        row.innerHTML = v.map((c, i) => `<span class="ap-via-chip"><b>${escapeHtml(c)}</b>${escapeHtml(airportLabel(c))} 轉機<button type="button" onclick="removeVia(${i})" aria-label="移除轉機">✕</button></span>`).join("") +
+          (v.length < 2 ? `<button type="button" class="ap-via-add" onclick="openAirportPicker('via')">＋ 有轉機</button>` : "");
+      }
       ["Dep", "Arr"].forEach(k => {
         const code = document.getElementById(`f${k}Iata`).value.trim().toUpperCase();
         const box = document.getElementById(`ap${k}Box`);
@@ -11603,7 +12131,9 @@ function initSupabaseClient() {
       })));
       const out = [];
       const add = c => { if (c && !out.includes(c)) out.push(c); };
-      if (AP.side === "dep") {
+      if (AP.side === "via") {
+        ["HKG", "ICN", "NRT", "SIN", "BKK", "DXB", "IST", "SFO", "LAX", "SEA"].forEach(add);
+      } else if (AP.side === "dep") {
         // 前一班飛機降落的機場
         const ctx = railFormContext();
         const prevFlight = [...(getActiveDay().items || [])].filter(i => i.type === "flight" && i.id !== editingItemId).pop();
@@ -11622,11 +12152,13 @@ function initSupabaseClient() {
     function renderAirportPicker() {
       const dep = document.getElementById("fDepIata").value.trim().toUpperCase();
       const arr = document.getElementById("fArrIata").value.trim().toUpperCase();
-      document.getElementById("apTabs").innerHTML = ["dep", "arr"].map(sd => {
-        const c = sd === "dep" ? dep : arr;
-        return `<button type="button" class="${AP.side === sd ? "on" : ""}" onclick="AP.side='${sd}';renderAirportPicker()">${sd === "dep" ? "出發" : "抵達"}<b>${escapeHtml(c || "---")}</b>${escapeHtml(c ? airportLabel(c) : "")}</button>`;
+      const tabs = AP.side === "via" ? ["dep", "via", "arr"] : ["dep", "arr"];
+      document.getElementById("apTabs").style.gridTemplateColumns = `repeat(${tabs.length}, 1fr)`;
+      document.getElementById("apTabs").innerHTML = tabs.map(sd => {
+        const c = sd === "dep" ? dep : sd === "arr" ? arr : "";
+        return `<button type="button" class="${AP.side === sd ? "on" : ""}" onclick="AP.side='${sd}';renderAirportPicker()">${{ dep: "出發", arr: "抵達", via: "轉機" }[sd]}<b>${escapeHtml(c || (sd === "via" ? "＋" : "---"))}</b>${escapeHtml(c ? airportLabel(c) : "")}</button>`;
       }).join("");
-      const cur = AP.side === "dep" ? dep : arr;
+      const cur = AP.side === "dep" ? dep : AP.side === "arr" ? arr : "";
       const btn = (c, hot) => `<button type="button" class="ap-btn${hot ? " hot" : ""}${c === cur ? " sel" : ""}" onclick="pickAirport('${c}')"><b>${c}</b><span>${escapeHtml(airportLabel(c))}</span></button>`;
       const sug = airportSuggestions();
       let h = sug.length ? `<div class="rp-grp">常用</div><div class="ap-grid">${sug.map(c => btn(c, true)).join("")}</div>` : "";
@@ -11635,6 +12167,13 @@ function initSupabaseClient() {
       document.getElementById("apBody").innerHTML = h;
     }
     function pickAirport(code) {
+      if (AP.side === "via") {
+        const v = getVia();
+        if (!v.includes(code)) v.push(code);
+        setVia(v);
+        closeModalBackdrop("airportPickerModal");
+        return;
+      }
       document.getElementById(AP.side === "dep" ? "fDepIata" : "fArrIata").value = code;
       renderAirportEntry();
       const other = document.getElementById(AP.side === "dep" ? "fArrIata" : "fDepIata").value.trim();
@@ -11857,8 +12396,10 @@ function initSupabaseClient() {
       version: "2026.11.18b",
       date: "2026.11.18",
       items: [
-        ["點選車站，轉乘自動排好", "新增交通時按「點選車站」：App 會從前後行程猜上車站和目的地，排好轉乘，連要不要出閘門、走出站都標好。台灣（含高鐵、台鐵）、東京、大阪京都、首爾、舊金山、紐約。"],
-        ["點選機場", "航班不用記機場代號，點城市就好。"],
+        ["點選車站，轉乘自動排好", "新增交通時按「點選車站」：點上車站、點下車站，TabigrAm 會給你幾種走法（轉乘最少、站數最少、不用出站），點一下就填好。台灣（含高鐵、台鐵）、東京、大阪京都、首爾、舊金山、紐約。"],
+        ["路線圖分享卡重畫", "台北捷運、東京地鐵、山手線照官方路線圖的線形畫，轉角改成圓弧；站名、站牌可以自己選要不要顯示。也新增成田、關西機場的特急。"],
+        ["新配色：螢光、金屬", "分享卡多了螢光桃紅、電光藍、香檳金、鏡面銀、玫瑰金、幻彩鐳射等配色，還有「隨機配色」一鍵換搭配。"],
+        ["點選機場、轉機", "航班不用記機場代號，點城市就好；有轉機也可以加上，登機證會畫出轉機路線。"],
         ["備份提醒", "沒登入時，行程只存在這台裝置。App 會提醒你登入或備份；選單的「備份到這台裝置」也會顯示上次備份是幾天前。"],
         ["當日回顧", "每天最後一個行程結束後，當天最上方會出現回顧：完成幾個行程、打卡幾個地點、走了幾公里、花了多少。"],
         ["「我到了」更好找", "行程當天，卡片下方會有「我到了」按鈕，按下去記下位置，旅程結束後畫成足跡地圖。心情章也搬到旁邊。"],

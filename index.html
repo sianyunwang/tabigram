@@ -13211,6 +13211,14 @@ function initSupabaseClient() {
           const depUtc = (+sh * 60 + +sm) - tzOffsetAt(depTz, date, s1.depTime);
           const arrLocal = depUtc + s1.duration + tzOffsetAt(arrTz, date, s2.arrTime);
           off = Math.floor(arrLocal / 1440);
+        } else if (legs.length === 1 && depTz && arrTz) {
+          // 沒有飛行時間（台灣班表）：用兩地時差推算，找出合理的飛行時間（20 分鐘到 22 小時）是哪一天抵達
+          const depUtc = (+sh * 60 + +sm) - tzOffsetAt(depTz, date, s1.depTime);
+          off = (+eh * 60 + +em < +sh * 60 + +sm) ? 1 : 0;
+          for (let o = -1; o <= 2; o++) {
+            const d = (+eh * 60 + +em + o * 1440 - tzOffsetAt(arrTz, date, s2.arrTime)) - depUtc;
+            if (d >= 20 && d <= 22 * 60) { off = o; break; }
+          }
         } else if (+eh * 60 + +em < +sh * 60 + +sm) off = 1;
         document.getElementById("fEndDayOffset").value = String(Math.max(-1, Math.min(2, off)));
         renderAirportEntry();

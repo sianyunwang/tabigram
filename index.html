@@ -27,7 +27,7 @@
       var lang = q || saved || (/^zh/i.test(nav) ? "zh" : "en");
       window.TG_LANG = lang;
       document.documentElement.lang = lang === "en" ? "en" : "zh-TW";
-      if (lang === "en") document.write('<script src="i18n/en.js?v=bccee733"><\/script>');
+      if (lang === "en") document.write('<script src="i18n/en.js?v=ba4bc278"><\/script>');
     })();
   </script>
   <script>
@@ -1517,6 +1517,16 @@
     .ed-chip.danger { color: #B23A20; }
     .ed-selbar span { font-size: 12px; font-weight: 800; color: var(--sub); }
     .ed-emoji { flex: none; width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border); background: var(--card); font-size: 21px; cursor: pointer; }
+    .ed-pack { margin: 2px 0 10px; }
+    .ed-pack-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13.5px; }
+    .ed-free { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: #E3F3E8; color: #16803C; }
+    .ed-pack-by { font-size: 11.5px; color: var(--sub); margin: 2px 0 8px; }
+    .ed-pack-by a { color: var(--ink); font-weight: 700; }
+    .ed-pack-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .ed-art { aspect-ratio: 1; border: 1px solid var(--border); border-radius: 12px; background: var(--card, #fff); padding: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .ed-art img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+    .ed-art:active { transform: scale(.94); }
+    .ed-sub { font-size: 11.5px; color: var(--sub); font-weight: 700; margin: 4px 0 6px; }
     .ed-photo { flex: none; width: 54px; height: 54px; border-radius: 10px; border: 2.5px solid transparent; padding: 0; overflow: hidden; cursor: pointer; background: var(--card2, #EBE9E4); }
     .ed-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .ed-photo.on { border-color: var(--accent); }
@@ -6648,7 +6658,13 @@
         try { recents = JSON.parse(localStorage.getItem("TABIGRAM_RECENT_EMOJIS") || "[]"); } catch (e) {}
         const emojis = [...new Set([...recents, "☕", "🚃", "🍜", "🌊", "🍂", "📸", "✨", "❤️"])].slice(0, 14);
         const act = activeStickerId ? `<div class="ed-wrap ed-selbar"><span>已選取貼圖</span><button type="button" class="ed-chip" onclick="bringSelectedStickerToFront()">移到最前</button><button type="button" class="ed-chip" onclick="sendSelectedStickerToBack()">移到最後</button><button type="button" class="ed-chip danger" onclick="removeSelectedStorySticker();edRender()">刪除</button></div>` : "";
-        h = act + `<div class="ed-row">${emojis.map(e => `<button type="button" class="ed-emoji" onclick="addEmojiStickerToStory('${escapeHtml(e)}');edRender()">${escapeHtml(e)}</button>`).join("")}
+        const en = window.TG_LANG === "en";
+        const packs = STICKER_PACKS.map(pk => `<div class="ed-pack">
+            <div class="ed-pack-head"><b>${escapeHtml(en ? pk.nameEn : pk.name)}</b><span class="ed-free">免費</span></div>
+            <div class="ed-pack-by" data-notr>${en ? "Illustrations: " : "插畫："}${escapeHtml(en ? pk.artistEn : pk.artist)}${pk.url ? ` · <a href="${pk.url}" target="_blank" rel="noopener">${en ? "See more work" : "看更多作品"}</a>` : ""}</div>
+            <div class="ed-pack-grid">${pk.items.map(([f, zh, enName], i) => `<button type="button" class="ed-art" onclick="addArtStickerToStory('${pk.id}', ${i})" title="${escapeHtml(en ? enName : zh)}" aria-label="${escapeHtml(en ? enName : zh)}"><img src="${artStickerSrc(pk, f)}" alt="" loading="lazy" decoding="async"></button>`).join("")}</div>
+          </div>`).join("");
+        h = act + packs + `<div class="ed-sub">表情貼</div><div class="ed-row">${emojis.map(e => `<button type="button" class="ed-emoji" onclick="addEmojiStickerToStory('${escapeHtml(e)}');edRender()">${escapeHtml(e)}</button>`).join("")}
           <button type="button" class="ed-chip" onclick="promptCustomStoryEmojiSticker()">自訂</button></div>
           <div class="ed-wrap"><button type="button" class="ed-chip" onclick="triggerAddStickerPolaroidUpload()">＋ 拍立得照片</button>${(currentShareItem.photos || []).length ? `<button type="button" class="ed-chip" onclick="addExistingPhotoAsPolaroidSticker(${selectedSharePhotoIndex})">＋ 用這個行程的照片</button>` : ""}</div>`;
       }
@@ -6802,6 +6818,45 @@
       renderStoryCanvas();
     }
 
+    // 插畫家貼紙包（目前免費開放）。圖片放在 stickers/<包名>/，第一次用到時下載，之後存在手機裡
+    const STICKER_PACKS = [
+      {
+        id: "naobao", name: "跟著蛋白一起去旅行", nameEn: "Travel with naobao",
+        artist: "蛋白人", artistEn: "naobao", url: "https://www.instagram.com/naobao_draw/",
+        items: [
+          ["01.png", "出發囉", "Let's GO"], ["02.png", "塊陶", "Hurry up"], ["03.png", "拍照就擺 pose", "Give you big heart"],
+          ["04.png", "好吃還想再吃", "Yumyum"], ["05.png", "是免稅不是免費", "It's tax free, not for free"], ["06.png", "嚇一跳", "Bingbong"],
+          ["07.png", "100 分", "Excellent"], ["08.png", "每天都值得慶祝", "Happy birthday"],
+        ],
+      },
+    ];
+    const artStickerImgCache = new Map();
+    function artStickerSrc(pack, file) { return `stickers/${pack.id}/${file}`; }
+    async function addArtStickerToStory(packId, idx) {
+      const pack = STICKER_PACKS.find(p => p.id === packId);
+      const it = pack && pack.items[idx];
+      if (!it) return;
+      const src = artStickerSrc(pack, it[0]);
+      let img = artStickerImgCache.get(src);
+      if (!img) {
+        try { img = await loadImageElement(src); } catch (e) { showToast("貼紙載入失敗，請檢查網路"); return; }
+        artStickerImgCache.set(src, img);
+      }
+      // 寬 300（以 1080 寬的卡片計），高度照原圖比例
+      const w = 300, h = Math.round(300 * img.height / img.width);
+      const id = "stk_art_" + Date.now() + "_" + Math.floor(Math.random() * 100);
+      storyStickerLayers.push({
+        id, type: "art", img, src, w, h, pack: pack.id,
+        x: 540 + (Math.random() - 0.5) * 260,
+        y: 960 + (Math.random() - 0.5) * 260,
+        scale: 1.0,
+        rot: (Math.random() - 0.5) * 0.2
+      });
+      activeStickerId = id;
+      renderStoryCanvas();
+      edRender();
+    }
+
     function addEmojiStickerToStory(emoji) {
       const id = "stk_emo_" + Date.now() + "_" + Math.floor(Math.random() * 100);
       storyStickerLayers.push({
@@ -6871,6 +6926,10 @@
       if (stk.type === "polaroid") {
         const hw = 155, hh = 184;
         return { sc, corners: [[-hw, -hh], [hw, -hh], [-hw, hh], [hw, hh]], top: [0, -hh], rot: [0, -hh - 78 / sc] };
+      }
+      if (stk.type === "art") {
+        const hw = stk.w / 2, hh = stk.h / 2;
+        return { sc, corners: [[-hw, -hh], [hw, -hh], [-hw, hh], [hw, hh]], top: [0, -hh], rot: [0, -hh - 70 / sc] };
       }
       const r = 68;
       return { sc, corners: [[0, -r], [r, 0], [0, r], [-r, 0]], top: [0, -r], rot: [0, -r - 70 / sc] };
@@ -6942,6 +7001,16 @@
             ctx.strokeStyle = "#C84B31";
             ctx.lineWidth = 4 / (stk.scale || 1);
             ctx.strokeRect(-pW / 2, -pH / 2, pW, pH);
+            drawStickerHandles(ctx, stk);
+          }
+        } else if (stk.type === "art" && stk.img) {
+          ctx.drawImage(stk.img, -stk.w / 2, -stk.h / 2, stk.w, stk.h);
+          if (stk.id === activeStickerId) {
+            ctx.strokeStyle = "#C84B31";
+            ctx.lineWidth = 3.5 / (stk.scale || 1);
+            ctx.setLineDash([12 / (stk.scale || 1), 10 / (stk.scale || 1)]);
+            ctx.strokeRect(-stk.w / 2, -stk.h / 2, stk.w, stk.h);
+            ctx.setLineDash([]);
             drawStickerHandles(ctx, stk);
           }
         } else if (stk.type === "emoji") {
@@ -8620,7 +8689,7 @@
       function hitSticker(cx, cy) {
         for (let i = storyStickerLayers.length - 1; i >= 0; i--) {
           const s = storyStickerLayers[i];
-          const rad = (s.type === "polaroid" ? 180 : 72) * (s.scale || 1);
+          const rad = (s.type === "polaroid" ? 180 : s.type === "art" ? Math.max(s.w, s.h) / 2 + 10 : 72) * (s.scale || 1);
           if (Math.hypot(cx - s.x, cy - s.y) <= rad) return s;
         }
         return null;
@@ -14789,9 +14858,10 @@ function initSupabaseClient() {
     // 更新公告：改版時只要修改 WHATS_NEW（版本號換新，內容換新），老朋友打開會看到一次
     // =====================================================================
     const WHATS_NEW = {
-      version: "2026.11.18-hello",
-      date: "2026.11.18",
+      version: "2026.11.19-naobao",
+      date: "2026.11.19",
       items: [
+        ["新貼紙：跟著蛋白一起去旅行", "插畫家蛋白人畫的 8 張旅行貼紙，免費使用。做分享卡時按「貼圖」就找得到，出發囉、塊陶、是免稅不是免費……幫你的旅行多一點表情。"],
         ["謝謝你來玩 TabigrAm", "這是一個想把旅行好好收起來的小工具。從排行程、搭車、等航班，到旅程結束蓋上一枚章，希望你走過的每一段路，都被溫柔地記住。"],
         ["這陣子悄悄變好了", "修了好多小地方，也多了全世界的機場和英文版。細節就不一一細數了，用起來順手、開心就好。"],
         ["有話想說，我都在", "TabigrAm 還在封測，難免有迷路的時候。卡卡的地方、想要的功能，或只是想分享你的旅行，都歡迎從選單的「意見回饋」告訴我，每一則我都會認真看。"]

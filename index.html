@@ -6850,7 +6850,8 @@
     }
 
     // 插畫家貼紙包（目前免費開放）。圖片放在 stickers/<包名>/，第一次用到時下載，之後存在手機裡
-    const STICKER_PACKS = [
+    // 內建的貼紙包（網站裡的檔案）：雲端貼紙包讀不到時的備援；雲端有同一個 id 的話以雲端為準
+    const BUILTIN_STICKER_PACKS = [
       {
         id: "naobao", name: "跟著蛋白一起去旅行", nameEn: "Travel with naobao", cover: "cover.png",
         artist: "蛋白人", artistEn: "naobao", url: "https://www.instagram.com/naobao_draw/",
@@ -6861,8 +6862,36 @@
         ],
       },
     ];
+    let STICKER_PACKS = BUILTIN_STICKER_PACKS.slice();
     const artStickerImgCache = new Map();
     let edStickerPack = null;
+    // 雲端貼紙包（管理頁上架的）：存在 Supabase 的 sticker_packs 表，圖片在公開的 stickers 空間
+    const STICKER_PACKS_CACHE = "TABIGRAM_STICKER_PACKS_V1";
+    function stickerPublicUrl(path) { return `${SUPABASE_URL}/storage/v1/object/public/stickers/${String(path || "").split("/").map(encodeURIComponent).join("/")}`; }
+    function applyStickerPackRows(rows) {
+      const cloud = (Array.isArray(rows) ? rows : []).filter(r => r && r.id && Array.isArray(r.items) && r.items.length).map(r => ({
+        id: String(r.id), name: String(r.name || ""), nameEn: String(r.name_en || r.name || ""),
+        artist: String(r.artist || ""), artistEn: String(r.artist_en || r.artist || ""),
+        url: /^https:\/\//.test(r.url || "") ? r.url : "",
+        cover: r.cover ? stickerPublicUrl(r.cover) : "",
+        items: r.items.filter(x => x && x.path).map(x => [stickerPublicUrl(x.path), String(x.name || ""), String(x.name_en || x.name || "")]),
+      }));
+      const ids = new Set(cloud.map(p => p.id));
+      STICKER_PACKS = [...cloud, ...BUILTIN_STICKER_PACKS.filter(p => !ids.has(p.id))];
+    }
+    async function loadStickerPacks() {
+      try { const c = JSON.parse(localStorage.getItem(STICKER_PACKS_CACHE) || "null"); if (c) applyStickerPackRows(c); } catch (e) {}
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/sticker_packs?select=id,name,name_en,artist,artist_en,url,cover,items,sort&published=eq.true&order=sort.asc,created_at.asc`, { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } });
+        if (!res.ok) return; // 資料表還沒建立：只用內建貼紙
+        const rows = await res.json();
+        applyStickerPackRows(rows);
+        try { localStorage.setItem(STICKER_PACKS_CACHE, JSON.stringify(rows)); } catch (e) {}
+        const sm = document.getElementById("shareModal");
+        if (sm && sm.classList.contains("open") && typeof edRender === "function") edRender();
+      } catch (e) {}
+    }
+    window.addEventListener("load", () => setTimeout(loadStickerPacks, 1200));
     // 點貼紙：先放大預覽（背景模糊），再點一下才貼到卡片上
     function edPreviewArtSticker(packId, idx) {
       const pack = STICKER_PACKS.find(p => p.id === packId);
@@ -6882,7 +6911,7 @@
         <div class="ed-stkpv-hint">再點一下，貼到卡片上</div>`;
       requestAnimationFrame(() => pv.classList.add("open"));
     }
-    function artStickerSrc(pack, file) { return `stickers/${pack.id}/${file}`; }
+    function artStickerSrc(pack, file) { return /^https?:\/\//.test(file) ? file : `stickers/${pack.id}/${file}`; }
     async function addArtStickerToStory(packId, idx) {
       const pack = STICKER_PACKS.find(p => p.id === packId);
       const it = pack && pack.items[idx];

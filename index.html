@@ -27,7 +27,7 @@
       var lang = q || saved || (/^zh/i.test(nav) ? "zh" : "en");
       window.TG_LANG = lang;
       document.documentElement.lang = lang === "en" ? "en" : "zh-TW";
-      if (lang === "en") document.write('<script src="i18n/en.js?v=ba4bc278"><\/script>');
+      if (lang === "en") document.write('<script src="i18n/en.js?v=857a04bd"><\/script>');
     })();
   </script>
   <script>
@@ -1517,16 +1517,32 @@
     .ed-chip.danger { color: #B23A20; }
     .ed-selbar span { font-size: 12px; font-weight: 800; color: var(--sub); }
     .ed-emoji { flex: none; width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border); background: var(--card); font-size: 21px; cursor: pointer; }
-    .ed-pack { margin: 2px 0 10px; }
-    .ed-pack-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13.5px; }
-    .ed-free { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: #E3F3E8; color: #16803C; }
-    .ed-pack-by { font-size: 11.5px; color: var(--sub); margin: 2px 0 8px; }
+    .ed-stk { height: 156px; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+    .ed-stkbar { height: 32px; flex: none; display: flex; align-items: center; gap: 6px; font-size: 13px; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .ed-stkbar::-webkit-scrollbar { display: none; }
+    .ed-stkbar > span:first-child { font-size: 12px; color: var(--sub); font-weight: 800; }
+    .ed-stkhint { font-size: 12px; color: var(--sub); }
+    .ed-free { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: #E3F3E8; color: #16803C; flex: none; }
+    .ed-pack-by { font-size: 11.5px; color: var(--sub); }
     .ed-pack-by a { color: var(--ink); font-weight: 700; }
-    .ed-pack-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-    .ed-art { aspect-ratio: 1; border: 1px solid var(--border); border-radius: 12px; background: var(--card, #fff); padding: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .ed-stkrow { height: 78px; flex: none; align-items: center; }
+    .ed-pack-cover { flex: none; width: 64px; border: 0; background: none; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; font-family: var(--sans); }
+    .ed-pack-cover span { width: 56px; height: 56px; border-radius: 16px; background: var(--card2, #EBE9E4); display: grid; place-items: center; overflow: hidden; border: 1.5px solid var(--border); }
+    .ed-pack-cover img { width: 50px; height: 50px; object-fit: contain; }
+    .ed-pack-cover small { font-size: 10.5px; font-weight: 800; color: var(--sub); max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ed-stkdiv { flex: none; width: 1px; height: 44px; background: var(--border); margin: 0 2px; }
+    .ed-art { flex: none; width: 58px; height: 58px; border: 1px solid var(--border); border-radius: 14px; background: var(--card2, #EBE9E4); padding: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .ed-art img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
     .ed-art:active { transform: scale(.94); }
-    .ed-sub { font-size: 11.5px; color: var(--sub); font-weight: 700; margin: 4px 0 6px; }
+    .ed-back { flex: none; width: 34px; height: 58px; border: 0; border-radius: 12px; background: none; color: var(--ink); font: 900 26px var(--sans); cursor: pointer; }
+    .ed-stktools { flex: none; align-items: center; }
+    .ed-stkpv { position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; background: rgba(10,10,12,.45); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); opacity: 0; pointer-events: none; transition: opacity .18s ease; }
+    .ed-stkpv.open { opacity: 1; pointer-events: auto; }
+    .ed-stkpv-img { border: 0; background: none; padding: 0; cursor: pointer; transform: scale(.85); transition: transform .2s cubic-bezier(.3,1.4,.5,1); }
+    .ed-stkpv.open .ed-stkpv-img { transform: scale(1); }
+    .ed-stkpv-img img { width: min(64vw, 280px); height: auto; display: block; filter: drop-shadow(0 10px 24px rgba(0,0,0,.35)); }
+    .ed-stkpv-name { color: #fff; font: 900 17px var(--sans); }
+    .ed-stkpv-hint { color: rgba(255,255,255,.75); font-size: 12.5px; }
     .ed-photo { flex: none; width: 54px; height: 54px; border-radius: 10px; border: 2.5px solid transparent; padding: 0; overflow: hidden; cursor: pointer; background: var(--card2, #EBE9E4); }
     .ed-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .ed-photo.on { border-color: var(--accent); }
@@ -1747,6 +1763,20 @@
     .mem-pick.on i { display: grid; }
 
     /* ---------- 主題包預告 ---------- */
+    .jam-pack { padding: 16px; }
+    .jam-pack-head { display: flex; gap: 12px; align-items: center; }
+    .jam-cover { flex: none; width: 64px; height: 64px; border-radius: 18px; background: var(--card2, #EBE9E4); display: grid; place-items: center; border: 1.5px solid var(--border); }
+    .jam-cover img { width: 56px; height: 56px; object-fit: contain; }
+    .jam-kicker { font-family: var(--mono); font-size: 11px; font-weight: 800; letter-spacing: 1px; color: var(--accent); }
+    .jam-name { font-size: 18px; font-weight: 900; margin-top: 2px; }
+    .jam-by { font-size: 12px; color: var(--sub); margin-top: 2px; }
+    .jam-by a { color: var(--ink); font-weight: 800; }
+    .jam-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 12px; }
+    .jam-grid span { aspect-ratio: 1; border-radius: 12px; background: var(--card2, #EBE9E4); display: grid; place-items: center; padding: 4px; }
+    .jam-grid img { width: 100%; height: 100%; object-fit: contain; }
+    .jam-how { font-size: 12px; color: var(--sub); margin-top: 10px; }
+    .jam-invite { padding: 16px; }
+    .jam-invite .jam-kicker { margin-bottom: 6px; }
     .theme-teaser-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
     .theme-teaser { aspect-ratio: 3 / 4; border-radius: 14px; position: relative; overflow: hidden; display: flex; align-items: flex-end; padding: 8px; color: #fff; font-size: 11px; font-weight: 900; }
     .theme-teaser::after { content: ""; width: 14px; height: 14px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E") center / contain no-repeat; position: absolute; top: 8px; right: 8px; font-size: 14px; }
@@ -2519,7 +2549,7 @@
             <button class="dropdown-item" onclick="openTripManager(); toggleHeaderDropdown();">我的旅程</button>
             <button class="dropdown-item" id="dropdownTripAdminBtn" onclick="openTripAdminModal(); toggleHeaderDropdown();" style="display: none;">管理旅行</button>
             <button class="dropdown-item" onclick="openMemories(); toggleHeaderDropdown();">旅程回憶</button>
-            <button class="dropdown-item" onclick="openArchiveModalWithEmail(); toggleHeaderDropdown();">主題商店 <span class="hd-soon">即將推出</span></button>
+            <button class="dropdown-item" onclick="openArchiveModalWithEmail(); toggleHeaderDropdown();">果醬派對 <span class="hd-soon">新貼紙</span></button>
 
             <div class="hd-sec">工具</div>
             <button class="dropdown-item" onclick="openCsvImportModal(); toggleHeaderDropdown();">試算表匯入 / 範本</button>
@@ -3516,25 +3546,19 @@
   <div class="modal-backdrop" id="archiveModal">
     <div class="modal-sheet" style="max-width: 420px;">
       <div class="modal-header">
-        <div class="modal-title">主題商店</div>
+        <div class="modal-title">果醬派對</div>
         <button class="pill-btn" onclick="closeArchiveModal()" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
       </div>
-      <div class="form-card" style="text-align:center; padding:22px 18px;">
-        <div style="display:inline-block; font-family:var(--mono); font-size:11px; font-weight:800; letter-spacing:2px; padding:4px 12px; border-radius:999px; background:var(--accent-soft); color:var(--accent); margin-bottom:12px;">即將推出</div>
-        <div style="font-family:var(--sans); font-weight:900; font-size:22px; margin-bottom:8px;">插畫家主題包</div>
-        <div style="font-size:13.5px; color:var(--sub); line-height:1.7; text-wrap:pretty;">
-          邀請插畫家、設計師與 IP 創作者操刀，<br>每一包都是完整的旅行主視覺：
-        </div>
-        <div class="theme-teaser-grid">
-          <div class="theme-teaser" style="background:linear-gradient(160deg,#F2B880,#C84B31);"><span>主題配色</span></div>
-          <div class="theme-teaser" style="background:linear-gradient(160deg,#9BC4C0,#2B5B84);"><span>獨家貼紙</span></div>
-          <div class="theme-teaser" style="background:linear-gradient(160deg,#E7D3A8,#7A6A45);"><span>拍立得模板</span></div>
-        </div>
-        <div style="font-size:12.5px; color:var(--sub); line-height:1.6;">每包獨立販售，收益與創作者分潤。<br>想合作的創作者，歡迎來信 <a href="mailto:support@tabigram.info" style="color:var(--accent); font-weight:800;">support@tabigram.info</a></div>
+      <!-- 已上架的貼紙包（由 renderJamShowcase 依 STICKER_PACKS 畫出來）-->
+      <div id="jamShowcase"></div>
+      <div class="form-card jam-invite">
+        <div class="jam-kicker">下一包，可能就是你的</div>
+        <div style="font-size:13px; color:var(--sub); line-height:1.7; text-wrap:pretty;">邀請插畫家、設計師與 IP 創作者，把作品變成大家旅行時貼在分享卡上的貼紙、配色和拍立得模板。署名和作品連結都會放在貼紙包上。</div>
+        <div style="font-size:12.5px; color:var(--sub); line-height:1.6; margin-top:8px;">想合作的創作者，歡迎來信 <a href="mailto:support@tabigram.info" style="color:var(--accent); font-weight:800;">support@tabigram.info</a></div>
       </div>
       <div class="form-card" id="waitlistBox">
-        <div style="font-size:14px; font-weight:900; margin-bottom:4px;">上架時通知我</div>
-        <div style="font-size:12.5px; color:var(--sub); margin-bottom:8px;">第一批主題包上架時，會寄一封信給你，不會寄其他廣告。</div>
+        <div style="font-size:14px; font-weight:900; margin-bottom:4px;">新的貼紙包上架時通知我</div>
+        <div style="font-size:12.5px; color:var(--sub); margin-bottom:8px;">有新的創作者加入時，會寄一封信給你，不會寄其他廣告。</div>
         <input type="email" class="form-input" id="waitlistEmailInput" placeholder="你的 Email" autocomplete="email" />
         <input type="text" class="form-input" id="waitlistWishInput" placeholder="想看到哪位創作者或哪種風格？（選填）" maxlength="200" style="margin-top:8px;" />
         <button type="button" class="pill-btn primary" id="waitlistSubmitBtn" style="width:100%; justify-content:center; padding:11px; margin-top:10px;" onclick="joinThemeWaitlist()">通知我</button>
@@ -6627,7 +6651,7 @@
         } else {
           const list = edColorPart === "outer" ? OUTER_SWATCHES : INNER_SWATCHES, cur = edColorPart === "outer" ? outer.id : inner.id;
           h += list.map(sw => `<button type="button" class="ed-sw${sw.id === cur ? " on" : ""}" onclick="${edColorPart === "outer" ? "selectOuterSwatch" : "selectInnerSwatch"}('${sw.id}');edRender()"><span style="background:${swatchCss(sw)}"></span><small>${escapeHtml(sw.name)}</small></button>`).join("");
-          h += `<button type="button" class="ed-sw soon" onclick="openArchiveModalWithEmail()"><span>＋</span><small>主題包</small></button>`;
+          h += `<button type="button" class="ed-sw soon" onclick="openArchiveModalWithEmail()"><span>＋</span><small>果醬派對</small></button>`;
         }
         h += `</div>`;
       } else if (edTab === "content") {
@@ -6657,16 +6681,23 @@
         let recents = [];
         try { recents = JSON.parse(localStorage.getItem("TABIGRAM_RECENT_EMOJIS") || "[]"); } catch (e) {}
         const emojis = [...new Set([...recents, "☕", "🚃", "🍜", "🌊", "🍂", "📸", "✨", "❤️"])].slice(0, 14);
-        const act = activeStickerId ? `<div class="ed-wrap ed-selbar"><span>已選取貼圖</span><button type="button" class="ed-chip" onclick="bringSelectedStickerToFront()">移到最前</button><button type="button" class="ed-chip" onclick="sendSelectedStickerToBack()">移到最後</button><button type="button" class="ed-chip danger" onclick="removeSelectedStorySticker();edRender()">刪除</button></div>` : "";
         const en = window.TG_LANG === "en";
-        const packs = STICKER_PACKS.map(pk => `<div class="ed-pack">
-            <div class="ed-pack-head"><b>${escapeHtml(en ? pk.nameEn : pk.name)}</b><span class="ed-free">免費</span></div>
-            <div class="ed-pack-by" data-notr>${en ? "Illustrations: " : "插畫："}${escapeHtml(en ? pk.artistEn : pk.artist)}${pk.url ? ` · <a href="${pk.url}" target="_blank" rel="noopener">${en ? "See more work" : "看更多作品"}</a>` : ""}</div>
-            <div class="ed-pack-grid">${pk.items.map(([f, zh, enName], i) => `<button type="button" class="ed-art" onclick="addArtStickerToStory('${pk.id}', ${i})" title="${escapeHtml(en ? enName : zh)}" aria-label="${escapeHtml(en ? enName : zh)}"><img src="${artStickerSrc(pk, f)}" alt="" loading="lazy" decoding="async"></button>`).join("")}</div>
-          </div>`).join("");
-        h = act + packs + `<div class="ed-sub">表情貼</div><div class="ed-row">${emojis.map(e => `<button type="button" class="ed-emoji" onclick="addEmojiStickerToStory('${escapeHtml(e)}');edRender()">${escapeHtml(e)}</button>`).join("")}
-          <button type="button" class="ed-chip" onclick="promptCustomStoryEmojiSticker()">自訂</button></div>
-          <div class="ed-wrap"><button type="button" class="ed-chip" onclick="triggerAddStickerPolaroidUpload()">＋ 拍立得照片</button>${(currentShareItem.photos || []).length ? `<button type="button" class="ed-chip" onclick="addExistingPhotoAsPolaroidSticker(${selectedSharePhotoIndex})">＋ 用這個行程的照片</button>` : ""}</div>`;
+        const pk = edStickerPack ? STICKER_PACKS.find(p => p.id === edStickerPack) : null;
+        // 第一行固定高度：選到貼紙時放操作按鈕，沒選時放說明，面板高度不會跳動（拖曳時卡片不會突然縮放）
+        const top = activeStickerId
+          ? `<div class="ed-stkbar"><span>已選取貼圖</span><button type="button" class="ed-chip" onclick="bringSelectedStickerToFront()">移到最前</button><button type="button" class="ed-chip" onclick="sendSelectedStickerToBack()">移到最後</button><button type="button" class="ed-chip danger" onclick="removeSelectedStorySticker();edRender()">刪除</button></div>`
+          : pk
+            ? `<div class="ed-stkbar"><b>${escapeHtml(en ? pk.nameEn : pk.name)}</b><span class="ed-free">免費</span><span class="ed-pack-by" data-notr>${en ? "by " : "插畫："}${escapeHtml(en ? pk.artistEn : pk.artist)}${pk.url ? ` · <a href="${pk.url}" target="_blank" rel="noopener">${en ? "More work" : "看更多作品"}</a>` : ""}</span></div>`
+            : `<div class="ed-stkbar"><span class="ed-stkhint">點貼紙包看全部貼紙</span></div>`;
+        let row;
+        if (pk) {
+          row = `<div class="ed-row ed-stkrow"><button type="button" class="ed-back" onclick="edStickerPack=null;edRender()" aria-label="返回">‹</button>${pk.items.map(([f, zh, enName], i) => `<button type="button" class="ed-art" onclick="edPreviewArtSticker('${pk.id}', ${i})" title="${escapeHtml(en ? enName : zh)}" aria-label="${escapeHtml(en ? enName : zh)}"><img src="${artStickerSrc(pk, f)}" alt="" decoding="async"></button>`).join("")}</div>`;
+        } else {
+          row = `<div class="ed-row ed-stkrow">${STICKER_PACKS.map(p => `<button type="button" class="ed-pack-cover" onclick="edStickerPack='${p.id}';edRender()"><span><img src="${artStickerSrc(p, p.cover || p.items[0][0])}" alt="" decoding="async"></span><small>${escapeHtml(en ? p.nameEn : p.name)}</small></button>`).join("")}
+            <span class="ed-stkdiv" aria-hidden="true"></span>${emojis.map(e => `<button type="button" class="ed-emoji" onclick="addEmojiStickerToStory('${escapeHtml(e)}');edRender()">${escapeHtml(e)}</button>`).join("")}</div>`;
+        }
+        const tools = `<div class="ed-row ed-stktools"><button type="button" class="ed-chip" onclick="promptCustomStoryEmojiSticker()">自訂表情</button><button type="button" class="ed-chip" onclick="triggerAddStickerPolaroidUpload()">＋ 拍立得照片</button>${(currentShareItem.photos || []).length ? `<button type="button" class="ed-chip" onclick="addExistingPhotoAsPolaroidSticker(${selectedSharePhotoIndex})">＋ 用這個行程的照片</button>` : ""}</div>`;
+        h = `<div class="ed-stk">${top}${row}${tools}</div>`;
       }
       panel.innerHTML = h;
       edLastSticker = activeStickerId;
@@ -6821,7 +6852,7 @@
     // 插畫家貼紙包（目前免費開放）。圖片放在 stickers/<包名>/，第一次用到時下載，之後存在手機裡
     const STICKER_PACKS = [
       {
-        id: "naobao", name: "跟著蛋白一起去旅行", nameEn: "Travel with naobao",
+        id: "naobao", name: "跟著蛋白一起去旅行", nameEn: "Travel with naobao", cover: "cover.png",
         artist: "蛋白人", artistEn: "naobao", url: "https://www.instagram.com/naobao_draw/",
         items: [
           ["01.png", "出發囉", "Let's GO"], ["02.png", "塊陶", "Hurry up"], ["03.png", "拍照就擺 pose", "Give you big heart"],
@@ -6831,6 +6862,26 @@
       },
     ];
     const artStickerImgCache = new Map();
+    let edStickerPack = null;
+    // 點貼紙：先放大預覽（背景模糊），再點一下才貼到卡片上
+    function edPreviewArtSticker(packId, idx) {
+      const pack = STICKER_PACKS.find(p => p.id === packId);
+      const it = pack && pack.items[idx];
+      if (!it) return;
+      const en = window.TG_LANG === "en";
+      let pv = document.getElementById("edStkPreview");
+      if (!pv) {
+        pv = document.createElement("div");
+        pv.id = "edStkPreview";
+        pv.className = "ed-stkpv";
+        pv.addEventListener("click", e => { if (e.target === pv) pv.classList.remove("open"); });
+        document.getElementById("shareModal").appendChild(pv);
+      }
+      pv.innerHTML = `<button type="button" class="ed-stkpv-img" onclick="document.getElementById('edStkPreview').classList.remove('open'); addArtStickerToStory('${pack.id}', ${idx})" aria-label="${escapeHtml(en ? it[2] : it[1])}"><img src="${artStickerSrc(pack, it[0])}" alt=""></button>
+        <div class="ed-stkpv-name">${escapeHtml(en ? it[2] : it[1])}</div>
+        <div class="ed-stkpv-hint">再點一下，貼到卡片上</div>`;
+      requestAnimationFrame(() => pv.classList.add("open"));
+    }
     function artStickerSrc(pack, file) { return `stickers/${pack.id}/${file}`; }
     async function addArtStickerToStory(packId, idx) {
       const pack = STICKER_PACKS.find(p => p.id === packId);
@@ -13399,7 +13450,25 @@ function initSupabaseClient() {
       if (error && error.code !== "23505") return alert("登記失敗，請稍後再試。");
       document.getElementById("waitlistBox").innerHTML = '<div class="fb-done" style="padding:12px 4px;"><b>登記好了！</b><div style="font-size:13px; color:var(--sub);">主題包上架時會寄信通知你。</div></div>';
     }
+    function renderJamShowcase() {
+      const box = document.getElementById("jamShowcase");
+      if (!box) return;
+      const en = window.TG_LANG === "en";
+      box.innerHTML = STICKER_PACKS.map(pk => `<div class="form-card jam-pack">
+          <div class="jam-pack-head">
+            <span class="jam-cover"><img src="${artStickerSrc(pk, pk.cover || pk.items[0][0])}" alt=""></span>
+            <div style="min-width:0;">
+              <div class="jam-kicker">已上架・免費</div>
+              <div class="jam-name">${escapeHtml(en ? pk.nameEn : pk.name)}</div>
+              <div class="jam-by" data-notr>${en ? "Illustrations: " : "插畫："}${escapeHtml(en ? pk.artistEn : pk.artist)}${pk.url ? ` · <a href="${pk.url}" target="_blank" rel="noopener">${en ? "See more work" : "看更多作品"}</a>` : ""}</div>
+            </div>
+          </div>
+          <div class="jam-grid">${pk.items.map(([f, zh, enName]) => `<span title="${escapeHtml(en ? enName : zh)}"><img src="${artStickerSrc(pk, f)}" alt="${escapeHtml(en ? enName : zh)}" loading="lazy" decoding="async"></span>`).join("")}</div>
+          <div class="jam-how">做分享卡時，按「貼圖」就找得到這組貼紙。</div>
+        </div>`).join("");
+    }
     function openArchiveModalWithEmail() {
+      renderJamShowcase();
       openArchiveModal();
       const inp = document.getElementById("waitlistEmailInput");
       if (inp && !inp.value && currentCloudUser) inp.value = currentCloudUser.email || "";
@@ -13860,7 +13929,12 @@ function initSupabaseClient() {
       railData[id] = d;
       return d;
     }
-    const RAIL_SHORT = { "成田エクスプレス": "N'EX", "はるか": "はるか" };
+    // 圓形路線標誌放不下長名字：用兩個字的簡稱（首爾的線名比較長）
+    const RAIL_SHORT = {
+      "成田エクスプレス": "N'EX", "はるか": "はるか",
+      "京義・中央線": "京義", "水仁・盆唐線": "水仁", "仁川2號線": "仁2", "新盆唐線": "新盆",
+      "機場鐵路": "機場", "龍仁輕軌": "龍仁", "金浦黃金線": "金浦",
+    };
     function railFg(hex) {
       const h = String(hex || "#888888").replace("#", "");
       const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);

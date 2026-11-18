@@ -94,9 +94,10 @@
           var v = root.nodeValue; if (HAN.test(v)) { var t = tr(v); if (t !== v) root.nodeValue = t; } return;
         }
         if (root.nodeType !== 1 && root.nodeType !== 9 && root.nodeType !== 11) return;
-        if (root.nodeType === 1) { if (SKIP[root.tagName] || root.hasAttribute("data-notr")) return; trEl(root); }
+        // 輸入框（textarea）的內容是使用者打的字，不翻；但提示文字（placeholder）要翻
+        if (root.nodeType === 1) { if (root.hasAttribute("data-notr")) return; if (SKIP[root.tagName]) { if (root.tagName === "TEXTAREA") trEl(root); return; } trEl(root); }
         var w = document.createTreeWalker(root, 5, { acceptNode: function (n) {
-          if (n.nodeType === 1) return (SKIP[n.tagName] || n.hasAttribute("data-notr")) ? 2 : 1;
+          if (n.nodeType === 1) { if (n.tagName === "TEXTAREA" && !n.hasAttribute("data-notr")) trEl(n); return (SKIP[n.tagName] || n.hasAttribute("data-notr")) ? 2 : 1; }
           return HAN.test(n.nodeValue) ? 1 : 3;
         } });
         var n;
@@ -1975,6 +1976,7 @@
     .flk-msg { font-size: 12px; color: var(--sub); }
     .lf-mismatch { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 12px; color: #9A5B00; }
     .lf-mismatch .ic { width: 13px; height: 13px; flex: none; }
+    .footer-corner-toggle .ic { width: 16px; height: 16px; stroke-width: 2.6; }
     .lf-mismatch button { margin-left: auto; border: 1.5px solid currentColor; background: none; color: inherit; border-radius: 999px; padding: 1px 9px; font: inherit; font-weight: 800; cursor: pointer; white-space: nowrap; }
     html[data-mode="dark"] .lf-mismatch { color: #F2C36B; }
     .lf-foot { margin-top: 3px; font-size: 10.5px; color: var(--sub); line-height: 1.5; }
@@ -2343,7 +2345,7 @@
 </head>
 <body>
   <!-- 介面線條圖示（取代 emoji） -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/></symbol><symbol id="i-cloud" viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></symbol><symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol><symbol id="i-user-plus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></symbol><symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol><symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.33 2q2 0 3.67-1v11q-1.67 1-3.67 1C13 15 11 13 8 13a6 6 0 0 0-4 1.5"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol><symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol><symbol id="i-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol><symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></symbol><symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></symbol><symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8"/></symbol><symbol id="i-stamp" viewBox="0 0 24 24"><path d="M5 22h14"/><path d="M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z"/><path d="M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3c-1.66 0-3 1-3 3s1 2 1 3.5V13"/></symbol><symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></symbol><symbol id="i-train" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16M12 3v8M8 19l-2 3M18 22l-2-3M8 15h.01M16 15h.01"/></symbol><symbol id="i-plane" viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></symbol><symbol id="i-car" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></symbol><symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></symbol><symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol><symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></symbol><symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22M18 2l4 4-4 4M2 6h1.9c1.5 0 2.9.9 3.6 2.2M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8M18 14l4 4-4 4"/></symbol><symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol><symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol><symbol id="i-luggage" viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="13" rx="2"/><path d="M9 7V4h6v3M9 11v5M15 11v5M8 20v2M16 20v2"/></symbol><symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></symbol><symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol><symbol id="i-droplet" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol><symbol id="i-ship" viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6M12 10v4M12 2v3"/></symbol><symbol id="i-camera" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol><symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol><symbol id="i-cloud-sun" viewBox="0 0 24 24"><path d="M12 2v2M4.93 4.93l1.41 1.41M20 12h2M19.07 4.93l-1.41 1.41M15.95 12.65a4 4 0 0 0-5.93-4.13"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/></symbol><symbol id="i-fog" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24M16 17H7M17 21H9"/></symbol><symbol id="i-rain" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24M16 14v6M8 14v6M12 16v6"/></symbol><symbol id="i-drizzle" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24M8 19v1M8 14v1M16 19v1M16 14v1M12 21v1M12 16v1"/></symbol><symbol id="i-snow" viewBox="0 0 24 24"><path d="M2 12h20M12 2v20M20 16l-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4 4"/></symbol><symbol id="i-storm" viewBox="0 0 24 24"><path d="M6 16.33A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.97M13 11l-4 6h6l-4 6"/></symbol></svg>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/></symbol><symbol id="i-cloud" viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></symbol><symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol><symbol id="i-user-plus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></symbol><symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol><symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.33 2q2 0 3.67-1v11q-1.67 1-3.67 1C13 15 11 13 8 13a6 6 0 0 0-4 1.5"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol><symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol><symbol id="i-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol><symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></symbol><symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></symbol><symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8"/></symbol><symbol id="i-stamp" viewBox="0 0 24 24"><path d="M5 22h14"/><path d="M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z"/><path d="M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3c-1.66 0-3 1-3 3s1 2 1 3.5V13"/></symbol><symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></symbol><symbol id="i-train" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16M12 3v8M8 19l-2 3M18 22l-2-3M8 15h.01M16 15h.01"/></symbol><symbol id="i-plane" viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></symbol><symbol id="i-car" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></symbol><symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></symbol><symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol><symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></symbol><symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22M18 2l4 4-4 4M2 6h1.9c1.5 0 2.9.9 3.6 2.2M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8M18 14l4 4-4 4"/></symbol><symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol><symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol><symbol id="i-luggage" viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="13" rx="2"/><path d="M9 7V4h6v3M9 11v5M15 11v5M8 20v2M16 20v2"/></symbol><symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></symbol><symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol><symbol id="i-droplet" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol><symbol id="i-ship" viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6M12 10v4M12 2v3"/></symbol><symbol id="i-camera" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol><symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol><symbol id="i-cloud-sun" viewBox="0 0 24 24"><path d="M12 2v2M4.93 4.93l1.41 1.41M20 12h2M19.07 4.93l-1.41 1.41M15.95 12.65a4 4 0 0 0-5.93-4.13"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/></symbol><symbol id="i-fog" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24M16 17H7M17 21H9"/></symbol><symbol id="i-rain" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24M16 14v6M8 14v6M12 16v6"/></symbol><symbol id="i-drizzle" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24M8 19v1M8 14v1M16 19v1M16 14v1M12 21v1M12 16v1"/></symbol><symbol id="i-snow" viewBox="0 0 24 24"><path d="M2 12h20M12 2v20M20 16l-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4 4"/></symbol><symbol id="i-storm" viewBox="0 0 24 24"><path d="M6 16.33A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.97M13 11l-4 6h6l-4 6"/></symbol></svg>
   <!-- 入口頁：新訪客看到品牌與功能介紹；熟客自動跳過 -->
   <div class="landing" id="landingScreen" role="region" aria-label="TabigrAm 介紹">
     <div class="landing-inner">
@@ -3386,7 +3388,7 @@
             </div>
             <div style="display:flex; gap:4px; align-items:center;">
               <button type="button" class="mini-btn" onclick="bringSelectedStickerToFront()" title="移至最前"><svg class="ic" aria-hidden="true"><use href="#i-arrow-up"/></svg> 最前</button>
-              <button type="button" class="mini-btn" onclick="sendSelectedStickerToBack()" title="移至最後">⬇️ 最後</button>
+              <button type="button" class="mini-btn" onclick="sendSelectedStickerToBack()" title="移至最後">移到最後</button>
               <button type="button" class="mini-btn delete-btn" onclick="removeSelectedStorySticker()"><svg class="ic" aria-hidden="true"><use href="#i-trash"/></svg> 刪除</button>
             </div>
           </div>
@@ -3706,7 +3708,7 @@
         <div class="cd-swatch-row" id="cdInnerSwatches"></div>
         <button type="button" class="pill-btn cd-random-btn" onclick="randomizeCountdownColors()"><svg class="ic" aria-hidden="true"><use href="#i-shuffle"/></svg> 隨機配色</button>
       </div>
-      <button type="button" class="pill-btn primary" style="width:100%; justify-content:center; padding:11px; margin-top:12px;" onclick="exportCountdownShareCard()">⬇️ 儲存 / 分享圖片</button>
+      <button type="button" class="pill-btn primary" style="width:100%; justify-content:center; padding:11px; margin-top:12px;" onclick="exportCountdownShareCard()"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg> 儲存 / 分享圖片</button>
     </div>
   </div>
 
@@ -3724,8 +3726,8 @@
           一列就是一個行程。第 2 列是各欄的填寫說明（# 開頭，匯入時會自動略過）。不用的欄位可以留空或整欄刪掉，順序也可以調整。
         </div>
         <div style="display:flex; gap:8px; margin:10px 0 8px;">
-          <button type="button" class="pill-btn primary" style="flex:1; justify-content:center;" onclick="downloadCsvTemplate(false)">⬇️ 空白範本</button>
-          <button type="button" class="pill-btn" style="flex:1; justify-content:center;" onclick="downloadCsvTemplate(true)">⬇️ 填寫範例</button>
+          <button type="button" class="pill-btn primary" style="flex:1; justify-content:center;" onclick="downloadCsvTemplate(false)"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg> 空白範本</button>
+          <button type="button" class="pill-btn" style="flex:1; justify-content:center;" onclick="downloadCsvTemplate(true)"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg> 填寫範例</button>
         </div>
         <details class="csv-guide">
           <summary>每一欄怎麼填？</summary>
@@ -5143,7 +5145,7 @@
       const trip = getActiveTrip();
       const i = appState.activeDayIndex;
       const n = trip.days.length;
-      const lbl = (k) => `第 ${k + 1} 天`;
+      const lbl = (k) => window.TG_LANG === "en" ? `Day ${k + 1}` : `第 ${k + 1} 天`;
       const dt = (k) => trip.startDate ? ` · ${getDayFormattedDateString(trip.startDate, k)}` : "";
       const opts = [];
       if (i === 0) {
@@ -5273,8 +5275,33 @@
       return ' lang="ja"';
     }
 
+    function railEnText(name, kind, region) {
+      if (!name || !/[\u3400-\u9fff\u3040-\u30ff\uac00-\ud7af]/.test(name) || typeof railData === "undefined") return name;
+      // 那個地區的路線資料還沒載入：背景載入一次，好了再重畫
+      if (region && !railData[region] && !railEnText.loading.has(region)) {
+        railEnText.loading.add(region);
+        loadRail(region).then(() => renderAll()).catch(() => {});
+      }
+      const regs = region && railData[region] ? [railData[region]] : Object.values(railData);
+      for (const d of regs) {
+        for (const L of (d && d.lines) || []) {
+          if (kind === "line") { if (L.en && (L.n === name || name.endsWith(L.n))) return L.en; continue; }
+          const st = L.st.find(x => x.en && (x.n === name || x.alt === name));
+          if (st) return st.en;
+        }
+      }
+      return name;
+    }
+    railEnText.loading = new Set();
     function formatItemSubtitle(item) {
       if (item.type === "transit" && Array.isArray(item.transitLegs) && item.transitLegs.length > 0) {
+        if (window.TG_LANG === "en") {
+          // 英文版：中文／日文存的站名、路線名，有載入路線資料就換成英文
+          return item.transitLegs.map(leg => {
+            const trainBadge = leg.trainNo ? ` ${leg.trainNo}` : "";
+            return `${railEnText(leg.line, "line", leg.railRegion) || "Line"}${trainBadge} (${railEnText(leg.from, "st", leg.railRegion)} → ${railEnText(leg.to, "st", leg.railRegion)})`;
+          }).join(" / ");
+        }
         return item.transitLegs.map(leg => {
           const trainBadge = leg.trainNo ? ` ${leg.trainNo}` : "";
           return `${leg.line || "路線"}${trainBadge}（${leg.from} → ${leg.to}）`;
@@ -5291,7 +5318,8 @@
       if (item.type === "roadtrip") {
         const stopsStr = item.roadStops ? ` → ${item.roadStops} → ` : " → ";
         const hwyStr = item.roadHighway ? ` [${item.roadHighway}]` : "";
-        return `${item.roadFrom || "起點"}${stopsStr}${item.roadTo || "終點"}${hwyStr}`;
+        const en = window.TG_LANG === "en";
+        return `${item.roadFrom || (en ? "Start" : "起點")}${stopsStr}${item.roadTo || (en ? "End" : "終點")}${hwyStr}`;
       }
       return item.subtitle || "";
     }
@@ -5453,7 +5481,7 @@
           </div>
 
           <div class="card-footer">
-            <button type="button" class="footer-corner-toggle" id="footerToggle_${item.id}" onclick="toggleCardFooterDrawer(event, '${item.id}')" title="展開操作選單">•••</button>
+            <button type="button" class="footer-corner-toggle" id="footerToggle_${item.id}" onclick="toggleCardFooterDrawer(event, '${item.id}')" title="展開操作選單" aria-label="展開操作選單">${ic("more")}</button>
             <div class="footer-actions-drawer" id="footerDrawer_${item.id}">
               ${!appState.travelLockMode ? `<button class="footer-text-btn" onclick="openItemModal('${item.id}')">編輯</button>` : ""}
               <button class="footer-text-btn" onclick="triggerQuickPhotoUpload('${item.id}', false)">照片</button>
@@ -7865,6 +7893,39 @@
       ctx.restore();
     }
 
+    // 字太長：先縮字級，到最小還放不下就用「…」收尾（不會壓到旁邊的東西）
+    function fitFillText(ctx, text, x, y, maxW, weight, maxSize, minSize, family) {
+      let size = maxSize, t = String(text || "");
+      const setF = () => { ctx.font = `${weight} ${size}px ${family}`; };
+      setF();
+      while (size > minSize && ctx.measureText(t).width > maxW) { size -= 2; setF(); }
+      if (ctx.measureText(t).width > maxW) {
+        while (t.length > 1 && ctx.measureText(t + "…").width > maxW) t = t.slice(0, -1);
+        t = t.replace(/[\s·・（(]+$/, "") + "…";
+      }
+      ctx.__lastFit = t;
+      ctx.fillText(t, x, y);
+      return size;
+    }
+    // 線條小船（船身＋船艙＋煙囪），(x, y) 是水線中心
+    function drawLineBoat(ctx, x, y, k, color, lw) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(k, k);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lw / k;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(-28, -12); ctx.lineTo(28, -12); ctx.lineTo(19, 0); ctx.lineTo(-19, 0); ctx.closePath();
+      ctx.moveTo(-14, -12); ctx.lineTo(-14, -24); ctx.lineTo(12, -24); ctx.lineTo(12, -12);
+      ctx.moveTo(2, -24); ctx.lineTo(2, -32); ctx.lineTo(8, -32); ctx.lineTo(8, -24);
+      ctx.moveTo(-7, -18); ctx.lineTo(-5, -18);
+      ctx.moveTo(3, -18); ctx.lineTo(5, -18);
+      ctx.stroke();
+      ctx.restore();
+    }
+
     function drawFerryTicketCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch, outerSwatch) {
       drawCardPaperTexture(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg, appState.paperTexture);
 
@@ -7884,9 +7945,10 @@
       ctx.setLineDash([]);
 
       drawRoundedRect(ctx, cardX + 36, cardY + 36, cardW - 72, 92, 18, "#0F2942");
+      drawLineBoat(ctx, cardX + 92, cardY + 92, 0.8, "#FFFFFF", 2.6);
       ctx.fillStyle = "#FFFFFF";
-      ctx.font = "800 26px 'JetBrains Mono', monospace";
-      ctx.fillText("⛴ MARITIME FERRY BOARDING PASS", cardX + 68, cardY + 92);
+      ctx.textAlign = "left";
+      fitFillText(ctx, "MARITIME FERRY BOARDING PASS", cardX + 132, cardY + 92, cardW - 72 - 120, "800", 26, 18, "'JetBrains Mono', monospace");
 
       const leg = (item.transitLegs && item.transitLegs[0]) || {
         from: item.title.split(/to|➔|→/i)[0] || "DEPARTURE PIER",
@@ -7894,59 +7956,72 @@
         line: item.subtitle || "FERRY LINE",
         trainNo: "DECK PASS"
       };
+      const L = cardX + 64, R = cardX + cardW - 64, W = R - L;
+      const tearY = cardY + cardH * 0.62;
+
+      // 出發港、抵達港各佔一行（不會互相擠到），中間用一條細浪線＋線條小船
+      ctx.fillStyle = "#64748B";
+      ctx.textAlign = "left";
+      ctx.font = "700 22px 'JetBrains Mono', monospace";
+      ctx.fillText("EMBARKATION PIER", L, cardY + 200);
+      ctx.fillStyle = innerSwatch.text;
+      fitFillText(ctx, String(leg.from || "出發港").trim(), L, cardY + 262, W, "900", 52, 30, "'Noto Sans TC', sans-serif");
+
+      const routeY = cardY + 322;
+      ctx.strokeStyle = "rgba(2, 132, 199, 0.55)";
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(L, routeY);
+      for (let wx = L; wx < R - 1; wx += 32) {
+        const e = Math.min(wx + 32, R), h = (e - wx) / 2;
+        ctx.quadraticCurveTo(wx + h / 2, routeY - 5, wx + h, routeY);
+        ctx.quadraticCurveTo(wx + h * 1.5, routeY + 5, e, routeY);
+      }
+      ctx.stroke();
+      ctx.fillStyle = "#0284C7";
+      [L, R].forEach(x => { ctx.beginPath(); ctx.arc(x, routeY, 6, 0, Math.PI * 2); ctx.fill(); });
+      // 小船底下先鋪一塊底色，浪線不會穿過船身
+      const boatX = cardX + cardW / 2;
+      ctx.fillStyle = innerSwatch.bg;
+      ctx.fillRect(boatX - 40, routeY - 34, 80, 44);
+      drawLineBoat(ctx, boatX, routeY + 2, 1.15, "#0284C7", 3);
 
       ctx.fillStyle = "#64748B";
+      ctx.textAlign = "right";
       ctx.font = "700 22px 'JetBrains Mono', monospace";
-      ctx.fillText("EMBARKATION PIER", cardX + 64, cardY + 220);
-      ctx.textAlign = "right";
-      ctx.fillText("DESTINATION PIER", cardX + cardW - 64, cardY + 220);
-      ctx.textAlign = "left";
-
+      ctx.fillText("DESTINATION PIER", R, cardY + 392);
       ctx.fillStyle = innerSwatch.text;
-      ctx.font = "900 52px 'Noto Sans TC', sans-serif";
-      ctx.fillText((leg.from || "出發港").slice(0, 6), cardX + 64, cardY + 295);
-
-      ctx.textAlign = "right";
-      ctx.fillText((leg.to || "抵達港").slice(0, 6), cardX + cardW - 64, cardY + 295);
+      fitFillText(ctx, String(leg.to || "抵達港").trim(), R, cardY + 454, W, "900", 52, 30, "'Noto Sans TC', sans-serif");
       ctx.textAlign = "left";
 
-      const midX = cardX + cardW / 2;
-      ctx.strokeStyle = "#0284C7";
-      ctx.lineWidth = 5;
-      ctx.beginPath();
-      ctx.moveTo(midX - 95, cardY + 275);
-      ctx.lineTo(midX + 95, cardY + 275);
-      ctx.stroke();
-      ctx.font = "38px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("⛴️", midX, cardY + 262);
-      ctx.textAlign = "left";
-
-      ctx.strokeStyle = "rgba(2, 132, 199, 0.22)";
-      ctx.lineWidth = 4;
-      for (let wy = cardY + 380; wy <= cardY + 540; wy += 45) {
+      // 底部留兩道很淡的浪，碰不到上面的字
+      ctx.strokeStyle = "rgba(2, 132, 199, 0.16)";
+      ctx.lineWidth = 3;
+      for (let wy = cardY + 500; wy <= tearY - 30; wy += 30) {
         ctx.beginPath();
-        for (let wx = cardX + 64; wx <= cardX + cardW - 64; wx += 40) {
-          ctx.quadraticCurveTo(wx + 10, wy - 10, wx + 20, wy);
-          ctx.quadraticCurveTo(wx + 30, wy + 10, wx + 40, wy);
+        ctx.moveTo(L, wy);
+        for (let wx = L; wx < R - 1; wx += 40) {
+          const e = Math.min(wx + 40, R), h = (e - wx) / 2;
+          ctx.quadraticCurveTo(wx + h / 2, wy - 7, wx + h, wy);
+          ctx.quadraticCurveTo(wx + h * 1.5, wy + 7, e, wy);
         }
         ctx.stroke();
       }
 
-      const stubY = cardY + cardH * 0.62 + 75;
+      const stubY = tearY + 75;
+      const c2 = cardX + cardW * 0.5, c3 = cardX + cardW * 0.76;
       ctx.fillStyle = "#64748B";
       ctx.font = "700 20px 'JetBrains Mono', monospace";
-      ctx.fillText("VESSEL / LINE", cardX + 64, stubY);
-      ctx.fillText("SAILING TIME", cardX + 430, stubY);
-      ctx.fillText("CLASS / NO.", cardX + 690, stubY);
+      ctx.fillText("VESSEL / LINE", L, stubY);
+      ctx.fillText("SAILING TIME", c2, stubY);
+      ctx.fillText("CLASS / NO.", c3, stubY);
 
       ctx.fillStyle = innerSwatch.text;
-      ctx.font = "900 30px 'Noto Sans TC', sans-serif";
-      ctx.fillText((leg.line || "高速船").slice(0, 10), cardX + 64, stubY + 48);
+      fitFillText(ctx, String(leg.line || "高速船"), L, stubY + 48, c2 - L - 24, "900", 30, 20, "'Noto Sans TC', sans-serif");
       ctx.font = "800 30px 'JetBrains Mono', monospace";
-      ctx.fillText(item.startTime || "09:00", cardX + 430, stubY + 48);
-      ctx.font = "800 28px 'Noto Sans TC', sans-serif";
-      ctx.fillText((leg.trainNo || "自由席").slice(0, 8), cardX + 690, stubY + 48);
+      ctx.fillText(item.startTime || "09:00", c2, stubY + 48);
+      fitFillText(ctx, String(leg.trainNo || "自由席"), c3, stubY + 48, R - c3, "800", 28, 18, "'Noto Sans TC', sans-serif");
 
       drawBarcodeStrip(ctx, cardX + 64, cardY + cardH - 135, cardW - 128, 70, innerSwatch.text);
     }
@@ -8171,36 +8246,51 @@
       const rightX = frameX + frameW - 48;
 
       ctx.save();
-      ctx.font = `900 42px ${fontFam}`;
       ctx.textBaseline = "middle";
       ctx.fillStyle = ink;
-
-      const wFrom = ctx.measureText(fromStr).width;
-      const wTo = ctx.measureText(toStr).width;
-
-      ctx.fillText(fromStr, leftX, headerY);
-      ctx.fillText(toStr, rightX - wTo, headerY);
-
-      const arrowStart = leftX + wFrom + 24;
-      const arrowEnd = rightX - wTo - 24;
-      const headLen = 20, headHalfH = 10;
-
-      if (toStr && arrowEnd - arrowStart > 34) {
-        ctx.strokeStyle = ink;
+      ctx.strokeStyle = ink;
+      const W = rightX - leftX, GAP = 24, MIN_ARROW = 70, headLen = 20, headHalfH = 10;
+      const drawArrow = (x0, x1, y) => {
         ctx.lineWidth = 4.5;
         ctx.lineCap = "butt";
         ctx.beginPath();
-        ctx.moveTo(arrowStart, headerY);
-        ctx.lineTo(arrowEnd - headLen + 2, headerY);
+        ctx.moveTo(x0, y);
+        ctx.lineTo(x1 - headLen + 2, y);
         ctx.stroke();
-
-        ctx.fillStyle = ink;
         ctx.beginPath();
-        ctx.moveTo(arrowEnd, headerY);
-        ctx.lineTo(arrowEnd - headLen, headerY - headHalfH);
-        ctx.lineTo(arrowEnd - headLen, headerY + headHalfH);
+        ctx.moveTo(x1, y);
+        ctx.lineTo(x1 - headLen, y - headHalfH);
+        ctx.lineTo(x1 - headLen, y + headHalfH);
         ctx.closePath();
         ctx.fill();
+      };
+      // 放得下就排一行（字可以小一點，最小 34px）；放不下就分兩行：
+      // 第一行出發地，第二行「箭頭 → 目的地」，太長的名字先縮字、再用「…」收尾，不會互相壓到
+      let oneLine = 0;
+      for (let fs = 42; fs >= 34 && toStr; fs -= 2) {
+        ctx.font = `900 ${fs}px ${fontFam}`;
+        if (ctx.measureText(fromStr).width + ctx.measureText(toStr).width + GAP * 2 + MIN_ARROW <= W) { oneLine = fs; break; }
+      }
+      if (!toStr) {
+        fitFillText(ctx, fromStr, leftX, headerY, W, "900", 42, 28, fontFam);
+      } else if (oneLine) {
+        ctx.font = `900 ${oneLine}px ${fontFam}`;
+        const wFrom = ctx.measureText(fromStr).width, wTo = ctx.measureText(toStr).width;
+        ctx.fillText(fromStr, leftX, headerY);
+        ctx.fillText(toStr, rightX - wTo, headerY);
+        drawArrow(leftX + wFrom + GAP, rightX - wTo - GAP, headerY);
+      } else {
+        const y2 = headerY + 60;
+        const arrowW = 64;
+        // 兩行用同一個字級，看起來比較整齊
+        const sizeFor = (t, maxW) => { let fs = 42; for (; fs > 28; fs -= 2) { ctx.font = `900 ${fs}px ${fontFam}`; if (ctx.measureText(t).width <= maxW) break; } return fs; };
+        const fs2 = Math.min(sizeFor(fromStr, W), sizeFor(toStr, W - arrowW - GAP));
+        fitFillText(ctx, fromStr, leftX, headerY, W, "900", fs2, fs2, fontFam);
+        ctx.textAlign = "right";
+        fitFillText(ctx, toStr, rightX, y2, W - arrowW - GAP, "900", fs2, fs2, fontFam);
+        const wTo = ctx.measureText(ctx.__lastFit || toStr).width;
+        ctx.textAlign = "left";
+        drawArrow(Math.max(leftX, rightX - wTo - GAP - arrowW), rightX - wTo - GAP, y2);
       }
       ctx.restore();
 
@@ -8385,9 +8475,8 @@
       drawCardPaperTexture(ctx, mainX, ticketY, mainW, ticketH, 32, innerSwatch.bg, appState.paperTexture);
 
       ctx.fillStyle = innerSwatch.text;
-      ctx.font = "900 44px 'Noto Sans TC', sans-serif";
       const moodStr = (showMood && item.mood) ? `  ${item.mood}` : "";
-      ctx.fillText(`${item.title}${moodStr}`, mainX + 54, ticketY + 86);
+      fitFillText(ctx, `${item.title}${moodStr}`, mainX + 54, ticketY + 86, mainW - 108, "900", 44, 30, "'Noto Sans TC', sans-serif");
 
       ctx.fillStyle = "#57534E";
       ctx.font = "600 26px 'Noto Sans TC', sans-serif";
@@ -10456,7 +10545,7 @@ function initSupabaseClient() {
       document.querySelectorAll(".footer-actions-drawer.open").forEach(el => el.classList.remove("open"));
       document.querySelectorAll(".footer-corner-toggle.expanded").forEach(el => {
         el.classList.remove("expanded");
-        el.textContent = "•••";
+        el.innerHTML = ic("more");
       });
       if (willOpen) {
         drawer.classList.add("open");

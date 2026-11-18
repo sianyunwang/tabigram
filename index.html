@@ -1641,6 +1641,7 @@
     .ld-top { display: flex; justify-content: flex-end; gap: 8px; }
     .ld-lang { border-color: var(--border); color: var(--sub); }
     html[lang="en"] .ld-lang .l-zh, html:not([lang="en"]) .ld-lang .l-en { display: none; }
+    html[lang="en"] .zh-only, html.lang-en .zh-only { display: none !important; }
     .ld-link { background: none; border: 1.5px solid var(--ink); border-radius: 999px; padding: 6px 14px; font-family: var(--sans); font-weight: 700; font-size: 13px; color: var(--ink); cursor: pointer; min-height: 36px; }
     .ld-mid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px 0; }
     .ld-ring { width: min(104px, 28vw); aspect-ratio: 1; color: var(--ink); animation: tgSpin 18s linear infinite; }
@@ -2352,6 +2353,7 @@
       <section class="ld-hero">
         <div class="ld-top">
           <button type="button" class="ld-link ld-lang" data-notr onclick="setAppLanguage(window.TG_LANG === 'en' ? 'zh' : 'en')" aria-label="切換語言 / Language"><span class="l-zh">English</span><span class="l-en">中文</span></button>
+          <a class="ld-link zh-only" href="highlights/" style="text-decoration:none; display:inline-flex; align-items:center;">功能亮點</a>
           <button type="button" class="ld-link" onclick="landingAction('login')">登入</button>
         </div>
         <div class="ld-mid">
@@ -2455,6 +2457,8 @@
       try {
         var q = location.search;
         var force = /[?&]home\b/.test(q);
+        // 從亮點介紹頁按「開始」：不顯示入口頁，直接帶去建立第一趟旅程
+        if (/[?&]start\b/.test(q)) { window.__tgAutoStart = true; return; }
         var authReturn = /[?&]code=/.test(q) || location.hash.indexOf("access_token") !== -1;
         var seen = localStorage.getItem("TABIGRAM_LANDING_DONE") === "1";
         var signedIn = !!localStorage.getItem("sb-pjgjxvahhauqluassiuo-auth-token");
@@ -2519,6 +2523,7 @@
             <button class="dropdown-item" onclick="openWhatsNew(); toggleHeaderDropdown();">更新內容</button>
             <button class="dropdown-item" onclick="openFeedback(); toggleHeaderDropdown();">意見回饋</button>
             <button class="dropdown-item" onclick="showLanding(); toggleHeaderDropdown();">關於 TabigrAm</button>
+            <a class="dropdown-item zh-only" href="highlights/" style="text-decoration:none;">功能亮點</a>
 
             <div class="hd-prefs">
               <div class="hd-pref">
@@ -12180,6 +12185,13 @@ function initSupabaseClient() {
       }
     }
 
+    window.addEventListener("load", () => {
+      if (!window.__tgAutoStart) return;
+      try { localStorage.setItem("TABIGRAM_LANDING_DONE", "1"); } catch (e) {}
+      const u = new URL(location.href); u.searchParams.delete("start");
+      history.replaceState(null, "", u.pathname + u.search + u.hash);
+      setTimeout(() => landingAction("start"), 300);
+    });
     function landingAction(kind) {
       hideLanding();
       if (kind === "login") {

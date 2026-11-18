@@ -68,6 +68,24 @@ p { margin: 0; }
 .fan img:nth-child(2) { left: 52%; top: 34px; rotate: 8deg; }
 .fan img:nth-child(3) { left: 27%; top: 0; z-index: 2; }
 .nb { display: inline-block; }
+/* 頂部固定列：隨時都能按「開始」 */
+.topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 10px max(16px, env(safe-area-inset-left, 0px)); background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 21; background: var(--paper); }
+.topbar .in { max-width: 1040px; margin: 0 auto; display: flex; align-items: center; gap: 10px; }
+.topbar .mini-ring { width: 28px; aspect-ratio: 1; background: var(--accent); -webkit-mask: url(logo-ring.png) center / contain no-repeat; mask: url(logo-ring.png) center / contain no-repeat; }
+.topbar b { font-family: var(--f-display); font-weight: 400; font-size: 18px; }
+.topbar .sp { flex: 1; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 999px; font-weight: 900; text-decoration: none; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
+.btn:hover { transform: translateY(-1px); }
+.btn:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+.btn.go { background: var(--accent); color: #fff; box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 35%, transparent); }
+.btn.ghost { border: 1.5px solid var(--ink); color: var(--ink); }
+.btn.sm { font-size: 14px; padding: 8px 16px; }
+.btn.lg { font-size: 18px; padding: 15px 28px; }
+.btn .ar { transition: transform .15s ease; }
+.btn:hover .ar { transform: translateX(3px); }
+.hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 26px; }
+.hero-cta small { color: var(--sub); font-size: 13px; width: 100%; }
 .brandrow { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
 .ring { width: clamp(64px, 9vw, 96px); aspect-ratio: 1; flex: none; background: var(--accent);
   -webkit-mask: url(logo-ring.png) center / contain no-repeat; mask: url(logo-ring.png) center / contain no-repeat;
@@ -93,6 +111,9 @@ p { margin: 0; }
 .sim button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .sim-cap { margin-top: 18px; color: var(--sub); font-size: 14.5px; }
 .end .ring { width: 120px; background: var(--accent); }
+.end .btn.go { justify-self: start; margin-top: 10px; }
+.end .alt { font-size: 13.5px; opacity: .75; }
+.end .alt a { color: inherit; }
 .end .txt { display: grid; gap: 8px; min-width: 0; }
 
 /* 目錄 */
@@ -169,6 +190,7 @@ figcaption b { color: var(--ink); }
 <body>
 
 <div class="wrap">
+  <div class="topbar"><div class="in"><span class="mini-ring" aria-hidden="true"></span><b>TabigrAm</b><span class="sp"></span><a class="btn go sm" href="../?start">開始排行程 <span class="ar">→</span></a></div></div>
   <header class="hero">
     <div>
       <div class="brandrow"><span class="ring" role="img" aria-label="TabigrAm 圓形標誌"></span><div class="brand">TabigrAm<sup>.beta</sup></div></div>
@@ -179,6 +201,11 @@ figcaption b { color: var(--ink); }
         <span class="chip">中文／English</span>
         <span class="chip">沒網路也看得到行程</span>
         <span class="chip">可以和旅伴一起編輯</span>
+      </div>
+      <div class="hero-cta">
+        <a class="btn go lg" href="../?start">開始排我的行程 <span class="ar">→</span></a>
+        <a class="btn ghost lg" href="#plan">先看看能做什麼</a>
+        <small>免費、不用下載，打開就能開始，資料先存在你的手機裡。</small>
       </div>
     </div>
     <figure class="fan">
@@ -371,7 +398,8 @@ figcaption b { color: var(--ink); }
     <div class="txt">
       <h2>想把旅行好好收起來的話，來玩玩看</h2>
       <p>TabigrAm 還在封測，難免有迷路的時候。用起來卡卡的地方、想要的功能，或只是想分享你的旅行，都歡迎從選單的「意見回饋」告訴我。</p>
-      <a class="url" href="../" style="text-decoration:none;">tabigram.info →</a>
+      <a class="btn go lg" href="../?start">現在開始排第一趟旅行 <span class="ar">→</span></a>
+      <div class="alt">已經在用了？<a href="../">回到我的行程</a></div>
     </div>
     <span class="ring" aria-hidden="true"></span>
   </section>

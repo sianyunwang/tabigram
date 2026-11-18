@@ -27,7 +27,7 @@
       var lang = q || saved || (/^zh/i.test(nav) ? "zh" : "en");
       window.TG_LANG = lang;
       document.documentElement.lang = lang === "en" ? "en" : "zh-TW";
-      if (lang === "en") document.write('<script src="i18n/en.js"><\/script>');
+      if (lang === "en") document.write('<script src="i18n/en.js?v=307da7b0"><\/script>');
     })();
   </script>
   <script>
@@ -2395,7 +2395,7 @@
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-pills"><span class="on">第 1 天</span><span>第 2 天</span><span>第 3 天</span><span class="add">＋</span></div>
-                <div class="ldd-card"><i class="dot" style="--c:#3E7CB1"></i><div><small>08:50 → 13:15</small><b><svg class="ic" aria-hidden="true"><use href="#i-plane"/></svg> 長榮 BR198 去程</b><em>TPE → NRT · 飛行 3 小時 25 分</em></div></div>
+                <div class="ldd-card"><i class="dot" style="--c:#3E7CB1"></i><div><small>08:50 → 12:55</small><b><svg class="ic" aria-hidden="true"><use href="#i-plane"/></svg> 長榮 BR198 去程</b><em>TPE → NRT · 飛行 3 小時 5 分</em></div></div>
                 <div class="ldd-card"><i class="dot" style="--c:#16A34A"></i><div><small>14:15 → 15:10</small><b><svg class="ic" aria-hidden="true"><use href="#i-train"/></svg> 成田特快進市區</b><em>成田空港 → 東京 · ¥3,070</em></div></div>
                 <div class="ldd-card"><i class="dot" style="--c:var(--accent)"></i><div><small>16:00 → 17:00</small><b><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg> 飯店 Check-in</b><em>秋葉原</em></div></div>
               </div>
@@ -3445,18 +3445,7 @@
         <button type="button" id="googleSignInBtn" class="google-signin-btn" onclick="cloudSignInWithGoogle()">
           <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg><span id="googleSignInText">使用 Google 帳號登入</span>
         </button>
-        <!-- 只開放 Google 登入；以前用 Email 註冊的舊帳號，收在這裡還能登入（不再開放新註冊） -->
-        <details class="legacy-email-login" style="margin-top:12px;">
-          <summary style="font-size:12px; color:var(--sub); cursor:pointer;">以前用 Email 註冊過？按這裡登入</summary>
-          <div style="margin-top:10px;">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-input" id="cloudEmailInput" placeholder="name@example.com" autocomplete="email" style="margin-bottom:10px; padding:10px;" />
-            <label class="form-label">密碼</label>
-            <input type="password" class="form-input" id="cloudPasswordInput" placeholder="請輸入密碼" autocomplete="current-password" onkeydown="if(event.key==='Enter'){cloudSignInWithPassword();}" style="margin-bottom:12px; padding:10px;" />
-            <button type="button" id="pwSignInBtn" onclick="cloudSignInWithPassword()" style="width:100%; padding:12px; background:var(--ink); color:#FFFFFF; border:none; border-radius:10px; font-weight:900; font-size:14px; cursor:pointer;">用 Email 登入</button>
-          </div>
-        </details>
-        <div style="font-size:11.5px; color:var(--sub); line-height:1.5; margin-top:6px;">登入即表示你同意 <a href="terms.html" target="_blank" rel="noopener" style="color:var(--ink); font-weight:800;">服務條款</a> 與 <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--ink); font-weight:800;">隱私權政策</a></div>
+        <div style="font-size:11.5px; color:var(--sub); line-height:1.5; margin-top:12px;">登入即表示你同意 <a href="terms.html" target="_blank" rel="noopener" style="color:var(--ink); font-weight:800;">服務條款</a> 與 <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--ink); font-weight:800;">隱私權政策</a></div>
 
         
       </div>
@@ -4178,7 +4167,7 @@
       trips: [
         {
           id: "trip_1",
-          title: "我的旅程",
+          title: window.TG_LANG === "en" ? "My trip" : "我的旅程",
           startDate: cdLocalDateStr(),
           homeTz: "Asia/Taipei",
           checklist: [],
@@ -4229,6 +4218,9 @@
       appState.paperTexture = localStorage.getItem("TABIGRAM_PAPER_TEX") || appState.paperTexture || "dots";
       appState.customEmojis = Array.isArray(appState.customEmojis) ? appState.customEmojis : [];
       appState.trips = (appState.trips || []).map(normalizeTrip).filter(Boolean);
+      // 沒改過名字的預設旅程，名稱跟著語言換（我的旅程 ⇄ My trip）
+      const otherDefault = window.TG_LANG === "en" ? "我的旅程" : "My trip";
+      appState.trips.forEach(t => { if (t.title === otherDefault) t.title = defaultTripTitle(); });
       sanitizeAppStateData();
       // Purge legacy demo item if accidentally present
       (appState.trips || []).forEach(t => {
@@ -4521,7 +4513,7 @@
       if (!Array.isArray(appState.trips)) appState.trips = [];
       appState.trips = appState.trips.map(normalizeTrip).filter(Boolean);
       if (appState.trips.length === 0) {
-        appState.trips.push(normalizeTrip({ id: "trip_" + Date.now(), title: "我的旅程", startDate: cdLocalDateStr() }));
+        appState.trips.push(normalizeTrip({ id: "trip_" + Date.now(), title: defaultTripTitle(), startDate: cdLocalDateStr() }));
       }
       return appState.trips.find(t => t.id === appState.activeTripId) || appState.trips[0];
     }
@@ -4562,6 +4554,7 @@
      *************************************************************************/
 
     // ---------- 語言 ----------
+    function defaultTripTitle() { return window.TG_LANG === "en" ? "My trip" : "我的旅程"; }
     function setAppLanguage(lang) {
       lang = lang === "en" ? "en" : "zh";
       try { localStorage.setItem("TABIGRAM_LANG", lang); } catch (e) {}
@@ -6132,7 +6125,7 @@
       listEl.innerHTML = appState.trips.map(t => `
         <div class="form-card" style="margin-bottom:8px; padding:12px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <div style="font-weight:800; font-size:14px;">${escapeHtml(t.title)} (${t.days.length} 天)</div>
+            <div style="font-weight:800; font-size:14px;">${escapeHtml(t.title)} (${window.TG_LANG === "en" ? `${t.days.length} day${t.days.length === 1 ? "" : "s"}` : `${t.days.length} 天`})</div>
             <button class="pill-btn ${t.id === appState.activeTripId ? "primary" : ""}" onclick="switchActiveTripFromModal('${t.id}')">切換</button>
           </div>
           <div style="display:flex; gap:6px; align-items:center; justify-content:space-between; font-size:12px; color:var(--sub); border-top:1px dashed var(--border); padding-top:6px;">
@@ -10824,18 +10817,18 @@ function initSupabaseClient() {
       endTz: "Arrival time zone", currency: "Currency", cost: "Cost", costLabel: "Cost label", from: "From", to: "To", route: "Route", trainSeat: "Train or seat",
       stops: "Stops", subtitle: "Place", note: "Note", url: "URL", urlLabel: "URL label", mapUrl: "Map link", private: "Private", dayTheme: "Day theme", dayCity: "City" };
     const CSV_EXAMPLE_ROWS_EN = [
-      { day: "1", date: "2026/12/01", type: "flight", title: "Flight to Taipei", start: "09:30", end: "12:30", tz: "Japan", endTz: "Taiwan", currency: "¥", cost: "32,000", from: "NRT", to: "TPE", route: "BR197", trainSeat: "Seat 32A", note: "Get an EasyCard at the airport", dayTheme: "Arrive in Taipei", dayCity: "Taipei" },
-      { type: "transit", title: "Airport MRT to the city", start: "13:30", end: "14:10", tz: "Taiwan", currency: "NT$", cost: "150", from: "Airport Terminal 2", to: "Taipei Main Station", route: "Taoyuan Airport MRT", trainSeat: "Express train" },
-      { type: "transfer", end: "14:25", cost: "20", costLabel: "fare", from: "Taipei Main Station", to: "Ximen", route: "Bannan Line" },
-      { type: "spot", title: "Hotel check-in", start: "15:00", end: "15:30", subtitle: "Ximending", note: "Leave bags first", mapUrl: "https://www.google.com/maps/search/?api=1&query=Ximending" },
-      { type: "spot", title: "Raohe Night Market", start: "19:00", end: "21:00", cost: "500", costLabel: "food", subtitle: "Songshan", private: "yes" },
+      { day: "1", date: "2026/12/01", type: "flight", title: "Flight to Taipei", start: "14:00", end: "17:05", tz: "Japan", endTz: "Taiwan", currency: "¥", cost: "32,000", from: "NRT", to: "TPE", route: "BR197", trainSeat: "Seat 32A", note: "Get an EasyCard at the airport", dayTheme: "Arrive in Taipei", dayCity: "Taipei" },
+      { type: "transit", title: "Airport MRT to the city", start: "18:00", end: "18:40", tz: "Taiwan", currency: "NT$", cost: "150", from: "Airport Terminal 2", to: "Taipei Main Station", route: "Taoyuan Airport MRT", trainSeat: "Express train" },
+      { type: "transfer", end: "18:55", cost: "20", costLabel: "fare", from: "Taipei Main Station", to: "Ximen", route: "Bannan Line" },
+      { type: "spot", title: "Hotel check-in", start: "19:10", end: "19:30", subtitle: "Ximending", note: "Leave bags first", mapUrl: "https://www.google.com/maps/search/?api=1&query=Ximending" },
+      { type: "spot", title: "Raohe Night Market", start: "20:00", end: "22:00", cost: "500", costLabel: "food", subtitle: "Songshan", private: "yes" },
       { day: "2", type: "transit", title: "High Speed Rail to Taichung", start: "09:00", end: "10:00", currency: "NT$", cost: "700", costLabel: "ticket", from: "Taipei", to: "Taichung", route: "Taiwan High Speed Rail", trainSeat: "Car 5 · 12A", dayTheme: "Sun Moon Lake day trip", dayCity: "Taichung" },
       { type: "roadtrip", title: "Drive around Sun Moon Lake", start: "11:00", end: "16:00", cost: "1,800", from: "Shuishe Pier", to: "Ita Thao", route: "Route 21", stops: "Wenwu Temple, Xiangshan Visitor Center", note: "Sunset at Xiangshan" },
       { type: "spot", title: "Late-night hot pot", start: "22:30", end: "00:30", nextDay: "yes", cost: "900", subtitle: "Taichung" },
-      { day: "3", type: "flight", title: "Flight home", start: "17:30", end: "21:40", tz: "Taiwan", endTz: "Japan", currency: "NT$", from: "TPE", to: "NRT", route: "BR198", dayCity: "Taipei" }
+      { day: "3", type: "flight", title: "Flight home", start: "15:20", end: "19:20", tz: "Taiwan", endTz: "Japan", currency: "NT$", from: "TPE", to: "NRT", route: "BR196", dayCity: "Taipei" }
     ];
     const CSV_EXAMPLE_ROWS = [
-      { day: "1", date: "2026/12/01", type: "航班", title: "長榮 去程", start: "08:50", end: "13:15", tz: "台灣", endTz: "日本", currency: "NT$", cost: "12,500", from: "TPE", to: "NRT", route: "BR198", trainSeat: "第二航廈・座位 32A", note: "提前 2.5 小時到機場", dayTheme: "抵達東京", dayCity: "東京" },
+      { day: "1", date: "2026/12/01", type: "航班", title: "長榮 去程", start: "08:50", end: "12:55", tz: "台灣", endTz: "日本", currency: "NT$", cost: "12,500", from: "TPE", to: "NRT", route: "BR198", trainSeat: "第二航廈・座位 32A", note: "提前 2.5 小時到機場", dayTheme: "抵達東京", dayCity: "東京" },
       { type: "交通", title: "成田特快進市區", start: "14:15", end: "15:10", tz: "日本", currency: "¥", cost: "3,070", from: "成田空港", to: "東京", route: "成田特快", trainSeat: "N'EX 30號" },
       { type: "轉乘", end: "15:45", cost: "210", costLabel: "車資", from: "東京", to: "秋葉原", route: "JR山手線", trainSeat: "內環方向" },
       { type: "景點", title: "飯店 Check-in", start: "16:00", end: "16:30", subtitle: "秋葉原", note: "先寄放行李", mapUrl: "https://www.google.com/maps/search/?api=1&query=秋葉原站" },
@@ -12074,7 +12067,7 @@ function initSupabaseClient() {
       const days = Math.max(1, (trip.days || []).length);
       const date = formatStampDate(trip);
       document.getElementById("tsArcText").textContent = stampArcText(trip);
-      document.getElementById("tsTitle").textContent = trip.title || "我的旅程";
+      document.getElementById("tsTitle").textContent = trip.title || defaultTripTitle();
       document.getElementById("tsSub").textContent = `${days} 天的旅程完成了！已經收進「旅程回憶」，隨時可以回去看。` + (currentCloudUser ? "" : "記得登入或備份，回憶才不會因為換手機不見。");
       const stampEl = ov.querySelector(".ts-stamp");
       if (stampEl) stampEl.style.setProperty("--rot", `${stampParams(trip.id).rot}deg`);
@@ -12434,7 +12427,7 @@ function initSupabaseClient() {
         <div class="mem-top">
           <div class="mem-top-text">
             <div class="mem-date">${escapeHtml(formatMemoryRange(trip))}</div>
-            <div class="mem-title">${escapeHtml(trip.title || "我的旅程")}</div>
+            <div class="mem-title">${escapeHtml(trip.title || defaultTripTitle())}</div>
             <div class="mem-stats"><span>${st.days} 天</span><span>${formatKm(st.km)}</span><span>${st.stops} 個行程</span>${st.checkins ? `<span>${st.checkins} 個打卡</span>` : ""}</div>
           </div>
           <div class="mem-stamp-zone" aria-hidden="true"><div class="mem-stamp" style="${stampStyle(trip)}">${stampSvgHTML(trip, uid)}</div></div>
@@ -12675,7 +12668,7 @@ function initSupabaseClient() {
       ctx.fillStyle = outer.text;
       ctx.textAlign = "center";
       ctx.font = "400 76px 'Dela Gothic One', 'TabigrAm Fill', sans-serif";
-      const title = trip.title || "我的旅程";
+      const title = trip.title || defaultTripTitle();
       const lines = []; let cur = "";
       for (const ch of title) { if (ctx.measureText(cur + ch).width > W - 200) { lines.push(cur); cur = ch; } else cur += ch; }
       if (cur) lines.push(cur);
@@ -14650,48 +14643,12 @@ function initSupabaseClient() {
     // 更新公告：改版時只要修改 WHATS_NEW（版本號換新，內容換新），老朋友打開會看到一次
     // =====================================================================
     const WHATS_NEW = {
-      version: "2026.11.18m",
+      version: "2026.11.18-hello",
       date: "2026.11.18",
       items: [
-        ["全世界的機場", "選機場可以直接搜尋城市、機場名稱或代號，也能依國家找；全球 3,000 多個有定期航班的機場都在裡面，每個國家也都有自己的戳章。"],
-        ["轉機航班分段填編號", "有轉機的航班，每一段都可以填自己的航班編號。"],
-        ["用航班編號帶入時刻", "填好航班編號和日期，按一下就帶入表定起降時間和時區。卡片上的時間和航班表定不一樣時會提醒你，要不要套用由你決定。"],
-        ["同一家公司轉乘", "路線規劃多了「同一家公司」，盡量只搭同一家鐵道公司的路線，附近步行可到的站也可以轉。"],
-        ["直接輸入站名", "不知道車站在哪條線？在上車站、下車站直接輸入站名，中文、日文、英文都可以。"],
-        ["飛行時間修正", "跨夏令時間的航班（例如夏天飛美國），飛行時間會依當天日期計算，不會多算或少算 1 小時。"],
-        ["分享卡可以選大小", "每種版型中間的兩張卡片可以選「標準」「大」「滿版」，畫面更飽滿。公路旅行的照片也改成滿版，不再有一圈外框。"],
-        ["路線圖補上 6 條線", "東京加上京濱東北線、東海道線、橫須賀・總武快速線、高崎線、江之電、富士急行線；「本線」改成京急本線、京成本線這樣的全名。"],
-        ["即時航班（台灣機場）", "從台灣的機場出發或抵達的航班，卡片上會顯示航廈、登機門、預計時間和狀態，有變動會提醒。資料僅供參考，請以機場與航空公司公告為準。"],
-        ["English 版本", "選單的「語言」可以切換中文／English；手機是英文的話會自動用英文。英文版的車站顯示英文站名，旁邊附上當地寫法。"],
-        ["機場戳章", "搭飛機那天，人在機場就能在航班卡片蓋出境章、入境章。每個國家的章長得不一樣，收在「旅程回憶」的護照頁，也會蓋在登機證分享卡上。"],
-        ["介面換上線條圖示", "介面上的 emoji 換成一致的線條圖示；「DAY 01」「Timetable」等英文標籤改成中文（第 1 天、精簡列表）。心情章、貼圖、分享卡維持原樣。"],
-        ["首頁可以先看看", "首頁的 7 個功能介紹，點「看看」就會出現示意畫面。"],
-        ["新主題 Paper", "原本的 Simple 改名為 Paper：再生紙灰的底色、淡淡的紙張纖維，主色換成國際橘。"],
-        ["日文、韓文站名", "東京、大阪京都的站名改用日文字型，寫法和現場站牌一樣；首爾的站名旁邊附上韓文，到了現場對得上。首爾的中文站名也全部整理成繁體。"],
-        ["分享卡標題字修正", "旅程回憶、倒數分享卡的標題，有時會變成普通字體，現在修好了。"],
-        ["完成章的 LOGO 回來了", "有些手機、Safari 上，完成章中間的 TabigrAm 標誌不見了，現在修好了。標題的「趟」等字也不會再變細。"],
-        ["轉乘建議更合理", "短距離不會再建議搭成田特快、新幹線等要另外買票的特急；搭 N'EX、はるか 和 JR 之間轉乘，也正確標成站內轉乘。"],
-        ["時區自動切換", "用「點選車站」選了東京、首爾、紐約等地的車站，或點選機場，卡片的時區會自動換成當地，倒數不會再差一小時。"],
-        ["新增行程更簡單", "新增行程只先問類型、標題、時間；地點、時區、費用、備註、地圖、相片收在「更多選項」。"],
-        ["天氣旁顯示地點", "沒填「所在城市」時，天氣旁會寫是哪裡的天氣（例如「東京 19°C / 9°C」）。"],
-        ["旅行預算", "建立旅行時可以填總預算。「清單/預算」會用圓環和長條圖顯示用了多少、還剩多少、每天花多少；其他幣別依當天匯率換算。"],
-        ["選擇地圖 App", "個人設定可以選按「地圖」時用 Google 地圖、Apple 地圖，或每次問我。地圖連結也可以貼任何地圖 App 的分享連結。"],
-        ["全球時區", "時區選單改成全世界的時區，常用的在最上面，其他依洲分類。"],
-        ["同名城市會問你", "「所在城市」填了同名的地方（例如 Portland、San Jose），會列出來讓你選是哪一個，天氣才會對。"],
-        ["CSV 重新匯入會更新", "匯入到目前旅行時，已經有的行程（同一天、同時間、同標題）可以選用檔案內容更新，改過備註、費用也會套用；照片、打卡、心情保留。"],
-        ["建立行程直接選日期", "新增旅行時選好出發、回程日期，天數自動建好，不用一直按「＋」。旅行管理也可以改回程日期。"],
-        ["隨時加一天", "按「＋ 加一天」，可以提前一天出發，或加在任何一天的前面、後面，原本排好的行程會自動往後順延。"],
-        ["點選車站，轉乘自動排好", "新增交通時按「點選車站」：點上車站、點下車站，TabigrAm 會給你幾種走法（轉乘最少、站數最少、不用出站），點一下就填好。台灣（含高鐵、台鐵）、東京、大阪京都、首爾、舊金山、紐約。"],
-        ["路線圖分享卡重畫", "台北捷運、東京地鐵、山手線照官方路線圖的線形畫，轉角改成圓弧；站名、站牌可以自己選要不要顯示。也新增成田、關西機場的特急。"],
-        ["分享編輯頁改版", "預覽放大到整個畫面，儲存在右上角；下面只有版型、配色、內容、貼圖 4 個按鈕，點了直接選。"],
-        ["新配色：螢光、金屬", "分享卡多了螢光桃紅、電光藍、香檳金、鏡面銀、玫瑰金、幻彩鐳射等配色，還有「隨機配色」一鍵換搭配。"],
-        ["點選機場、轉機", "航班不用記機場代號，點城市就好；有轉機也可以加上，登機證會畫出轉機路線。"],
-        ["備份提醒", "沒登入時，行程只存在這台裝置。App 會提醒你登入或備份；選單的「備份到這台裝置」也會顯示上次備份是幾天前。"],
-        ["當日回顧", "每天最後一個行程結束後，當天最上方會出現回顧：完成幾個行程、打卡幾個地點、移動了幾公里、花了多少。"],
-        ["「我到了」更好找", "行程當天，卡片下方會有「我到了」按鈕，按下去記下位置，旅程結束後畫成足跡地圖。心情章也搬到旁邊。"],
-        ["拍立得照片直接調整", "分享拍立得時，直接在照片上單指拖曳、兩指縮放。"],
-        ["費用名目", "預定費用可以寫上是什麼錢，例如門票、車資、住宿。"],
-        ["深色模式", "跟著手機自動切換，也可以在選單的「外觀」自己選。Silver 是深色金屬、Lilac 是深紫夜空。"]
+        ["謝謝你來玩 TabigrAm", "這是一個想把旅行好好收起來的小工具。從排行程、搭車、等航班，到旅程結束蓋上一枚章，希望你走過的每一段路，都被溫柔地記住。"],
+        ["這陣子悄悄變好了", "修了好多小地方，也多了全世界的機場和英文版。細節就不一一細數了，用起來順手、開心就好。"],
+        ["有話想說，我都在", "TabigrAm 還在封測，難免有迷路的時候。卡卡的地方、想要的功能，或只是想分享你的旅行，都歡迎從選單的「意見回饋」告訴我，每一則我都會認真看。"]
       ]
     };
     function openWhatsNew() {

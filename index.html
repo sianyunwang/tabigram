@@ -27,7 +27,7 @@
       var lang = q || saved || (/^zh/i.test(nav) ? "zh" : "en");
       window.TG_LANG = lang;
       document.documentElement.lang = lang === "en" ? "en" : "zh-TW";
-      if (lang === "en") document.write('<script src="i18n/en.js?v=307da7b0"><\/script>');
+      if (lang === "en") document.write('<script src="i18n/en.js?v=a58eb7de"><\/script>');
     })();
   </script>
   <script>
@@ -13824,7 +13824,11 @@ function initSupabaseClient() {
     }
     function railXfer(La, sa, Lb, sb) {
       const d = railMeters(sa, sb), same = railNorm(sa.n) === railNorm(sb.n);
-      if (same && railOp(La) === railOp(Lb) && (d == null || d < 450)) return { k: "same", t: "同站轉乘" };
+      // 同一家公司、同一個站名：就算月台很遠（例如東京站的京葉線），也是在站內換車，不用出閘門
+      if (same && railOp(La) === railOp(Lb) && (d == null || d < 800)) {
+        const walkMin = d != null && d > 300 ? Math.round(d * 1.3 / 70) : 0;
+        return { k: "same", t: walkMin ? `同站轉乘（站內走約 ${walkMin} 分）` : "同站轉乘" };
+      }
       if (same && (d == null || d < 350)) return { k: "gate", t: "出閘門再進站" };
       // 步行時間：直線距離 ×1.3（實際路線會繞）÷ 每分鐘 70 公尺
       const min = d == null ? 0 : Math.max(3, Math.round(d * 1.3 / 70));
@@ -13849,9 +13853,10 @@ function initSupabaseClient() {
             const prev = cur.legs[cur.legs.length - 1];
             if (prev && prev.L === m.L) continue;
             const x = prev ? railXfer(prev.L, prev.to, m.L, m.s) : (m.s !== start.s ? railXfer(start.L, start.s, m.L, m.s) : null);
-            let pen = x ? (x.k === "walk" ? w.walk : x.k === "gate" ? w.gate : 2) : 0;
-            // 「同一家公司」：換到別家公司的線要另外買票，加很重的成本
-            if (w.op) { const fromL = prev ? prev.L : start.L; if (fromL && railOp(fromL) !== railOp(m.L)) pen += w.op; }
+            // 起點還沒進站：要搭哪一家的哪條線都可以直接進那個閘門，不算「出閘門再進站」；只有要走到別的車站才算步行
+            let pen = x ? (x.k === "walk" ? w.walk : x.k === "gate" ? (prev ? w.gate : 0) : 2) : 0;
+            // 「同一家公司」：換到別家公司的線要另外買票，加很重的成本（起點不算換車）
+            if (w.op && prev && railOp(prev.L) !== railOp(m.L)) pen += w.op;
             m.L.st.forEach((s1, j) => {
               if (s1.cl === cl) return;
               const h = railHops(m.L, m.i, j);
@@ -14157,6 +14162,10 @@ function initSupabaseClient() {
       variants.forEach(v => {
         const legs = railRoute(d, RP.from, RP.to.s.cl, v.w);
         if (!legs) return;
+        // 標籤要名副其實：找不到真的「不用出站」「同一家公司」的走法，就不要掛這個名字
+        const xs = legs.slice(1).map((g, i) => railXfer(legs[i].L, legs[i].to, g.L, g.from));
+        if (v.tag === "不用出站" && xs.some(x => x && (x.k === "gate" || x.k === "walk"))) return;
+        if (v.tag === "同一家公司" && new Set(legs.map(g => railOp(g.L))).size > 1) return;
         const sig = legs.map(g => `${g.L.k}:${g.from.n}>${g.to.n}`).join("|");
         if (seen.has(sig)) { seen.get(sig).tags.push(v.tag); return; }
         seen.set(sig, { legs, tags: [v.tag] });

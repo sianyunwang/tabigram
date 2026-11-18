@@ -1971,6 +1971,12 @@
     .lf-st.ok { background: #E3F4E8; color: #1E7A3E; } .lf-st.done { background: var(--border); color: var(--ink); }
     .lf-st.warn { background: #FFF1D6; color: #9A5B00; } .lf-st.bad { background: #FBE3E3; color: #B42323; }
     html[data-mode="dark"] .lf-st.ok { background: #1F3A29; color: #7BD69B; } html[data-mode="dark"] .lf-st.warn { background: #3A2E17; color: #F2C36B; } html[data-mode="dark"] .lf-st.bad { background: #3A2323; color: #E89A9A; }
+    .flk-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 8px; }
+    .flk-msg { font-size: 12px; color: var(--sub); }
+    .lf-mismatch { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 12px; color: #9A5B00; }
+    .lf-mismatch .ic { width: 13px; height: 13px; flex: none; }
+    .lf-mismatch button { margin-left: auto; border: 1.5px solid currentColor; background: none; color: inherit; border-radius: 999px; padding: 1px 9px; font: inherit; font-weight: 800; cursor: pointer; white-space: nowrap; }
+    html[data-mode="dark"] .lf-mismatch { color: #F2C36B; }
     .lf-foot { margin-top: 3px; font-size: 10.5px; color: var(--sub); line-height: 1.5; }
     .lf-foot button { border: 0; background: none; padding: 0; font: inherit; color: var(--sub); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
 
@@ -2235,6 +2241,7 @@
     [lang="ja"] { font-family: 'Noto Sans JP', var(--sans); }
     [lang="ko"] { font-family: 'Noto Sans KR', var(--sans); }
     .rp-ja :is(.name, .nm, .val, .aka) { font-family: 'Noto Sans JP', var(--sans); }
+    .rp-search { margin: 8px 0 6px; }
     .rp-ko { display: inline-block; margin-left: 6px; font-size: .82em; font-weight: 700; color: var(--sub); }
     .rp-sug .aka { font-size: 11.5px; font-weight: 700; display: block; line-height: 1.4; }
     .rp-sug .why { font-size: 11.5px; color: var(--sub); font-weight: 600; display: block; line-height: 1.4; }
@@ -2328,6 +2335,8 @@
     .ap-btn.hot { border-color: var(--accent); background: var(--accent-soft); }
     .ap-btn.sel { background: var(--ink); color: var(--bg); border-color: var(--ink); }
     .ap-btn.sel span { color: var(--bg); opacity: .8; }
+    .ap-search { margin: 8px 0 4px; }
+    .ap-list .ap-btn span small { display: block; font-size: 10.5px; color: var(--sub); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .ap-own { display: flex; gap: 6px; margin-top: 12px; }
     .ap-own input { flex: 1; text-transform: uppercase; }
 </style>
@@ -2348,7 +2357,7 @@
           <div class="ld-stage" id="ldStage" data-step="0">
             <div class="tg-ring ld-ring" role="img" aria-label="TabigrAm 圓形標誌"></div>
             <img class="ld-card" src="sample-route-card.jpg" width="450" height="800" alt="路線圖分享卡範例：中目黑搭日比谷線到銀座，轉銀座線到淺草" decoding="async" />
-            <img class="ld-card" src="sample-flight-card.jpg" width="450" height="800" alt="登機證分享卡範例：台北飛東京成田" decoding="async" />
+            <img class="ld-card" src="sample-flight-card.jpg" width="450" height="800" alt="登機證分享卡範例：台北飛紐約甘迺迪機場" decoding="async" />
             <img class="ld-card" src="sample-stamp-card.jpg" width="450" height="800" alt="旅程完成章範例：東京五日遊" decoding="async" />
             <img class="ld-card" src="sample-memory-card.jpg" width="450" height="800" alt="旅程回憶紀念卡範例：天數、公里、照片" decoding="async" />
             <img class="ld-card" src="sample-recap-card.jpg" width="450" height="800" alt="當日回顧範例：當天里程與路線地圖" decoding="async" />
@@ -2945,14 +2954,16 @@
           </div>
           <div class="form-row-2" style="margin-top:8px;">
             <div>
-              <label class="form-label">航班編號</label>
-              <input type="text" class="form-input" id="fFlightNo" placeholder="BR198 / JL096" />
+              <label class="form-label" id="fFlightNoLabel">航班編號</label>
+              <input type="text" class="form-input" id="fFlightNo" placeholder="BR198" autocapitalize="characters" />
             </div>
             <div>
               <label class="form-label">登機門 / 座位</label>
               <input type="text" class="form-input" id="fGateSeat" placeholder="Gate C5 · 24A" />
             </div>
           </div>
+          <div id="fLegFlights"></div>
+          <div class="flk-row"><button type="button" class="mini-btn" onclick="lookupFlightSchedule()"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg> 用航班編號帶入時刻</button><span id="fFlightLookupMsg" class="flk-msg"></span></div>
         </div>
 
         <!-- Road Trip Fields -->
@@ -4433,6 +4444,7 @@
           if (it.currency != null) it.currency = stripMarkup(it.currency, 8);
           if (it.mood != null) it.mood = stripMarkup(it.mood, 16);
           if (it.costLabel != null) it.costLabel = stripMarkup(it.costLabel, 30);
+          if (it.legFlightNos != null) { if (Array.isArray(it.legFlightNos)) it.legFlightNos = it.legFlightNos.slice(0, 3).map(x => stripMarkup(String(x || ""), 12)); else delete it.legFlightNos; }
           if (it.viaIata != null) it.viaIata = Array.isArray(it.viaIata) ? it.viaIata.map(x => String(x).toUpperCase()).filter(x => /^[A-Z]{3}$/.test(x)).slice(0, 2) : [];
           if (it.mapUrl != null) it.mapUrl = /^https:\/\//i.test(String(it.mapUrl)) ? String(it.mapUrl).slice(0, 500) : "";
           if (it.stamps != null) {
@@ -5212,8 +5224,11 @@
         const [eh, em] = item.endTime.split(":").map(Number);
         const offsetDays = item.endDayOffset || 0;
         
-        // Use a fixed base date to avoid daylight saving edge cases from current date if possible, but JS requires actual dates.
-        const baseDate = new Date();
+        // 用這個行程所在那天的日期算時差（夏令時間），找不到才用今天
+        let baseDate = new Date();
+        const di = trip && Array.isArray(trip.days) ? trip.days.findIndex(dd => (dd.items || []).some(x => x === item || (item.id && x.id === item.id))) : -1;
+        const ds = di >= 0 ? tripDayDateStr(trip, di) : "";
+        if (ds) { const [yy, mm, dd] = ds.split("-").map(Number); baseDate = new Date(yy, mm - 1, dd); }
         const y = baseDate.getFullYear(), m = baseDate.getMonth(), d = baseDate.getDate();
         
         // Calculate UTC times for start and end by assuming the local times in their respective timezones
@@ -5268,8 +5283,10 @@
       if (item.type === "flight") {
         const trip = getActiveTrip();
         const dur = calculateTimezoneAwareDuration(item, trip);
-        const durBadge = dur ? ` · 飛行 ${dur.h} 小時 ${dur.m} 分` : "";
-        return `${item.flightNo || "FLIGHT"} (${[(item.depIata || "DEP"), ...(item.viaIata || []), (item.arrIata || "ARR")].map(x => x.toUpperCase()).join(" → ")})${(item.viaIata || []).length ? `・轉機 ${item.viaIata.length} 次` : ""}${item.gateSeat ? " · " + item.gateSeat : ""}${durBadge}`;
+        const en = window.TG_LANG === "en";
+        const durBadge = dur ? (en ? ` · ${dur.h}h ${dur.m}m flight` : ` · 飛行 ${dur.h} 小時 ${dur.m} 分`) : "";
+        const fnos = Array.isArray(item.legFlightNos) && item.legFlightNos.some(Boolean) ? item.legFlightNos.filter(Boolean).join(" / ") : (item.flightNo || "FLIGHT");
+        return `${fnos} (${[(item.depIata || "DEP"), ...(item.viaIata || []), (item.arrIata || "ARR")].map(x => x.toUpperCase()).join(" → ")})${(item.viaIata || []).length ? (en ? ` · ${item.viaIata.length} stop${item.viaIata.length > 1 ? "s" : ""}` : `・轉機 ${item.viaIata.length} 次`) : ""}${item.gateSeat ? " · " + item.gateSeat : ""}${durBadge}`;
       }
       if (item.type === "roadtrip") {
         const stopsStr = item.roadStops ? ` → ${item.roadStops} → ` : " → ";
@@ -5708,6 +5725,8 @@
         document.getElementById("fViaIata").value = (item.viaIata || []).join(",");
         renderAirportEntry();
         document.getElementById("fFlightNo").value = item.flightNo || "";
+        window.__legFlightPrefill = Array.isArray(item.legFlightNos) ? item.legFlightNos : [];
+        const lfBox = document.getElementById("fLegFlights"); if (lfBox) lfBox.innerHTML = "";
         document.getElementById("fGateSeat").value = item.gateSeat || "";
         document.getElementById("fRoadFrom").value = item.roadFrom || "";
         document.getElementById("fRoadTo").value = item.roadTo || "";
@@ -5771,6 +5790,8 @@
         document.getElementById("fViaIata").value = "";
         renderAirportEntry();
         document.getElementById("fFlightNo").value = "";
+        window.__legFlightPrefill = [];
+        const lfBox2 = document.getElementById("fLegFlights"); if (lfBox2) lfBox2.innerHTML = "";
         document.getElementById("fGateSeat").value = "";
         document.getElementById("fRoadFrom").value = "";
         document.getElementById("fRoadTo").value = "";
@@ -5957,7 +5978,8 @@
       const depIata = document.getElementById("fDepIata").value.trim().toUpperCase();
       const arrIata = document.getElementById("fArrIata").value.trim().toUpperCase();
       const viaIata = type === "flight" ? document.getElementById("fViaIata").value.split(",").map(x => x.trim().toUpperCase()).filter(x => /^[A-Z]{3}$/.test(x)).slice(0, 2) : [];
-      const flightNo = document.getElementById("fFlightNo").value.trim();
+      const flightNo = document.getElementById("fFlightNo").value.trim().toUpperCase();
+      const legFlightNos = type === "flight" && viaIata.length ? [flightNo, ...[...document.querySelectorAll("#fLegFlights .leg-flight")].map(x => x.value.trim().toUpperCase())].slice(0, viaIata.length + 1) : [];
       const gateSeat = document.getElementById("fGateSeat").value.trim();
       const roadFrom = document.getElementById("fRoadFrom").value.trim();
       const roadTo = document.getElementById("fRoadTo").value.trim();
@@ -6022,6 +6044,7 @@
         arrIata,
         viaIata,
         flightNo,
+        legFlightNos: legFlightNos.some(Boolean) ? legFlightNos : undefined,
         gateSeat,
         roadFrom,
         roadTo,
@@ -8371,7 +8394,15 @@
       const subLine = tpl === 'transit' ? (item.note || "") : (formatItemSubtitle(item) || item.note || "");
       let timeYOffset = 186;
       if (subLine) {
-         ctx.fillText(subLine.slice(0, 34), mainX + 54, ticketY + 138);
+         // 太長先縮字（最小 21px），還是放不下就用「…」收尾，不從字中間硬切
+         const maxW = mainW - 108;
+         let fs = 26, s = subLine;
+         while (fs > 21 && ctx.measureText(s).width > maxW) { fs--; ctx.font = `600 ${fs}px 'Noto Sans TC', sans-serif`; }
+         if (ctx.measureText(s).width > maxW) {
+           while (s.length > 1 && ctx.measureText(s + "…").width > maxW) s = s.slice(0, -1);
+           s = s.replace(/[\s·・]+$/, "") + "…";
+         }
+         ctx.fillText(s, mainX + 54, ticketY + 138);
       } else {
          timeYOffset = 150;
       }
@@ -12672,6 +12703,20 @@ function initSupabaseClient() {
       PW: { name: "PALAU", local: "Belau", dep: "DEPARTED", arr: "ARRIVED", shape: "circle", color: "#1A6F8F" },
       XX: { name: "", local: "", dep: "DEPARTED", arr: "ARRIVED", shape: "roundrect", color: "#3B3B3B" }
     };
+    // 沒有特別設計的國家：依國家代碼自動決定形狀和墨色（每個國家固定一款）
+    function stampStyleFor(cc) {
+      if (cc && STAMP_STYLE[cc]) return STAMP_STYLE[cc];
+      if (!cc) return STAMP_STYLE.XX;
+      const shapes = ["rect", "roundrect", "oval", "circle", "octagon", "hexagon", "roundsquare", "pentagon", "shield", "ticket", "arch"];
+      const inks = ["#24479A", "#B3262E", "#1D7A5A", "#6B2D86", "#1E3A6E", "#A12A1E", "#2F6B3A", "#7A1F2B", "#1A6F8F", "#3B3B3B", "#9A5B00"];
+      const h = Math.abs(hashString("cc|" + cc));
+      let name = cc;
+      try { name = new Intl.DisplayNames(["en"], { type: "region" }).of(cc).toUpperCase(); } catch (e) {}
+      if (name.length > 16) name = cc;
+      const st = { name, local: "", dep: "DEPARTED", arr: "ARRIVED", shape: shapes[h % shapes.length], color: inks[(h >> 4) % inks.length], double: !!(h & 1) };
+      STAMP_STYLE[cc] = st;
+      return st;
+    }
     const STAMP_MONTH = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
     function airportCoord(code) {
       for (const [, list] of AIRPORT_PICKS) { const a = list.find(x => x[0] === code); if (a) return { lat: a[2], lng: a[3] }; }
@@ -12688,7 +12733,7 @@ function initSupabaseClient() {
     function airportStampSVG(st, opts) {
       opts = opts || {};
       const code = String(st.iata || "").toUpperCase();
-      const S = STAMP_STYLE[AP_COUNTRY[code]] || STAMP_STYLE.XX;
+      const S = stampStyleFor(AP_COUNTRY[code] || (AIRPORTS_DB[code] && AIRPORTS_DB[code].cc));
       // 每次蓋的墨色深淺都有一點不同（同一座機場蓋十次，也不會一模一樣）
       const handC = stampHand(st.seed || code + st.t);
       const shade = (hex, k) => { const n = parseInt(hex.slice(1), 16); const f = c => Math.round(c * (1 - k)); return "#" + [n >> 16, (n >> 8) & 255, n & 255].map(c => f(c).toString(16).padStart(2, "0")).join(""); };
@@ -12908,11 +12953,13 @@ function initSupabaseClient() {
     // 這張航班卡要不要顯示即時資訊：桃園出發或抵達、有航班編號、日期在昨天～明天
     function liveFlightTarget(item) {
       if (!item || item.type !== "flight" || item.status === "cancelled") return null;
-      const flight = parseFlightNo(item.flightNo) || parseFlightNo(item.title);
-      if (!flight) return null;
       const dep = String(item.depIata || "").toUpperCase(), arr = String(item.arrIata || "").toUpperCase();
-      const kind = LIVE_FLIGHT_AIRPORTS.includes(dep) ? "D" : LIVE_FLIGHT_AIRPORTS.includes(arr) ? "A" : "";
-      if (!kind) return null;
+      const legs = Array.isArray(item.legFlightNos) ? item.legFlightNos : [];
+      // 台灣的機場用官方資料（比較準）；都不是台灣就查出發機場（AirLabs）
+      const kind = LIVE_FLIGHT_AIRPORTS.includes(dep) ? "D" : LIVE_FLIGHT_AIRPORTS.includes(arr) ? "A" : "D";
+      const flight = kind === "A" && legs.length ? parseFlightNo(legs[legs.length - 1]) : parseFlightNo(legs[0] || item.flightNo) || parseFlightNo(item.title);
+      if (!flight || !(kind === "D" ? dep : arr)) return null;
+      if ((appState.liveFlight || {})[item.id] && appState.liveFlight[item.id].error === "unsupported") return null;
       const trip = getActiveTrip();
       let date = tripDayDateStr(trip, appState.activeDayIndex || 0);
       if (!date) return null;
@@ -12949,15 +12996,25 @@ function initSupabaseClient() {
           <span>${late ? `<s>${sch}</s> <b class="lf-late">${est}</b>` : `<b>${sch}</b>`}</span>${extra}`;
       } else if (err === "notfound") {
         line = `<span class="lf-muted">機場資料查不到這個航班</span>`;
+      } else if (err === "unsupported") {
+        return "";
       } else if (err) {
         line = `<span class="lf-muted">暫時無法取得</span>`;
       } else {
         line = `<span class="lf-muted">讀取中…</span>`;
       }
       const notify = f && "Notification" in window && Notification.permission === "default" ? ` · <button type="button" onclick="askLiveFlightNotify()">變動時通知我</button>` : "";
+      // 卡片時間和航班表定時間不一樣：提醒，讓使用者自己決定要不要套用（不自動覆蓋）
+      let mismatch = "";
+      if (f && f.scheduled) {
+        const sch = hm(f.scheduled), mine = tg.kind === "D" ? item.startTime : item.endTime;
+        if (sch && mine && sch !== mine) mismatch = `<div class="lf-mismatch">${ic("alert")}<span>航班表定 ${tg.kind === "D" ? "起飛" : "抵達"} ${sch}，卡片寫 ${escapeHtml(mine)}</span><button type="button" onclick="applyLiveFlightTime('${item.id}')">套用 ${sch}</button></div>`;
+      }
+      const src = rec && rec.source === "AirLabs" ? "資料：AirLabs" : "資料：台灣機場";
       return `<div class="live-flight" id="lf_${item.id}">
           <div class="lf-line"><span class="lf-label">即時</span>${line}</div>
-          <div class="lf-foot">僅供參考，以機場與航空公司公告為準（目前僅台灣機場）· <button type="button" onclick="refreshLiveFlight('${item.id}', true)">更新</button>${notify}</div>
+          ${mismatch}
+          <div class="lf-foot">僅供參考，以機場與航空公司公告為準（${src}）· <button type="button" onclick="refreshLiveFlight('${item.id}', true)">更新</button>${notify}</div>
         </div>`;
     }
     async function refreshLiveFlight(itemId, manual) {
@@ -12975,11 +13032,12 @@ function initSupabaseClient() {
           body: JSON.stringify({ flight: tg.flight, date: tg.date, airport: tg.airport, kind: tg.kind })
         });
         const data = await res.json();
+        if (data && /airlabs_(not_configured|usage_limit|unknown_api_key)/.test(data.error || "")) { rec = { at: Date.now(), error: "unsupported" }; throw "skip"; }
         if (!data || !data.ok) throw new Error((data && data.error) || "error");
         const f = (data.flights || []).find(x => x.kind === tg.kind) || null;
-        rec = f ? { at: Date.now(), flight: f } : { at: Date.now(), error: "notfound" };
+        rec = f ? { at: Date.now(), flight: f, source: data.source } : { at: Date.now(), error: "notfound" };
       } catch (e) {
-        rec = { at: Date.now(), error: "offline", flight: prev && prev.flight };
+        if (e !== "skip") rec = { at: Date.now(), error: "offline", flight: prev && prev.flight };
       } finally {
         liveFlightBusy[itemId] = false;
       }
@@ -12996,6 +13054,75 @@ function initSupabaseClient() {
       saveAppState();
       const el = document.getElementById("lf_" + itemId);
       if (el) el.outerHTML = liveFlightHtml(item);
+    }
+    // ---------- 輸入航班編號 → 帶入表定起降時刻（AirLabs routes，可查未來日期）----------
+    function tzOffsetAt(tz, dateStr, hm) {
+      try {
+        const d = new Date(`${dateStr}T${hm || "12:00"}:00Z`);
+        const v = new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: "longOffset" }).formatToParts(d).find(p => p.type === "timeZoneName").value;
+        const m = v.match(/GMT([+-])(\d{1,2}):?(\d{2})?/);
+        return m ? (m[1] === "-" ? -1 : 1) * (Number(m[2]) * 60 + Number(m[3] || 0)) : 0;
+      } catch (e) { return 0; }
+    }
+    async function fetchFlightSchedule(flight, date) {
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/flight-status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+        body: JSON.stringify({ action: "schedule", flight, date })
+      });
+      return res.json();
+    }
+    async function lookupFlightSchedule() {
+      const msg = document.getElementById("fFlightLookupMsg");
+      const legs = [document.getElementById("fFlightNo").value, ...[...document.querySelectorAll("#fLegFlights .leg-flight")].map(x => x.value)].map(parseFlightNo);
+      const first = legs[0], last = legs[legs.length - 1] || first;
+      if (!first) { msg.textContent = "先填航班編號，例如 BR12"; return; }
+      const date = tripDayDateStr(getActiveTrip(), appState.activeDayIndex || 0) || cdLocalDateStr();
+      msg.textContent = "查詢中…";
+      try {
+        await ensureAirportsDb();
+        const a = await fetchFlightSchedule(first, date);
+        const b = last && last !== first ? await fetchFlightSchedule(last, date) : a;
+        if (!a.ok || !b.ok) {
+          msg.textContent = /not_configured/.test(a.error || b.error || "") ? "這個功能還沒開通（需要設定 AirLabs）" : /usage_limit/.test(a.error || b.error || "") ? "本月免費查詢次數用完了" : "暫時查不到，請稍後再試";
+          return;
+        }
+        const s1 = a.schedule, s2 = b.schedule;
+        if (!s1 || !s2) { msg.textContent = "查不到這個航班的表定時刻，請手動填寫"; return; }
+        const depEl = document.getElementById("fDepIata"), arrEl = document.getElementById("fArrIata");
+        depEl.value = s1.dep; arrEl.value = s2.arr;
+        const depTz = CSV_AIRPORT_TZ[s1.dep] || (AIRPORTS_DB[s1.dep] || {}).tz, arrTz = CSV_AIRPORT_TZ[s2.arr] || (AIRPORTS_DB[s2.arr] || {}).tz;
+        autoSetItemTz(depTz || null, arrTz || null);
+        const [sh, sm] = s1.depTime.split(":"), [eh, em] = s2.arrTime.split(":");
+        document.getElementById("fStartHour").value = sh; document.getElementById("fStartMin").value = sm;
+        document.getElementById("fEndHour").value = eh; document.getElementById("fEndMin").value = em;
+        // 跨日：單段用飛行時間換算；轉機用「抵達的當地時間比出發早」判斷
+        let off = 0;
+        if (legs.length === 1 && s1.duration && depTz && arrTz) {
+          const depUtc = (+sh * 60 + +sm) - tzOffsetAt(depTz, date, s1.depTime);
+          const arrLocal = depUtc + s1.duration + tzOffsetAt(arrTz, date, s2.arrTime);
+          off = Math.floor(arrLocal / 1440);
+        } else if (+eh * 60 + +em < +sh * 60 + +sm) off = 1;
+        document.getElementById("fEndDayOffset").value = String(Math.max(-1, Math.min(2, off)));
+        renderAirportEntry();
+        const t = document.getElementById("fTitle");
+        if (!t.value.trim()) t.value = `${s1.dep} → ${s2.arr}`;
+        msg.textContent = `已帶入 ${s1.dep} ${s1.depTime} → ${s2.arr} ${s2.arrTime}（表定，以航空公司為準）` + (a.operatesThatDay === false ? "・這天可能沒有飛，請確認日期" : "");
+      } catch (e) {
+        msg.textContent = "暫時查不到，請稍後再試";
+      }
+    }
+
+    function applyLiveFlightTime(itemId) {
+      const item = findActiveDayItem(itemId);
+      const rec = (appState.liveFlight || {})[itemId];
+      const tg = liveFlightTarget(item);
+      if (!item || !rec || !rec.flight || !tg) return;
+      const sch = (rec.flight.scheduled || "").slice(11, 16);
+      if (!/^\d\d:\d\d$/.test(sch)) return;
+      if (tg.kind === "D") item.startTime = sch; else item.endTime = sch;
+      saveAppState(); debouncedSyncToCloud(); renderAll();
+      showToast(`已改成 ${sch}`);
     }
     function notifyLiveFlight(text) {
       showToast(text, 6000);
@@ -13605,7 +13732,9 @@ function initSupabaseClient() {
             const prev = cur.legs[cur.legs.length - 1];
             if (prev && prev.L === m.L) continue;
             const x = prev ? railXfer(prev.L, prev.to, m.L, m.s) : (m.s !== start.s ? railXfer(start.L, start.s, m.L, m.s) : null);
-            const pen = x ? (x.k === "walk" ? w.walk : x.k === "gate" ? w.gate : 2) : 0;
+            let pen = x ? (x.k === "walk" ? w.walk : x.k === "gate" ? w.gate : 2) : 0;
+            // 「同一家公司」：換到別家公司的線要另外買票，加很重的成本
+            if (w.op) { const fromL = prev ? prev.L : start.L; if (fromL && railOp(fromL) !== railOp(m.L)) pen += w.op; }
             m.L.st.forEach((s1, j) => {
               if (s1.cl === cl) return;
               const h = railHops(m.L, m.i, j);
@@ -13905,6 +14034,7 @@ function initSupabaseClient() {
         { tag: "轉乘最少", w: { leg: 1000, walk: 30, gate: 10 } },
         { tag: "站數最少", w: { leg: 4, walk: 8, gate: 3 } },
         { tag: "不用出站", w: { leg: 200, walk: 5000, gate: 900 } },
+        { tag: "同一家公司", w: { leg: 200, walk: 40, gate: 10, op: 4000 } },
       ];
       const seen = new Map();
       variants.forEach(v => {
@@ -13921,6 +14051,30 @@ function initSupabaseClient() {
         return { ...r, hops, transfers: r.legs.length - 1, walk };
       });
     }
+    // 用站名找車站（不用先知道在哪條線）：中文、日文、英文、韓文都比對
+    function railSearchHtml(d, q, role) {
+      q = String(q || "").trim();
+      if (!q) return "";
+      const nq = railNorm(q), lq = q.toLowerCase();
+      const seen = new Set(), hits = [];
+      d.lines.forEach((L, li) => L.st.forEach((s, si) => {
+        if (seen.has(s.cl)) return;
+        const names = [railNorm(s.n), railNorm(s.alt || ""), String(s.en || "").toLowerCase()];
+        const exact = names[0] === nq || names[1] === nq || names[2] === lq;
+        const part = names[0].includes(nq) || (names[1] && names[1].includes(nq)) || (names[2] && names[2].includes(lq));
+        if (!exact && !part) return;
+        if (role === "to" && RP.from && s.cl === RP.from.s.cl) return;
+        seen.add(s.cl);
+        hits.push({ s, li, si, score: exact ? 0 : names[0].startsWith(nq) || names[2].startsWith(lq) ? 1 : 2 });
+      }));
+      hits.sort((a, b) => a.score - b.score);
+      if (!hits.length) return `<div class="rp-msg" style="padding:8px 2px;">找不到「${escapeHtml(q)}」。可以換個寫法，或用「照路線找」。</div>`;
+      return `<div class="rp-sugs">${hits.slice(0, 8).map(x => railPlaceCard(d, x.s, "", false, `RP.q='';railPickStation(${x.li}, ${x.si}, '${role}')`)).join("")}</div>`;
+    }
+    function railSearchUpdate(role) {
+      const d = railData[RP.region], box = document.getElementById("rpSearchRes");
+      if (d && box) box.innerHTML = railSearchHtml(d, RP.q, role);
+    }
     function railRender() {
       const d = railData[RP.region];
       if (!d) return;
@@ -13932,7 +14086,7 @@ function initSupabaseClient() {
       if (!RP.from) {
         const sugs = railFromSuggestions(d);
         RP._sugs = sugs;
-        h += `<div class="rp-step"><div class="rp-step-h"><span>① 從哪一站上車？</span>${isActiveDayToday() ? `<button type="button" onclick="railUseHere()">用我的位置</button>` : ""}</div><div class="rp-sugs">` +
+        h += `<div class="rp-step"><div class="rp-step-h"><span>① 從哪一站上車？</span>${isActiveDayToday() ? `<button type="button" onclick="railUseHere()">用我的位置</button>` : ""}</div><input type="search" class="form-input rp-search" placeholder="不知道在哪條線？直接輸入站名（中、日、英文都可以）" value="${escapeHtml(RP.q || "")}" oninput="RP.q=this.value;railSearchUpdate('from')" autocomplete="off" /><div id="rpSearchRes">${railSearchHtml(d, RP.q, "from")}</div><div class="rp-sugs">` +
           sugs.map((x, i) => railPlaceCard(d, x.s, x.why, x.hot, `railSetFrom(${i})`)).join("") + (RP.pending ? `<div class="rp-msg" style="padding:10px;">正在找附近的車站…</div>` : "") + `</div>`;
         h += RP.browse === "from" ? railLineGrid(d, "from", RP.browseLine) : `<button type="button" class="rp-more" onclick="RP.browse='from';RP.browseLine=null;railRender()">${sugs.length ? "都不是？" : ""}照路線找</button>`;
         h += `</div>`;
@@ -13944,7 +14098,7 @@ function initSupabaseClient() {
       if (RP.from && !RP.to) {
         const tg = railTarget(d);
         RP._tg = tg;
-        h += `<div class="rp-step"><div class="rp-step-h"><span>② 到哪一站下車？</span></div><div class="rp-sugs">`;
+        h += `<div class="rp-step"><div class="rp-step-h"><span>② 到哪一站下車？</span></div><input type="search" class="form-input rp-search" placeholder="不知道在哪條線？直接輸入站名（中、日、英文都可以）" value="${escapeHtml(RP.q || "")}" oninput="RP.q=this.value;railSearchUpdate('to')" autocomplete="off" /><div id="rpSearchRes">${railSearchHtml(d, RP.q, "to")}</div><div class="rp-sugs">`;
         if (tg && tg.s.cl !== RP.from.s.cl) h += railPlaceCard(d, tg.s, tg.why, true, `railSetTo()`);
         h += (RP.pending ? `<div class="rp-msg" style="padding:10px;">正在找附近的車站…</div>` : "") + `</div>`;
         h += RP.browse === "to" ? railLineGrid(d, "to", RP.browseLine) : `<button type="button" class="rp-more" onclick="RP.browse='to';RP.browseLine=null;railRender()">${tg ? "不是這裡？" : ""}照路線找下車站</button>`;
@@ -13975,7 +14129,7 @@ function initSupabaseClient() {
       if (inl && RP._scrollInline) { RP._scrollInline = false; inl.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
     }
     function railSetFrom(i) { railSetFromStation(railMember(railData[RP.region], RP._sugs[i].s)); }
-    function railSetFromStation(m) { RP.from = { L: m.L, s: m.s }; RP.to = null; RP.browse = false; RP.browseLine = null; railRender(); }
+    function railSetFromStation(m) { RP.q = ""; RP.from = { L: m.L, s: m.s }; RP.to = null; RP.browse = false; RP.browseLine = null; railRender(); }
     function railSetTo() { const m = railMember(railData[RP.region], RP._tg.s); RP.to = { L: m.L, s: m.s }; RP.browse = false; railRender(); }
     function railBrowseLine(role, li) { RP.browse = role; RP.browseLine = RP.browseLine === li ? null : li; RP._scrollInline = true; railRender(); }
     function railPickStation(li, si, role) {
@@ -14054,12 +14208,45 @@ function initSupabaseClient() {
       AIRPORT_ZH[c] = zh;
       if (!AIRPORT_COORDS[c]) AIRPORT_COORDS[c] = { name: zh, lat, lng };
     }));
-    let AP = { side: "dep", group: null };
-    function airportLabel(code) { return AIRPORT_ZH[code] || (AIRPORT_COORDS[code] && AIRPORT_COORDS[code].name) || ""; }
+    let AP = { side: "dep", group: null, country: null };
+    // ---------- 全球機場（airports.json：OurAirports 公有領域資料，約 3,200 座有定期航班的機場）----------
+    const AIRPORTS_DB = {};
+    let airportsDbPromise = null;
+    function ensureAirportsDb() {
+      if (!airportsDbPromise) airportsDbPromise = fetch("airports.json", { cache: "default" }).then(r => r.json()).then(list => {
+        list.forEach(([code, name, city, cc, lat, lng, tz, big]) => {
+          AIRPORTS_DB[code] = { code, name, city, cc, lat, lng, tz, big: !!big };
+          if (!AIRPORT_COORDS[code]) AIRPORT_COORDS[code] = { name: (city || name).toUpperCase(), lat, lng };
+          if (tz && !CSV_AIRPORT_TZ[code]) CSV_AIRPORT_TZ[code] = tz;
+          if (cc && !AP_COUNTRY[code]) AP_COUNTRY[code] = cc;
+        });
+        return AIRPORTS_DB;
+      }).catch(() => { airportsDbPromise = null; return AIRPORTS_DB; });
+      return airportsDbPromise;
+    }
+    setTimeout(() => ensureAirportsDb(), 2500);
+    const regionNameZh = (() => { try { const dn = new Intl.DisplayNames([window.TG_LANG === "en" ? "en" : "zh-TW"], { type: "region" }); return cc => { try { return dn.of(cc) || cc; } catch (e) { return cc; } }; } catch (e) { return cc => cc; } })();
+    function airportLabel(code) {
+      if (window.TG_LANG !== "en" && AIRPORT_ZH[code]) return AIRPORT_ZH[code];
+      const a = AIRPORTS_DB[code];
+      if (a) return a.city || a.name;
+      return AIRPORT_ZH[code] || (AIRPORT_COORDS[code] && AIRPORT_COORDS[code].name) || "";
+    }
     function getVia() { return document.getElementById("fViaIata").value.split(",").filter(Boolean); }
     function setVia(list) { document.getElementById("fViaIata").value = list.slice(0, 2).join(","); renderAirportEntry(); }
     function removeVia(i) { const v = getVia(); v.splice(i, 1); setVia(v); }
+    // 有轉機時，每一段各填一個航班編號
+    function renderLegFlightInputs() {
+      const box = document.getElementById("fLegFlights");
+      if (!box) return;
+      const prev = [...box.querySelectorAll("input")].map(x => x.value);
+      const pts = [document.getElementById("fDepIata").value.trim().toUpperCase() || "?", ...getVia(), document.getElementById("fArrIata").value.trim().toUpperCase() || "?"];
+      const lbl = document.getElementById("fFlightNoLabel");
+      if (lbl) lbl.textContent = pts.length > 2 ? `第 1 段航班（${pts[0]} → ${pts[1]}）` : "航班編號";
+      box.innerHTML = pts.slice(1, -1).map((p, i) => `<div style="margin-top:8px;"><label class="form-label">第 ${i + 2} 段航班（${escapeHtml(p)} → ${escapeHtml(pts[i + 2])}）</label><input type="text" class="form-input leg-flight" placeholder="CX500" autocapitalize="characters" value="${escapeHtml(prev[i] != null ? prev[i] : (window.__legFlightPrefill || [])[i + 1] || "")}" /></div>`).join("");
+    }
     function renderAirportEntry() {
+      setTimeout(renderLegFlightInputs, 0);
       const row = document.getElementById("apViaRow");
       if (row) {
         const v = getVia();
@@ -14075,10 +14262,12 @@ function initSupabaseClient() {
       });
     }
     function openAirportPicker(side) {
-      AP = { side, group: null };
+      AP = { side, group: null, country: null };
       openModalBackdrop("airportPickerModal");
       document.getElementById("apOwnCode").value = "";
+      const sb = document.getElementById("apSearch"); if (sb) sb.value = "";
       renderAirportPicker();
+      ensureAirportsDb().then(() => renderAirportPicker());
     }
     function airportSuggestions() {
       const trip = getActiveTrip();
@@ -14120,8 +14309,26 @@ function initSupabaseClient() {
       const btn = (c, hot) => `<button type="button" class="ap-btn${hot ? " hot" : ""}${c === cur ? " sel" : ""}" onclick="pickAirport('${c}')"><b>${c}</b><span>${escapeHtml(airportLabel(c))}</span></button>`;
       const sug = airportSuggestions();
       let h = sug.length ? `<div class="rp-grp">常用</div><div class="ap-grid">${sug.map(c => btn(c, true)).join("")}</div>` : "";
-      h += `<div class="rp-regions" style="margin-top:12px;">${AIRPORT_PICKS.map(([g], i) => `<button type="button" class="${AP.group === i ? "on" : ""}" onclick="AP.group=${i};renderAirportPicker()">${g}</button>`).join("")}</div>`;
-      if (AP.group != null) h += `<div class="ap-grid">${AIRPORT_PICKS[AP.group][1].map(([c]) => btn(c)).join("")}</div>`;
+      const q = ((document.getElementById("apSearch") || {}).value || "").trim().toLowerCase();
+      const btnDb = a => `<button type="button" class="ap-btn${a.code === cur ? " sel" : ""}" onclick="pickAirport('${a.code}')"><b>${a.code}</b><span>${escapeHtml(airportLabel(a.code))}<small>${escapeHtml(a.name)} · ${escapeHtml(regionNameZh(a.cc))}</small></span></button>`;
+      if (q) {
+        // 搜尋：代號、城市、機場名、國家（中英都可以）
+        const hits = Object.values(AIRPORTS_DB).filter(a => {
+          if (a.code.toLowerCase() === q) return true;
+          const hay = `${a.code} ${a.city} ${a.name} ${regionNameZh(a.cc)} ${AIRPORT_ZH[a.code] || ""} ${TZ_ZH[a.tz] || ""}`.toLowerCase();
+          return hay.includes(q);
+        }).sort((x, y) => (y.code.toLowerCase() === q) - (x.code.toLowerCase() === q) || y.big - x.big || x.city.localeCompare(y.city)).slice(0, 40);
+        h = hits.length ? `<div class="ap-grid ap-list">${hits.map(btnDb).join("")}</div>` : `<div class="rp-msg">${Object.keys(AIRPORTS_DB).length ? "找不到這個機場，可以在下面直接輸入 3 碼代號。" : "機場資料載入中…"}</div>`;
+      } else {
+        h += `<div class="rp-regions" style="margin-top:12px;">${AIRPORT_PICKS.map(([g], i) => `<button type="button" class="${AP.group === i ? "on" : ""}" onclick="AP.group=${i};AP.country=null;renderAirportPicker()">${g}</button>`).join("")}<button type="button" class="${AP.group === "all" ? "on" : ""}" onclick="AP.group='all';renderAirportPicker()">全球・依國家</button></div>`;
+        if (AP.group === "all") {
+          const byCc = {};
+          Object.values(AIRPORTS_DB).forEach(a => { (byCc[a.cc] = byCc[a.cc] || []).push(a); });
+          const ccs = Object.keys(byCc).sort((a, b) => regionNameZh(a).localeCompare(regionNameZh(b), window.TG_LANG === "en" ? "en" : "zh-Hant"));
+          h += `<select class="form-select" style="margin-top:8px;" onchange="AP.country=this.value;renderAirportPicker()"><option value="">選國家／地區（${ccs.length}）</option>${ccs.map(cc => `<option value="${cc}"${AP.country === cc ? " selected" : ""}>${escapeHtml(regionNameZh(cc))}（${byCc[cc].length}）</option>`).join("")}</select>`;
+          if (AP.country && byCc[AP.country]) h += `<div class="ap-grid ap-list" style="margin-top:8px;">${byCc[AP.country].sort((x, y) => y.big - x.big || x.city.localeCompare(y.city)).map(btnDb).join("")}</div>`;
+        } else if (AP.group != null) h += `<div class="ap-grid">${AIRPORT_PICKS[AP.group][1].map(([c]) => btn(c)).join("")}</div>`;
+      }
       document.getElementById("apBody").innerHTML = h;
     }
     function pickAirport(code) {
@@ -14134,7 +14341,7 @@ function initSupabaseClient() {
       }
       document.getElementById(AP.side === "dep" ? "fDepIata" : "fArrIata").value = code;
       renderAirportEntry();
-      const apTz = CSV_AIRPORT_TZ[code];
+      const apTz = CSV_AIRPORT_TZ[code] || (AIRPORTS_DB[code] && AIRPORTS_DB[code].tz);
       if (apTz) autoSetItemTz(AP.side === "dep" ? apTz : null, AP.side === "dep" ? null : apTz);
       const other = document.getElementById(AP.side === "dep" ? "fArrIata" : "fDepIata").value.trim();
       if (AP.side === "dep" && !other) { AP.side = "arr"; AP.group = null; renderAirportPicker(); return; }
@@ -14353,9 +14560,15 @@ function initSupabaseClient() {
     // 更新公告：改版時只要修改 WHATS_NEW（版本號換新，內容換新），老朋友打開會看到一次
     // =====================================================================
     const WHATS_NEW = {
-      version: "2026.11.18k",
+      version: "2026.11.18m",
       date: "2026.11.18",
       items: [
+        ["全世界的機場", "選機場可以直接搜尋城市、機場名稱或代號，也能依國家找；全球 3,000 多個有定期航班的機場都在裡面，每個國家也都有自己的戳章。"],
+        ["轉機航班分段填編號", "有轉機的航班，每一段都可以填自己的航班編號。"],
+        ["用航班編號帶入時刻", "填好航班編號和日期，按一下就帶入表定起降時間和時區。卡片上的時間和航班表定不一樣時會提醒你，要不要套用由你決定。"],
+        ["同一家公司轉乘", "路線規劃多了「同一家公司」，盡量只搭同一家鐵道公司的路線，附近步行可到的站也可以轉。"],
+        ["直接輸入站名", "不知道車站在哪條線？在上車站、下車站直接輸入站名，中文、日文、英文都可以。"],
+        ["飛行時間修正", "跨夏令時間的航班（例如夏天飛美國），飛行時間會依當天日期計算，不會多算或少算 1 小時。"],
         ["分享卡可以選大小", "每種版型中間的兩張卡片可以選「標準」「大」「滿版」，畫面更飽滿。公路旅行的照片也改成滿版，不再有一圈外框。"],
         ["路線圖補上 6 條線", "東京加上京濱東北線、東海道線、橫須賀・總武快速線、高崎線、江之電、富士急行線；「本線」改成京急本線、京成本線這樣的全名。"],
         ["即時航班（台灣機場）", "從台灣的機場出發或抵達的航班，卡片上會顯示航廈、登機門、預計時間和狀態，有變動會提醒。資料僅供參考，請以機場與航空公司公告為準。"],
@@ -14453,6 +14666,7 @@ function initSupabaseClient() {
         <button class="pill-btn" onclick="closeModalBackdrop('airportPickerModal')" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
       </div>
       <div class="ap-tabs" id="apTabs"></div>
+      <input type="search" class="form-input ap-search" id="apSearch" placeholder="搜尋城市、機場、國家或代號（例：Phoenix、PHX、美國）" oninput="renderAirportPicker()" autocomplete="off" />
       <div id="apBody"></div>
       <div class="ap-own">
         <input type="text" class="form-input" id="apOwnCode" maxlength="3" placeholder="清單沒有？輸入 3 碼代號" />

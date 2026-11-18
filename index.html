@@ -1637,7 +1637,9 @@
     html.landing-open .landing { display: block; }
     .landing-inner { max-width: 520px; margin: 0 auto; padding: 0 20px; }
     .ld-hero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; padding: max(env(safe-area-inset-top, 0px), 14px) 6px max(env(safe-area-inset-bottom, 0px), 14px); }
-    .ld-top { display: flex; justify-content: flex-end; }
+    .ld-top { display: flex; justify-content: flex-end; gap: 8px; }
+    .ld-lang { border-color: var(--border); color: var(--sub); }
+    html[lang="en"] .ld-lang .l-zh, html:not([lang="en"]) .ld-lang .l-en { display: none; }
     .ld-link { background: none; border: 1.5px solid var(--ink); border-radius: 999px; padding: 6px 14px; font-family: var(--sans); font-weight: 700; font-size: 13px; color: var(--ink); cursor: pointer; min-height: 36px; }
     .ld-mid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px 0; }
     .ld-ring { width: min(104px, 28vw); aspect-ratio: 1; color: var(--ink); animation: tgSpin 18s linear infinite; }
@@ -1952,6 +1954,10 @@
     .ed-size span { color: var(--sub); font-weight: 700; margin-right: 4px; }
     .ed-size button { border: 1.5px solid var(--border); background: var(--card); color: var(--ink); border-radius: 999px; padding: 4px 12px; font: inherit; font-weight: 800; cursor: pointer; }
     .ed-size button.on { background: var(--ink); color: var(--card); border-color: var(--ink); }
+
+    /* 額外消費明細：沒有明細時，標題在框裡上下置中 */
+    #modalExtraExpensesList:empty { display: none; }
+    #modalExtraExpensesList:not(:empty) { margin-top: 8px; }
 
     /* 即時航班：一行就好，警語小字 */
     .live-flight { margin: 6px 0 8px; }
@@ -2333,7 +2339,10 @@
   <div class="landing" id="landingScreen" role="region" aria-label="TabigrAm 介紹">
     <div class="landing-inner">
       <section class="ld-hero">
-        <div class="ld-top"><button type="button" class="ld-link" onclick="landingAction('login')">登入</button></div>
+        <div class="ld-top">
+          <button type="button" class="ld-link ld-lang" data-notr onclick="setAppLanguage(window.TG_LANG === 'en' ? 'zh' : 'en')" aria-label="切換語言 / Language"><span class="l-zh">English</span><span class="l-en">中文</span></button>
+          <button type="button" class="ld-link" onclick="landingAction('login')">登入</button>
+        </div>
         <div class="ld-mid">
           <!-- 開場：轉動的 LOGO → 地鐵路線卡 → 登機證，輪流播放 -->
           <div class="ld-stage" id="ldStage" data-step="0">
@@ -3043,7 +3052,7 @@
         </div>
 
         <div style="margin-top:10px; background:#F3F2EE; padding:10px; border-radius:12px; border:1px dashed var(--border);">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <div class="xe-head" style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:12.5px; font-weight:800; display:inline-flex; align-items:center; gap:5px;"><svg class="ic" aria-hidden="true"><use href="#i-bag"/></svg> 額外消費明細</span>
             <button type="button" class="mini-btn" onclick="addExtraExpenseRowInModal()">＋ 新增明細</button>
           </div>
@@ -4543,7 +4552,9 @@
       try { localStorage.setItem("TABIGRAM_LANG", lang); } catch (e) {}
       const u = new URL(location.href);
       u.searchParams.delete("lang");
-      location.replace(u.pathname + u.search + u.hash);
+      // 在首頁切換：換完語言還是留在首頁
+      if (document.documentElement.classList.contains("landing-open")) u.searchParams.set("home", "");
+      location.replace(u.pathname + u.search.replace(/home=(&|$)/, "home$1") + u.hash);
     }
     function initLanguageUi() {
       const sel = document.getElementById("langSelect");
@@ -5301,6 +5312,8 @@
         const shouldAnimateStamp = (lastStampedCardId === item.id);
 
         card.className = "timeline-card" + (isTimetableCompactMode ? " timetable-compact" : "") + (isNow ? " now-active" : "") + (isDone ? " done-card" : "") + (isCancel ? " cancelled-card" : "");
+        // 心情選單打開時，這張卡片要疊在下一張上面，選單才不會被蓋住
+        if (activeEmojiPopoverItemId === item.id) { card.style.position = "relative"; card.style.zIndex = "40"; }
         if (isTimetableCompactMode) {
           card.innerHTML = `
             <div style="display:flex; align-items:center; gap:10px; min-width:0;">

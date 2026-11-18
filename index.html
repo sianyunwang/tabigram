@@ -27,7 +27,7 @@
       var lang = q || saved || (/^zh/i.test(nav) ? "zh" : "en");
       window.TG_LANG = lang;
       document.documentElement.lang = lang === "en" ? "en" : "zh-TW";
-      if (lang === "en") document.write('<script src="i18n/en.js?v=a58eb7de"><\/script>');
+      if (lang === "en") document.write('<script src="i18n/en.js?v=bccee733"><\/script>');
     })();
   </script>
   <script>
@@ -2293,6 +2293,7 @@
     .rp-xt.same { background: #E3F3E8; color: #16803C; }
     .rp-xt.gate { background: #FFF1D6; color: #9A5B00; }
     .rp-xt.walk { background: #FBE3DD; color: #B23A20; }
+    .rp-xt.through { background: #E4ECF8; color: #2C4F8A; white-space: normal; }
     .rp-end { width: 100%; border: 0; border-radius: 999px; background: var(--ink); color: var(--bg); font: 900 15px var(--sans); padding: 12px; cursor: pointer; }
     #feedbackModal { z-index: 2300; }   /* 從編輯視窗裡打開回報時要蓋在上面 */
     /* 旅伴邀請碼框：淺色、深色模式都看得清楚 */
@@ -12893,6 +12894,7 @@ function initSupabaseClient() {
 
     // ---------- 蓋章（單次定位；在機場附近才行）----------
     const STAMP_RADIUS_KM = 5;
+    const STAMP_WIDE_AIRPORTS = ["DFW", "DEN", "IAH", "ORD", "IAD", "MCO", "SLC", "ATL", "JFK", "EWR", "LAX", "SFO", "SEA", "MSP", "DTW", "CLT", "PHX", "LAS", "BOS", "YYZ", "YVR", "MEX", "CDG", "AMS", "FRA", "MUC", "LHR", "MAD", "IST", "DXB", "DOH", "PEK", "PKX", "PVG", "CAN", "ICN", "NRT", "KIX", "TPE", "BKK", "SIN", "HKG", "KUL", "CGK", "SYD", "MEL"];
     function stampAirportFor(item, kind) {
       return String((kind === "arr" ? item.arrIata : item.depIata) || "").toUpperCase();
     }
@@ -12912,7 +12914,9 @@ function initSupabaseClient() {
         hideLogoLoader();
         const km = haversineKm({ lat: pos.coords.latitude, lng: pos.coords.longitude }, ap);
         const slack = Math.min(3, (pos.coords.accuracy || 0) / 1000);
-        if (km > STAMP_RADIUS_KM + slack) {
+        // 占地特別大的機場（航廈離機場中心點很遠）放寬到 8 公里；市區機場（例如松山）維持 5 公里，避免在市中心就蓋得到
+        const radius = STAMP_WIDE_AIRPORTS.includes(code) ? 8 : STAMP_RADIUS_KM;
+        if (km > radius + slack) {
           alert(`要在 ${code} 機場附近才能蓋章（你現在距離約 ${km < 100 ? km.toFixed(1) : Math.round(km)} 公里）。`);
           return;
         }
@@ -13078,7 +13082,9 @@ function initSupabaseClient() {
       let arrAt = toUtc(arrDate, item.endTime || item.startTime || "23:59", endTz);
       if (!(arrAt > depAt)) arrAt = depAt + 24 * 3600 * 1000;
       const now = Date.now();
-      if (now < depAt - 24 * 3600 * 1000 || now > arrAt + 2 * 3600 * 1000) return null;
+      // 卡片時間填錯也不會漏掉：出發當天（日曆日）一整天都會查
+      const sameDay = cdCalendarDaysBetween(cdLocalDateStr(), depDate) === 0;
+      if (!sameDay && (now < depAt - 24 * 3600 * 1000 || now > arrAt + 2 * 3600 * 1000)) return null;
       return { flight, kind, date, airport: kind === "D" ? dep : arr };
     }
     const LIVE_STATUS = {
@@ -13762,6 +13768,7 @@ function initSupabaseClient() {
       d.lines.forEach(L => {
         const ste = L.ste || [];
         L.st = L.st.map((a, i) => ({ n: a[0], no: a[1], lat: a[2], lng: a[3], cl: a[4], alt: a[5] || "", en: ste[i] || "" }));
+        try { railFixBranches(L); } catch (e) {}
       });
       d.byCl = new Map();
       d.lines.forEach(L => L.st.forEach((s, i) => {
@@ -13822,7 +13829,44 @@ function initSupabaseClient() {
       if (L.g === "新幹線") return /山陽/.test(L.n) ? "JR西日本" : "JR東日本"; // 東海道新幹線也在 JR 站內轉乘
       return L.g;
     }
+    // 直通運轉：兩家公司的列車直接開進對方路線，同一班車可能不用下車（以 [公司, 路線] 配對，加上交會的車站）
+    const RAIL_THROUGH = [
+      ["東京メトロ", "副都心線", "東急", "東横線", "渋谷"], ["東急", "東横線", "みなとみらい線", "横浜高速鉄道みなとみらい21線", "横浜"],
+      ["東京メトロ", "副都心線", "東武", "東上線", "和光市"], ["東京メトロ", "有楽町線", "東武", "東上線", "和光市"],
+      ["東京メトロ", "副都心線", "西武", "有楽町線", "小竹向原"], ["東京メトロ", "有楽町線", "西武", "有楽町線", "小竹向原"],
+      ["西武", "有楽町線", "西武", "池袋線", "練馬"],
+      ["東京メトロ", "半蔵門線", "東急", "田園都市線", "渋谷"], ["東京メトロ", "半蔵門線", "東武", "スカイツリーライン", "押上"],
+      ["東京メトロ", "千代田線", "JR東日本", "常磐線", "綾瀬"], ["東京メトロ", "千代田線", "小田急", "小田原線", "代々木上原"],
+      ["東京メトロ", "東西線", "JR東日本", "中央・総武緩行線", "中野"], ["東京メトロ", "東西線", "JR東日本", "中央・総武緩行線", "西船橋"],
+      ["東京メトロ", "東西線", "東葉高速", "東葉高速線", "西船橋"], ["東京メトロ", "日比谷線", "東武", "スカイツリーライン", "北千住"],
+      ["東京メトロ", "南北線", "東急", "目黒線", "目黒"], ["都営", "三田線", "東急", "目黒線", "目黒"],
+      ["東京メトロ", "南北線", "埼玉高速", "埼玉高速鉄道線", "赤羽岩淵"],
+      ["都営", "浅草線", "京急", "京急本線", "泉岳寺"], ["都営", "浅草線", "京成", "押上線", "押上"],
+      ["京成", "押上線", "京成", "京成本線", "青砥"], ["京成", "京成本線", "京成", "北総線", "京成高砂"],
+      ["都営", "新宿線", "京王", "新線", "新宿"], ["りんかい線", "りんかい線", "JR東日本", "埼京線", "大崎"],
+      ["東急", "目黒線", "東急", "新横浜線", "日吉"], ["東急", "東横線", "東急", "新横浜線", "日吉"],
+      ["大阪メトロ", "堺筋線", "阪急", "千里線", "天神橋筋六丁目"], ["大阪メトロ", "中央線", "近鉄", "けいはんな線", "長田"],
+      ["京都市営地下鉄", "烏丸線", "近鉄", "京都線", "竹田"], ["近鉄", "難波線", "近鉄", "奈良線", "大阪上本町"],
+    ];
+    // 不同公司、但共用車站或月台，不用出閘門
+    const RAIL_SHARED = [
+      ["東京メトロ", "南北線", "都営", "三田線", "白金高輪"], ["東京メトロ", "南北線", "都営", "三田線", "白金台"],
+      ["東京メトロ", "南北線", "都営", "三田線", "目黒"], ["東京メトロ", "半蔵門線", "都営", "新宿線", "九段下"],
+    ];
+    function railPairHit(list, La, sa, Lb, sb) {
+      const nm = x => railNorm(String(x || "").replace(/〈.*?〉/g, ""));
+      const a = nm(sa.n), b = nm(sb.n);
+      return list.find(([ga, na, gb, nb, st]) => {
+        const k = nm(st);
+        if (!(a.startsWith(k) && b.startsWith(k))) return false;
+        const m1 = La.g === ga && La.n === na && Lb.g === gb && Lb.n === nb;
+        const m2 = La.g === gb && La.n === nb && Lb.g === ga && Lb.n === na;
+        return m1 || m2;
+      });
+    }
     function railXfer(La, sa, Lb, sb) {
+      if (railPairHit(RAIL_THROUGH, La, sa, Lb, sb)) return { k: "through", t: "直通運轉（同一班車可能不用下車）" };
+      if (railPairHit(RAIL_SHARED, La, sa, Lb, sb)) return { k: "same", t: "同站轉乘（共用車站）" };
       const d = railMeters(sa, sb), same = railNorm(sa.n) === railNorm(sb.n);
       // 同一家公司、同一個站名：就算月台很遠（例如東京站的京葉線），也是在站內換車，不用出閘門
       if (same && railOp(La) === railOp(Lb) && (d == null || d < 800)) {
@@ -13839,46 +13883,104 @@ function initSupabaseClient() {
     // 加一段固定成本（約等於多坐 10 幾站），長距離或能省下轉乘時還是會選它
     const RAIL_PREMIUM = { "機場特急": 12, "新幹線": 16, "台灣高鐵": 10 };
     function railPremium(L) { return RAIL_PREMIUM[L.g] || 0; }
-    function railHops(L, i, j) { const d = Math.abs(i - j); return L.loop ? Math.min(d, L.st.length - d) : d; }
+    function railHops(L, i, j) {
+      if (L.hopM) return L.hopM[i][j];
+      const d = Math.abs(i - j); return L.loop ? Math.min(d, L.st.length - d) : d;
+    }
+    // 有些路線資料不是一直線：中間會跳回前面（支線、或同一段重複），照清單順序數站會數錯。
+    // 偵測「突然跳很遠、又落在前面某站附近」的地方，接回那一站，再用最短路徑算兩站之間隔幾站。
+    function railFixBranches(L) {
+      const st = L.st, n = st.length;
+      if (L.loop || n < 3) return;
+      const dist = (a, b) => (a.lat == null || b.lat == null) ? null : railMeters(a, b);
+      const gaps = [];
+      for (let i = 0; i < n - 1; i++) gaps.push(dist(st[i], st[i + 1]));
+      const valid = gaps.filter(g => g != null).sort((a, b) => a - b);
+      if (!valid.length) return;
+      const med = valid[Math.floor(valid.length / 2)];
+      const adj = Array.from({ length: n }, () => []);
+      const link = (a, b, w) => { adj[a].push([b, w]); adj[b].push([a, w]); };
+      let jumped = false;
+      for (let i = 0; i < n - 1; i++) {
+        const g = gaps[i];
+        let isJump = false;
+        if (g != null && g > Math.max(3 * med, 3000)) {
+          let bestJ = -1, bestD = Infinity;
+          for (let j = 0; j < i; j++) { const dd = dist(st[j], st[i + 1]); if (dd != null && dd < bestD) { bestD = dd; bestJ = j; } }
+          if (bestJ >= 0 && bestD < g * 0.5) { isJump = true; jumped = true; link(bestJ, i + 1, bestD < 300 || st[bestJ].cl === st[i + 1].cl ? 0 : 1); }
+        }
+        if (!isJump) link(i, i + 1, 1);
+      }
+      if (!jumped) return;
+      // 同一站在清單裡出現兩次：視為同一個點
+      for (let a = 0; a < n; a++) for (let b = a + 1; b < n; b++) if (st[a].cl === st[b].cl) link(a, b, 0);
+      L.hopM = [];
+      for (let src = 0; src < n; src++) {
+        const d = new Array(n).fill(Infinity); d[src] = 0;
+        const dq = [src];
+        while (dq.length) {
+          const u = dq.shift();
+          for (const [v, w] of adj[u]) if (d[u] + w < d[v]) { d[v] = d[u] + w; w ? dq.push(v) : dq.unshift(v); }
+        }
+        L.hopM.push(d.map((x, k) => x === Infinity ? Math.abs(src - k) : x));
+      }
+    }
 
     // 轉乘最少的走法（最多換 2 次）
     function railRoute(d, start, goalCl, w = { leg: 1000, walk: 30, gate: 10 }) {
-      const best = new Map([[start.s.cl, { cost: 0, legs: [] }]]);
-      let frontier = [start.s.cl];
-      for (let round = 0; round < 4 && frontier.length; round++) {
+      // 記錄的是「搭哪條線抵達哪一站」：同一站，搭不同的線到，接下來換車的方便程度不一樣
+      // （例如到淡路：搭阪急到可以站內轉千里線，搭 JR 到就要出站），所以不能只留最便宜的那一個
+      let uid = 0;
+      const lid = L => (L._rid || (L._rid = "L" + (++uid) + "_" + Math.random().toString(36).slice(2, 6)));
+      const startKey = start.s.cl + "|start";
+      const best = new Map([[startKey, { cl: start.s.cl, cost: 0, legs: [] }]]);
+      let frontier = [startKey];
+      // 最多換 4 次車（5 段）；換車成本很高，能少換就會少換
+      for (let round = 0; round < 5 && frontier.length; round++) {
         const next = new Set();
-        for (const cl of frontier) {
-          const cur = best.get(cl);
+        for (const key of frontier) {
+          const cur = best.get(key);
+          const cl = cur.cl;
           for (const m of d.byCl.get(cl) || []) {
             const prev = cur.legs[cur.legs.length - 1];
             if (prev && prev.L === m.L) continue;
             const x = prev ? railXfer(prev.L, prev.to, m.L, m.s) : (m.s !== start.s ? railXfer(start.L, start.s, m.L, m.s) : null);
-            // 起點還沒進站：要搭哪一家的哪條線都可以直接進那個閘門，不算「出閘門再進站」；只有要走到別的車站才算步行
-            let pen = x ? (x.k === "walk" ? w.walk : x.k === "gate" ? (prev ? w.gate : 0) : 2) : 0;
+            // 起點還沒進站：要搭哪一家的哪條線都可以直接進那個閘門；要走到別的車站只算一般步行（不是換車）
+            let pen;
+            if (!x) pen = 0;
+            else if (!prev) {
+              // 起點：同一站名、或幾百公尺內的出入口，幾乎不算成本；真的要走一段才加一點
+              const dm = railMeters(start.s, m.s);
+              pen = railNorm(start.s.n) === railNorm(m.s.n) ? 0 : (dm != null && dm < 400 ? 5 : Math.min(w.walk, 30));
+            } else pen = x.k === "walk" ? w.walk : x.k === "gate" ? w.gate : 2;
+            // 直通運轉：同一班車開過去，幾乎等於沒換車（抵銷掉一次換車的成本，但還是比真正不用換的同一條線差一點）
+            if (x && x.k === "through" && prev) pen = 4 - w.leg;
             // 「同一家公司」：換到別家公司的線要另外買票，加很重的成本（起點不算換車）
             if (w.op && prev && railOp(prev.L) !== railOp(m.L)) pen += w.op;
             m.L.st.forEach((s1, j) => {
               if (s1.cl === cl) return;
               const h = railHops(m.L, m.i, j);
               const cost = cur.cost + w.leg + h + pen + railPremium(m.L);
-              const old = best.get(s1.cl);
+              const k2 = s1.cl + "|" + lid(m.L);
+              const old = best.get(k2);
               if (!old || cost < old.cost) {
-                best.set(s1.cl, { cost, legs: [...cur.legs, { L: m.L, from: m.s, to: s1, hops: h }] });
-                next.add(s1.cl);
+                best.set(k2, { cl: s1.cl, cost, legs: [...cur.legs, { L: m.L, from: m.s, to: s1, hops: h }] });
+                next.add(k2);
               }
             });
           }
         }
         frontier = [...next];
       }
-      const r = best.get(goalCl);
+      let r = null;
+      for (const v of best.values()) if (v.cl === goalCl && v.legs.length && (!r || v.cost < r.cost)) r = v;
       return r ? r.legs : null;
     }
     function railLegsHtml(legs, start) {
       let h = "";
       legs.forEach((g, i) => {
         if (i === 0 && start && railNorm(g.from.n) !== railNorm(start.s.n)) h += `<div class="rp-xfer">先走到 ${escapeHtml(railStName(g.from))} ${railXt(railXfer(start.L, start.s, g.L, g.from))}</div>`;
-        if (i > 0) { const p = legs[i - 1]; h += `<div class="rp-xfer">在 ${escapeHtml(railStName(p.to))} 換車 ${railXt(railXfer(p.L, p.to, g.L, g.from))}</div>`; }
+        if (i > 0) { const p = legs[i - 1], x = railXfer(p.L, p.to, g.L, g.from); h += `<div class="rp-xfer">${x.k === "through" ? `經過 ${escapeHtml(railStName(p.to))}` : `在 ${escapeHtml(railStName(p.to))} 換車`} ${railXt(x)}</div>`; }
         h += `<div class="rp-leg">${railSign(g.L, g.from.no)} ${escapeHtml(railStName(g.from))} → ${escapeHtml(railStName(g.to))}<small>${escapeHtml(railLineName(g.L))}・${g.hops} 站</small></div>`;
       });
       return h;
@@ -14174,7 +14276,8 @@ function initSupabaseClient() {
         const hops = r.legs.reduce((a, g) => a + g.hops, 0);
         const xs = r.legs.slice(1).map((g, i) => railXfer(r.legs[i].L, r.legs[i].to, g.L, g.from));
         const walk = xs.filter(x => x.k === "walk").length;
-        return { ...r, hops, transfers: r.legs.length - 1, walk };
+        const through = xs.filter(x => x.k === "through").length;
+        return { ...r, hops, transfers: r.legs.length - 1 - through, walk };
       });
     }
     // 用站名找車站（不用先知道在哪條線）：中文、日文、英文、韓文都比對
@@ -14744,7 +14847,7 @@ function initSupabaseClient() {
       </div>
       <div class="rp-regions" id="rpRegions"></div>
       <div id="rpBody"></div>
-      <p class="rp-note">車站資料 © OpenStreetMap contributors・台鐵：臺鐵開放資料</p>
+      <p class="rp-note">路線是依站數和轉乘次數估算的建議，不含班次時刻；換車方式、直通運轉請以現場指標為準。<br>車站資料 © OpenStreetMap contributors・台鐵：臺鐵開放資料</p>
     </div>
   </div>
 

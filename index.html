@@ -13058,17 +13058,27 @@ function initSupabaseClient() {
       const kind = LIVE_FLIGHT_AIRPORTS.includes(dep) ? "D" : LIVE_FLIGHT_AIRPORTS.includes(arr) ? "A" : "D";
       const flight = kind === "A" && legs.length ? parseFlightNo(legs[legs.length - 1]) : parseFlightNo(legs[0] || item.flightNo) || parseFlightNo(item.title);
       if (!flight || !(kind === "D" ? dep : arr)) return null;
-      if ((appState.liveFlight || {})[item.id] && appState.liveFlight[item.id].error === "unsupported") return null;
+      // 查不到（還沒開通、額度用完）：6 小時內不再查，之後再試一次（下個月額度恢復就會自己回來）
+      const lr = (appState.liveFlight || {})[item.id];
+      if (lr && lr.error === "unsupported" && Date.now() - (lr.at || 0) < 6 * 3600 * 1000) return null;
       const trip = getActiveTrip();
-      let date = tripDayDateStr(trip, appState.activeDayIndex || 0);
-      if (!date) return null;
+      const depDate = tripDayDateStr(trip, appState.activeDayIndex || 0);
+      if (!depDate) return null;
+      let date = depDate;
       if (kind === "A" && item.endDayOffset) {
-        const [y, m, d] = date.split("-").map(Number);
+        const [y, m, d] = depDate.split("-").map(Number);
         date = cdLocalDateStr(new Date(y, m - 1, d + Number(item.endDayOffset)));
       }
-      const today = cdLocalDateStr();
-      const diff = cdCalendarDaysBetween(today, date);
-      if (diff < -1 || diff > 1) return null;
+      // 只在「起飛前 24 小時」到「落地後 2 小時」之間查即時資訊；其他時間卡片只顯示表定時刻
+      const toUtc = (ds, hm, tz) => Date.parse(`${ds}T${hm || "00:00"}:00Z`) - tzOffsetAt(tz, ds, hm) * 60000;
+      const startTz = item.startTz || trip.homeTz || "Asia/Taipei", endTz = item.endTz || startTz;
+      const [yy, mm, dd] = depDate.split("-").map(Number);
+      const arrDate = cdLocalDateStr(new Date(yy, mm - 1, dd + Number(item.endDayOffset || 0)));
+      const depAt = toUtc(depDate, item.startTime || "00:00", startTz);
+      let arrAt = toUtc(arrDate, item.endTime || item.startTime || "23:59", endTz);
+      if (!(arrAt > depAt)) arrAt = depAt + 24 * 3600 * 1000;
+      const now = Date.now();
+      if (now < depAt - 24 * 3600 * 1000 || now > arrAt + 2 * 3600 * 1000) return null;
       return { flight, kind, date, airport: kind === "D" ? dep : arr };
     }
     const LIVE_STATUS = {

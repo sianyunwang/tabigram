@@ -134,6 +134,8 @@
         <li>Your private notes, photos, extra expenses and check-in locations are <b>visible only to you</b> and are not shared with your travel companions.</li>
         <li>Your location is recorded only once, when you tap "I'm here". <b>It is not tracked in the background</b>, and you can clear it at any time.</li>
         <li>"Use my location" in "Pick stations" only finds the nearest station on this device. <b>Your location is not saved and is not sent to any server.</b></li>
+        <li>When you stamp an airport stamp, whether you are near the airport is checked on this device only. <b>We record only the airport code and the time, never your coordinates.</b></li>
+        <li>Flight lookups send only the flight number, date and airport code, <b>never your identity or location</b>.</li>
         <li>You can ask us to delete your account and all your cloud data at any time.</li>
       </ul>
     </section>
@@ -155,7 +157,7 @@
         <tbody>
           <tr>
             <td>Account data</td>
-            <td>Email; if you sign in with Google, also your Google name. Your password is stored encrypted by the sign-in service, and we cannot see it.</td>
+            <td>The email address and Google name you agree to share when you sign in with your Google account. The Service offers Google sign-in only and does not store any passwords.</td>
             <td>Signing in and identifying your account</td>
           </tr>
           <tr>
@@ -177,6 +179,11 @@
             <td>Check-in location</td>
             <td>When you tap "I'm here" on an itinerary card and agree to record it, your location coordinates and the time at that moment. Recorded only once, at the moment you tap; not tracked continuously in the background</td>
             <td>Drawing your footprint map; <b>visible only to you</b></td>
+          </tr>
+          <tr>
+            <td>Airport stamps</td>
+            <td>When you tap "Stamp departure" or "Stamp arrival" on a flight card: the airport code and the time. Whether you are near the airport is checked only on your device; your coordinates are not recorded or uploaded</td>
+            <td>Showing on your flight card, passport page and share cards; <b>visible only to you</b></td>
           </tr>
           <tr>
             <td>Photos</td>
@@ -230,6 +237,8 @@
           <tr><td>Google</td><td>"Sign in with Google"</td><td>The email and name you agree to share</td></tr>
           <tr><td>GitHub Pages</td><td>Website hosting</td><td>Connection logs such as your IP address when you visit the site</td></tr>
           <tr><td>Open-Meteo</td><td>Weather, sunrise and sunset</td><td>The city or place you enter</td></tr>
+          <tr><td>Flight data: MOTC TDX (Taiwan), Taoyuan International Airport, AirLabs</td><td>"Fill times from flight number" and live flight info on flight cards (terminal, gate, estimated time, status)</td><td>Flight number, date and airport code. Lookups are sent by the Service's own server (Supabase), so these services cannot see your IP address or account</td></tr>
+          <tr><td>Airport data (OurAirports, mwgg/Airports)</td><td>Names, coordinates and time zones of airports worldwide, prepared in advance and hosted on this site</td><td>Nothing is sent; the airport list is simply downloaded from this site</td></tr>
           <tr><td>ExchangeRate-API (open.er-api.com)</td><td>When you set a budget, converting other currencies into the budget currency</td><td>None of your data is sent; only that day's exchange rates are downloaded</td></tr>
           <tr><td>OpenStreetMap (Nominatim)</td><td>Converting station and place names into map coordinates</td><td>Station or place names in your itinerary</td></tr>
           <tr><td>Station and route data (OpenStreetMap, Taiwan Railway open data)</td><td>Route and station data for "Pick stations", prepared in advance and hosted on this website</td><td>No data is sent; route files are simply downloaded from this website</td></tr>

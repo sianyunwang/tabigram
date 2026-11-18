@@ -12884,11 +12884,13 @@ function initSupabaseClient() {
     function stampAirportFor(item, kind) {
       return String((kind === "arr" ? item.arrIata : item.depIata) || "").toUpperCase();
     }
-    function stampFlight(itemId, kind) {
+    async function stampFlight(itemId, kind) {
       const item = findActiveDayItem(itemId);
       if (!item) return;
       const code = stampAirportFor(item, kind);
-      const ap = airportCoord(code);
+      let ap = airportCoord(code);
+      // 全球機場資料還沒載入完：等它載好再找一次（每一座有定期航班的機場都能蓋）
+      if (!ap && code) { await ensureAirportsDb(); ap = airportCoord(code); }
       item.stamps = item.stamps || {};
       if (item.stamps[kind]) { openStampViewer(item, kind); return; }
       if (!code || !ap) return alert("這個航班沒有設定機場，或是 App 還不認得這個機場，沒辦法蓋章。");
@@ -12967,6 +12969,8 @@ function initSupabaseClient() {
       return out.sort((a, b) => a.t - b.t);
     }
     function openPassport() {
+      // 章的國家樣式要看全球機場資料，還沒載入就先載
+      if (!Object.keys(AIRPORTS_DB).length && !openPassport.waited) { openPassport.waited = true; ensureAirportsDb().then(() => openPassport()); return; }
       const list = allAirportStamps();
       const body = document.getElementById("passportBody");
       const airports = new Set(list.map(s => s.iata)), countries = new Set(list.map(s => AP_COUNTRY[s.iata] || "XX"));

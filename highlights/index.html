@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="TabigrAm：排行程、搭車、等航班，到旅程結束蓋上一枚章。把每一趟旅行，好好收起來。">
+<meta property="og:title" content="TabigrAm 亮點介紹">
+<meta property="og:description" content="排行程、搭車、等航班，到旅程結束蓋上一枚章。把每一趟旅行，好好收起來。">
+<meta property="og:image" content="https://tabigram.info/og-image.png">
+<meta property="og:url" content="https://tabigram.info/highlights/">
+<link rel="icon" href="../favicon.png">
+<title>TabigrAm 亮點介紹</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root { padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); color-scheme: light; }
+body { margin: 0; }
+img { max-width: 100%; }
+/* Layout: 一頁長捲的產品型錄 — 每個亮點一段，左文右圖（手機上變成上文下圖），圖都是 App 真實畫面 */
+:root {
+  --paper: #E7E5E0;      /* 再生紙灰：App 的 Paper 主題底色 */
+  --sheet: #F4F2EE;      /* 卡片紙 */
+  --ink: #1B1A18;
+  --sub: #5F5B54;
+  --line: #CFCBC3;
+  --accent: #FF4F00;     /* 國際橘 */
+  --accent-soft: #FFE3D4;
+  --shadow: rgba(27, 26, 24, .16);
+  --f-display: 'Dela Gothic One', 'Noto Sans TC', system-ui, sans-serif;
+  --f-body: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #1A1917; --sheet: #24221F; --ink: #F1EEE8; --sub: #B3ADA3; --line: #3A3733;
+    --accent: #FF6A26; --accent-soft: #3A2418; --shadow: rgba(0, 0, 0, .45); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #1A1917; --sheet: #24221F; --ink: #F1EEE8; --sub: #B3ADA3; --line: #3A3733;
+  --accent: #FF6A26; --accent-soft: #3A2418; --shadow: rgba(0, 0, 0, .45); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--paper); color: var(--ink); font-family: var(--f-body);
+  font-size: 16px; line-height: 1.75;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 56px;
+}
+.wrap { max-width: 1040px; margin: 0 auto; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+
+/* 封面 */
+.hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 32px; align-items: center; padding-block: 56px 40px; }
+.brand { font-family: var(--f-display); font-size: clamp(44px, 8vw, 84px); line-height: 1; letter-spacing: -.01em; }
+.brand sup { font-family: var(--f-mono); font-size: .22em; color: var(--accent); vertical-align: super; margin-left: 4px; letter-spacing: 0; }
+.hero .lead { font-size: clamp(20px, 2.6vw, 26px); font-weight: 900; margin-top: 18px; line-height: 1.45; }
+.hero .intro { color: var(--sub); margin-top: 14px; max-width: 36em; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.chip { font-size: 13px; font-weight: 700; padding: 5px 12px; border-radius: 99px; border: 1px solid var(--line); background: var(--sheet); }
+.fan { position: relative; height: 440px; }
+.fan img { position: absolute; width: 46%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 14px; box-shadow: 0 14px 34px var(--shadow); max-width: 100%; }
+.fan img:nth-child(1) { left: 2%; top: 34px; rotate: -9deg; }
+.fan img:nth-child(2) { left: 52%; top: 34px; rotate: 8deg; }
+.fan img:nth-child(3) { left: 27%; top: 0; z-index: 2; }
+.nb { display: inline-block; }
+.brandrow { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.ring { width: clamp(64px, 9vw, 96px); aspect-ratio: 1; flex: none; background: var(--accent);
+  -webkit-mask: url(logo-ring.png) center / contain no-repeat; mask: url(logo-ring.png) center / contain no-repeat;
+  animation: spin 18s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .ring, .end .ring { animation: none; } }
+.editor { display: grid; grid-template-columns: 300px 1fr; gap: 40px; align-items: center; margin-top: 32px; }
+.swatches { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.sw { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700; padding: 6px 12px 6px 6px; border-radius: 99px; background: var(--sheet); border: 1px solid var(--line); }
+.sw i { width: 22px; height: 22px; border-radius: 50%; display: block; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+.end { grid-template-columns: 1fr auto; align-items: center; }
+.sim { display: grid; grid-template-columns: minmax(0, 340px) 1fr; gap: 40px; align-items: center; margin-top: 44px; padding: 28px; background: var(--sheet); border: 1px solid var(--line); border-radius: 24px; }
+.sim-stage { margin: 0; }
+.sim-stage img { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; border-radius: 16px; box-shadow: 0 16px 36px var(--shadow); background: var(--paper); }
+.sim-ctrl { min-width: 0; }
+.sim-label { font-family: var(--f-mono); font-size: 12px; font-weight: 700; letter-spacing: .12em; color: var(--sub); margin: 22px 0 10px; }
+.sim-tpl, .sim-sw { display: flex; flex-wrap: wrap; gap: 8px; }
+.sim-tpl button, .sim-sw button { font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); background: var(--paper); border: 1.5px solid var(--line); border-radius: 99px; padding: 7px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.sim-sw button { padding-left: 6px; }
+.sim-sw i { width: 22px; height: 22px; border-radius: 50%; display: block; box-shadow: inset 0 0 0 1px rgba(0,0,0,.14); }
+.sim-tpl button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.sim-sw button[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.sim button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sim-cap { margin-top: 18px; color: var(--sub); font-size: 14.5px; }
+.end .ring { width: 120px; background: var(--accent); }
+.end .txt { display: grid; gap: 8px; min-width: 0; }
+
+/* 目錄 */
+.toc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-bottom: 24px; }
+.toc a { background: var(--sheet); padding: 14px 16px; color: var(--ink); text-decoration: none; display: grid; gap: 2px; min-width: 0; }
+.toc a:hover, .toc a:focus-visible { background: var(--accent-soft); outline: none; }
+.toc b { font-size: 15px; }
+.toc small { color: var(--sub); font-size: 12.5px; line-height: 1.45; }
+
+/* 亮點段落 */
+.feat { display: grid; grid-template-columns: 1fr 340px; gap: 48px; align-items: center; padding-block: 52px; border-top: 1px dashed var(--line); }
+.feat.flip { grid-template-columns: 340px 1fr; }
+.feat.flip .copy { order: 2; }
+.copy { min-width: 0; }
+.tag { font-family: var(--f-mono); font-size: 12px; font-weight: 700; letter-spacing: .12em; color: var(--accent); text-transform: uppercase; }
+.feat h2 { font-size: clamp(26px, 3.4vw, 36px); font-weight: 900; line-height: 1.3; margin-top: 8px; }
+.feat .say { color: var(--sub); margin-top: 12px; max-width: 34em; }
+.points { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 10px; }
+.points li { display: grid; grid-template-columns: 22px 1fr; gap: 8px; align-items: start; }
+.points li::before { content: ""; width: 10px; height: 10px; border-radius: 50%; border: 2.5px solid var(--accent); margin-top: 9px; }
+.points b { font-weight: 700; }
+
+/* 手機外框與圖說 */
+.phone { margin: 0; display: grid; gap: 12px; justify-items: center; }
+.phone .frame { width: 100%; max-width: 300px; border-radius: 34px; padding: 10px; background: var(--ink); box-shadow: 0 18px 40px var(--shadow); }
+.phone img { display: block; width: 100%; border-radius: 25px; }
+figcaption { font-size: 13.5px; color: var(--sub); line-height: 1.6; max-width: 300px; }
+figcaption b { color: var(--ink); }
+
+/* 分享卡畫廊 */
+.gallery { padding-block: 52px; border-top: 1px dashed var(--line); }
+.gallery .head { max-width: 40em; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 36px; }
+.cards figure { margin: 0; display: grid; gap: 8px; align-content: start; }
+.cards img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 12px; box-shadow: 0 10px 24px var(--shadow); }
+.cards figcaption { font-size: 13px; }
+
+/* 其他小亮點 */
+.more { padding-block: 52px; border-top: 1px dashed var(--line); }
+.grid6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 24px; }
+.mini { background: var(--sheet); border: 1px solid var(--line); border-radius: 16px; padding: 18px 18px 16px; min-width: 0; }
+.mini h3 { font-size: 17px; font-weight: 900; }
+.mini p { color: var(--sub); font-size: 14.5px; margin-top: 6px; line-height: 1.65; }
+.mini .k { font-family: var(--f-mono); font-size: 11.5px; color: var(--accent); font-weight: 700; letter-spacing: .1em; }
+
+.end { margin-top: 24px; padding: 28px; border-radius: 20px; background: var(--ink); color: var(--paper); display: grid; gap: 8px; }
+.end h2 { font-family: var(--f-display); font-weight: 400; font-size: clamp(24px, 3.4vw, 32px); }
+.end p { opacity: .82; max-width: 40em; }
+.end .url { font-family: var(--f-mono); font-size: 15px; color: var(--accent); font-weight: 700; user-select: all; }
+.note { font-size: 12.5px; color: var(--sub); margin-top: 18px; }
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; padding-top: 36px; }
+  .fan { height: 380px; max-width: 420px; width: 100%; justify-self: center; }
+  .toc { grid-template-columns: repeat(2, 1fr); }
+  .feat, .feat.flip { grid-template-columns: 1fr; gap: 28px; padding-block: 40px; }
+  .feat.flip .copy { order: 0; }
+  .grid6 { grid-template-columns: 1fr 1fr; }
+  .editor { grid-template-columns: 1fr; }
+  .sim { grid-template-columns: 1fr; padding: 18px; gap: 20px; }
+  .sim-stage { max-width: 230px; width: 100%; justify-self: center; order: 2; }
+  .sim-ctrl { order: 1; }
+  .sim-label { margin-top: 14px; }
+  .sim-tpl button, .sim-sw button { font-size: 13px; padding-block: 6px; }
+  .end { grid-template-columns: 1fr; }
+  .end .ring { width: 88px; }
+}
+@media (max-width: 520px) {
+  .grid6 { grid-template-columns: 1fr; }
+  .fan { height: 330px; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <div class="brandrow"><span class="ring" role="img" aria-label="TabigrAm 圓形標誌"></span><div class="brand">TabigrAm<sup>.beta</sup></div></div>
+      <p class="lead"><span class="nb">排行程、搭車、等航班，</span><span class="nb">到旅程結束蓋上一枚章。</span><br><span class="nb">把每一趟旅行，好好收起來。</span></p>
+      <p class="intro">TabigrAm 是一個用手機就能打開的旅行網頁 App。不用下載、不用先註冊，打開就能開始排行程；出國當天它會告訴你下一站怎麼去、航班有沒有變動，旅程結束後，再把走過的路畫成可以分享的卡片。</p>
+      <div class="chips">
+        <span class="chip">免下載・免註冊就能用</span>
+        <span class="chip">中文／English</span>
+        <span class="chip">沒網路也看得到行程</span>
+        <span class="chip">可以和旅伴一起編輯</span>
+      </div>
+    </div>
+    <figure class="fan">
+      <img src="cards/c-polaroid-moss.jpg" alt="京都苔綠拍立得卡：伏見稻荷千本鳥居" loading="lazy">
+      <img src="cards/c-memory-oat.jpg" alt="暖米原紙旅程回憶卡：東京・京都五日遊，5 天、9 個行程與三張照片" loading="lazy">
+      <img src="cards/c-flight-navy.jpg" alt="深海夜藍登機證：長榮 BR198 台北飛成田" loading="lazy">
+    </figure>
+  </header>
+
+  <nav class="toc" aria-label="亮點目錄">
+    <a href="#plan"><b>排行程</b><small>時間軸、天氣、日照條</small></a>
+    <a href="#rail"><b>搭車不迷路</b><small>選站就幫你排好轉乘</small></a>
+    <a href="#flight"><b>航班</b><small>輸入編號就帶入時刻</small></a>
+    <a href="#budget"><b>預算</b><small>還剩多少一眼看懂</small></a>
+    <a href="#stamp"><b>機場戳章</b><small>人在機場才蓋得到</small></a>
+    <a href="#cards"><b>分享卡</b><small>自己選卡片、配顏色</small></a>
+    <a href="#more"><b>更多小細節</b><small>旅伴、離線、匯入、AI</small></a>
+    <a href="#hello"><b>開始使用</b><small>給朋友的一句話</small></a>
+  </nav>
+
+  <section class="feat" id="plan">
+    <div class="copy">
+      <div class="tag">01 · Plan</div>
+      <h2>一天的行程，排成一條清楚的時間軸</h2>
+      <p class="say">建立旅行時選好出發和回程日期，天數就自動排好。每個行程是一張卡片，交通、景點、航班、自駕都能放，完成了按一下就蓋上「COMPLETED」。</p>
+      <ul class="points">
+        <li><span><b>日出到日落的日照條</b>：當天每個行程落在白天還是晚上，一眼看出來。</span></li>
+        <li><span><b>當地天氣</b>：自動帶入那天、那個城市的氣溫和天氣。</span></li>
+        <li><span><b>時區自動切換</b>：選了海外車站或機場，卡片就換成當地時間，不會算錯一小時。</span></li>
+        <li><span><b>中間想多玩一天</b>：「＋ 加一天」可以插在任何一天前後，之後的日期自動順延。</span></li>
+      </ul>
+    </div>
+    <figure class="phone">
+      <div class="frame"><img src="timeline.jpg" alt="App 畫面：出發前倒數 13:33:58，去程航班卡顯示即時資訊：時間更改、第二航廈、登機門 C6、08:50 改成 09:05" loading="lazy"></div>
+      <figcaption><b>出發前一天</b>　上方倒數到起飛前的時分秒；航班卡直接顯示即時資訊：第二航廈、登機門 C6，起飛時間從 08:50 改成 09:05。</figcaption>
+    </figure>
+  </section>
+
+  <section class="feat flip" id="rail">
+    <div class="copy">
+      <div class="tag">02 · Transit</div>
+      <h2>點上車站、下車站，轉乘幫你排好</h2>
+      <p class="say">支援台灣、東京、大阪京都、首爾、舊金山、紐約的鐵道與捷運。不用先知道車站在哪條線，直接打站名就找得到，中文、日文、英文都可以。</p>
+      <ul class="points">
+        <li><span><b>多種走法比一比</b>：推薦走法、站數最少、不用出站、只搭同一家公司。</span></li>
+        <li><span><b>轉乘方式講清楚</b>：同站轉乘、要出閘門再進站，還是站外步行，都會標出來。</span></li>
+        <li><span><b>短程不亂推特急</b>：N'EX、新幹線這類要另外買票的車，短距離不會優先推薦。</span></li>
+        <li><span><b>站名跟現場站牌一樣</b>：東京用日文寫法、首爾附上韓文，到了現場對得上。</span></li>
+      </ul>
+    </div>
+    <figure class="phone">
+      <div class="frame"><img src="rail.jpg" alt="App 畫面：從中目黑到淺草的兩種走法，推薦走法在銀座同站轉乘" loading="lazy"></div>
+      <figcaption><b>選車站</b>　中目黑 → 淺草：推薦在銀座「同站轉乘」，另一條站數較少但要「出閘門再進站」。</figcaption>
+    </figure>
+  </section>
+
+  <section class="feat" id="flight">
+    <div class="copy">
+      <div class="tag">03 · Flight</div>
+      <h2>輸入航班編號，起降時間自動帶入</h2>
+      <p class="say">全球 3,000 多個有定期航班的機場都能選，可以搜尋城市、機場名稱、代號，也能依國家找。有轉機的航班，每一段都能填自己的航班編號。</p>
+      <ul class="points">
+        <li><span><b>一鍵帶入表定時刻</b>：填好 BR32，按一下就帶入起降時間和兩地時區。</span></li>
+        <li><span><b>出發前後看即時航班</b>：航廈、登機門、預計時間和狀態直接出現在行程卡上，延誤或改時間會提醒你。</span></li>
+        <li><span><b>時間對不上會提醒</b>：卡片寫的時間和航班表定不同時，會提示你，要不要套用由你決定。</span></li>
+        <li><span><b>飛行時間算得準</b>：跨時區、跨日、夏令時間都算進去。</span></li>
+      </ul>
+    </div>
+    <figure class="phone">
+      <div class="frame"><img src="flightform.jpg" alt="App 畫面：新增航班卡片，輸入 BR32 後帶入 TPE 19:20 到 JFK 21:05" loading="lazy"></div>
+      <figcaption><b>新增航班</b>　輸入 BR32、按「用航班編號帶入時刻」，19:20 → 21:05 和台北、紐約時區都填好了。</figcaption>
+    </figure>
+  </section>
+
+  <section class="feat flip" id="budget">
+    <div class="copy">
+      <div class="tag">04 · Budget</div>
+      <h2>設一個總預算，隨時知道還剩多少</h2>
+      <p class="say">每張行程卡都能記預定費用和現場額外消費。不同幣別會依當天匯率換算，日圓、台幣混著記也沒關係。</p>
+      <ul class="points">
+        <li><span><b>圓環圖</b>：已經用了幾成、還剩多少、接下來每天大約可以花多少。</span></li>
+        <li><span><b>每天花多少</b>：長條圖對照平均每天預算，哪天花太兇一看就知道。</span></li>
+        <li><span><b>花在哪裡</b>：機票、吃住購物、交通、自駕的比例。</span></li>
+        <li><span><b>當日回顧</b>：一天結束後，整理今天完成幾個行程、移動幾公里、花了多少。</span></li>
+      </ul>
+    </div>
+    <figure class="phone">
+      <div class="frame"><img src="budget.jpg" alt="App 畫面：記帳與支出總覽，預算 NT$120,000 已用 13%" loading="lazy"></div>
+      <figcaption><b>記帳與支出總覽</b>　預算 NT$120,000 用了 13%，還剩 NT$104,236；下面是每天花費和類別比例。</figcaption>
+    </figure>
+  </section>
+
+  <section class="feat" id="stamp">
+    <div class="copy">
+      <div class="tag">05 · Stamps</div>
+      <h2>人在機場，才蓋得到的出入境章</h2>
+      <p class="say">搭飛機那天，在航班卡片按「蓋出境章」「蓋入境章」。要真的在機場附近才蓋得到，所以每一枚章，都是你真的去過的證明。</p>
+      <ul class="points">
+        <li><span><b>同一座機場，可以一直蓋</b>：每次去都是一枚新的章，上面印著那一天的日期。常去日本的人，成田、羽田的章會越蓋越多。</span></li>
+        <li><span><b>收集不同時候的自己</b>：2024 年春天的第一次、2025 年冬天的再訪，翻護照頁就像翻一本旅行日記。</span></li>
+        <li><span><b>全世界的機場都蓋得到</b>：3,000 多座有定期航班的機場，每一座都能蓋。每個國家的章形狀、顏色都不一樣，日本紅色方章、香港紫色六角章、荷蘭橘色申根章、菲律賓綠色票根章。</span></li>
+        <li><span><b>護照頁幫你算好</b>：蓋了幾枚、去過幾座機場、幾個國家，哪座機場去最多次。</span></li>
+      </ul>
+    </div>
+    <figure class="phone">
+      <div class="frame"><img src="passport.jpg" alt="App 畫面：我的護照頁，8 枚章、6 座機場、6 個國家或地區；第一頁有兩枚不同日期的成田章、香港六角章、阿姆斯特丹章" loading="lazy"></div>
+      <figcaption><b>成田 × 3</b>　2024 年 3 月和 2025 年 1 月的成田章，旁邊是香港的紫色六角章、阿姆斯特丹的橘色申根章。</figcaption>
+    </figure>
+  </section>
+
+  <section class="gallery" id="cards">
+    <div class="head">
+      <div class="tag">06 · Share</div>
+      <h2 style="font-size:clamp(26px,3.4vw,36px);font-weight:900;line-height:1.3;margin-top:8px;">走過的路，變成想發限動的卡片</h2>
+      <p class="say" style="color:var(--sub);margin-top:12px;">每張行程卡都能做成 9:16 分享卡。拍立得、登機證、路線圖、船票、公路攝影誌，還有旅程結束的回憶卡。長地名會自動縮字或換行，不會壓到照片和路線。</p>
+    </div>
+    <div class="editor">
+      <figure class="phone">
+        <div class="frame"><img src="editor.jpg" alt="App 畫面：分享卡編輯器，選了香檳金背景，下方色票有鏡面銀、玫瑰金、鈦金屬黑、幻彩鐳射" loading="lazy"></div>
+        <figcaption><b>分享卡編輯器</b>　選版型、配色、內容、貼圖，四個按鈕就能做完一張。</figcaption>
+      </figure>
+      <div class="copy">
+        <h3 style="font-size:22px;font-weight:900;">金屬色和螢光色，一鍵換上</h3>
+        <p class="say" style="color:var(--sub);margin-top:10px;">背景和票卡都能換：沉穩的夜藍、苔綠、原紙色，也有香檳金、鏡面銀、玫瑰金、鈦金屬黑、幻彩鐳射，和在限動裡特別跳的螢光色。想不到怎麼配，就按「隨機」。下面可以直接試試看。</p>
+      </div>
+    </div>
+    <div class="sim" id="sim">
+      <figure class="sim-stage">
+        <img id="simImg" src="cards/c-polaroid-navy.jpg" alt="分享卡預覽" width="405" height="720">
+      </figure>
+      <div class="sim-ctrl">
+        <h3 style="font-size:22px;font-weight:900;">自己配配看</h3>
+        <p class="say" style="color:var(--sub);margin-top:8px;">選一種卡片，再換個顏色。這些都是 App 實際做出來的卡片。</p>
+        <div class="sim-label">卡片</div>
+        <div class="sim-tpl" role="radiogroup" aria-label="卡片版型">
+          <button type="button" data-tpl="polaroid" aria-pressed="true">拍立得</button>
+          <button type="button" data-tpl="flight" aria-pressed="false">登機證</button>
+          <button type="button" data-tpl="transit" aria-pressed="false">路線圖</button>
+          <button type="button" data-tpl="roadtrip" aria-pressed="false">公路誌</button>
+          <button type="button" data-tpl="memory" aria-pressed="false">回憶卡</button>
+        </div>
+        <div class="sim-label">顏色</div>
+        <div class="sim-sw" role="radiogroup" aria-label="背景顏色">
+          <button type="button" data-c="navy" aria-pressed="true"><i style="background:#111A27"></i>深海夜藍</button>
+          <button type="button" data-c="oat" aria-pressed="false"><i style="background:#EFECE4"></i>暖米原紙</button>
+          <button type="button" data-c="moss" aria-pressed="false"><i style="background:#233127"></i>京都苔綠</button>
+          <button type="button" data-c="gold" aria-pressed="false"><i style="background:linear-gradient(135deg,#7A5A22,#E9D29A,#B48A3E,#F7E7B4)"></i>香檳金</button>
+          <button type="button" data-c="silver" aria-pressed="false"><i style="background:linear-gradient(135deg,#7D838B,#F2F4F7,#AEB4BC,#FFFFFF)"></i>鏡面銀</button>
+          <button type="button" data-c="rosegold" aria-pressed="false"><i style="background:linear-gradient(135deg,#A0605A,#F3C9B8,#C98C80,#FBE3D6)"></i>玫瑰金</button>
+          <button type="button" data-c="holo" aria-pressed="false"><i style="background:linear-gradient(135deg,#9EEBFF,#E2C6FF,#FFC6E3,#FFF1B8,#B8FFE0)"></i>幻彩鐳射</button>
+          <button type="button" data-c="neonlime" aria-pressed="false"><i style="background:#D4FF2A"></i>螢光黃綠</button>
+        </div>
+        <p class="sim-cap" id="simCap"></p>
+      </div>
+    </div>
+    <script>
+    (function () {
+      var tpl = "polaroid", col = "navy";
+      var caps = { polaroid: "伏見稻荷，清晨七點半的千本鳥居。", flight: "長榮 BR198 台北飛成田，地球儀畫出航線。", transit: "中目黑 → 銀座 → 淺草，換車站和站號都畫好。", roadtrip: "河口湖環湖自駕，配上起訖點和座標。", memory: "東京・京都五日遊，5 天、9 個行程收成一張。" };
+      var img = document.getElementById("simImg"), cap = document.getElementById("simCap");
+      function show() {
+        img.src = "cards/c-" + tpl + "-" + col + ".jpg";
+        cap.textContent = caps[tpl];
+        document.querySelectorAll(".sim-tpl button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.tpl === tpl)); });
+        document.querySelectorAll(".sim-sw button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.c === col)); });
+      }
+      document.querySelectorAll(".sim-tpl button").forEach(function (b) { b.addEventListener("click", function () { tpl = b.dataset.tpl; show(); }); });
+      document.querySelectorAll(".sim-sw button").forEach(function (b) { b.addEventListener("click", function () { col = b.dataset.c; show(); }); });
+      show();
+      // 背景先偷偷載好其他組合，點下去就馬上換
+      setTimeout(function () { ["polaroid","flight","transit","roadtrip","memory"].forEach(function (t) { ["navy","oat","moss","gold","silver","rosegold","holo","neonlime"].forEach(function (c) { var i = new Image(); i.src = "cards/c-" + t + "-" + c + ".jpg"; }); }); }, 1500);
+    })();
+    </script>
+  </section>
+
+  <section class="more" id="more">
+    <div class="tag">07 · Details</div>
+    <h2 style="font-size:clamp(26px,3.4vw,36px);font-weight:900;line-height:1.3;margin-top:8px;">還有這些，讓旅行更順手</h2>
+    <div class="grid6">
+      <div class="mini"><div class="k">TOGETHER</div><h3>和旅伴一起編輯</h3><p>用邀請碼共享行程，大家一起改。打卡、照片、心情和蓋過的章是你自己的，不會被看到。</p></div>
+      <div class="mini"><div class="k">OFFLINE</div><h3>沒網路也看得到</h3><p>加到手機主畫面後，地下鐵、漫遊沒訊號時一樣打得開；有網路時再自動同步。</p></div>
+      <div class="mini"><div class="k">IMPORT</div><h3>用試算表一次匯入</h3><p>在電腦用 Excel 或 Google 試算表排好，複製貼上就變成整趟行程。有中英文範本可以下載。</p></div>
+      <div class="mini"><div class="k">AI CHECK</div><h3>請 AI 幫你檢查</h3><p>一鍵匯出行程，丟給 ChatGPT、Claude 或 Gemini，看看轉乘時間夠不夠、哪天太累。</p></div>
+      <div class="mini"><div class="k">中文 / EN</div><h3>中英雙語</h3><p>手機是英文就自動用英文，車站顯示英文站名、旁邊附上當地寫法。很適合帶外國朋友來台灣玩。</p></div>
+      <div class="mini"><div class="k">MAPS</div><h3>一鍵開地圖</h3><p>每個地點都能直接用 Google 地圖或 Apple 地圖打開，想用哪個自己選。</p></div>
+    </div>
+  </section>
+
+  <section class="end" id="hello">
+    <div class="txt">
+      <h2>想把旅行好好收起來的話，來玩玩看</h2>
+      <p>TabigrAm 還在封測，難免有迷路的時候。用起來卡卡的地方、想要的功能，或只是想分享你的旅行，都歡迎從選單的「意見回饋」告訴我。</p>
+      <a class="url" href="../" style="text-decoration:none;">tabigram.info →</a>
+    </div>
+    <span class="ring" aria-hidden="true"></span>
+  </section>
+  <p class="note">頁面上的手機畫面都是 App 實際畫面，行程和數字是示範用的範例資料。航班時刻為表定時間，實際以航空公司公告為準。</p>
+</div>
+
+</body>
+</html>

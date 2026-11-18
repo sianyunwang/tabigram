@@ -1948,6 +1948,11 @@
     .ic { width: 1.15em; height: 1.15em; flex: none; display: inline-block; vertical-align: -0.2em; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
     .ic + span, span + .ic { margin-left: 0; }
     .day-meta-input-wrap .ic { width: 14px; height: 14px; }
+    .ed-size { display: flex; align-items: center; gap: 6px; padding: 8px 2px 2px; font-size: 12.5px; }
+    .ed-size span { color: var(--sub); font-weight: 700; margin-right: 4px; }
+    .ed-size button { border: 1.5px solid var(--border); background: var(--card); color: var(--ink); border-radius: 999px; padding: 4px 12px; font: inherit; font-weight: 800; cursor: pointer; }
+    .ed-size button.on { background: var(--ink); color: var(--card); border-color: var(--ink); }
+
     /* 即時航班：一行就好，警語小字 */
     .live-flight { margin: 6px 0 8px; }
     .lf-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13px; color: var(--ink); }
@@ -6538,6 +6543,8 @@
       let h = "";
       if (edTab === "tpl") {
         h = `<div class="ed-row">` + ED_TEMPLATES.map(([v, n, svg]) => `<button type="button" class="ed-tpl${tpl === v ? " on" : ""}" onclick="edSetTpl('${v}')"><span class="ed-tpl-card" style="background:${swatchCss(outer)}"><span style="background:${swatchCss(inner)}">${svg}</span><i style="background:${swatchCss(inner)}"></i></span><small>${n}</small></button>`).join("") + `</div>`;
+        const cs = appState.storyCardSize || "std";
+        h += `<div class="ed-size"><span>卡片大小</span>${[["std", "標準"], ["lg", "大"], ["full", "滿版"]].map(([k, n]) => `<button type="button" class="${cs === k ? "on" : ""}" onclick="edSetCardSize('${k}')">${n}</button>`).join("")}</div>`;
       } else if (edTab === "color") {
         const seg = [["outer", "背景"], ["inner", "紙卡"], ["tex", "紙紋"]].map(([k, n]) => `<button type="button" class="${edColorPart === k ? "on" : ""}" onclick="edColorPart='${k}';edRender()">${n}</button>`).join("");
         h = `<div class="ed-colorbar"><div class="ed-seg">${seg}</div><button type="button" class="ed-random" onclick="randomStoryStyle();edRender()">隨機</button></div><div class="ed-row">`;
@@ -6584,6 +6591,17 @@
       panel.innerHTML = h;
       edLastSticker = activeStickerId;
     }
+    // 分享卡中間上下兩張卡的大小
+    const STORY_CARD_SIZES = {
+      std: { x: 84, y: 195, h: 1040, ty: 1275, th: 340, fy: 1665 },
+      lg: { x: 52, y: 186, h: 1096, ty: 1306, th: 360, fy: 1716 },
+      full: { x: 24, y: 176, h: 1150, ty: 1350, th: 384, fy: 1782 }
+    };
+    function storyCardSize(W) {
+      const s = STORY_CARD_SIZES[appState.storyCardSize] || STORY_CARD_SIZES.std;
+      return { ...s, w: W - s.x * 2 };
+    }
+    function edSetCardSize(k) { appState.storyCardSize = k; saveAppState(); renderStoryCanvas(); edRender(); }
     function edSetTpl(v) { document.getElementById("shareTemplateSelect").value = v; onShareTemplateChange(); edRender(); }
     function edToggleMood() { const c = document.getElementById("shareShowMoodCheck"); c.checked = !c.checked; renderStoryCanvas(); edRender(); }
     function edRouteOpt(k) { const ro = appState.routeCardOpts || {}; setRouteCardOpt(k, ro[k] === false); const el = document.getElementById(k === "names" ? "routeShowNames" : "routeShowSigns"); if (el) el.checked = (appState.routeCardOpts || {})[k] !== false; edRender(); }
@@ -8081,9 +8099,10 @@
     async function drawRoadTripLogCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch) {
       drawCardPaperTexture(ctx, cardX, cardY, cardW, cardH, 32, innerSwatch.bg, appState.paperTexture);
 
-      const frameX = cardX + 26, frameY = cardY + 26, frameW = cardW - 52, frameH = cardH - 52;
+      // 照片滿到卡片邊緣，不再多一圈底色外框
+      const frameX = cardX, frameY = cardY, frameW = cardW, frameH = cardH;
       ctx.save();
-      drawRoundedRectPath(ctx, frameX, frameY, frameW, frameH, 24);
+      drawRoundedRectPath(ctx, frameX, frameY, frameW, frameH, 32);
       ctx.clip();
 
       if (item.photos && item.photos[selectedSharePhotoIndex]) {
@@ -8253,8 +8272,9 @@
       ctx.stroke();
       ctx.globalAlpha = 1;
 
-      // 3. Main Visual Frame (Y: 195 -> 1255)
-      const mainX = 84, mainY = 195, mainW = W - 168, mainH = 1040;
+      // 3. Main Visual Frame：三種大小（標準／大／滿版）
+      const SZ = storyCardSize(W);
+      const mainX = SZ.x, mainY = SZ.y, mainW = SZ.w, mainH = SZ.h;
 
       if (tpl === "transit") {
         await prepareTransitRailGeo(item);
@@ -8280,7 +8300,7 @@
           ctx.save();
           ctx.strokeStyle = "#C84B31";
           ctx.lineWidth = 4;
-          drawRoundedRectPath(ctx, mainX + 26, mainY + 26, mainW - 52, mainH - 52, 24);
+          drawRoundedRectPath(ctx, mainX + 3, mainY + 3, mainW - 6, mainH - 6, 30);
           ctx.stroke();
           ctx.restore();
         }
@@ -8325,7 +8345,7 @@
       }
 
       // 4. Lower Summary Stub Card (Y: 1275 -> 1615)
-      const ticketY = 1275, ticketH = 340;
+      const ticketY = SZ.ty, ticketH = SZ.th;
       drawCardPaperTexture(ctx, mainX, ticketY, mainW, ticketH, 32, innerSwatch.bg, appState.paperTexture);
 
       ctx.fillStyle = innerSwatch.text;
@@ -8379,10 +8399,10 @@
       ctx.fillStyle = outerSwatch.text;
       ctx.globalAlpha = 0.42;
       ctx.font = "700 24px 'JetBrains Mono', monospace";
-      ctx.fillText(`${trip.startDate || ""}`, mainX, 1665);
+      ctx.fillText(`${trip.startDate || ""}`, mainX, SZ.fy);
       ctx.textAlign = "right";
       ctx.font = "400 25px 'Dela Gothic One', 'TabigrAm Fill', sans-serif";
-      ctx.fillText("TabigrAm", W - 84, 1665);
+      ctx.fillText("TabigrAm", mainX + mainW, SZ.fy);
       ctx.textAlign = "left";
       ctx.globalAlpha = 1;
       ctx.restore();
@@ -8480,7 +8500,8 @@
         const tpl = document.getElementById("shareTemplateSelect").value;
         const lay = getStoryLayout(canvas.width);
         const cpt = { x: (pt.x - lay.tx) / lay.s, y: (pt.y - lay.ty) / lay.s };
-        const inMainFrame = (cpt.x >= 84 && cpt.x <= 996 && cpt.y >= 195 && cpt.y <= 1235);
+        const SZh = storyCardSize(1080);
+        const inMainFrame = (cpt.x >= SZh.x && cpt.x <= SZh.x + SZh.w && cpt.y >= SZh.y && cpt.y <= SZh.y + SZh.h);
 
         if (pointers.size === 1) {
           const active = storyStickerLayers.find(s => s.id === activeStickerId);
@@ -13161,7 +13182,8 @@ function initSupabaseClient() {
       const items = day.items.filter(i => i && i.status !== "cancelled");
       const done = items.filter(i => i.status === "done").length;
       const checkins = items.filter(i => i.checkin).length;
-      const pts = tripFootprintPoints(trip).filter(p => p.dayIdx === idx);
+      // 只算已完成（或已打卡）的行程，還沒去的不算進今天的移動距離
+      const pts = tripFootprintPoints(trip).filter(p => p.dayIdx === idx && p.item && (p.item.status === "done" || p.checked));
       let km = 0;
       for (let i = 1; i < pts.length; i++) km += haversineKm(pts[i - 1], pts[i]);
       const spend = {};
@@ -13186,7 +13208,7 @@ function initSupabaseClient() {
           <div class="dr-stats">
             <div><b>${done}<small>/${items.length}</small></b><span>完成行程</span></div>
             <div><b>${checkins}</b><span>打卡地點</span></div>
-            <div><b>${kmTxt}</b><span>公里</span></div>
+            <div><b>${kmTxt}</b><span>移動公里</span></div>
             <div class="dr-spend"><b>${escapeHtml(spendTxt)}</b><span>花費</span></div>
           </div>
           ${moods ? `<div class="dr-moods" aria-label="今天的心情">${moods}</div>` : ""}
@@ -14318,9 +14340,11 @@ function initSupabaseClient() {
     // 更新公告：改版時只要修改 WHATS_NEW（版本號換新，內容換新），老朋友打開會看到一次
     // =====================================================================
     const WHATS_NEW = {
-      version: "2026.11.18j",
+      version: "2026.11.18k",
       date: "2026.11.18",
       items: [
+        ["分享卡可以選大小", "每種版型中間的兩張卡片可以選「標準」「大」「滿版」，畫面更飽滿。公路旅行的照片也改成滿版，不再有一圈外框。"],
+        ["路線圖補上 6 條線", "東京加上京濱東北線、東海道線、橫須賀・總武快速線、高崎線、江之電、富士急行線；「本線」改成京急本線、京成本線這樣的全名。"],
         ["即時航班（台灣機場）", "從台灣的機場出發或抵達的航班，卡片上會顯示航廈、登機門、預計時間和狀態，有變動會提醒。資料僅供參考，請以機場與航空公司公告為準。"],
         ["English 版本", "選單的「語言」可以切換中文／English；手機是英文的話會自動用英文。英文版的車站顯示英文站名，旁邊附上當地寫法。"],
         ["機場戳章", "搭飛機那天，人在機場就能在航班卡片蓋出境章、入境章。每個國家的章長得不一樣，收在「旅程回憶」的護照頁，也會蓋在登機證分享卡上。"],
@@ -14347,7 +14371,7 @@ function initSupabaseClient() {
         ["新配色：螢光、金屬", "分享卡多了螢光桃紅、電光藍、香檳金、鏡面銀、玫瑰金、幻彩鐳射等配色，還有「隨機配色」一鍵換搭配。"],
         ["點選機場、轉機", "航班不用記機場代號，點城市就好；有轉機也可以加上，登機證會畫出轉機路線。"],
         ["備份提醒", "沒登入時，行程只存在這台裝置。App 會提醒你登入或備份；選單的「備份到這台裝置」也會顯示上次備份是幾天前。"],
-        ["當日回顧", "每天最後一個行程結束後，當天最上方會出現回顧：完成幾個行程、打卡幾個地點、走了幾公里、花了多少。"],
+        ["當日回顧", "每天最後一個行程結束後，當天最上方會出現回顧：完成幾個行程、打卡幾個地點、移動了幾公里、花了多少。"],
         ["「我到了」更好找", "行程當天，卡片下方會有「我到了」按鈕，按下去記下位置，旅程結束後畫成足跡地圖。心情章也搬到旁邊。"],
         ["拍立得照片直接調整", "分享拍立得時，直接在照片上單指拖曳、兩指縮放。"],
         ["費用名目", "預定費用可以寫上是什麼錢，例如門票、車資、住宿。"],

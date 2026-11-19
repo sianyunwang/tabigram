@@ -9,12 +9,16 @@
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap">
 <style>
+@font-face { font-family: 'TabigrAm Fill'; src: url("../fonts/tg-fill.woff2") format("woff2"); font-display: swap; }
 /* TabigrAm.zine：紙張質感的旅行小誌（測試版，還沒和 App 串在一起） */
 :root {
   --paper: #EFEBE2; --ink: #1F1D1A; --sub: #6B655B; --line: rgba(31,29,26,.16);
-  --accent: #FF4F00; --accent2: #2F6FDB; --tape: rgba(240, 214, 140, .78);
+  --accent: #FF4F00; --accent2: #2F6FDB;
+  /* 孔版／網版的三個特色色：螢光粉、孔版藍、黃 */
+  --riso-pink: #FF48B0; --riso-blue: #0078BF; --riso-yellow: #FFE11A;
+  --p2x: 4px; --p2y: -2px; --p2r: -.6deg; --p3x: -3px; --p3y: 3px; --p3r: .4deg; --tape: rgba(240, 214, 140, .78);
   --serif: 'Noto Serif TC', serif; --sans: 'Noto Sans TC', -apple-system, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
   --paper-img: none; --paper-size: 512px;
   color-scheme: light;
@@ -31,16 +35,19 @@ body {
 a { color: inherit; }
 .wrap { max-width: 1080px; margin: 0 auto; padding: max(28px, env(safe-area-inset-top, 0px)) 18px 80px; }
 
-/* ===== 刊頭：孔版印刷的套色偏移，慢慢對準 ===== */
-.mast { text-align: center; padding: 18px 0 8px; position: relative; }
+/* ===== 刊頭：網版／孔版印刷，三個色版各自偏一點、邊緣粗糙、墨色不均 ===== */
+.mast { text-align: center; padding: 18px 0 8px; position: relative; isolation: isolate; }
 .mast .kicker { font: 800 11px var(--mono); letter-spacing: .3em; color: var(--sub); }
-.riso { position: relative; display: inline-block; font-family: var(--serif); font-weight: 900; font-size: clamp(44px, 11vw, 112px); line-height: 1; letter-spacing: -.02em; margin: 10px 0 6px; }
+/* 刊頭後面一顆網點太陽 */
+.mast::before { content: ""; position: absolute; z-index: -1; width: clamp(150px, 30vw, 300px); aspect-ratio: 1; border-radius: 50%; left: 58%; top: 2px;
+  background: radial-gradient(circle, var(--riso-yellow) 0 38%, transparent 39%) 0 0 / 7px 7px; mix-blend-mode: multiply; opacity: .85; filter: url(#inkC); transform: rotate(8deg); }
+.riso { position: relative; display: inline-block; font-family: 'Dela Gothic One', 'TabigrAm Fill', var(--sans); font-weight: 400; font-size: clamp(38px, 10.5vw, 104px); line-height: 1.08; letter-spacing: 0; margin: 14px 0 6px; }
 .riso span { display: block; }
-.riso .l1 { color: var(--accent); mix-blend-mode: multiply; }
-.riso .l2 { position: absolute; inset: 0; color: var(--accent2); mix-blend-mode: multiply; animation: register 2.4s cubic-bezier(.2,.8,.2,1) .2s both; }
-.riso .l3 { position: absolute; inset: 0; color: var(--ink); opacity: .9; animation: inkin 1.2s ease 1.6s both; }
-@keyframes register { from { transform: translate(7px, -5px) rotate(-.6deg); } to { transform: translate(1.5px, 1px); } }
-@keyframes inkin { from { opacity: 0; } to { opacity: .9; } }
+.riso .l1 { color: var(--riso-blue); mix-blend-mode: multiply; filter: url(#inkA); }
+.riso .l2 { position: absolute; inset: 0; color: var(--riso-pink); mix-blend-mode: multiply; filter: url(#inkB); transform: translate(var(--p2x), var(--p2y)) rotate(var(--p2r)); animation: register2 2.6s cubic-bezier(.2,.8,.2,1) .15s both; }
+.riso .l3 { position: absolute; inset: 0; color: var(--riso-yellow); mix-blend-mode: multiply; filter: url(#inkC); transform: translate(var(--p3x), var(--p3y)) rotate(var(--p3r)); animation: register3 2.2s cubic-bezier(.2,.8,.2,1) .3s both; z-index: -1; }
+@keyframes register2 { from { transform: translate(calc(var(--p2x) * 3.2), calc(var(--p2y) * 3.2)) rotate(calc(var(--p2r) * 2.4)); } to { transform: translate(var(--p2x), var(--p2y)) rotate(var(--p2r)); } }
+@keyframes register3 { from { transform: translate(calc(var(--p3x) * 3), calc(var(--p3y) * 3)) rotate(calc(var(--p3r) * 2)); } to { transform: translate(var(--p3x), var(--p3y)) rotate(var(--p3r)); } }
 .mast .tag { font-family: var(--serif); font-size: 15px; color: var(--sub); margin-top: 14px; }
 .mast .rule { display: flex; align-items: center; gap: 10px; margin: 18px auto 0; max-width: 560px; font: 700 11px var(--mono); color: var(--sub); letter-spacing: .12em; }
 .mast .rule::before, .mast .rule::after { content: ""; flex: 1; border-top: 1.5px dashed var(--line); }
@@ -74,6 +81,14 @@ a { color: inherit; }
 @keyframes turnout { to { transform: rotateY(-70deg); opacity: 0; } }
 .sheet .back { border: 0; background: none; font: 700 13px var(--mono); color: var(--sub); cursor: pointer; padding: 0; letter-spacing: .06em; }
 .sheet .issue { font: 800 11px var(--mono); color: var(--accent); letter-spacing: .14em; margin-top: 22px; }
+.sheet h1 { text-shadow: 2px 1.5px 0 rgba(255, 72, 176, .5), -1.5px -1px 0 rgba(0, 120, 191, .38); }
+.cut h2 { text-shadow: 1.2px 1px 0 rgba(255, 72, 176, .35), -1px -.6px 0 rgba(0, 120, 191, .25); }
+.cut .img, .sheet .cover { position: relative; }
+.cut .img::after, .sheet .cover::after { content: ""; position: absolute; inset: 0; pointer-events: none; mix-blend-mode: multiply; opacity: .22;
+  background: radial-gradient(circle, rgba(0, 0, 0, .55) 0 30%, transparent 32%) 0 0 / 4px 4px; }
+/* 整頁：油墨與紙的顆粒 */
+body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 50; opacity: .5; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3  0 0 0 0 .25  0 0 0 0 .2  0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23g)'/%3E%3C/svg%3E"); }
 .sheet h1 { font-family: var(--serif); font-weight: 900; font-size: clamp(28px, 6vw, 44px); line-height: 1.25; margin: 8px 0 10px; text-wrap: balance; }
 .sheet .lede { font-family: var(--serif); font-size: 18px; color: var(--sub); margin: 0 0 16px; text-wrap: pretty; }
 .sheet .byline { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--sub); border-top: 1.5px dashed var(--line); border-bottom: 1.5px dashed var(--line); padding: 8px 0; margin-bottom: 26px; }
@@ -143,6 +158,7 @@ a { color: inherit; }
 .sheet h1, .sheet .lede, .sheet blockquote { font-family: var(--tfont, var(--serif)); }
 .sheet .body p { font-family: var(--bfont, inherit); }
 .cut h2 { font-family: var(--tfont, var(--serif)); }
+@media (prefers-reduced-motion: reduce) { .riso .l2, .riso .l3 { animation: none !important; } }
 @media (prefers-reduced-motion: reduce) {
   .riso .l2, .riso .l3, .cut.land, .sheet.turn-in, .sheet.turn-out { animation: none !important; }
   .riso .l2 { transform: translate(1.5px, 1px); } .riso .l3 { opacity: .9; }
@@ -151,6 +167,7 @@ a { color: inherit; }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="inkA" x="-4%" y="-12%" width="108%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="1" seed="11" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -4.2 0 0 0 3.25" result="m"/><feComposite in="d" in2="m" operator="in"/></filter><filter id="inkB" x="-4%" y="-12%" width="108%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.6" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="1" seed="23" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -4.2 0 0 0 3.25" result="m"/><feComposite in="d" in2="m" operator="in"/></filter><filter id="inkC" x="-4%" y="-12%" width="108%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="13" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="1" seed="5" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -4.2 0 0 0 3.25" result="m"/><feComposite in="d" in2="m" operator="in"/></filter></svg>
 <div class="wrap" id="app"></div>
 <script>
 // ===== 設定：和 TabigrAm 同一個 Supabase（公開金鑰，權限由資料庫規則控管）=====
@@ -289,6 +306,11 @@ function blockHtml(b, i) {
 }
 
 // ===== 共用：刊頭、導覽、卡片 =====
+(function randomRegister() {
+  const r = (a, b) => a + Math.random() * (b - a), sgn = () => (Math.random() < .5 ? -1 : 1), st = document.documentElement.style;
+  st.setProperty("--p2x", (sgn() * r(2.5, 6)).toFixed(1) + "px"); st.setProperty("--p2y", (sgn() * r(1.5, 4.5)).toFixed(1) + "px"); st.setProperty("--p2r", (sgn() * r(.25, .9)).toFixed(2) + "deg");
+  st.setProperty("--p3x", (sgn() * r(2, 5)).toFixed(1) + "px"); st.setProperty("--p3y", (sgn() * r(2, 5)).toFixed(1) + "px"); st.setProperty("--p3r", (sgn() * r(.2, .7)).toFixed(2) + "deg");
+})();
 function mastHtml() {
   const name = CONFIG.name || "TabigrAm.zine";
   return `<header class="mast">

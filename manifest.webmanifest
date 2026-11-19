@@ -1,7 +1,7 @@
 {
   "name": "TabigrAm",
   "short_name": "TabigrAm",
-  "description": "和旅伴一起排行程、出發前倒數、旅途中提醒，回來後蓋一枚完成章。",
+  "description": "從想去，到下次還要去。排行程、在機場蓋章、錄一卷旅行卡帶。",
   "lang": "zh-TW",
   "start_url": "./",
   "scope": "./",

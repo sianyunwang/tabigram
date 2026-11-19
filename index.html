@@ -27,7 +27,7 @@
       var lang = q || saved || (/^zh/i.test(nav) ? "zh" : "en");
       window.TG_LANG = lang;
       document.documentElement.lang = lang === "en" ? "en" : "zh-TW";
-      if (lang === "en") document.write('<script src="i18n/en.js?v=74f70a7a"><\/script>');
+      if (lang === "en") document.write('<script src="i18n/en.js?v=914366d3"><\/script>');
     })();
   </script>
   <script>
@@ -1773,9 +1773,9 @@
     .jam-name { font-size: 18px; font-weight: 900; margin-top: 2px; }
     .jam-by { font-size: 12px; color: var(--sub); margin-top: 2px; }
     .jam-by a { color: var(--ink); font-weight: 800; }
-    .jam-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 12px; }
-    .jam-grid span { aspect-ratio: 1; border-radius: 12px; background: var(--card2, #EBE9E4); display: grid; place-items: center; padding: 4px; }
-    .jam-grid img { width: 100%; height: 100%; object-fit: contain; }
+    .jam-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+    .jam-grid span { position: relative; aspect-ratio: 1; min-width: 0; overflow: hidden; border-radius: 12px; background: var(--card2, #EBE9E4); }
+    .jam-grid img { position: absolute; inset: 4px; width: calc(100% - 8px); height: calc(100% - 8px); object-fit: contain; }
     .jam-how { font-size: 12px; color: var(--sub); margin-top: 10px; }
     .jam-own { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
     .jam-own .pill-btn { flex: none; padding: 6px 12px; }
@@ -2465,7 +2465,6 @@
       <section class="ld-hero">
         <div class="ld-top">
           <button type="button" class="ld-link ld-lang" data-notr onclick="setAppLanguage(window.TG_LANG === 'en' ? 'zh' : 'en')" aria-label="切換語言 / Language"><span class="l-zh">English</span><span class="l-en">中文</span></button>
-          <a class="ld-link zh-only" href="highlights/" style="text-decoration:none; display:inline-flex; align-items:center;">功能亮點</a>
           <button type="button" class="ld-link" onclick="landingAction('login')">登入</button>
         </div>
         <div class="ld-mid">
@@ -2613,8 +2612,7 @@
           </button>
 
           <div id="headerDropdownMenu" class="hd-menu" style="display: none;">
-            <button class="dropdown-item hd-account" id="dropdownCloudBtn" onclick="openCloudModal(); toggleHeaderDropdown();">登入</button>
-            <button class="dropdown-item" id="dropdownProfileBtn" onclick="openProfileModal(); toggleHeaderDropdown();" style="display: none;">個人設定</button>
+            <button class="dropdown-item hd-account" id="dropdownCloudBtn" onclick="openCloudModal(); toggleHeaderDropdown();">登入與設定</button>
 
             <div class="hd-sec">旅程</div>
             <button class="dropdown-item" onclick="openTripManager(); toggleHeaderDropdown();">我的旅程</button>
@@ -2640,7 +2638,6 @@
             <button class="dropdown-item" onclick="openWhatsNew(); toggleHeaderDropdown();">更新內容</button>
             <button class="dropdown-item" onclick="openFeedback(); toggleHeaderDropdown();">意見回饋</button>
             <button class="dropdown-item" onclick="showLanding(); toggleHeaderDropdown();">關於 TabigrAm</button>
-            <a class="dropdown-item zh-only" href="highlights/" style="text-decoration:none;">功能亮點</a>
             <a class="dropdown-item" id="menuZineLink" href="zine/" style="text-decoration:none; display:none;">TabigrAm.zine</a>
 
             <div class="hd-prefs">
@@ -3287,6 +3284,14 @@
       <div id="allTripsListContainer"></div>
 
       <button class="pill-btn primary" style="width:100%; justify-content:center; padding:13px; margin-top:10px;" onclick="openNewTripSheet()">＋ 新增旅行分頁</button>
+      <div class="form-card" style="margin-top:12px;">
+        <div style="font-size:13.5px; font-weight:900; margin-bottom:6px;">加入旅伴的行程</div>
+        <div id="joinNeedLogin" style="font-size:12px; color:var(--sub); margin-bottom:8px;">旅伴給你 6 碼邀請碼？先登入就能加入。</div>
+        <div style="display:flex; gap:6px;">
+          <input type="text" class="form-input" id="joinShareCodeInput" placeholder="輸入 6 碼邀請碼" maxlength="6" style="font-family:var(--mono); text-transform:uppercase; letter-spacing:2px;" />
+          <button type="button" class="pill-btn primary" onclick="joinTripByShareCode()">加入並合併</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -3582,74 +3587,6 @@
     </div>
   </div>
 <!-- Modal 5: Cloud Auth, Invite Code & Dual-Track Sync -->
-  <div class="modal-backdrop" id="cloudModal">
-    <div class="modal-sheet" style="max-width: 440px;">
-      <div class="modal-header">
-        <div class="modal-title">雲端同步與旅伴協作</div>
-        <button class="pill-btn" onclick="closeCloudModal()" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
-      </div>
-
-      <!-- 狀態 A：尚未登入 (訪客模式) -->
-      <div id="cloudLoggedOutBox" class="form-card">
-        <div class="sync-line" style="margin-bottom:12px;">
-          <b>現在還沒登入：</b>行程只存在這台裝置的瀏覽器裡，清除瀏覽器資料或換手機就會不見。<span id="cloudLocalBackupAge"></span><br>
-          登入後會自動備份到雲端，也能用邀請碼和旅伴共享。
-        </div>
-        <button type="button" id="googleSignInBtn" class="google-signin-btn" onclick="cloudSignInWithGoogle()">
-          <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg><span id="googleSignInText">使用 Google 帳號登入</span>
-        </button>
-        <div style="font-size:11.5px; color:var(--sub); line-height:1.5; margin-top:12px;">登入即表示你同意 <a href="terms.html" target="_blank" rel="noopener" style="color:var(--ink); font-weight:800;">服務條款</a> 與 <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--ink); font-weight:800;">隱私權政策</a></div>
-
-        
-      </div>
-
-      <!-- 狀態 B：已登入 -->
-      <div id="cloudLoggedInBox" style="display:none;">
-        <div class="form-card" style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <div style="font-size:11.5px; color:var(--sub);">已連線帳號</div>
-            <div style="font-size:13.5px; font-weight:800;" id="cloudUserEmailLabel"></div>
-          </div>
-          <button type="button" class="mini-btn delete-btn" onclick="signOutCloud()">登出</button>
-        </div>
-        <div id="cloudSyncStatusLine" class="sync-line" style="margin:-4px 0 12px;"></div>
-
-        <!-- 目前旅程的雲端協作卡片 -->
-        <div class="form-card">
-          <div style="font-size:13.5px; font-weight:900; margin-bottom:6px;" id="cloudActiveTripTitle">目前專案</div>
-          <div id="cloudShareCodeBadge" class="code-badge" style="display:none; border:1px dashed var(--border); padding:8px 12px; border-radius:10px; margin-bottom:10px; text-align:center;">
-            <span style="font-size:12px; color:var(--sub);">旅伴邀請碼：</span>
-            <strong id="cloudShareCodeText" style="font-family:var(--mono); font-size:18px; letter-spacing:3px; color:var(--ink);"></strong>
-            <div id="cloudCompanionStatsBox" style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border); font-size:12px; color:var(--ink); text-align:left;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span id="cloudCompanionCountText" style="font-weight:800;">讀取旅伴名單中…</span>
-                <button type="button" class="mini-btn" style="padding:2px 8px; font-size:11px;" onclick="fetchTripCompanions()"><svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg> 重新整理</button>
-              </div>
-              <div id="cloudCompanionListText" style="margin-top:4px; color:var(--sub); font-family:var(--mono); font-size:11.5px; line-height:1.5; word-break:break-all;"></div>
-            </div>
-          </div>
-
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button type="button" class="pill-btn primary" style="flex:1; justify-content:center;" id="publishTripBtn" onclick="publishActiveTripToCloud()"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg> 發佈 / 更新共用行程</button>
-            <button type="button" class="pill-btn" style="flex:1; justify-content:center;" onclick="syncMyJournalToCloud()"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg> 同步我的手札</button>
-          </div>
-          <div style="font-size:11.5px; color:var(--sub); margin-top:8px; line-height:1.4;">
-            • <b>發佈共用行程</b>：將時間、地點、路線推送給所有團員。<br/>
-            • <b>同步我的手札</b>：單獨備份你的私人備註、心情印章、拍立得與額外消費。
-          </div>
-        </div>
-
-        <!-- 輸入邀請碼加入朋友的旅程 -->
-        <div class="form-card">
-          <div style="font-size:13.5px; font-weight:900; margin-bottom:6px;">加入旅伴的行程</div>
-          <div style="display:flex; gap:6px;">
-            <input type="text" class="form-input" id="joinShareCodeInput" placeholder="輸入 6 碼邀請碼" maxlength="6" style="font-family:var(--mono); text-transform:uppercase; letter-spacing:2px;" />
-            <button type="button" class="pill-btn primary" onclick="joinTripByShareCode()">加入並合併</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   <!-- Modal 4: 主題商店預告（插畫家／設計師主題包）-->
   <div class="modal-backdrop" id="archiveModal">
     <div class="modal-sheet" style="max-width: 420px;">
@@ -3662,7 +3599,7 @@
       <div class="form-card jam-invite">
         <div class="jam-kicker">下一包，可能就是你的</div>
         <div style="font-size:13px; color:var(--sub); line-height:1.7; text-wrap:pretty;">邀請插畫家、設計師與 IP 創作者，把作品變成大家旅行時貼在分享卡上的貼紙、配色和拍立得模板。署名和作品連結都會放在貼紙包上。</div>
-        <div style="font-size:12.5px; color:var(--sub); line-height:1.6; margin-top:8px;">想合作的創作者，歡迎來信 <a href="mailto:support@tabigram.info" style="color:var(--accent); font-weight:800;">support@tabigram.info</a></div>
+        <div style="font-size:12.5px; color:var(--sub); line-height:1.6; margin-top:8px;">想合作的創作者，歡迎來信 <a href="mailto:editor@tabigram.info" style="color:var(--accent); font-weight:800;">editor@tabigram.info</a></div>
       </div>
       <div class="form-card" id="waitlistBox">
         <div style="font-size:14px; font-weight:900; margin-bottom:4px;">新的貼紙包上架時通知我</div>
@@ -3678,7 +3615,7 @@
   <div class="modal-backdrop" id="profileModal">
     <div class="modal-sheet" style="max-width: 440px;">
       <div class="modal-header">
-        <div class="modal-title" id="profileModalTitle">個人設定</div>
+        <div class="modal-title" id="profileModalTitle">帳號與設定</div>
         <button class="pill-btn" onclick="closeProfileModal()" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
       </div>
 
@@ -3690,6 +3627,30 @@
           <li><span>顯示家鄉時間</span>打開後，出國時卡片會同時顯示家鄉時間，方便和家人聯絡。</li>
         </ul>
         <button type="button" class="ld-link" style="min-height:30px; padding:4px 12px; font-size:12px;" onclick="closeProfileModal()">之後再說</button>
+      </div>
+
+      <!-- 帳號：沒登入時是登入按鈕，登入後是目前帳號＋登出＋同步狀態（以前在「雲端同步與旅伴協作」）-->
+      <div id="cloudLoggedOutBox" class="form-card">
+        <div class="sync-line" style="margin-bottom:12px;">
+          <b>現在還沒登入：</b>行程只存在這台裝置的瀏覽器裡，清除瀏覽器資料或換手機就會不見。<span id="cloudLocalBackupAge"></span><br>
+          登入後會自動備份到雲端，也能用邀請碼和旅伴共享。
+        </div>
+        <button type="button" id="googleSignInBtn" class="google-signin-btn" onclick="cloudSignInWithGoogle()">
+          <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg><span id="googleSignInText">使用 Google 帳號登入</span>
+        </button>
+        <div style="font-size:11.5px; color:var(--sub); line-height:1.5; margin-top:12px;">登入即表示你同意 <a href="terms.html" target="_blank" rel="noopener" style="color:var(--ink); font-weight:800;">服務條款</a> 與 <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--ink); font-weight:800;">隱私權政策</a></div>
+
+        
+      </div>
+      <div id="cloudLoggedInBox" style="display:none;">
+        <div class="form-card" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-size:11.5px; color:var(--sub);">已連線帳號</div>
+            <div style="font-size:13.5px; font-weight:800;" id="cloudUserEmailLabel"></div>
+          </div>
+          <button type="button" class="mini-btn delete-btn" onclick="signOutCloud()">登出</button>
+        </div>
+        <div id="cloudSyncStatusLine" class="sync-line" style="margin:-4px 0 12px;"></div>
       </div>
 
       <div class="form-card">
@@ -3724,7 +3685,7 @@
             <option value="apple">Apple 地圖</option>
             <option value="ask">每次問我</option>
           </select>
-          <label class="sheet-check" style="margin-top:8px; font-size:12.5px;"><input type="checkbox" id="profileAnalyticsCheck" onchange="appState.analyticsOff = !this.checked; saveAppState();" /> 協助改善 TabigrAm：送出匿名使用統計（只有次數，沒有個資）</label>
+          <label class="sheet-check" style="margin-top:8px; font-size:12.5px;"><input type="checkbox" id="profileAnalyticsCheck" onchange="appState.analyticsOff = !this.checked; saveAppState(); metricsOff();" /> 協助改善 TabigrAm：送出匿名使用統計（只有次數，沒有個資）</label>
           <label class="sheet-check" style="margin-top:8px; font-size:12.5px;"><input type="checkbox" id="profileNaverKoreaCheck" onchange="appState.naverInKorea = this.checked; saveAppState();" /> 在韓國的地點改用 NAVER 地圖（Google 地圖在韓國幾乎不能導航）</label>
         </div>
 
@@ -3766,11 +3727,10 @@
 
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button type="button" class="pill-btn primary" style="flex:1; justify-content:center;" id="adminPublishTripBtn" onclick="publishActiveTripToCloud()"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg> 發佈 / 更新共用行程</button>
-          <button type="button" class="pill-btn" style="flex:1; justify-content:center;" onclick="syncMyJournalToCloud()"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg> 同步我的手札</button>
         </div>
         <div style="font-size:11.5px; color:var(--sub); margin-top:8px; line-height:1.4;">
           • <b>發佈共用行程</b>：將時間、地點、路線推送給所有團員。<br/>
-          • <b>同步我的手札</b>：單獨備份你的私人備註、心情印章與拍立得。
+          • 你的私人備註、心情印章、拍立得與額外消費，登入後會自動同步，不用另外按。
         </div>
       </div>
 
@@ -6652,6 +6612,8 @@
      *************************************************************************/
     function openTripManager() {
       const trip = getActiveTrip();
+      const jn = document.getElementById("joinNeedLogin");
+      if (jn) jn.style.display = currentCloudUser ? "none" : "block";
       document.getElementById("tmTitleInput").value = trip.title || "";
       document.getElementById("tmStartDateInput").value = trip.startDate || "";
       document.getElementById("tmEndDateInput").value = trip.startDate ? shiftDateStr(trip.startDate, trip.days.length - 1) : "";
@@ -7394,13 +7356,14 @@
     // 雲端貼紙包（管理頁上架的）：存在 Supabase 的 sticker_packs 表，圖片在公開的 stickers 空間
     const STICKER_PACKS_CACHE = "TABIGRAM_STICKER_PACKS_V1";
     function stickerPublicUrl(path) { return `${SUPABASE_URL}/storage/v1/object/public/stickers/${String(path || "").split("/").map(encodeURIComponent).join("/")}`; }
+    const STICKERS_PER_PACK = 8;   // 一包最多 8 張：再多版面會亂、也不好挑
     function applyStickerPackRows(rows) {
       const cloud = (Array.isArray(rows) ? rows : []).filter(r => r && r.id && Array.isArray(r.items) && r.items.length).map(r => ({
         id: String(r.id), name: String(r.name || ""), nameEn: String(r.name_en || r.name || ""),
         artist: String(r.artist || ""), artistEn: String(r.artist_en || r.artist || ""),
         url: /^https:\/\//.test(r.url || "") ? r.url : "",
         cover: r.cover ? stickerPublicUrl(r.cover) : "",
-        items: r.items.filter(x => x && x.path).map(x => [stickerPublicUrl(x.path), String(x.name || ""), String(x.name_en || x.name || "")]),
+        items: r.items.filter(x => x && x.path).slice(0, STICKERS_PER_PACK).map(x => [stickerPublicUrl(x.path), String(x.name || ""), String(x.name_en || x.name || "")]),
         featured: !!r.featured,
       }));
       const ids = new Set(cloud.map(p => p.id));
@@ -10128,6 +10091,11 @@
     function metricsOff() {
       try {
         if (navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true) return true;
+        // 同一個網站的 Zine、選物、旅行提案頁讀不到 appState：把「關閉匿名統計」另外記一份給它們看
+        if (typeof appState !== "undefined" && appState && typeof appStateLoaded !== "undefined" && appStateLoaded) {
+          const off = !!appState.analyticsOff;
+          if ((localStorage.getItem("TG_ANALYTICS_OFF") === "1") !== off) { if (off) localStorage.setItem("TG_ANALYTICS_OFF", "1"); else localStorage.removeItem("TG_ANALYTICS_OFF"); }
+        }
         if (typeof appState !== "undefined" && appState && appState.analyticsOff) return true;
         if (window.TG_FLAGS && window.TG_FLAGS.analytics === false) return true;
       } catch (e) {}
@@ -10389,14 +10357,16 @@ function initSupabaseClient() {
       });
     }
 
+    // 登入、帳號、個人設定都在同一個「帳號與設定」視窗
     function openCloudModal() {
       initSupabaseClient();
-      renderCloudModalUI();
-      openModalBackdrop("cloudModal");
+      openProfileModal();
+      const sheet = document.querySelector("#profileModal .modal-sheet");
+      if (sheet) sheet.scrollTop = 0;
     }
 
     function closeCloudModal() {
-      closeModalBackdrop("cloudModal");
+      closeProfileModal();
     }
 
     // 成員清單：優先用資料庫函式 get_trip_members（只回傳名稱/Email，不外洩私人手札）；尚未建立函式時退回舊查詢
@@ -10456,6 +10426,7 @@ function initSupabaseClient() {
     function renderCloudModalUI() {
       const outBox = document.getElementById("cloudLoggedOutBox");
       const inBox = document.getElementById("cloudLoggedInBox");
+      if (!outBox || !inBox) return;
       if (!currentCloudUser) {
         outBox.style.display = "block";
         inBox.style.display = "none";
@@ -10471,29 +10442,6 @@ function initSupabaseClient() {
       inBox.style.display = "block";
       updateCloudSyncLine();
       document.getElementById("cloudUserEmailLabel").textContent = currentCloudUser.email || "已登入旅人";
-
-      const trip = getActiveTrip();
-      document.getElementById("cloudActiveTripTitle").textContent = `目前專案：${trip.title}`;
-
-      const codeBadge = document.getElementById("cloudShareCodeBadge");
-      const pubBtn = document.getElementById("publishTripBtn");
-      if (trip.shareCode) {
-        codeBadge.style.display = "block";
-        document.getElementById("cloudShareCodeText").textContent = trip.shareCode;
-        fetchTripCompanions();
-      } else {
-        codeBadge.style.display = "none";
-      }
-
-      if (!isUserTripAdmin(trip, currentCloudUser)) {
-        pubBtn.innerHTML = ic("lock") + " 團員唯讀主行程";
-        pubBtn.disabled = true;
-        pubBtn.style.opacity = "0.55";
-      } else {
-        pubBtn.innerHTML = ic("upload") + " 發佈 / 更新共用行程";
-        pubBtn.disabled = false;
-        pubBtn.style.opacity = "1";
-      }
     }
 
     async function fetchTripCompanions() {
@@ -11114,7 +11062,7 @@ function initSupabaseClient() {
         return silent ? undefined : alert("只有管理員或共同管理員可以修改共用主行程喔！");
       }
 
-      const btn = document.getElementById("publishTripBtn") || { textContent: "", innerHTML: "" };
+      const btn = document.getElementById("adminPublishTripBtn") || { textContent: "", innerHTML: "" };
       if (!silent) btn.textContent = "上傳中...";
 
       if (!trip.shareCode) {
@@ -11178,7 +11126,7 @@ function initSupabaseClient() {
 
     // Companion joins a shared trip using 6-char invite code
     async function joinTripByShareCode() {
-      if (!currentCloudUser) return alert("請先登入雲端帳號");
+      if (!currentCloudUser) { alert("請先登入，才能用邀請碼加入旅伴的行程。"); closeTripManager(); openCloudModal(); return; }
       const code = document.getElementById("joinShareCodeInput").value.trim().toUpperCase();
       if (code.length < 4) return alert("請輸入 6 碼邀請碼");
 
@@ -11358,7 +11306,6 @@ function initSupabaseClient() {
         saveAppState();
       }
       const dropdownCloudBtn = document.getElementById("dropdownCloudBtn");
-      const dropdownProfileBtn = document.getElementById("dropdownProfileBtn");
       const avatarImg = document.getElementById("headerUserAvatarImg");
       if (!dropdownCloudBtn) return;
       updateBackupAgeLabel();
@@ -11375,11 +11322,9 @@ function initSupabaseClient() {
       if (currentCloudUser) {
         const disp = appState.userDisplayName || currentCloudUser.email;
         dropdownCloudBtn.textContent = disp;
-        if (dropdownProfileBtn) dropdownProfileBtn.style.display = "block";
         
       } else {
-        dropdownCloudBtn.textContent = "登入";
-        if (dropdownProfileBtn) dropdownProfileBtn.style.display = "block";
+        dropdownCloudBtn.textContent = "登入與設定";
         
       }
     }
@@ -11615,7 +11560,7 @@ function initSupabaseClient() {
       const wEl = document.getElementById("profileWelcome");
       if (wEl) wEl.style.display = welcome ? "block" : "none";
       const tEl = document.getElementById("profileModalTitle");
-      if (tEl) tEl.textContent = welcome ? "設定個人資料" : "個人設定";
+      if (tEl) tEl.textContent = welcome ? "設定個人資料" : "帳號與設定";
       const sel = document.getElementById("profileDefaultHomeTzSelect");
       if (sel && !sel.innerHTML) {
         sel.innerHTML = buildTzOptionsHtml();
@@ -11640,6 +11585,7 @@ function initSupabaseClient() {
       } else {
         box.textContent = (appState.userDisplayName || "旅").slice(0, 1);
       }
+      renderCloudModalUI();
       openModalBackdrop("profileModal");
     }
 
@@ -11769,7 +11715,7 @@ function initSupabaseClient() {
       if (code.length < 4) return alert("請輸入有效之 6 碼邀請碼");
       
       closeOnboardingModal();
-      openCloudModal();
+      openTripManager();
       const modalInp = document.getElementById("joinShareCodeInput");
       if (modalInp) {
         modalInp.value = code;
@@ -13630,10 +13576,12 @@ function initSupabaseClient() {
       if (kind === "login") {
         openCloudModal();
       } else if (kind === "join") {
-        openCloudModal();
+        // 加入旅伴的行程在「我的旅程」裡；還沒登入就先登入
+        if (!currentCloudUser) { openCloudModal(); return; }
+        openTripManager();
         setTimeout(() => {
-          const inp = document.getElementById(currentCloudUser ? "joinShareCodeInput" : "cloudEmailInput");
-          if (inp) inp.focus();
+          const inp = document.getElementById("joinShareCodeInput");
+          if (inp) { inp.scrollIntoView({ block: "center" }); inp.focus(); }
         }, 300);
       } else {
         const trip = getActiveTrip();

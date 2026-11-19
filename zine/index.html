@@ -202,7 +202,7 @@ let ARTICLES = [], ISSUES = [], usingSample = false;
 // ===== 匿名統計（和 App 同一套：只有次數）=====
 function track(e, d) {
   try {
-    if (navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true) return;
+    if (navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true || localStorage.getItem("TG_ANALYTICS_OFF") === "1") return;
     fetch(`${SUPABASE_URL}/rest/v1/rpc/track`, { method: "POST", keepalive: true, headers: { ...H, "Content-Type": "application/json" }, body: JSON.stringify({ events: [d ? { e, d: String(d).replace(/[^A-Za-z0-9_.:/-]/g, "").slice(0, 40) } : { e }] }) }).catch(() => {});
   } catch (e) {}
 }

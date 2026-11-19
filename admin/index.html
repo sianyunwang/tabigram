@@ -247,6 +247,13 @@ h2 { font-size: 18px; font-weight: 900; margin: 0; }
 .tip { position: fixed; pointer-events: none; z-index: 200; background: var(--ink); color: var(--paper); font-size: 12px; padding: 6px 9px; border-radius: 8px; transform: translate(-50%, calc(-100% - 10px)); white-space: nowrap; display: none; }
 .agreement h2 { font-size: 22px; margin: 4px 0 12px; } .agreement h3 { font-size: 16px; margin: 22px 0 6px; } .agreement p, .agreement li { font-size: 14.5px; } .agreement blockquote { margin: 10px 0; padding: 8px 12px; background: #FFF1D6; border-radius: 10px; font-size: 13px; }
 details.spec summary { cursor: pointer; }
+/* 手寫簽名板 */
+.sigpad-wrap { position: relative; border: 1.5px dashed var(--line); border-radius: 14px; background: #fff; overflow: hidden; }
+.sigpad-wrap::after { content: ""; position: absolute; left: 6%; right: 6%; bottom: 34px; border-bottom: 1.5px solid #D6D2CA; pointer-events: none; }
+.sigpad { display: block; width: 100%; height: 190px; touch-action: none; cursor: crosshair; position: relative; z-index: 1; }
+.sigpad-hint { position: absolute; left: 0; right: 0; top: 50%; translate: 0 -60%; text-align: center; color: #A8A39A; font-size: 14px; pointer-events: none; }
+.sigpad-wrap.signed .sigpad-hint { display: none; }
+.sigpad-x { position: absolute; left: 6%; bottom: 40px; color: #A8A39A; font: 700 16px var(--mono); pointer-events: none; }
 table.mini { width: 100%; border-collapse: collapse; font-size: 13px; }
 table.mini th, table.mini td { text-align: left; padding: 7px 6px; border-bottom: 1px solid var(--line); }
 table.mini th { font-size: 12px; color: var(--sub); font-weight: 800; }
@@ -526,6 +533,7 @@ function fileToImage(file) {
     img.src = url;
   });
 }
+const MAX_STICKERS = 8;   // 一包最多 8 張：App 的果醬派對、分享卡貼圖列都照這個數字排版
 async function prepImage(file) {
   if (!/^image\//.test(file.type)) throw new Error(`${file.name} 不是圖片`);
   const { img, url } = await fileToImage(file);
@@ -624,7 +632,7 @@ function renderEditor() {
         </section>
         <section class="card section">
           <div class="section-head"><h2>貼紙 <span class="kicker" style="margin-left:6px;">${d.items.length} 張</span></h2><p>檔名寫「中文:English」會自動填好名稱</p></div>
-          <label class="drop" id="stkDrop"><b>選擇貼紙圖片</b>（可以一次選很多張），或拖到這裡<br><span style="font-size:12px;">建議 PNG 透明背景</span><input type="file" accept="image/png,image/webp,image/jpeg" multiple id="stkInput" hidden></label>
+          <label class="drop" id="stkDrop"><b>選擇貼紙圖片</b>（可以一次選多張，最多 8 張），或拖到這裡<br><span style="font-size:12px;">建議 PNG 透明背景</span><input type="file" accept="image/png,image/webp,image/jpeg" multiple id="stkInput" hidden></label>
           <div class="stk-list" style="margin-top:12px;">${d.items.map((x, i) => `<div class="stk">
               <div class="stk-img"><span class="stk-no">${String(i + 1).padStart(2, "0")}</span>${x.blob ? `<span class="stk-new">新</span>` : ""}<img src="${esc(x.preview)}" alt=""></div>
               <input data-i="${i}" data-k="name" value="${esc(x.name)}" placeholder="中文名稱" aria-label="第 ${i + 1} 張中文名稱">
@@ -675,6 +683,9 @@ function bindEditor() {
   wireDrop("stkDrop", "stkInput", async files => {
     readFields();
     let jpg = 0;
+    const room = MAX_STICKERS - draft.items.length;
+    if (room <= 0) return toast(`一包最多 ${MAX_STICKERS} 張貼紙`, 4000);
+    if (files.length > room) { toast(`一包最多 ${MAX_STICKERS} 張，這次只加入前 ${room} 張`, 5000); files = files.slice(0, room); }
     for (const f of files) {
       try { const r = await prepImage(f); if (r.jpg) jpg++; const [zh, en] = splitName(nameFromFile(f)); draft.items.push({ blob: r.blob, preview: r.preview, name: zh, name_en: en }); }
       catch (e) { toast(e.message, 4000); }
@@ -703,6 +714,7 @@ async function savePack(status, note) {
   const d = draft;
   if (!d.name) return toast("請填中文包名");
   if (!d.items.length) return toast("至少要有一張貼紙");
+  if (d.items.length > MAX_STICKERS) return toast(`一包最多 ${MAX_STICKERS} 張，請先移除 ${d.items.length - MAX_STICKERS} 張`, 5000);
   if (d.url && !/^https:\/\//.test(d.url)) return toast("作品連結請用 https:// 開頭");
   if (d.items.some(x => !x.name)) return toast("每張貼紙都要有中文名稱");
   if (d.isNew) {
@@ -798,7 +810,7 @@ async function importNaobao() {
 // 主題、拍立得相框、Zine：共用清單與編輯器
 // =====================================================================
 const SPEC = {
-  stickers: `<b>貼紙</b>：PNG 透明背景，最長邊 512px 以上（上傳時會自動縮到 512px），單張處理後 1MB 以內；一包建議 8～24 張。<br><b>封面</b>：正方形 PNG，主角置中。<br><b>檔名</b>寫成「中文:English」（例如 <code>出發囉:Let's go.png</code>）會自動填好名稱。<br><b>不可以</b>：別人的商標、官方 logo、真實人物肖像、照片直接去背。`,
+  stickers: `<b>貼紙</b>：PNG 透明背景，最長邊 512px 以上（上傳時會自動縮到 512px），單張處理後 1MB 以內；<b>一包最多 8 張</b>（4×2 剛好排滿，挑起來也不累）。<br><b>封面</b>：正方形 PNG，主角置中。<br><b>檔名</b>寫成「中文:English」（例如 <code>出發囉:Let's go.png</code>）會自動填好名稱。<br><b>不可以</b>：別人的商標、官方 logo、真實人物肖像、照片直接去背。`,
   themes: `一組主題 = 三層圖片＋一組文字顏色，套在 9:16 限動卡上。<br><b>① 背景</b>：1080×1920（直式 9:16），JPG，壓縮後 900KB 以內。主要內容避開最上面、最下面各 250px（Instagram 會蓋住）。<br><b>② 紙卡材質</b>：512×512，JPG，要能<b>無縫拼接</b>（左右、上下接起來看不出接縫），顏色偏淺、不要有明顯圖案，文字要能放在上面。<br><b>③ 裝飾層</b>：1080×1920 <b>透明 PNG</b>，放在最上層的花邊、膠帶、手繪；中間的卡片區（左右各留 90px、上下 420～1500px 之間）盡量保持透明，不要擋到行程文字。<br><b>文字顏色</b>：主要文字、次要文字、強調色三個，和紙卡顏色的對比要夠（主要文字對比 4.5:1 以上）。`,
   polaroid: `<b>相框</b>：1200×1440 <b>透明 PNG</b>，照片的位置挖空（透明），邊框、底部寫字區做成不透明。<br><b>照片框位置</b>：用比例填（0～1），例如左邊 0.08、上面 0.07、寬 0.84、高 0.70。預覽裡藍橘色的就是照片會放的地方。<br><b>字的顏色</b>：底部寫字區的文字顏色。<br>處理後 2MB 以內。`,
   zine: `<b>封面</b>：1600×1000（16:10），JPG，壓縮後 600KB 以內；主角放中間，左右兩側可能被裁掉。<br><b>內文圖片</b>：寬 1600px 以內（會自動縮），JPG，每張 500KB 以內，一篇建議 3～8 張。<br><b>文字</b>：一篇 1 分鐘內讀完（約 300～500 字）。段落之間空一行；<code>**粗體**</code> 可以用。<br><b>區塊</b>：段落、圖片（可加圖說）、引言、旅行小物／小提醒、地點卡（名稱＋一句話＋地圖連結）。<br>照片要是自己拍的或有授權；合作內容請在文末註明。`,
@@ -1355,10 +1367,61 @@ function printAgreement(ag, sig) {
   w.document.write(`<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><title>${esc(ag.title)} ${esc(ag.version)}</title>
     <style>body{font:15px/1.8 'Noto Sans TC',sans-serif;color:#191919;max-width:760px;margin:40px auto;padding:0 20px}h2{font-size:22px}h3{font-size:16px;margin-top:22px}.sig{margin-top:36px;border:1.5px solid #191919;padding:16px 20px;border-radius:8px}.sig div{margin:4px 0}code{font-size:12px;word-break:break-all}@media print{body{margin:0}}</style></head><body>
     ${mdToHtml(ag.body)}
-    ${sig ? `<div class="sig"><b>電子簽署紀錄</b><div>合約版本：${esc(sig.version)}</div><div>簽署人（真實姓名）：${esc(sig.legal_name)}</div><div>顯示名稱：${esc(sig.display_name || "")}</div><div>登入 Email：${esc(sig.email)}</div><div>簽署時間：${esc(new Date(sig.agreed_at).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }))}（台北時間）</div><div>合約內容雜湊值（SHA-256）：<code>${esc(sig.body_sha256)}</code></div></div>` : ""}
+    ${sig ? `<div class="sig"><b>電子簽署紀錄</b><div>合約版本：${esc(sig.version)}</div><div>簽署人（真實姓名）：${esc(sig.legal_name)}</div><div>顯示名稱：${esc(sig.display_name || "")}</div><div>登入 Email：${esc(sig.email)}</div><div>簽署時間：${esc(new Date(sig.agreed_at).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }))}（台北時間）</div><div>合約內容雜湊值（SHA-256）：<code>${esc(sig.body_sha256)}</code></div>${safeSigPng(sig.signature_png) ? `<div style="margin-top:10px;">手寫簽名：<br><img src="${safeSigPng(sig.signature_png)}" alt="手寫簽名" style="max-width:300px; max-height:130px; border-bottom:1.5px solid #191919; margin-top:4px;"></div>${sig.signature_sha256 ? `<div>簽名圖雜湊值（SHA-256）：<code>${esc(sig.signature_sha256)}</code></div>` : ""}` : ""}</div>` : ""}
     <script>setTimeout(()=>print(),400)<\/script></body></html>`);
   w.document.close();
 }
+// 手寫簽名板：手指、觸控筆、滑鼠都可以；輸出時裁掉空白、縮成寬 600 以內的透明 PNG
+function setupSigPad(canvas, wrap) {
+  const g = canvas.getContext("2d");
+  let dpr = 1, strokes = [], cur = null, ink = 0;
+  const size = () => {
+    dpr = Math.max(1, window.devicePixelRatio || 1);
+    const r = canvas.getBoundingClientRect();
+    canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.height * dpr);
+    redraw();
+  };
+  const pt = e => { const r = canvas.getBoundingClientRect(); return { x: (e.clientX - r.left) * dpr, y: (e.clientY - r.top) * dpr, p: e.pressure || 0.5 }; };
+  const drawStroke = st => {
+    g.lineCap = "round"; g.lineJoin = "round"; g.strokeStyle = "#191919";
+    for (let i = 1; i < st.length; i++) {
+      const a = st[i - 1], b = st[i];
+      g.lineWidth = (1.8 + (b.p || 0.5) * 2.2) * dpr;
+      g.beginPath(); g.moveTo(a.x, a.y);
+      const m = i < st.length - 1 ? { x: (b.x + st[i + 1].x) / 2, y: (b.y + st[i + 1].y) / 2 } : b;
+      g.quadraticCurveTo(b.x, b.y, m.x, m.y); g.stroke();
+    }
+    if (st.length === 1) { g.fillStyle = "#191919"; g.beginPath(); g.arc(st[0].x, st[0].y, 1.8 * dpr, 0, Math.PI * 2); g.fill(); }
+  };
+  function redraw() { g.clearRect(0, 0, canvas.width, canvas.height); strokes.forEach(drawStroke); }
+  canvas.addEventListener("pointerdown", e => { e.preventDefault(); canvas.setPointerCapture(e.pointerId); cur = [pt(e)]; strokes.push(cur); wrap.classList.add("signed"); redraw(); });
+  canvas.addEventListener("pointermove", e => {
+    if (!cur) return; e.preventDefault();
+    const q = pt(e), l = cur[cur.length - 1];
+    if (Math.hypot(q.x - l.x, q.y - l.y) < 1.5 * dpr) return;
+    ink += Math.hypot(q.x - l.x, q.y - l.y) / dpr; cur.push(q); redraw();
+  });
+  const end = () => { cur = null; };
+  canvas.addEventListener("pointerup", end); canvas.addEventListener("pointercancel", end); canvas.addEventListener("pointerleave", end);
+  size();
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (!strokes.length) size(); }, 150); });
+  return {
+    // 太短（例如只點一下）不算簽名
+    isEmpty: () => ink < 40,
+    clear: () => { strokes = []; ink = 0; wrap.classList.remove("signed"); redraw(); },
+    toPng: () => {
+      const all = strokes.flat(); if (!all.length) return "";
+      const pad = 12 * dpr;
+      const x0 = Math.max(0, Math.min(...all.map(p => p.x)) - pad), y0 = Math.max(0, Math.min(...all.map(p => p.y)) - pad);
+      const x1 = Math.min(canvas.width, Math.max(...all.map(p => p.x)) + pad), y1 = Math.min(canvas.height, Math.max(...all.map(p => p.y)) + pad);
+      const k = Math.min(1, 600 / (x1 - x0)), out = document.createElement("canvas");
+      out.width = Math.max(1, Math.round((x1 - x0) * k)); out.height = Math.max(1, Math.round((y1 - y0) * k));
+      out.getContext("2d").drawImage(canvas, x0, y0, x1 - x0, y1 - y0, 0, 0, out.width, out.height);
+      return out.toDataURL("image/png");
+    },
+  };
+}
+const safeSigPng = u => /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(String(u || "")) ? u : "";
 // 創作者第一次進來（或合約改版）：先簽署才能上傳
 async function renderSignAgreement() {
   const { data: ag, error } = await T(sb.from("creator_agreements").select("*").eq("version", me.agreement).maybeSingle());
@@ -1371,21 +1434,28 @@ async function renderSignAgreement() {
       <div class="field"><label for="sgLegal">真實姓名（簽署用，不會公開）</label><input id="sgLegal" maxlength="60" autocomplete="name"></div>
       <div class="field"><label for="sgDisplay">顯示名稱（作品上標示的名字）</label><input id="sgDisplay" maxlength="40" value="${esc((me.creator && me.creator.display_name) || "")}"></div>
       <div class="field full"><label>登入 Email</label><input value="${esc(me.email)}" readonly></div>
+      <div class="field full"><label>手寫簽名</label>
+        <div class="sigpad-wrap" id="sgWrap"><canvas class="sigpad" id="sgPad" role="img" aria-label="手寫簽名區：用手指、觸控筆或滑鼠簽名"></canvas><span class="sigpad-x" aria-hidden="true">×</span><span class="sigpad-hint">請用手指、觸控筆或滑鼠在這裡簽名</span></div>
+        <div style="display:flex; gap:10px; align-items:center; margin-top:8px; flex-wrap:wrap;"><button class="btn soft sm" type="button" id="sgClear">重寫</button><span class="hint">簽名會和簽署紀錄一起保存，不會公開。</span></div>
+      </div>
     </div>
     <label class="check"><input type="checkbox" id="sgRead"><span><b>我已經完整讀過，並同意這份合約（版本 ${esc(ag.version)}）</b></span></label>
     <label class="check"><input type="checkbox" id="sgOwn"><span><b>我上傳的作品是自己創作的，或已經取得授權</b></span></label>
     <label class="check"><input type="checkbox" id="sgAge"><span><b>我已滿 18 歲</b>（未滿 18 歲請先取得法定代理人同意）</span></label>
     <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;"><button class="btn go" type="button" id="sgBtn">簽署</button><button class="btn soft" type="button" id="sgPrint">先列印／存成 PDF 看看</button></div></section>`;
   $("sgPrint").addEventListener("click", () => printAgreement(ag, null));
+  const pad = setupSigPad($("sgPad"), $("sgWrap"));
+  $("sgClear").addEventListener("click", () => pad.clear());
   $("sgBtn").addEventListener("click", async () => {
     const legal = $("sgLegal").value.trim();
     if (legal.length < 2) return toast("請輸入真實姓名");
+    if (pad.isEmpty()) { $("sgWrap").scrollIntoView({ behavior: "smooth", block: "center" }); return toast("請在簽名區手寫簽名"); }
     if (!$("sgRead").checked || !$("sgOwn").checked || !$("sgAge").checked) return toast("請勾選三個確認項目");
     const btn = $("sgBtn"); btn.disabled = true;
-    const row = { version: ag.version, legal_name: legal, display_name: $("sgDisplay").value.trim(), body_sha256: await sha256Hex(ag.body), email: me.email };
+    const row = { version: ag.version, legal_name: legal, display_name: $("sgDisplay").value.trim(), body_sha256: await sha256Hex(ag.body), email: me.email, signature_png: pad.toPng() };
     const { data, error: e2 } = await T(sb.from("creator_signatures").insert(row).select().maybeSingle());
     btn.disabled = false;
-    if (e2) return toast("簽署失敗：" + e2.message, 6000);
+    if (e2) return toast(/signature_png|signature_sha256/.test(e2.message) ? "簽署功能正在更新，請稍後再試，或聯絡 TabigrAm 管理員。" : /signature required/.test(e2.message) ? "請在簽名區手寫簽名" : "簽署失敗：" + e2.message, 6000);
     toast("簽署完成，謝謝你！", 4000);
     me.signed = true;
     if (confirm("簽署完成。要現在列印或存成 PDF 留存嗎？")) printAgreement(ag, data || { ...row, agreed_at: new Date().toISOString() });
@@ -1415,8 +1485,8 @@ async function renderAgreementAdmin() {
         ${/【.+?】/.test(x.body) ? `<div class="note-box">還有「【…】」沒有填（例如營運者名稱、聯絡 Email），發布前請先改好。</div>` : ""}</article>`).join("") || `<div class="empty-note">還沒有合約版本。</div>`}</div>
     <div id="agEdit"></div>
     <div class="bar"><span class="kicker">簽署紀錄 · ${sigs.length} 筆</span></div>
-    <section class="card" style="overflow-x:auto;"><table class="mini"><thead><tr><th>Email</th><th>真實姓名</th><th>顯示名稱</th><th>版本</th><th>時間</th><th></th></tr></thead><tbody>
-      ${sigs.map((x, i) => `<tr><td>${esc(x.email)}</td><td>${esc(x.legal_name)}</td><td>${esc(x.display_name)}</td><td>${esc(x.version)}</td><td>${esc(fmtTime(x.agreed_at))}</td><td><button class="btn soft sm" type="button" data-sgp="${i}" style="padding:4px 10px;">列印</button></td></tr>`).join("") || `<tr><td colspan="6" class="empty-note">還沒有人簽署</td></tr>`}
+    <section class="card" style="overflow-x:auto;"><table class="mini"><thead><tr><th>Email</th><th>真實姓名</th><th>簽名</th><th>顯示名稱</th><th>版本</th><th>時間</th><th></th></tr></thead><tbody>
+      ${sigs.map((x, i) => `<tr><td>${esc(x.email)}</td><td>${esc(x.legal_name)}</td><td>${safeSigPng(x.signature_png) ? `<img src="${safeSigPng(x.signature_png)}" alt="手寫簽名" style="height:34px; max-width:110px; object-fit:contain; background:#fff; border-radius:6px;">` : `<span class="hint">—</span>`}</td><td>${esc(x.display_name)}</td><td>${esc(x.version)}</td><td>${esc(fmtTime(x.agreed_at))}</td><td><button class="btn soft sm" type="button" data-sgp="${i}" style="padding:4px 10px;">列印</button></td></tr>`).join("") || `<tr><td colspan="7" class="empty-note">還沒有人簽署</td></tr>`}
     </tbody></table></section>`;
   document.querySelectorAll("[data-agv]").forEach(b => b.addEventListener("click", () => printAgreement(ags[+b.dataset.agv], null)));
   document.querySelectorAll("[data-sgp]").forEach(b => b.addEventListener("click", () => { const sg = sigs[+b.dataset.sgp]; const ag = ags.find(x => x.version === sg.version); if (ag) printAgreement(ag, sg); }));

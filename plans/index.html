@@ -151,7 +151,7 @@ let PLANS = [], usingSample = false;
 
 function track(e, d) {
   try {
-    if (navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true || usingSample) return;
+    if (navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true || localStorage.getItem("TG_ANALYTICS_OFF") === "1" || usingSample) return;
     fetch(`${SUPABASE_URL}/rest/v1/rpc/track`, { method: "POST", keepalive: true, headers: { ...H, "Content-Type": "application/json" }, body: JSON.stringify({ events: [d ? { e, d: String(d).replace(/[^A-Za-z0-9_.:/-]/g, "").slice(0, 40) } : { e }] }) }).catch(() => {});
   } catch (e) {}
 }

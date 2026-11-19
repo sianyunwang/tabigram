@@ -164,7 +164,7 @@ let ITEMS = [], usingSample = false;
 
 function track(e, d) {
   try {
-    if (navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true || usingSample) return;
+    if (navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true || localStorage.getItem("TG_ANALYTICS_OFF") === "1" || usingSample) return;
     fetch(`${SUPABASE_URL}/rest/v1/rpc/track`, { method: "POST", keepalive: true, headers: { ...H, "Content-Type": "application/json" }, body: JSON.stringify({ events: [d ? { e, d: String(d).replace(/[^A-Za-z0-9_.:/-]/g, "").slice(0, 40) } : { e }] }) }).catch(() => {});
   } catch (e) {}
 }
@@ -197,7 +197,7 @@ const rulesHtml = () => `<section class="rules">
       <li>價格、規格、庫存以賣家頁面為準，可能有變動。</li>
       <li>標示「<span class="collab">合作</span>」的商品，透過連結購買時 TabigrAm 可能獲得分潤，不會增加你的花費。</li>
       <li>點「前往購買」會離開 TabigrAm，賣家網站的隱私權與交易條款，請以該網站為準。</li>
-      <li>對商品有疑問請直接聯絡賣家；商品資訊有誤，歡迎在 TabigrAm 的「意見回饋」告訴我們。</li>
+      <li>對商品有疑問請直接聯絡賣家；商品資訊有誤，或你認為商品侵害權利，請寫信到 <a href="mailto:support@tabigram.info">support@tabigram.info</a>，我們會盡快確認、必要時下架。</li>
     </ul>
   </section>
   <div class="foot">由 <a href="../">TabigrAm</a> 經營 · 測試版</div>`;

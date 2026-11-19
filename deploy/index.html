@@ -27,7 +27,7 @@
       var lang = q || saved || (/^zh/i.test(nav) ? "zh" : "en");
       window.TG_LANG = lang;
       document.documentElement.lang = lang === "en" ? "en" : "zh-TW";
-      if (lang === "en") document.write('<script src="i18n/en.js?v=914366d3"><\/script>');
+      if (lang === "en") document.write('<script src="i18n/en.js?v=1282a41d"><\/script>');
     })();
   </script>
   <script>
@@ -128,12 +128,12 @@
       });
     })();
   </script>
-  <meta name="description" content="和旅伴一起排行程、出發前倒數、旅途中提醒，回來後蓋一枚完成章，收好每一張照片。" />
+  <meta name="description" content="從想去，到下次還要去。排行程、在機場蓋章、錄一卷旅行卡帶，和旅伴一起把每一趟旅行走完。" />
   <!-- 分享到 LINE / Facebook / Threads 時的預覽 -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="TabigrAm" />
-  <meta property="og:title" content="TabigrAm｜把旅程排好，把回憶收好" />
-  <meta property="og:description" content="和旅伴一起排行程、出發前倒數、旅途中提醒，回來後蓋一枚完成章。" />
+  <meta property="og:title" content="TabigrAm｜從想去，到下次還要去" />
+  <meta property="og:description" content="排行程、在機場蓋章、錄一卷旅行卡帶。" />
   <meta property="og:url" content="https://tabigram.info/" />
   <meta property="og:image" content="https://tabigram.info/og-image.png" />
   <meta property="og:image:width" content="1200" />
@@ -1689,7 +1689,7 @@
       .ld-stage > * { transition: opacity .4s; }
       .ld-stage .ld-ring { animation: none; }
     }
-    .ld-tag { color: var(--sub); font-size: 15.5px; margin: 0; text-wrap: balance; }
+    .ld-tag { color: var(--ink); font-size: 19px; font-weight: 900; letter-spacing: .04em; margin: 2px 0 0; text-wrap: balance; }
     .ld-btns { display: grid; gap: 10px; }
     .ld-btn { display: block; width: 100%; border-radius: 999px; padding: 14px; min-height: 50px; font-family: var(--sans); font-weight: 900; font-size: 16px; cursor: pointer; }
     .ld-btn.dark { background: var(--ink); color: #fff; border: 0; }
@@ -2454,11 +2454,129 @@
     .ap-list .ap-btn span small { display: block; font-size: 10.5px; color: var(--sub); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .ap-own { display: flex; gap: 6px; margin-top: 12px; }
     .ap-own input { flex: 1; text-transform: uppercase; }
+
+    /* ===== 旅行憑證 ===== */
+    .vault-btn { position: relative; }
+    .vault-badge { position: absolute; top: -3px; right: -3px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: var(--accent); color: #fff; font: 900 10.5px/17px var(--mono); text-align: center; }
+    .vault-entry { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 12px 14px; margin: 0 0 14px; border: 1.5px solid var(--ink); border-radius: 14px; background: var(--card); color: var(--ink); cursor: pointer; font: inherit; }
+    .vault-entry .ic { font-size: 22px; flex: none; }
+    .vault-entry span:not(.vault-entry-n) { flex: 1; min-width: 0; display: grid; }
+    .vault-entry b { font-size: 15px; }
+    .vault-entry small { font-size: 12px; color: var(--sub); line-height: 1.45; }
+    .vault-entry-n { flex: none; font: 900 12.5px var(--mono); color: var(--accent); }
+    .vault-add { display: flex; align-items: center; gap: 12px; padding: 16px; border: 2px dashed var(--border); border-radius: 16px; cursor: pointer; margin-bottom: 12px; }
+    .vault-add .ic { font-size: 24px; color: var(--accent); }
+    .vault-add span { display: grid; } .vault-add small { color: var(--sub); font-size: 12px; }
+    .vault-sec { font-size: 12px; font-weight: 900; color: var(--sub); letter-spacing: .04em; margin: 14px 0 6px; }
+    .vault-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .vault-open { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; background: none; border: 0; padding: 0; text-align: left; color: var(--ink); cursor: pointer; font: inherit; }
+    .vault-thumb { flex: none; width: 54px; height: 54px; border-radius: 10px; overflow: hidden; background: var(--card2, #EBE9E4); display: grid; place-items: center; font: 900 12px var(--mono); color: var(--accent); border: 1px solid var(--border); }
+    .vault-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .vault-meta { min-width: 0; display: grid; } .vault-meta b { font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .vault-meta small { font-size: 12px; color: var(--sub); }
+    .vault-edit { width: 100%; padding: 4px 0 6px; }
+    .vault-edit .mini-btn { text-decoration: none; }
+    .vault-empty { font-size: 13px; color: var(--sub); padding: 10px 2px; line-height: 1.6; }
+    .vault-note { display: flex; gap: 8px; align-items: flex-start; margin-top: 14px; font-size: 12px; color: var(--sub); line-height: 1.6; }
+    .vault-ended { margin-bottom: 10px; padding: 12px; border-radius: 12px; background: var(--card2, #EBE9E4); font-size: 13px; }
+    .vault-viewer { position: fixed; inset: 0; z-index: 5000; background: #fff; color: #191919; display: flex; flex-direction: column; padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); }
+    .vault-viewer[hidden] { display: none; }
+    .vv-top { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #E4E2DD; }
+    .vv-top b { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 15px; }
+    .vv-top span { font: 800 12px var(--mono); color: #6E6A63; }
+    .vv-stage { flex: 1; min-height: 0; display: grid; place-items: center; overflow: auto; padding: 12px; touch-action: pan-x pan-y pinch-zoom; }
+    .vv-stage img { max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in; image-rendering: auto; }
+    .vv-stage.zoom { place-items: start; } .vv-stage.zoom img { max-width: none; max-height: none; cursor: zoom-out; }
+    .vv-bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-top: 1px solid #E4E2DD; font-size: 11.5px; color: #6E6A63; text-align: center; }
+    .vault-pdf { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .vault-pdf > b { font: 900 22px var(--mono); color: var(--accent); } .vault-pdf iframe { flex: 1; width: 100%; min-height: 50vh; border: 1px solid #E4E2DD; border-radius: 10px; }
+
+    /* ===== 旅行卡帶 ===== */
+    .tape-chip { position: relative; flex: none; width: 104px; aspect-ratio: 1.567; border-radius: 8px; background: linear-gradient(#F5F2EC, #DDD7CC); box-shadow: 0 4px 10px rgba(0,0,0,.15); padding: 7px 7px 0; }
+    .tape-chip::before { content: ""; position: absolute; left: 7px; right: 7px; top: 34px; height: 8px; background: linear-gradient(#2E3F73 0 25%, #5EC4C6 25% 50%, #F7B955 50% 75%, #F29BB0 75%); }
+    .tape-chip span { font: 800 13px var(--mono); color: #1E1C1A; position: relative; }
+    .tape-chip b { position: relative; display: block; margin: -16px 0 0 16px; font-size: 9px; color: #1E1C1A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tape-chip i { position: absolute; top: 44px; width: 14px; height: 14px; border-radius: 50%; background: #F4F0E8; border: 4px solid #3A3631; }
+    .tape-chip i:first-of-type { left: 30px; } .tape-chip i:last-of-type { right: 30px; }
+    .tape-invite { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; padding: 14px; border-radius: 14px; background: var(--card2, #EBE9E4); text-align: left; }
+    .tape-invite b { font-size: 14.5px; } .tape-invite p { font-size: 12.5px; color: var(--sub); margin: 4px 0 8px; line-height: 1.6; }
+    .tape-invite small { display: block; font-size: 11px; color: var(--sub); margin-top: 6px; }
+    .tape-step { display: flex; align-items: baseline; gap: 10px; margin: 14px 0 8px; } .tape-step b { font-size: 15px; } .tape-step span { font-size: 12px; color: var(--sub); }
+    .rec-wrap { position: relative; width: 120px; height: 120px; margin: 6px auto 0; }
+    .rec-ring { position: absolute; inset: 0; transform: rotate(-90deg); pointer-events: none; }
+    .rec-ring circle { fill: none; stroke: var(--border); stroke-width: 6; } .rec-ring circle + circle { stroke: #F29BB0; stroke-linecap: round; transition: stroke-dashoffset .1s linear; }
+    .rec-btn { position: absolute; inset: 14px; border-radius: 50%; border: 0; background: var(--card); box-shadow: 0 6px 16px rgba(0,0,0,.12); cursor: pointer; display: grid; place-items: center; }
+    .rec-btn span { width: 38px; height: 38px; border-radius: 50%; background: #E0484D; transition: border-radius .2s, width .2s, height .2s; }
+    .rec-btn.on span { width: 30px; height: 30px; border-radius: 6px; }
+    .rec-time { text-align: center; font: 800 14px var(--mono); margin-top: 8px; }
+    .rec-level { display: block; width: 100%; height: 40px; margin-top: 6px; }
+    .rec-actions { display: flex; gap: 8px; justify-content: center; margin-top: 8px; }
+    .tape-cover-preview { display: block; width: 100%; height: auto; border-radius: 10px; background: var(--card2, #EBE9E4); }
+    .font-pick { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+    .font-chip { padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--card); color: var(--ink); cursor: pointer; font-size: 15px; }
+    .font-chip.on { border-color: var(--ink); background: var(--ink); color: var(--card); }
+    .tape-rule { margin-top: 12px; font-size: 12px; color: var(--sub); line-height: 1.6; padding: 10px 12px; border: 1px dashed var(--border); border-radius: 10px; }
+    .tape-play-sheet { background: #1F1D1B !important; color: #F3EDDF; }
+    .tape-play-sheet .modal-title { color: #F3EDDF; }
+    .tape-stage { display: flex; justify-content: center; position: relative; }
+    .tape-stage.tap-start::after { content: "▶ 點一下播放"; position: absolute; inset: 0; display: grid; place-items: center; font: 800 18px var(--sans); color: #fff; background: rgba(0,0,0,.35); border-radius: 12px; cursor: pointer; }
+    .tape-stage canvas { width: auto; height: min(64vh, 640px); max-width: 100%; aspect-ratio: 9 / 16; border-radius: 12px; background: #F2EBDD; }
+    .tape-ctrl { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+    .tape-export-msg { text-align: center; font-size: 12px; color: #B8AE9C; margin-top: 10px; line-height: 1.7; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; }
+    .tape-export-msg small { display: block; width: 100%; }
+    .tape-export-msg a.pill-btn { text-decoration: none; }
+    .tape-card { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .tape-case-thumb { flex: none; width: 118px; height: auto; border-radius: 6px; }
+    .tape-card-body { flex: 1; min-width: 0; } .tape-card-body > b { font-size: 14.5px; display: block; margin-bottom: 4px; }
+    .tape-side { display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 4px 0; }
+    .tape-side b { flex: none; font-size: 12px; } .tape-side span { flex: 1; color: var(--sub); }
+    .tape-side.off span { opacity: .6; } .tape-side.sealed b::after { content: " 🔒"; }
+    .tape-how { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: var(--card2, #EBE9E4); font-size: 12.5px; line-height: 1.7; } .tape-how p { margin: 4px 0 0; color: var(--sub); }
+
+    /* 入口頁副標、迷你卡帶 */
+    .ld-sub { margin: 6px 0 0; font-size: 13px; color: var(--sub); text-align: center; letter-spacing: .02em; }
+    .ldd-tape { position: relative; width: 150px; aspect-ratio: 1.567; margin: 4px auto 10px; border-radius: 9px; background: linear-gradient(#94623A, #583822); padding: 8px 8px 0; box-shadow: 0 6px 14px rgba(0,0,0,.18); }
+    .ldd-tape::before { content: ""; position: absolute; left: 8px; right: 8px; top: 8px; height: 48px; border-radius: 4px; background: #FBF6EA; }
+    .ldd-tape::after { content: ""; position: absolute; left: 8px; right: 8px; top: 26px; height: 7px; background: linear-gradient(#2E3F73 0 25%, #5EC4C6 25% 50%, #F7B955 50% 75%, #F29BB0 75%); }
+    .ldd-tape span { position: relative; z-index: 1; font: 800 14px var(--mono); color: #1E1C1A; }
+    .ldd-tape b { position: relative; z-index: 1; display: block; margin: -17px 0 0 18px; font-size: 11px; color: #1E1C1A; }
+    .ldd-tape i { position: absolute; z-index: 1; top: 52px; width: 18px; height: 18px; border-radius: 50%; background: #F4F0E8; border: 5px solid #3A3631; }
+    .ldd-tape i:first-of-type { left: 40px; } .ldd-tape i:last-of-type { right: 40px; }
+
+    /* ===== 開始的四步 ===== */
+    .start-guide { background: var(--card); border: 1.5px solid var(--ink); border-radius: 18px; padding: 14px 16px 10px; margin-bottom: 14px; }
+    .sg-head { display: flex; align-items: baseline; gap: 8px; } .sg-head b { font-size: 16px; } .sg-head span { font: 800 12px var(--mono); color: var(--accent); }
+    .sg-skip { margin-left: auto; background: none; border: 0; padding: 4px 0; font: 700 12.5px var(--sans); color: var(--sub); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+    .sg-bar { height: 5px; border-radius: 3px; background: var(--card2, #EBE9E4); margin: 10px 0 6px; overflow: hidden; } .sg-bar i { display: block; height: 100%; background: var(--accent); border-radius: 3px; transition: width .3s ease; }
+    .sg-list { list-style: none; margin: 0; padding: 0; }
+    .sg-list li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px dashed var(--border); }
+    .sg-list li:first-child { border-top: 0; }
+    .sg-n { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font: 800 12px var(--mono); border: 1.5px solid var(--border); color: var(--sub); }
+    .sg-t { flex: 1; min-width: 0; display: grid; } .sg-t b { font-size: 14px; font-weight: 700; color: var(--sub); } .sg-t small { font-size: 12.5px; color: var(--sub); line-height: 1.5; margin-top: 2px; }
+    .sg-list li.next .sg-n { background: var(--accent); border-color: var(--accent); color: #fff; } .sg-list li.next .sg-t b { color: var(--ink); font-weight: 900; font-size: 15px; }
+    .sg-list li.done .sg-n { background: var(--ink); border-color: var(--ink); color: var(--card); } .sg-list li.done .sg-t b { text-decoration: line-through; opacity: .6; }
+    .sg-go { flex: none; padding: 8px 16px; }
+    .sg-later { flex: none; background: none; border: 0; font: 700 12px var(--sans); color: var(--sub); cursor: pointer; }
+    @media (prefers-reduced-motion: reduce) { .sg-bar i { transition: none; } }
+
+    /* ===== 想去清單 ===== */
+    .armed { background: #C0392B !important; color: #fff !important; border-color: #C0392B !important; }
+    .vault-tip { font-size: 12px; color: var(--sub); line-height: 1.6; margin: -4px 0 10px; }
+    .vault-tip.warn { color: var(--ink); background: #FFF1E0; border: 1px solid #F2C79B; border-radius: 10px; padding: 10px 12px; margin: 0 0 12px; }
+    html[data-mode="dark"] .vault-tip.warn { background: #3A2A18; border-color: #6B4A26; }
+    .later-hint { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 10px 12px; border-radius: 12px; background: var(--card2, #EBE9E4); font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+    .wish-row.here b::before { content: "● "; color: var(--accent); }
+    .wish-row { display: flex; align-items: center; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+    .wish-main { flex: 1; min-width: 0; display: grid; } .wish-main b { font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .wish-main small { font-size: 12px; color: var(--sub); }
+    .wish-main a { color: var(--ink); font-weight: 800; }
+    .wish-day { width: auto; flex: none; max-width: 42%; padding: 6px 8px; font-size: 13px; }
+    .wish-plan { margin-top: 10px; padding: 12px; border-radius: 12px; background: var(--card2, #EBE9E4); font-size: 13px; }
+    .wish-plan-day { margin-top: 6px; line-height: 1.6; } .wish-plan-day span { display: inline-block; min-width: 92px; font-weight: 900; }
+    .wish-plan small { display: block; color: var(--sub); margin-top: 8px; }
 </style>
 </head>
 <body>
   <!-- 介面線條圖示（取代 emoji） -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/></symbol><symbol id="i-cloud" viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></symbol><symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol><symbol id="i-user-plus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></symbol><symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol><symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.33 2q2 0 3.67-1v11q-1.67 1-3.67 1C13 15 11 13 8 13a6 6 0 0 0-4 1.5"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol><symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol><symbol id="i-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol><symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></symbol><symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></symbol><symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8"/></symbol><symbol id="i-stamp" viewBox="0 0 24 24"><path d="M5 22h14"/><path d="M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z"/><path d="M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3c-1.66 0-3 1-3 3s1 2 1 3.5V13"/></symbol><symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></symbol><symbol id="i-train" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16M12 3v8M8 19l-2 3M18 22l-2-3M8 15h.01M16 15h.01"/></symbol><symbol id="i-plane" viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></symbol><symbol id="i-car" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></symbol><symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></symbol><symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol><symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></symbol><symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22M18 2l4 4-4 4M2 6h1.9c1.5 0 2.9.9 3.6 2.2M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8M18 14l4 4-4 4"/></symbol><symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol><symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol><symbol id="i-luggage" viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="13" rx="2"/><path d="M9 7V4h6v3M9 11v5M15 11v5M8 20v2M16 20v2"/></symbol><symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></symbol><symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol><symbol id="i-droplet" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol><symbol id="i-ship" viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6M12 10v4M12 2v3"/></symbol><symbol id="i-camera" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol><symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol><symbol id="i-cloud-sun" viewBox="0 0 24 24"><path d="M12 2v2M4.93 4.93l1.41 1.41M20 12h2M19.07 4.93l-1.41 1.41M15.95 12.65a4 4 0 0 0-5.93-4.13"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/></symbol><symbol id="i-fog" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24M16 17H7M17 21H9"/></symbol><symbol id="i-rain" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24M16 14v6M8 14v6M12 16v6"/></symbol><symbol id="i-drizzle" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24M8 19v1M8 14v1M16 19v1M16 14v1M12 21v1M12 16v1"/></symbol><symbol id="i-snow" viewBox="0 0 24 24"><path d="M2 12h20M12 2v20M20 16l-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4 4"/></symbol><symbol id="i-storm" viewBox="0 0 24 24"><path d="M6 16.33A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.97M13 11l-4 6h6l-4 6"/></symbol></svg>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/></symbol><symbol id="i-cloud" viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></symbol><symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol><symbol id="i-user-plus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></symbol><symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol><symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.33 2q2 0 3.67-1v11q-1.67 1-3.67 1C13 15 11 13 8 13a6 6 0 0 0-4 1.5"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol><symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></symbol><symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol><symbol id="i-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol><symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></symbol><symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></symbol><symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8"/></symbol><symbol id="i-pass" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M7 9h3v3H7zM14 9h3M14 12h3M7 15.5h10"/></symbol><symbol id="i-tape" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><circle cx="15.5" cy="11" r="2"/><path d="M10.5 11h3M6 19l1.5-3h9L18 19"/></symbol><symbol id="i-stamp" viewBox="0 0 24 24"><path d="M5 22h14"/><path d="M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z"/><path d="M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3c-1.66 0-3 1-3 3s1 2 1 3.5V13"/></symbol><symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></symbol><symbol id="i-train" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16M12 3v8M8 19l-2 3M18 22l-2-3M8 15h.01M16 15h.01"/></symbol><symbol id="i-plane" viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></symbol><symbol id="i-car" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></symbol><symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></symbol><symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol><symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></symbol><symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22M18 2l4 4-4 4M2 6h1.9c1.5 0 2.9.9 3.6 2.2M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8M18 14l4 4-4 4"/></symbol><symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol><symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol><symbol id="i-luggage" viewBox="0 0 24 24"><rect x="5" y="7" width="14" height="13" rx="2"/><path d="M9 7V4h6v3M9 11v5M15 11v5M8 20v2M16 20v2"/></symbol><symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></symbol><symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol><symbol id="i-droplet" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol><symbol id="i-ship" viewBox="0 0 24 24"><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6M12 10v4M12 2v3"/></symbol><symbol id="i-camera" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol><symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol><symbol id="i-cloud-sun" viewBox="0 0 24 24"><path d="M12 2v2M4.93 4.93l1.41 1.41M20 12h2M19.07 4.93l-1.41 1.41M15.95 12.65a4 4 0 0 0-5.93-4.13"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/></symbol><symbol id="i-fog" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24M16 17H7M17 21H9"/></symbol><symbol id="i-rain" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24M16 14v6M8 14v6M12 16v6"/></symbol><symbol id="i-drizzle" viewBox="0 0 24 24"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24M8 19v1M8 14v1M16 19v1M16 14v1M12 21v1M12 16v1"/></symbol><symbol id="i-snow" viewBox="0 0 24 24"><path d="M2 12h20M12 2v20M20 16l-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4 4"/></symbol><symbol id="i-storm" viewBox="0 0 24 24"><path d="M6 16.33A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.97M13 11l-4 6h6l-4 6"/></symbol></svg>
   <!-- 入口頁：新訪客看到品牌與功能介紹；熟客自動跳過 -->
   <div class="landing" id="landingScreen" role="region" aria-label="TabigrAm 介紹">
     <div class="landing-inner">
@@ -2478,7 +2596,8 @@
             <img class="ld-card" src="sample-recap-card.jpg" width="450" height="800" alt="當日回顧範例：當天里程與路線地圖" decoding="async" />
           </div>
           <h1 class="ld-word">TabigrAm<span class="beta-tag ld-beta" aria-label="封測版">.beta</span></h1>
-          <p class="ld-tag">把旅程排好，把回憶收好。</p>
+          <p class="ld-tag">從想去，到下次還要去。</p>
+          <p class="ld-sub">排行程、在機場蓋章、錄一卷旅行卡帶。</p>
           <p class="ld-cap" id="ldCap" aria-live="polite">&nbsp;</p>
         </div>
         <div class="ld-btns">
@@ -2489,22 +2608,24 @@
       </section>
 
       <section class="ld-sec" id="landingFeatures">
-        <h2>旅行，<br>從倒數開始。</h2>
-        <p>從排行程、出發、旅途中，到回家後收藏回憶，一個 App 走完整趟旅程。</p>
+        <h2>一趟旅行，<br>從頭到尾都在這裡。</h2>
+        <p>先把想去的地方丟進來，排進天數；出發那天在機場蓋章、錄一卷卡帶；回家後，沒去成的地方收進「下次還要去」。</p>
         <div class="ld-cd" aria-hidden="true">
           <div class="row"><div class="big">D-12</div><div><div class="l1">東京五日遊</div><div class="l2">12/01 出發 · 桃園機場</div></div></div>
           <div class="bar"><i></i></div>
         </div>
         <ol class="ld-list">
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">01</span><div><b>路線圖分享卡</b>把搭過的地鐵、電車路線，用真實的路線顏色做成可以發限動的路線圖卡片。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">01</span><div><b>想去清單，自動排進天數</b>看到喜歡的店、景點，先丟進來就好，貼 Google 地圖連結也可以。按一下，依距離幫你分好每一天。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
-              <div class="ldd-cards"><img src="sample-route-card.jpg" alt="路線圖分享卡範例" loading="lazy"></div>
+              <div class="ldd-phone">
+                <div class="ldd-card"><i class="dot" style="--c:var(--accent)"></i><div><b>南禪寺水路閣</b><em>有位置</em></div></div>
+                <div class="ldd-card"><i class="dot" style="--c:var(--accent)"></i><div><b>一保堂茶舖</b><em>有位置</em></div></div>
+                <div class="ldd-card"><i class="dot" style="--c:var(--accent)"></i><div><b>嵐山竹林</b><em>有位置</em></div></div>
+                <div class="ldd-ai">✦ 依距離幫我排進天數</div>
+                <div class="ldd-x">第 1 天：嵐山竹林 → 金閣寺　第 2 天：南禪寺 → 一保堂</div>
+              </div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">02</span><div><b>足跡、當日回顧與完成章</b>按「我到了」記下走過的地方，每天結束有一張回顧。旅程結束蓋一枚章，收進旅程回憶。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
-            <div class="ld-demo" hidden>
-              <div class="ldd-cards two"><img src="sample-recap-card.jpg" alt="當日回顧範例" loading="lazy"><img src="sample-stamp-card.jpg" alt="完成章範例" loading="lazy"></div>
-            </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">03</span><div><b>一天一天排清楚</b>時間、地點、交通、花費一目了然。用電腦也能編輯，還能用試算表一次匯入整趟行程。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">02</span><div><b>一天一天排清楚</b>時間、地點、交通、花費一目了然。用電腦也能編輯，還能用試算表一次匯入整趟行程。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-pills"><span class="on">第 1 天</span><span>第 2 天</span><span>第 3 天</span><span class="add">＋</span></div>
@@ -2513,7 +2634,7 @@
                 <div class="ldd-card"><i class="dot" style="--c:var(--accent)"></i><div><small>16:00 → 17:00</small><b><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg> 飯店 Check-in</b><em>秋葉原</em></div></div>
               </div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">04</span><div><b>點車站，不用打字</b>從前後行程猜你在哪一站上車、要去哪，轉乘自動排好，連要不要出站轉乘都標清楚。台灣捷運、高鐵、台鐵，東京、大阪京都、首爾、舊金山、紐約都能用。機場也是點一下就好。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">03</span><div><b>點車站，不用打字</b>從前後行程猜你在哪一站上車、要去哪，轉乘自動排好，連要不要出站轉乘都標清楚。台灣捷運、高鐵、台鐵，東京、大阪京都、首爾、舊金山、紐約都能用。機場也是點一下就好。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-step"><span>上車</span><b>松山機場</b></div>
@@ -2525,12 +2646,20 @@
                 </div>
               </div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">05</span><div><b>和旅伴一起編</b>輸入 6 碼邀請碼就能加入。大家看同一份行程，私人筆記和照片各自保存。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">04</span><div><b>和旅伴一起編</b>輸入 6 碼邀請碼就能加入。大家看同一份行程，私人筆記和照片各自保存。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-code"><small>旅伴邀請碼</small><b>K7Q2MX</b><em>傳給朋友，輸入就能加入</em></div>
                 <div class="ldd-mates"><span style="--c:#3E7CB1">小</span><span style="--c:#E0A100">阿</span><span style="--c:#16A34A">Y</span><em>3 位旅伴一起編輯</em></div>
                 <div class="ldd-card"><i class="dot" style="--c:var(--accent)"></i><div><small>19:00 → 20:30</small><b>一蘭拉麵</b><em><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg> 我的私人筆記：記得點加麵</em></div></div>
+              </div>
+            </div></li>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">05</span><div><b>旅行憑證，在機場一點就開</b>登機證、入境 QR Code、簽證、訂房確認，原檔存在你的手機，不上傳。到了現場全螢幕白底出示，畫面不會熄滅。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+            <div class="ld-demo" hidden>
+              <div class="ldd-phone">
+                <div class="ldd-card"><i class="dot" style="--c:#2E3F73"></i><div><small>簽證／入境</small><b>Visit Japan Web QR</b><em>原檔 · 只存在這台手機</em></div></div>
+                <div class="ldd-card"><i class="dot" style="--c:#2E3F73"></i><div><small>登機證</small><b>BR198 TPE → NRT</b><em>原檔 · 只存在這台手機</em></div></div>
+                <div class="ldd-off">沒有網路也打得開</div>
               </div>
             </div></li>
           <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">06</span><div><b>旅途中不用再翻</b>現在在哪個行程、下一站幾點，打開就知道。沒有網路也看得到行程。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
@@ -2541,7 +2670,33 @@
                 <div class="ldd-off">沒有網路也看得到行程</div>
               </div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">07</span><div><b>請 AI 幫你檢查</b>一鍵匯出行程，交給 ChatGPT、Claude 或 Gemini 檢查轉乘時間和動線。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">07</span><div><b>機場戳章，和一卷旅行卡帶</b>人在機場才蓋得到的出入境章。出發那天錄一段 30 秒的聲音當 A 面，最後一段航班落地時播放；回程錄 B 面，等下一趟回到同一座機場才聽得到。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+            <div class="ld-demo" hidden>
+              <div class="ldd-phone">
+                <div class="ldd-tape" aria-hidden="true"><span>A</span><b>秋天的京都</b><i></i><i></i></div>
+                <div class="ldd-step"><span>A 面</span><b>出發・TPE　落地時播放</b></div>
+                <div class="ldd-step"><span>B 面</span><b>歸途・KIX　下次回來才播放</b></div>
+                <div class="ldd-ai">播放時可以存成影片分享</div>
+              </div>
+            </div></li>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">08</span><div><b>路線圖分享卡</b>把搭過的地鐵、電車路線，用真實的路線顏色做成可以發限動的路線圖卡片。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+            <div class="ld-demo" hidden>
+              <div class="ldd-cards"><img src="sample-route-card.jpg" alt="路線圖分享卡範例" loading="lazy"></div>
+            </div></li>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">09</span><div><b>足跡、當日回顧與完成章</b>按「我到了」記下走過的地方，每天結束有一張回顧。旅程結束蓋一枚章，收進旅程回憶。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+            <div class="ld-demo" hidden>
+              <div class="ldd-cards two"><img src="sample-recap-card.jpg" alt="當日回顧範例" loading="lazy"><img src="sample-stamp-card.jpg" alt="完成章範例" loading="lazy"></div>
+            </div></li>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">10</span><div><b>下次還要去</b>這趟取消、沒去成的地方，自動收進一份清單。下次再去同一座城市，提醒你上次錯過了什麼。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+            <div class="ld-demo" hidden>
+              <div class="ldd-phone">
+                <div class="ldd-x">上次在 京都 有 2 個地方沒去成</div>
+                <div class="ldd-card"><i class="dot" style="--c:var(--accent)"></i><div><b>南禪寺水路閣</b><em>01 秋天的京都</em></div></div>
+                <div class="ldd-card"><i class="dot" style="--c:var(--accent)"></i><div><b>惠文社一乘寺店</b><em>01 秋天的京都</em></div></div>
+                <div class="ldd-ai">全部放進想去清單</div>
+              </div>
+            </div></li>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">11</span><div><b>請 AI 幫你檢查</b>一鍵匯出行程，交給 ChatGPT、Claude 或 Gemini 檢查轉乘時間和動線。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-bubble me">（貼上 TabigrAm 匯出的行程）幫我檢查轉乘時間夠不夠？</div>
@@ -2602,6 +2757,7 @@
       <!-- 右側：編輯鎖、快速儲存鈕、漢堡選單 (等高垂直置中對齊) -->
       <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
         <span id="cloudSyncStatusBadge" style="font-size:11.5px; font-weight:800; color:var(--sub); padding:0 4px; display:none; align-items:center; gap:4px;"><svg class="ic" aria-hidden="true"><use href="#i-cloud"/></svg> <span id="syncText">已同步</span></span>
+        <button type="button" class="icon-btn vault-btn" id="vaultBtn" onclick="openVault()" aria-label="旅行憑證" title="旅行憑證：登機證、QR Code、簽證"><svg class="ic" aria-hidden="true"><use href="#i-pass"/></svg><span class="vault-badge" id="vaultBadge" style="display:none;"></span></button>
         <button type="button" class="icon-btn lock-btn" id="travelModeBtn" onclick="toggleTravelLockMode()" aria-label="編輯中，點一下鎖定" title="編輯中，點一下鎖定"></button>
 
         <!-- 右上角選單 -->
@@ -2618,6 +2774,8 @@
             <button class="dropdown-item" onclick="openTripManager(); toggleHeaderDropdown();">我的旅程</button>
             <button class="dropdown-item" id="dropdownTripAdminBtn" onclick="openTripAdminModal(); toggleHeaderDropdown();" style="display: none;">管理旅行</button>
             <button class="dropdown-item" onclick="openMemories(); toggleHeaderDropdown();">旅程回憶</button>
+            <button class="dropdown-item" onclick="openVault(); toggleHeaderDropdown();">旅行憑證</button>
+            <button class="dropdown-item" onclick="openTapeShelf(); toggleHeaderDropdown();">旅行卡帶 <span class="hd-soon">新</span></button>
             <button class="dropdown-item" onclick="openArchiveModalWithEmail(); toggleHeaderDropdown();">果醬派對 <span class="hd-soon">新貼紙</span></button>
 
             <div class="hd-sec">工具</div>
@@ -2637,6 +2795,7 @@
             <button class="dropdown-item" onclick="openGuide(); toggleHeaderDropdown();">使用教學</button>
             <button class="dropdown-item" onclick="openWhatsNew(); toggleHeaderDropdown();">更新內容</button>
             <button class="dropdown-item" onclick="openFeedback(); toggleHeaderDropdown();">意見回饋</button>
+            <button class="dropdown-item" id="menuDonate" onclick="openDonate(); toggleHeaderDropdown();" style="display:none;">贊助 TabigrAm</button>
             <button class="dropdown-item" onclick="showLanding(); toggleHeaderDropdown();">關於 TabigrAm</button>
             <a class="dropdown-item" id="menuZineLink" href="zine/" style="text-decoration:none; display:none;">TabigrAm.zine</a>
 
@@ -3025,12 +3184,14 @@
 
     <!-- View 3: Checklist & Dual-Track Finance View -->
     <section id="budgetView" style="display:none;"></section>
+    <section id="wishView" style="display:none;"></section>
   </main>
 
   <!-- Bottom Floating Bar: Navigation Capsule + Standalone '+' Circle Side-by-Side -->
   <div class="bottom-bar-wrapper" id="bottomBarWrapper">
     <nav class="bottom-dock" id="bottomNavDock">
       <button class="dock-tab active" id="tabBtnTimeline" onclick="switchMainView('timeline')">時間軸</button>
+      <button class="dock-tab" id="tabBtnWish" onclick="switchMainView('wish')">想去</button>
       
       <button class="dock-tab" id="tabBtnBudget" onclick="switchMainView('budget')">清單/預算</button>
     </nav>
@@ -3453,6 +3614,7 @@
             </select>
           </div>
         </div>
+        <p id="swatchHint" style="display:none; margin:6px 2px 0; font-size:11px; font-weight:700; color:var(--accent, #FF4F00);"></p>
 
         <!-- Row 3: Collapsible Tool Drawer Tabs -->
         <div class="share-tool-tabs">
@@ -3746,6 +3908,74 @@
         </div>
         <div id="adminMembersListContainer" style="margin-top:6px;"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- 贊助 -->
+  <div class="modal-backdrop" id="donateModal">
+    <div class="modal-sheet" style="max-width: 400px; text-align: center;">
+      <div class="modal-header">
+        <div class="modal-title">贊助 TabigrAm</div>
+        <button class="pill-btn" onclick="closeModalBackdrop('donateModal')" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="tg-ring" role="img" aria-label="TabigrAm" style="width:56px; height:56px; margin:6px auto 12px; color:var(--accent);"></div>
+      <p id="donateNote" style="font-size:14px; line-height:1.75; color:var(--sub); margin:0 0 16px;"></p>
+      <a class="pill-btn primary" id="donateGo" href="#" target="_blank" rel="noopener noreferrer" style="width:100%; justify-content:center; padding:12px; text-decoration:none;" onclick="track('donate_go')">前往贊助</a>
+      <p style="font-size:11.5px; color:var(--sub); margin:12px 0 0;">會打開贊助平台的頁面，付款在那裡完成，TabigrAm 不會收到你的付款資料。</p>
+    </div>
+  </div>
+
+  <!-- 旅行憑證 -->
+  <div class="modal-backdrop" id="vaultModal">
+    <div class="modal-sheet" style="max-width: 460px;">
+      <div class="modal-header">
+        <div class="modal-title">旅行憑證</div>
+        <button class="pill-btn" onclick="closeModalBackdrop('vaultModal')" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div id="vaultBody"></div>
+    </div>
+  </div>
+  <div class="vault-viewer" id="vaultViewer" hidden role="dialog" aria-modal="true" aria-labelledby="vaultViewerTitle">
+    <div class="vv-top"><button type="button" class="pill-btn" onclick="closeVaultViewer()" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button><b id="vaultViewerTitle"></b><span id="vaultViewerCount"></span></div>
+    <div class="vv-stage" id="vaultViewerStage"></div>
+    <div class="vv-bottom"><button type="button" class="pill-btn" id="vaultPrev" onclick="vaultStep(-1)">‹ 上一份</button><span>螢幕調亮一點，比較好掃描・點圖片可放大</span><button type="button" class="pill-btn" id="vaultNext" onclick="vaultStep(1)">下一份 ›</button></div>
+  </div>
+
+  <!-- 旅行卡帶 -->
+  <div class="modal-backdrop" id="tapeShelfModal">
+    <div class="modal-sheet" style="max-width: 460px;">
+      <div class="modal-header">
+        <div class="modal-title">旅行卡帶</div>
+        <button class="pill-btn" onclick="closeModalBackdrop('tapeShelfModal')" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div id="tapeShelfBody"></div>
+    </div>
+  </div>
+  <div class="modal-backdrop" id="tapeWriteModal">
+    <div class="modal-sheet" style="max-width: 460px;">
+      <div class="modal-header">
+        <div class="modal-title" id="tapeWriteTitle">旅行卡帶</div>
+        <button class="pill-btn" onclick="stopTapeRecording(); closeModalBackdrop('tapeWriteModal')" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="tape-step"><b>1　錄一段聲音</b><span>最多 30 秒，留下這一刻</span></div>
+      <div id="tapeRecBox"></div>
+      <div class="tape-step"><b>2　卡帶盒封面</b><span>選一張照片，配上這趟的標題</span></div>
+      <canvas id="tapeCoverPreview" class="tape-cover-preview" width="640" height="420" aria-label="卡帶盒封面預覽"></canvas>
+      <label class="mini-btn" style="margin-top:8px; cursor:pointer; display:inline-flex;">選一張照片當封面<input type="file" accept="image/*" hidden onchange="tapePickCover(this)"></label>
+      <label class="form-label" for="tapeLabelInput" style="margin-top:10px;">標題</label>
+      <input type="text" class="form-input" id="tapeLabelInput" maxlength="40" oninput="drawTapeCoverPreview()" />
+      <div class="font-pick" id="tapeFontPick" role="group" aria-label="標題字型"></div>
+      <div class="tape-rule" id="tapeRule"></div>
+      <button type="button" class="pill-btn primary" id="tapeSealBtn" style="width:100%; justify-content:center; padding:12px; margin-top:12px;" onclick="sealTape()">封存這一面</button>
+    </div>
+  </div>
+  <div class="modal-backdrop tape-play-backdrop" id="tapePlayModal">
+    <div class="modal-sheet tape-play-sheet" style="max-width: 460px;">
+      <div class="modal-header">
+        <div class="modal-title">旅行卡帶</div>
+        <button class="pill-btn" onclick="stopTapePlayer(); closeModalBackdrop('tapePlayModal')" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div id="tapePlayBody"></div>
     </div>
   </div>
 
@@ -4254,8 +4484,9 @@
     // 金屬感：斜向多段漸層，再加一道柔和的反光
     function swatchPaint(ctx, sw, x, y, w, h) {
       if (!sw || !sw.grad) return sw ? sw.bg : "#fff";
-      const g = ctx.createLinearGradient(x, y, x + w, y + h);
-      sw.grad.forEach((c, i) => g.addColorStop(i / (sw.grad.length - 1), c));
+      // 方向：diag 斜的（預設）、h 橫條（上到下）、v 直條（左到右）
+      const g = sw.gradDir === "h" ? ctx.createLinearGradient(x, y, x, y + h) : sw.gradDir === "v" ? ctx.createLinearGradient(x, y, x + w, y) : ctx.createLinearGradient(x, y, x + w, y + h);
+      sw.grad.forEach((c, i) => g.addColorStop(sw.gradPos && isFinite(sw.gradPos[i]) ? Math.max(0, Math.min(1, sw.gradPos[i])) : i / (sw.grad.length - 1), c));
       return g;
     }
     function fillSwatchBackground(ctx, sw, W, H) {
@@ -4267,7 +4498,11 @@
         ctx.fillStyle = sheen; ctx.fillRect(0, 0, W, H);
       }
     }
-    function swatchCss(sw) { return sw.grad ? `linear-gradient(135deg, ${sw.grad.join(", ")})` : sw.bg; }
+    function swatchCss(sw) {
+      if (!sw.grad) return sw.bg;
+      const dir = sw.gradDir === "h" ? "180deg" : sw.gradDir === "v" ? "90deg" : "135deg";
+      return `linear-gradient(${dir}, ${sw.grad.map((c, i) => sw.gradPos && isFinite(sw.gradPos[i]) ? `${c} ${(sw.gradPos[i] * 100).toFixed(1)}%` : c).join(", ")})`;
+    }
 
     /*************************************************************************
      * 2. STATE & PERSISTENCE
@@ -4542,6 +4777,7 @@
       }
       t.days.forEach(d => { if (!Array.isArray(d.items)) d.items = []; });
       if (!Array.isArray(t.checklist)) t.checklist = [];
+      if (!Array.isArray(t.wishlist)) t.wishlist = [];
       if (!t.homeTz) t.homeTz = "Asia/Taipei";
       if (!t.title) t.title = "未命名旅行";
       if (/^\d{1,2} ?新旅行(策展)?$/.test(String(t.title).trim())) t.title = "新的旅程";
@@ -4578,6 +4814,15 @@
       if (!t || typeof t !== "object") return t;
       t.id = safeIdOr(t.id, "trip_");
       if (t.shareCode != null && !/^[A-Z0-9]{4,12}$/.test(String(t.shareCode))) t.shareCode = "";
+      if (t.wishlist != null) {
+        t.wishlist = (Array.isArray(t.wishlist) ? t.wishlist : []).filter(w => w && typeof w === "object").slice(0, 300).map(w => {
+          const o = { id: safeIdOr(w.id, "wish_"), title: stripMarkup(w.title || "想去的地方", 80), addedAt: isFinite(w.addedAt) ? +w.addedAt : Date.now() };
+          if (w.note) o.note = stripMarkup(w.note, 300);
+          if (/^https:\/\//i.test(String(w.mapUrl || ""))) o.mapUrl = String(w.mapUrl).slice(0, 500);
+          if (isFinite(w.lat) && isFinite(w.lng) && Math.abs(w.lat) <= 90 && Math.abs(w.lng) <= 180) { o.lat = +w.lat; o.lng = +w.lng; }
+          return o;
+        });
+      }
       if (t.budget != null) {
         const amt = Number(t.budget && t.budget.amount);
         const cur = t.budget && t.budget.currency;
@@ -4626,6 +4871,9 @@
     function sanitizeAppStateData() {
       (appState.trips || []).forEach(sanitizeTripData);
       appState.customEmojis = (appState.customEmojis || []).map(e => stripMarkup(e, 16)).filter(Boolean);
+      appState.laterList = (Array.isArray(appState.laterList) ? appState.laterList : []).filter(x => x && typeof x === "object").slice(0, 200).map(x => ({
+        id: safeIdOr(x.id, "later_"), title: stripMarkup(x.title || "", 80), city: stripMarkup(x.city || "", 60), tripTitle: stripMarkup(x.tripTitle || "", 80),
+        mapUrl: /^https:\/\//i.test(String(x.mapUrl || "")) ? String(x.mapUrl).slice(0, 500) : "", addedAt: isFinite(x.addedAt) ? +x.addedAt : Date.now() })).filter(x => x.title);
       if (appState.userAvatarDataUrl && !String(appState.userAvatarDataUrl).startsWith("data:image/")) appState.userAvatarDataUrl = "";
       if (appState.activeTripId != null && !SAFE_ID_RE.test(String(appState.activeTripId))) appState.activeTripId = "";
       // 每個身分（訪客 guest、帳號 u_<id>）各自保存旅程；舊資料視為最後登入帳號的旅程
@@ -5105,6 +5353,7 @@
      * 6. UI RENDERING
      *************************************************************************/
     function renderAll() {
+      try { updateVaultBadge(); } catch (e) {}
       archiveFinishedTrips();
       syncBottomBarVisibility();
       setUiMaterialTheme(appState.uiTheme || "clean");
@@ -5704,14 +5953,54 @@
       enrichTransitLegs(item).then(ch => { if (ch) { saveAppState(); debouncedSyncToCloud(); renderAll(); } }).catch(() => {});
     }
 
+    // ===== 開始的四步：第一次用的人照順序走一遍；做完一步自動打勾，全部完成或按「我自己逛逛」就收起來 =====
+    const DEFAULT_TRIP_TITLES = /^(\d{1,2}\s)?(我的下一趟旅程|我的旅程|新的旅程|未命名旅行|My next trip|My trip|New trip)$/i;
+    function startGuideSteps(trip) {
+      const items = (trip.days || []).flatMap(d => d.items || []);
+      return [
+        { k: "trip", t: "替旅程取名、選日期", d: "先決定要去哪、什麼時候出發。", done: !!trip.startDate && !DEFAULT_TRIP_TITLES.test(String(trip.title || "").trim()), go: "startGuideGo('trip')" },
+        { k: "wish", t: "把想去的地方丟進來", d: "不用想時間，貼 Google 地圖連結也可以，之後再排進天數。", done: (trip.wishlist || []).length > 0 || items.some(i => i.type !== "flight"), go: "startGuideGo('wish')" },
+        { k: "flight", t: "加上航班", d: "出發那天可以在機場蓋章、錄一卷旅行卡帶。", done: items.some(i => i.type === "flight"), go: "startGuideGo('flight')" },
+        { k: "login", t: "登入，換手機也不會不見", d: "行程自動備份，也能邀請旅伴一起排。", done: !!currentCloudUser, go: "startGuideGo('login')" },
+      ];
+    }
+    function startGuideHtml(trip) {
+      if (appState.startGuideOff) return "";
+      const steps = startGuideSteps(trip), n = steps.filter(x => x.done).length;
+      if (n === steps.length) return "";
+      const next = steps.find(x => !x.done);
+      return `<div class="start-guide" role="region" aria-label="開始的四步">
+        <div class="sg-head"><b>開始的四步</b><span>${n} / ${steps.length}</span><button type="button" class="sg-skip" onclick="startGuideOff()">我自己逛逛</button></div>
+        <div class="sg-bar"><i style="width:${n / steps.length * 100}%"></i></div>
+        <ol class="sg-list">${steps.map((x, i) => `<li class="${x.done ? "done" : x === next ? "next" : ""}">
+          <span class="sg-n">${x.done ? "✓" : i + 1}</span>
+          <div class="sg-t"><b>${x.t}</b>${x === next ? `<small>${x.d}</small>` : ""}</div>
+          ${x === next ? `<button type="button" class="pill-btn primary sg-go" onclick="${x.go}">開始</button>` : x.done ? "" : `<button type="button" class="sg-later" onclick="${x.go}">先做這個</button>`}
+        </li>`).join("")}</ol>
+      </div>`;
+    }
+    function startGuideGo(k) {
+      track("guide_step", k);
+      if (k === "trip") return openTripManager();
+      if (k === "wish") {
+        if (window.innerWidth >= 1024) { const w = document.getElementById("wishViewDesk"); if (w) { w.scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(() => { const i = document.getElementById("wishInput"); if (i) i.focus(); }, 400); } return; }
+        switchMainView("wish"); setTimeout(() => { const i = document.getElementById("wishInput"); if (i) i.focus(); }, 200); return;
+      }
+      if (k === "flight") { openItemModal(); const sel = document.getElementById("fType"); if (sel) { sel.value = "flight"; onTypeChange(); } return; }
+      if (k === "login") return openCloudModal();
+    }
+    function startGuideActive(trip) { return !appState.startGuideOff && startGuideSteps(trip || getActiveTrip()).some(x => !x.done); }
+    function startGuideOff() { appState.startGuideOff = true; saveAppState(); track("guide_off"); renderTimelineCards(); showToast("收起來了。之後想看，選單裡有「使用教學」"); }
+
     function renderTimelineCards() {
       const container = document.getElementById("timelineView");
       container.innerHTML = "";
       const trip = getActiveTrip();
       const day = getActiveDay();
+      const guide = startGuideHtml(trip);
 
       if (!day.items || day.items.length === 0) {
-        container.innerHTML = `
+        container.innerHTML = guide + `
           <div class="timeline-card" style="text-align:center; padding:32px 16px; color:var(--sub);">
             <div style="font-size:15px; font-weight:800; margin-bottom:6px;">此日尚無行程卡片</div>
             <div style="font-size:13px;">點擊底部「＋」加入新行程</div>
@@ -5724,6 +6013,7 @@
       }
 
       const allEmojis = [...DEFAULT_MOOD_EMOJIS, ...(appState.customEmojis || [])];
+      if (guide) container.insertAdjacentHTML("beforeend", guide);
 
       const recapHtml = dayRecapHTML(trip, appState.activeDayIndex || 0);
       if (recapHtml) container.insertAdjacentHTML("beforeend", recapHtml);
@@ -5962,6 +6252,7 @@
       if (!item) return;
       item.status = (item.status === targetStatus) ? "normal" : targetStatus;
       lastStampedCardId = (item.status !== "normal") ? itemId : null;
+      if (targetStatus === "cancelled") laterFromItem(item, day, item.status === "cancelled");
       saveAppState(); debouncedSyncToCloud();
       renderAll();
     }
@@ -6844,7 +7135,8 @@
       };
     })();
     function swatchOptions(list) {
-      const groups = [["經典", list.filter(s => !s.group)], ...[...new Set(list.filter(s => s.group).map(s => s.group))].map(g => [g, list.filter(s => s.group === g)])];
+      const named = [...new Set(list.filter(s => s.group).map(s => s.group))].map(g => [g, list.filter(s => s.group === g)]);
+      const groups = [...named.filter(([, ls]) => ls.some(s => s.seasonal)), ["經典", list.filter(s => !s.group)], ...named.filter(([, ls]) => !ls.some(s => s.seasonal))];
       return groups.map(([g, ls]) => `<optgroup label="${g}">${ls.map(s => `<option value="${s.id}">${s.name}</option>`).join("")}</optgroup>`).join("");
     }
     // 隨機：背景、紙卡、紙紋一起換，盡量避開跟現在一樣的組合
@@ -9683,11 +9975,14 @@
         function switchMainView(view) {
       document.getElementById("timelineView").style.display = (view === "timeline") ? "block" : "none";
       document.getElementById("budgetView").style.display = (view === "budget") ? "block" : "none";
+      document.getElementById("wishView").style.display = (view === "wish") ? "block" : "none";
 
       document.getElementById("tabBtnTimeline").classList.toggle("active", view === "timeline");
       document.getElementById("tabBtnBudget").classList.toggle("active", view === "budget");
+      document.getElementById("tabBtnWish").classList.toggle("active", view === "wish");
 
       if (view === "budget") renderBudgetAndChecklist();
+      if (view === "wish") renderWishlist();
     }
 
     /*************************************************************************
@@ -9766,6 +10061,7 @@
       `).join("");
 
       el.innerHTML = `
+        ${window.innerWidth >= 1024 ? `<div id="wishViewDesk"></div>` : ""}
         <div class="form-card">
           <div style="font-size:16px; font-weight:900; margin-bottom:10px; display:flex; align-items:center; gap:6px;">${ic("wallet")} 記帳與支出總覽</div>
           ${renderBudgetOverviewHtml(trip, itemBreakdownRows)}
@@ -9774,6 +10070,7 @@
         </div>
 
         <div class="form-card">
+          <button type="button" class="vault-entry" onclick="openVault()">${ic("pass")}<span><b>旅行憑證</b><small>登機證、入境 QR Code、簽證、訂房確認，原檔存在這台手機</small></span><span class="vault-entry-n" id="vaultEntryN"></span></button>
           <div style="font-size:16px; font-weight:900; margin-bottom:10px; display:flex; align-items:center; gap:6px;">${ic("luggage")} 行前準備清單</div>
           <div style="display:flex; gap:8px; margin-bottom:10px;">
             <input type="text" class="form-input" id="newCheckItemInput" placeholder="新增攜帶物品或待辦事項..." />
@@ -9782,6 +10079,8 @@
           <div>${checklistHtml}</div>
         </div>
       `;
+      if (window.innerWidth >= 1024) renderWishlist();
+      loadVaultDocs().then(() => { const n = vaultForTrip(trip.id).length + vaultLongTerm().length; const e = document.getElementById("vaultEntryN"); if (e) e.textContent = n ? `${n} 份` : "加入"; });
     }
 
     // ---------- 預算：圖表 ----------
@@ -10147,9 +10446,54 @@
     // =====================================================================
     window.TG_FLAGS = {};
     window.TG_CFG = {};
+    // 後台「分享卡季節限定色」：在設定的日期之間，加進分享卡的配色（過期自動消失；選過的人會退回預設色）
+    function applySeasonalSwatches(cfg) {
+      [OUTER_SWATCHES, INNER_SWATCHES].forEach(arr => { for (let i = arr.length - 1; i >= 0; i--) if (arr[i].seasonal) arr.splice(i, 1); });
+      const list = cfg && cfg.seasonal && Array.isArray(cfg.seasonal.list) ? cfg.seasonal.list : [];
+      const today = cdLocalDateStr(), hex = c => /^#[0-9a-f]{6}$/i.test(String(c || "")), day = d => /^\d{4}-\d{2}-\d{2}$/.test(String(d || ""));
+      list.slice(0, 40).forEach(x => {
+        if (!x || !x.on || !hex(x.bg) || !hex(x.text)) return;
+        if (day(x.starts_on) && today < x.starts_on) return;
+        if (day(x.ends_on) && today > x.ends_on) return;
+        const id = "s_" + String(x.id || "").replace(/[^A-Za-z0-9_-]/g, "").slice(0, 40);
+        if (id === "s_") return;
+        const en = window.TG_LANG === "en" && x.name_en;
+        const sw = { id, name: stripMarkup(en ? x.name_en : (x.name || "限定色"), 20), group: stripMarkup(x.group || (window.TG_LANG === "en" ? "Limited" : "季節限定"), 20), bg: x.bg, text: x.text, seasonal: true };
+        const raw = Array.isArray(x.grad) ? x.grad.slice(0, 12) : [];
+        if (raw.length >= 2 && raw.every(hex)) {
+          sw.grad = raw;
+          const pos = Array.isArray(x.gradPos) ? x.gradPos.slice(0, raw.length) : [];
+          if (pos.length === raw.length && pos.every(p => typeof p === "number" && p >= 0 && p <= 1)) sw.gradPos = pos;
+          if (["diag", "h", "v"].includes(x.gradDir)) sw.gradDir = x.gradDir;
+          SWATCH_BY_BG[sw.bg] = sw;
+        }
+        (x.kind === "inner" ? INNER_SWATCHES : OUTER_SWATCHES).push(sw);
+      });
+    }
+    // 後台「贊助」：打開時，選單出現「贊助 TabigrAm」
+    function applyDonate(cfg) {
+      const d = (cfg && cfg.donate) || {}, el = document.getElementById("menuDonate");
+      const ok = d.on && /^https:\/\/[^\s"'<>]+$/.test(d.url || "");
+      if (el) { el.style.display = ok ? "" : "none"; el.textContent = stripMarkup(d.label || "贊助 TabigrAm", 30); }
+    }
+    // 後台「分享卡季節限定色」的提示文字：顯示在配色選單下面（空白就不顯示）
+    function applySwatchHint(cfg) {
+      const h = (cfg && cfg.seasonal) || {}, el = document.getElementById("swatchHint");
+      const txt = stripMarkup((window.TG_LANG === "en" && h.hint_en) || h.hint || "", 60);
+      if (el) { el.textContent = txt; el.style.display = txt ? "" : "none"; }
+    }
+    function openDonate() {
+      const d = ((window.TG_CFG || {}).donate) || {};
+      if (!/^https:\/\/[^\s"'<>]+$/.test(d.url || "")) return;
+      document.getElementById("donateNote").textContent = d.note || "TabigrAm 由一個人經營，沒有廣告、不賣資料。如果它陪你走過一趟好旅行，歡迎請我喝杯咖啡。";
+      const go = document.getElementById("donateGo"); go.href = d.url; go.textContent = stripMarkup(d.button || "前往贊助", 20);
+      openModalBackdrop("donateModal");
+      track("donate_open");
+    }
     function applyAppConfig(cfg) {
       window.TG_CFG = cfg || {};
       window.TG_FLAGS = (cfg && cfg.flags) || {};
+      try { applySeasonalSwatches(cfg); applyDonate(cfg); applySwatchHint(cfg); } catch (e) {}
       const jam = document.querySelector('#headerDropdownMenu [onclick*="openArchiveModalWithEmail"]');
       if (jam) jam.style.display = window.TG_FLAGS.jam_party === false ? "none" : "";
       const zl = document.getElementById("menuZineLink");
@@ -14305,6 +14649,7 @@ function initSupabaseClient() {
         item.stamps[kind] = { iata: code, kind, t: Date.now(), seed: `${item.id}|${kind}|${Date.now()}` };
         saveAppState(); debouncedSyncToCloud(); renderAll();
         openStampViewer(item, kind, true);
+        tapeAfterStamp(item, kind);
       }, err => {
         hideLogoLoader();
         if (err && err.code === 1) alert("沒有取得定位權限。\n\niPhone：設定 → 隱私權與安全性 → 定位服務 → Safari 網站 → 選「使用 App 期間」\nAndroid：點網址列左邊的圖示 → 權限 → 位置 → 允許");
@@ -14356,6 +14701,1080 @@ function initSupabaseClient() {
       if (!list.length) return "";
       return `<div class="card-stamps">${list.map(st => `<button type="button" onclick="stampFlight('${item.id}', '${st.kind}')" aria-label="機場戳章">${stampFigureHTML(st, 120, 60)}</button>`).join("")}</div>`;
     }
+
+
+    // =====================================================================
+    // 旅行憑證：QR Code、登機證、簽證、ESTA、訂房確認……
+    // 只存在這台裝置（IndexedDB，跟照片分開的資料庫），原檔不壓縮；不會上傳、不會出現在分享卡、旅伴共享、AI 匯出
+    // =====================================================================
+    // 按兩下才執行：第一下按鈕變成紅色「確定…？」，4 秒內再按一下才真的做
+    function armTap(btn, label) {
+      if (!btn) return true;
+      if (btn.dataset.armed === "1") return true;
+      btn.dataset.armed = "1"; btn.dataset.orig = btn.innerHTML; btn.classList.add("armed"); btn.textContent = label;
+      clearTimeout(btn._armT); btn._armT = setTimeout(() => { btn.dataset.armed = ""; btn.classList.remove("armed"); btn.innerHTML = btn.dataset.orig; }, 4000);
+      return false;
+    }
+    const VAULT_DB = "TABIGRAM_VAULT", VAULT_STORE = "docs";
+    const VAULT_KINDS = { qr: "QR Code／條碼", pass: "登機證", visa: "簽證／入境", hotel: "訂房", ticket: "票券", insurance: "保險", other: "其他" };
+    let vaultDbP = null, vaultDocs = [], vaultUrls = {}, vaultEditId = null, vaultViewList = [], vaultViewIdx = 0, vaultWake = null;
+    function openVaultDb() {
+      if (!vaultDbP) {
+        vaultDbP = new Promise((res, rej) => {
+          if (!window.indexedDB) return rej(new Error("IndexedDB unavailable"));
+          const r = indexedDB.open(VAULT_DB, 1);
+          r.onupgradeneeded = () => { const s = r.result.createObjectStore(VAULT_STORE, { keyPath: "id" }); s.createIndex("trip", "tripId"); };
+          r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); r.onblocked = () => rej(new Error("blocked"));
+        }).catch(e => { vaultDbP = null; throw e; });
+      }
+      return vaultDbP;
+    }
+    async function vaultTx(mode, fn) {
+      const db = await openVaultDb();
+      return new Promise((res, rej) => {
+        const tx = db.transaction(VAULT_STORE, mode), st = tx.objectStore(VAULT_STORE);
+        let out; const q = fn(st); if (q) q.onsuccess = () => { out = q.result; };
+        tx.oncomplete = () => res(out); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error);
+      });
+    }
+    async function loadVaultDocs() {
+      try { vaultDocs = (await vaultTx("readonly", st => st.getAll())) || []; } catch (e) { vaultDocs = []; }
+      vaultDocs.sort((a, b) => a.addedAt - b.addedAt);
+      return vaultDocs;
+    }
+    const vaultForTrip = tripId => vaultDocs.filter(d => d.tripId === tripId);
+    const vaultLongTerm = () => vaultDocs.filter(d => !d.tripId);
+    function vaultUrl(d) { if (!vaultUrls[d.id]) vaultUrls[d.id] = URL.createObjectURL(d.blob); return vaultUrls[d.id]; }
+    function guessVaultKind(name) {
+      const n = String(name || "").toLowerCase();
+      if (/esta|visa|簽證|入境|vjw|visit ?japan|k-?eta|arrival|e-?arrival|入國/.test(n)) return "visa";
+      if (/boarding|登機|bcbp/.test(n)) return "pass";
+      if (/hotel|booking|agoda|airbnb|訂房|住宿|飯店|旅館/.test(n)) return "hotel";
+      if (/insur|保險/.test(n)) return "insurance";
+      if (/qr|barcode|條碼/.test(n)) return "qr";
+      if (/ticket|票|pass|入場/.test(n)) return "ticket";
+      return "other";
+    }
+    function fmtSize(b) { return b >= 1048576 ? (b / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(b / 1024)) + " KB"; }
+    async function updateVaultBadge() {
+      const el = document.getElementById("vaultBadge"); if (!el) return;
+      if (!vaultDbP && !vaultDocs.length) await loadVaultDocs();
+      const trip = getActiveTrip();
+      const n = vaultForTrip(trip.id).length + vaultLongTerm().length;
+      el.textContent = n ? String(n) : ""; el.style.display = n ? "" : "none";
+    }
+    async function openVault() {
+      await loadVaultDocs();
+      renderVault();
+      openModalBackdrop("vaultModal");
+      track("vault_open");
+    }
+    function vaultRowHtml(d) {
+      const isImg = /^image\//.test(d.mime), editing = vaultEditId === d.id;
+      return `<div class="vault-row${editing ? " editing" : ""}">
+        <button type="button" class="vault-open" onclick="openVaultViewer('${d.id}')" aria-label="打開 ${escapeHtml(d.name)}">
+          <span class="vault-thumb">${isImg ? `<img src="${vaultUrl(d)}" alt="">` : `<b>PDF</b>`}</span>
+          <span class="vault-meta"><b>${escapeHtml(d.name)}</b><small>${escapeHtml(VAULT_KINDS[d.kind] || "其他")} · ${fmtSize(d.size)}</small></span>
+        </button>
+        <button type="button" class="mini-btn" onclick="vaultEditId=${editing ? "null" : `'${d.id}'`};renderVault()">${editing ? "完成" : "編輯"}</button>
+        ${editing ? `<div class="vault-edit">
+          <input class="form-input" value="${escapeHtml(d.name)}" maxlength="60" onchange="vaultUpdate('${d.id}', { name: this.value.trim() || '未命名' })" aria-label="名稱">
+          <div style="display:flex; gap:6px; margin-top:6px;">
+            <select class="form-select" onchange="vaultUpdate('${d.id}', { kind: this.value })" aria-label="種類">${Object.entries(VAULT_KINDS).map(([k, v]) => `<option value="${k}" ${d.kind === k ? "selected" : ""}>${v}</option>`).join("")}</select>
+            <select class="form-select" onchange="vaultUpdate('${d.id}', { tripId: this.value })" aria-label="放在哪裡"><option value="${escapeHtml(getActiveTrip().id)}" ${d.tripId ? "selected" : ""}>只有這趟</option><option value="" ${d.tripId ? "" : "selected"}>每趟都會用到</option></select>
+          </div>
+          <div style="display:flex; gap:6px; margin-top:6px;">
+            <a class="mini-btn" href="${vaultUrl(d)}" download="${escapeHtml(d.fileName || d.name)}">存回手機（原檔）</a>
+            <button type="button" class="mini-btn delete-btn" onclick="vaultDelete('${d.id}', this)">刪除</button>
+          </div></div>` : ""}
+      </div>`;
+    }
+    function renderVault() {
+      const box = document.getElementById("vaultBody"); if (!box) return;
+      const trip = getActiveTrip(), mine = vaultForTrip(trip.id), lt = vaultLongTerm();
+      const endStr = trip.startDate ? shiftDateStr(trip.startDate, trip.days.length - 1) : "";
+      const ended = endStr && endStr < cdLocalDateStr() && mine.length;
+      box.innerHTML = `
+        <label class="vault-add">${ic("upload")}<span><b>加入憑證</b><small>照片、截圖、PDF 都可以，原檔保存不壓縮</small></span>
+          <input type="file" accept="image/*,application/pdf" multiple hidden onchange="vaultAddFiles(this.files); this.value='';"></label>
+        ${matchMedia("(pointer: coarse)").matches ? `<div class="vault-tip">建議用出門要帶的那支手機新增：憑證只存在加入它的那台裝置上。</div>`
+          : `<div class="vault-tip warn">你現在用的是電腦。存在這裡的憑證只會在這台電腦上，<b>出門用的手機看不到</b>。要在機場出示的，請用手機打開 TabigrAm 再加入。</div>`}
+        ${ended ? `<div class="vault-ended">這趟旅程已經結束了，要刪掉這趟的 ${mine.length} 份憑證嗎？<div style="display:flex; gap:6px; margin-top:8px;"><button type="button" class="mini-btn delete-btn" onclick="vaultDeleteTrip(this)">刪掉這趟的憑證</button><button type="button" class="mini-btn" onclick="this.closest('.vault-ended').remove()">先留著</button></div></div>` : ""}
+        <div class="vault-sec">這趟：${escapeHtml(trip.title)}</div>
+        ${mine.map(vaultRowHtml).join("") || `<div class="vault-empty">還沒有。登機證、入境 QR Code、訂房確認放這裡，到了現場一點就打開。</div>`}
+        <div class="vault-sec">每趟都會用到</div>
+        ${lt.map(vaultRowHtml).join("") || `<div class="vault-empty">護照影本、ESTA、長期有效的簽證，放這裡每趟都看得到。</div>`}
+        <div class="vault-note">${ic("lock")}<span>只存在這台手機，不會上傳，也不會出現在分享卡、旅伴共享或匯出裡。換手機或清除瀏覽器資料就會消失，原檔請另外留一份。</span></div>`;
+      updateVaultBadge();
+    }
+    async function vaultAddFiles(files) {
+      const list = [...(files || [])].filter(f => /^image\//.test(f.type) || f.type === "application/pdf");
+      if (!list.length) return showToast("只能加入圖片或 PDF");
+      try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+      const tripId = getActiveTrip().id;
+      let added = 0;
+      for (const f of list) {
+        if (f.size > 25 * 1048576) { showToast(`「${f.name}」超過 25MB，太大了`); continue; }
+        const base = f.name.replace(/\.[^.]+$/, "").slice(0, 60) || "憑證";
+        const rec = { id: "vd_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8), tripId, name: base, fileName: f.name, kind: guessVaultKind(f.name), mime: f.type, size: f.size, blob: f, addedAt: Date.now() };
+        try { await vaultTx("readwrite", st => st.put(rec)); added++; } catch (e) { showToast("存不進這台裝置，可能是空間不夠或瀏覽器不允許"); break; }
+      }
+      await loadVaultDocs(); renderVault();
+      if (added) { showToast(`已加入 ${added} 份，原檔保存`); track("vault_add", String(added)); }
+    }
+    async function vaultUpdate(id, patch) {
+      const d = vaultDocs.find(x => x.id === id); if (!d) return;
+      Object.assign(d, patch);
+      try { await vaultTx("readwrite", st => st.put(d)); } catch (e) { showToast("儲存失敗"); }
+      renderVault();
+    }
+    async function vaultDelete(id, btn) {
+      const d = vaultDocs.find(x => x.id === id); if (!d) return;
+      if (!armTap(btn, "確定刪除？")) return;
+      await vaultTx("readwrite", st => st.delete(id));
+      if (vaultUrls[id]) { URL.revokeObjectURL(vaultUrls[id]); delete vaultUrls[id]; }
+      vaultEditId = null; await loadVaultDocs(); renderVault();
+    }
+    async function vaultDeleteTrip(btn) {
+      const ids = vaultForTrip(getActiveTrip().id).map(d => d.id);
+      if (!ids.length || !armTap(btn, `確定刪掉 ${ids.length} 份？`)) return;
+      await vaultTx("readwrite", st => { ids.forEach(id => st.delete(id)); return null; });
+      await loadVaultDocs(); renderVault();
+    }
+    // 出示：全螢幕白底、原檔；左右切換；畫面保持不熄滅
+    function openVaultViewer(id) {
+      const trip = getActiveTrip(), d = vaultDocs.find(x => x.id === id); if (!d) return;
+      vaultViewList = d.tripId ? vaultForTrip(trip.id) : vaultLongTerm();
+      vaultViewIdx = Math.max(0, vaultViewList.findIndex(x => x.id === id));
+      document.getElementById("vaultViewer").hidden = false;
+      document.body.style.overflow = "hidden";
+      renderVaultViewer();
+      try { if (navigator.wakeLock) navigator.wakeLock.request("screen").then(w => { vaultWake = w; }).catch(() => {}); } catch (e) {}
+      track("vault_show", d.kind);
+    }
+    function renderVaultViewer() {
+      const d = vaultViewList[vaultViewIdx]; if (!d) return closeVaultViewer();
+      const isImg = /^image\//.test(d.mime), n = vaultViewList.length;
+      document.getElementById("vaultViewerTitle").textContent = d.name;
+      document.getElementById("vaultViewerCount").textContent = n > 1 ? `${vaultViewIdx + 1} / ${n}` : "";
+      document.getElementById("vaultPrev").disabled = vaultViewIdx <= 0;
+      document.getElementById("vaultNext").disabled = vaultViewIdx >= n - 1;
+      const stage = document.getElementById("vaultViewerStage");
+      stage.classList.remove("zoom");
+      stage.innerHTML = isImg
+        ? `<img src="${vaultUrl(d)}" alt="${escapeHtml(d.name)}" onclick="this.parentNode.classList.toggle('zoom')">`
+        : `<div class="vault-pdf"><b>PDF</b><span>${escapeHtml(d.name)}</span><a class="pill-btn primary" href="${vaultUrl(d)}" target="_blank" rel="noopener">用手機的檢視器打開</a><iframe src="${vaultUrl(d)}" title="${escapeHtml(d.name)}"></iframe></div>`;
+    }
+    function vaultStep(k) { vaultViewIdx = Math.max(0, Math.min(vaultViewList.length - 1, vaultViewIdx + k)); renderVaultViewer(); }
+    function closeVaultViewer() {
+      document.getElementById("vaultViewer").hidden = true;
+      document.body.style.overflow = "";
+      try { if (vaultWake) vaultWake.release(); } catch (e) {} vaultWake = null;
+    }
+    (function wireVaultSwipe() {
+      let x0 = null;
+      document.addEventListener("touchstart", e => { if (e.target.closest && e.target.closest("#vaultViewerStage") && e.touches.length === 1) x0 = e.touches[0].clientX; }, { passive: true });
+      document.addEventListener("touchend", e => {
+        if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null;
+        if (document.getElementById("vaultViewerStage").classList.contains("zoom")) return;
+        if (Math.abs(dx) > 60) vaultStep(dx < 0 ? 1 : -1);
+      }, { passive: true });
+      document.addEventListener("keydown", e => {
+        const v = document.getElementById("vaultViewer"); if (!v || v.hidden) return;
+        if (e.key === "Escape") closeVaultViewer(); else if (e.key === "ArrowRight") vaultStep(1); else if (e.key === "ArrowLeft") vaultStep(-1);
+      });
+    })();
+
+    // =====================================================================
+    // 旅行卡帶：在機場錄一段 30 秒的聲音給自己。A 面＝出發（出發機場錄，這趟最後落地時播放）
+    //                                         B 面＝歸途（回程機場錄，下一趟隔 30 天以上回到同一座機場時播放）
+    // 要登入；封存後不能改；轉機機場（24 小時內從同一座機場再起飛）不算
+    // 播放是一段約 40 秒的動畫（卡帶盒打開 → 卡帶取出 → 轉動播放），畫在 canvas 上，可以存成影片分享
+    // =====================================================================
+    const TAPE_NAME = "旅行卡帶";
+    const TAPE_SIDE = { A: "A 面・出發", B: "B 面・歸途" };
+    const TAPE_MAX_MS = 30000;
+    const TAPE_FONTS = { sans: { label: "黑體", css: "'Noto Sans TC', sans-serif", w: 900 }, serif: { label: "明體", css: "'Noto Serif TC', serif", w: 900 }, dela: { label: "Dela Gothic", css: "'Dela Gothic One', 'TabigrAm Fill Full', 'Noto Sans TC', sans-serif", w: 400 } };
+    let tapeRows = null, tapeDraft = null, tapeRec = null, tapePlayer = null;
+    function tripFlightLegs(trip) {
+      const legs = [];
+      (trip.days || []).forEach((d, di) => (d.items || []).forEach(it => {
+        if (!it || it.type !== "flight" || it.status === "cancelled") return;
+        const dep = String(it.depIata || "").toUpperCase(), arr = String(it.arrIata || "").toUpperCase();
+        if (!/^[A-Z]{3}$/.test(dep) || !/^[A-Z]{3}$/.test(arr)) return;
+        const s = di * 1440 + hhmmToMinutes(it.startTime || "00:00");
+        let e = di * 1440 + hhmmToMinutes(it.endTime || it.startTime || "00:00") + (Number(it.endDayOffset) || 0) * 1440;
+        if (e < s) e += 1440;
+        legs.push({ item: it, dep, arr, s, e });
+      }));
+      return legs.sort((a, b) => a.s - b.s);
+    }
+    // 連續飛行：抵達後 24 小時內從同一座機場再起飛＝轉機，接在同一段
+    function tripTapeRoles(trip) {
+      const legs = tripFlightLegs(trip);
+      if (!legs.length) return null;
+      const chains = [[legs[0]]];
+      for (let i = 1; i < legs.length; i++) {
+        const prev = legs[i - 1], cur = legs[i];
+        if (cur.dep === prev.arr && cur.s - prev.e <= 24 * 60) chains[chains.length - 1].push(cur); else chains.push([cur]);
+      }
+      const first = chains[0][0], lastChain = chains[chains.length - 1], last = legs[legs.length - 1];
+      return {
+        A: { airport: first.dep, itemId: first.item.id },
+        B: chains.length > 1 ? { airport: lastChain[0].dep, itemId: lastChain[0].item.id } : null,
+        lastItemId: last.item.id,
+      };
+    }
+    function tapeInvites() { try { return JSON.parse(localStorage.getItem("TG_TAPE_INVITE") || "{}"); } catch (e) { return {}; } }
+    function setTapeInvite(key, v) { const m = tapeInvites(); if (v) m[key] = v; else delete m[key]; Object.keys(m).forEach(k => { if (m[k].until < Date.now()) delete m[k]; }); try { localStorage.setItem("TG_TAPE_INVITE", JSON.stringify(m)); } catch (e) {} }
+    async function loadTapes(force) {
+      if (!sbClient || !currentCloudUser) { tapeRows = null; return null; }
+      if (tapeRows && !force) return tapeRows;
+      const { data, error } = await sbClient.from("tapes").select("id,trip_id,trip_title,side,airport,label,cover_path,title_font,audio_ms,created_at,opened_at").order("created_at", { ascending: false });
+      tapeRows = error ? null : (data || []);
+      return tapeRows;
+    }
+    function ensureTapeFonts(text) {
+      if (!document.getElementById("tapeFontLink")) {
+        const l = document.createElement("link"); l.id = "tapeFontLink"; l.rel = "stylesheet";
+        l.href = "https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Dela+Gothic+One&display=swap";
+        document.head.appendChild(l);
+      }
+      // Dela Gothic 沒有的繁體字，用饅頭黑體（完整版，只有卡帶用到時才載入）補上
+      if (!ensureTapeFonts.full && window.FontFace) {
+        ensureTapeFonts.full = new FontFace("TabigrAm Fill Full", "url(fonts/tg-fill-full.woff2)").load().then(f => { document.fonts.add(f); }).catch(() => {});
+      }
+      const t = (text || "") + "旅行卡帶ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789・";
+      return Promise.all([ensureTapeFonts.full, document.fonts.load(`900 40px 'Noto Serif TC'`, t), document.fonts.load(`400 40px 'Dela Gothic One'`, t), document.fonts.load(`900 40px 'Noto Sans TC'`, t), document.fonts.load(`700 40px 'JetBrains Mono'`, "0123456789:")]).catch(() => {});
+    }
+    function loadImg(src) { return new Promise(res => { if (!src) return res(null); const im = new Image(); im.crossOrigin = "anonymous"; im.onload = () => res(im); im.onerror = () => res(null); im.src = src; }); }
+
+    // ---------- 繪圖：80 年代城市流行（City Pop）卡帶風格，原創設計 ----------
+    const TapeArt = (() => {
+      const W = 1080, H = 1920;
+      const C = { paper: "#F2EBDD", ink: "#1E1C1A", sub: "#7A7266", aqua: "#5EC4C6", sky: "#9ED6E3", pink: "#F29BB0", peach: "#F7C3A3", sun: "#F7B955", navy: "#2E3F73", shell: "#ECE8E1", shellEdge: "#CFC8BC", tape: "#4B3A2C" };
+      const STRIPES = [C.navy, C.aqua, C.sun, C.pink];
+      function rr(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+      function off(w, h) { const c = document.createElement("canvas"); c.width = w; c.height = h; return c; }
+      function noise(g, w, h, alpha, seed) { let s = seed || 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647; for (let i = 0; i < w * h / 160; i++) { g.fillStyle = `rgba(80,60,40,${rnd() * alpha})`; g.fillRect(rnd() * w, rnd() * h, 1.5, 1.5); } }
+      // 沒選照片時的封面：粉色天空、太陽、海平線、棕櫚樹剪影（原創插畫）
+      function defaultCover(w, h) {
+        const c = off(w, h), g = c.getContext("2d");
+        const sky = g.createLinearGradient(0, 0, 0, h * 0.68); sky.addColorStop(0, "#7FC9DD"); sky.addColorStop(0.55, "#BFE0E4"); sky.addColorStop(1, "#F7C9B5");
+        g.fillStyle = sky; g.fillRect(0, 0, w, h);
+        g.fillStyle = "#F9D9A0"; g.beginPath(); g.arc(w * 0.62, h * 0.6, w * 0.17, 0, Math.PI * 2); g.fill();
+        const sea = g.createLinearGradient(0, h * 0.66, 0, h); sea.addColorStop(0, "#3FA7B8"); sea.addColorStop(1, "#22678A");
+        g.fillStyle = sea; g.fillRect(0, h * 0.66, w, h * 0.34);
+        g.strokeStyle = "rgba(255,255,255,.55)"; g.lineWidth = Math.max(2, h * 0.006);
+        for (let i = 0; i < 7; i++) { const y = h * (0.7 + i * 0.045); g.beginPath(); g.moveTo(w * (0.38 + i * 0.02), y); g.lineTo(w * (0.86 - i * 0.015), y); g.stroke(); }
+        // 棕櫚樹
+        g.strokeStyle = "#20323F"; g.fillStyle = "#20323F"; g.lineCap = "round";
+        // 棕櫚樹：樹幹微彎、葉子是有寬度的弧形葉片
+        const palm = (x, base, hh, lean) => {
+          const tx = x + lean, ty = base - hh;
+          g.beginPath(); g.moveTo(x - w * 0.014, base); g.quadraticCurveTo(x + lean * 0.4 - w * 0.01, base - hh * 0.5, tx - w * 0.006, ty);
+          g.lineTo(tx + w * 0.006, ty); g.quadraticCurveTo(x + lean * 0.4 + w * 0.01, base - hh * 0.5, x + w * 0.014, base); g.closePath(); g.fill();
+          for (let k = 0; k < 8; k++) {
+            const a = -Math.PI + 0.25 + k * (Math.PI - 0.5) / 7 + (k % 2 ? 0.08 : -0.06), len = w * (0.15 + (k % 3) * 0.025);
+            const ex = tx + Math.cos(a) * len, ey = ty + Math.sin(a) * len * 0.55 + len * 0.42;
+            const mx = tx + Math.cos(a) * len * 0.55, my = ty + Math.sin(a) * len * 0.55 - len * 0.12;
+            const nx = -Math.sin(a) * w * 0.016, ny = Math.cos(a) * w * 0.016;
+            g.beginPath(); g.moveTo(tx, ty); g.quadraticCurveTo(mx + nx, my + ny, ex, ey); g.quadraticCurveTo(mx - nx, my - ny, tx, ty); g.fill();
+          }
+        };
+        palm(w * 0.18, h * 1.02, h * 0.72, w * 0.06); palm(w * 0.3, h * 1.02, h * 0.55, -w * 0.03);
+        return c;
+      }
+      // 卡帶盒封面（J 卡）：照片＋細色條＋標題
+      function jcard(w, h, o) {
+        const c = off(w, h), g = c.getContext("2d");
+        const ph = h * 0.74;
+        if (o.cover) { const im = o.cover, s = Math.max(w / im.width, ph / im.height); g.drawImage(im, (w - im.width * s) / 2, (ph - im.height * s) / 2, im.width * s, im.height * s); }
+        else g.drawImage(defaultCover(w, ph), 0, 0);
+        // 照片下緣的四條細色條
+        const sh = h * 0.012;
+        STRIPES.forEach((col, i) => { g.fillStyle = col; g.fillRect(0, ph + i * sh, w, sh); });
+        g.fillStyle = "#FBF7EF"; g.fillRect(0, ph + 4 * sh, w, h - ph - 4 * sh);
+        const f = TAPE_FONTS[o.font] || TAPE_FONTS.sans;
+        g.fillStyle = C.ink; g.textBaseline = "alphabetic";
+        let size = h * 0.105; g.font = `${f.w} ${size}px ${f.css}`;
+        while (g.measureText(o.title).width > w * 0.84 && size > h * 0.05) { size -= 2; g.font = `${f.w} ${size}px ${f.css}`; }
+        g.fillText(o.title, w * 0.07, h * 0.93);
+        g.font = `700 ${h * 0.032}px 'JetBrains Mono', monospace`; g.fillStyle = C.sub;
+        g.textAlign = "right"; g.fillText(o.meta || "", w * 0.93, h * 0.835); g.textAlign = "left";
+        g.fillText("TabigrAm TAPE", w * 0.07, h * 0.835);
+        // 右上角：SIDE A／B 小標
+        g.font = `800 ${h * 0.038}px 'JetBrains Mono', monospace`; g.fillStyle = "#fff";
+        g.shadowColor = "rgba(0,0,0,.35)"; g.shadowBlur = 6; g.fillText(`SIDE ${o.side}`, w * 0.07, h * 0.1); g.shadowBlur = 0;
+        return c;
+      }
+      // 透明卡帶盒（關起來的樣子）
+      function caseArt(w, h, o) {
+        const c = off(w, h), g = c.getContext("2d");
+        g.save(); g.shadowColor = "rgba(40,30,20,.28)"; g.shadowBlur = w * 0.05; g.shadowOffsetY = w * 0.025;
+        rr(g, 0, 0, w, h, w * 0.025); g.fillStyle = "rgba(255,255,255,.35)"; g.fill(); g.restore();
+        const pad = w * 0.04, jw = w - pad * 2, jh = h - pad * 2.3;
+        g.drawImage(jcard(jw, jh, o), pad, pad * 1.3);
+        // 塑膠光澤與邊框
+        rr(g, 0, 0, w, h, w * 0.025); g.strokeStyle = "rgba(255,255,255,.9)"; g.lineWidth = w * 0.008; g.stroke();
+        rr(g, w * 0.006, w * 0.006, w - w * 0.012, h - w * 0.012, w * 0.02); g.strokeStyle = "rgba(0,0,0,.18)"; g.lineWidth = 2; g.stroke();
+        const gl = g.createLinearGradient(0, 0, w, h); gl.addColorStop(0, "rgba(255,255,255,.38)"); gl.addColorStop(0.35, "rgba(255,255,255,0)"); gl.addColorStop(0.62, "rgba(255,255,255,0)"); gl.addColorStop(0.7, "rgba(255,255,255,.22)"); gl.addColorStop(0.78, "rgba(255,255,255,0)");
+        rr(g, 0, 0, w, h, w * 0.025); g.fillStyle = gl; g.fill();
+        // 上緣的卡榫
+        g.fillStyle = "rgba(255,255,255,.55)"; g.fillRect(w * 0.08, w * 0.01, w * 0.84, pad * 0.6);
+        return c;
+      }
+      // 卡帶本體（不會動的部分）：外殼、螺絲、標籤、底部
+      // 卡帶外殼：白、黑、琥珀棕三種，每卷依編號固定一種
+      const SHELLS = {
+        white: { top: "#F5F2EC", bot: "#DDD7CC", edge: "#CFC8BC", hi: "rgba(255,255,255,.8)", trapTop: "#D8D1C5", trapBot: "#C3BBAE", hole: "#2B2826", screwHi: "#F4F1EA", screwLo: "#A9A196", slot: "#7D766B", win: "rgba(40,38,40,.88)" },
+        black: { top: "#3A3633", bot: "#141312", edge: "#0A0908", hi: "rgba(255,255,255,.16)", trapTop: "#282522", trapBot: "#121110", hole: "#050505", screwHi: "#D8D3CA", screwLo: "#5E5A54", slot: "#2A2826", win: "rgba(14,13,12,.9)" },
+        brown: { top: "#94623A", bot: "#583822", edge: "#3A2414", hi: "rgba(255,226,190,.32)", trapTop: "#74492A", trapBot: "#4A2F1B", hole: "#1C120A", screwHi: "#EADCC8", screwLo: "#8C7A64", slot: "#5A4A38", win: "rgba(34,22,12,.86)" },
+      };
+      function cassetteBody(w, o) {
+        const h = Math.round(w / 1.567), c = off(w, h), g = c.getContext("2d"), S = SHELLS[o.shell] || SHELLS.white;
+        const sg = g.createLinearGradient(0, 0, 0, h); sg.addColorStop(0, S.top); sg.addColorStop(1, S.bot);
+        rr(g, 0, 0, w, h, w * 0.035); g.fillStyle = sg; g.fill();
+        // 外殼的細紋與光澤（塑膠的質感）
+        g.save(); rr(g, 0, 0, w, h, w * 0.035); g.clip();
+        g.strokeStyle = o.shell === "white" ? "rgba(0,0,0,.025)" : "rgba(255,255,255,.035)"; g.lineWidth = 1;
+        for (let y = 0; y < h; y += 4) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+        const gl = g.createLinearGradient(0, 0, w, h); gl.addColorStop(0, "rgba(255,255,255,.18)"); gl.addColorStop(0.4, "rgba(255,255,255,0)"); gl.addColorStop(1, "rgba(255,255,255,.06)");
+        g.fillStyle = gl; g.fillRect(0, 0, w, h); g.restore();
+        rr(g, w * 0.008, w * 0.008, w - w * 0.016, h - w * 0.016, w * 0.03); g.strokeStyle = S.hi; g.lineWidth = w * 0.004; g.stroke();
+        rr(g, 0, 0, w, h, w * 0.035); g.strokeStyle = S.edge; g.lineWidth = w * 0.003; g.stroke();
+        // 標籤
+        const lx = w * 0.06, ly = h * 0.06, lw = w * 0.88, lh = h * 0.62;
+        rr(g, lx, ly, lw, lh, w * 0.012); g.fillStyle = "#FBF6EA"; g.fill();
+        g.save(); rr(g, lx, ly, lw, lh, w * 0.012); g.clip();
+        const sh = lh * 0.035, sy = ly + lh * 0.3;
+        STRIPES.forEach((col, i) => { g.fillStyle = col; g.fillRect(lx, sy + i * sh, lw, sh * 0.82); });
+        noise(g, w, h, 0.05, 11);
+        g.restore();
+        g.fillStyle = C.ink; g.font = `800 ${h * 0.13}px 'JetBrains Mono', monospace`; g.fillText(o.side, lx + lw * 0.03, ly + lh * 0.25);
+        const f = TAPE_FONTS[o.font] || TAPE_FONTS.sans;
+        let size = h * 0.085; g.font = `${f.w} ${size}px ${f.css}`;
+        while (g.measureText(o.title).width > lw * 0.66 && size > h * 0.04) { size -= 1; g.font = `${f.w} ${size}px ${f.css}`; }
+        g.fillText(o.title, lx + lw * 0.15, ly + lh * 0.23);
+        g.font = `700 ${h * 0.036}px 'JetBrains Mono', monospace`; g.fillStyle = C.sub;
+        g.textAlign = "right"; g.fillText(o.sideLabel || "", lx + lw * 0.97, ly + lh * 0.12); g.fillText("C-30", lx + lw * 0.97, ly + lh * 0.95); g.textAlign = "left";
+        g.fillText("TabigrAm TAPE · NORMAL POSITION", lx + lw * 0.03, ly + lh * 0.95);
+        // 標籤上的書寫線
+        g.strokeStyle = "rgba(30,28,26,.18)"; g.lineWidth = 1.5; g.beginPath(); g.moveTo(lx + lw * 0.15, ly + lh * 0.27); g.lineTo(lx + lw * 0.97, ly + lh * 0.27); g.stroke();
+        // 窗口（磁帶看得見的地方）
+        rr(g, w * 0.27, h * 0.37, w * 0.46, h * 0.22, h * 0.11); g.fillStyle = S.win; g.fill();
+        // 底部梯形
+        g.beginPath(); g.moveTo(w * 0.2, h * 0.74); g.lineTo(w * 0.8, h * 0.74); g.lineTo(w * 0.86, h); g.lineTo(w * 0.14, h); g.closePath();
+        const bg = g.createLinearGradient(0, h * 0.74, 0, h); bg.addColorStop(0, S.trapTop); bg.addColorStop(1, S.trapBot); g.fillStyle = bg; g.fill();
+        g.fillStyle = S.hole;
+        [[0.29, 0.86, 0.022], [0.71, 0.86, 0.022]].forEach(([x, y, r]) => { g.beginPath(); g.arc(w * x, h * y, w * r, 0, Math.PI * 2); g.fill(); });
+        [[0.4, 0.84], [0.6, 0.84]].forEach(([x, y]) => g.fillRect(w * x - w * 0.012, h * y, w * 0.024, h * 0.09));
+        rr(g, w * 0.465, h * 0.8, w * 0.07, h * 0.12, 3); g.fill();
+        g.fillStyle = C.tape; g.fillRect(w * 0.16, h * 0.985, w * 0.68, h * 0.012);
+        // 五顆螺絲
+        [[0.04, 0.07], [0.96, 0.07], [0.04, 0.93], [0.96, 0.93], [0.5, 0.715]].forEach(([x, y]) => {
+          const cx = w * x, cy = h * y, r = w * 0.014;
+          const sgr = g.createRadialGradient(cx - r * 0.3, cy - r * 0.3, 1, cx, cy, r); sgr.addColorStop(0, S.screwHi); sgr.addColorStop(1, S.screwLo);
+          g.fillStyle = sgr; g.beginPath(); g.arc(cx, cy, r, 0, Math.PI * 2); g.fill();
+          g.strokeStyle = S.slot; g.lineWidth = r * 0.28; g.beginPath(); g.moveTo(cx - r * 0.6, cy); g.lineTo(cx + r * 0.6, cy); g.moveTo(cx, cy - r * 0.6); g.lineTo(cx, cy + r * 0.6); g.stroke();
+        });
+        return c;
+      }
+      // 會動的部分：兩個捲盤（磁帶厚度跟著進度變）
+      function reels(g, x, y, w, progress, angle) {
+        const h = w / 1.567;
+        g.save(); rr(g, x + w * 0.27, y + h * 0.37, w * 0.46, h * 0.22, h * 0.11); g.clip();
+        const cy = y + h * 0.48, rMin = w * 0.045, rMax = w * 0.115;
+        const rl = Math.sqrt(rMin * rMin + (rMax * rMax - rMin * rMin) * (1 - progress)), rrr = Math.sqrt(rMin * rMin + (rMax * rMax - rMin * rMin) * progress);
+        [[x + w * 0.355, rl], [x + w * 0.645, rrr]].forEach(([cx, r]) => {
+          const tg = g.createRadialGradient(cx, cy, rMin, cx, cy, r); tg.addColorStop(0, "#3D2E22"); tg.addColorStop(1, "#5A4433");
+          g.fillStyle = tg; g.beginPath(); g.arc(cx, cy, r, 0, Math.PI * 2); g.fill();
+          g.strokeStyle = "rgba(255,255,255,.06)"; g.lineWidth = 1; for (let k = rMin + 4; k < r; k += 5) { g.beginPath(); g.arc(cx, cy, k, 0, Math.PI * 2); g.stroke(); }
+        });
+        // 兩個捲盤之間的磁帶
+        g.fillStyle = "#4B3A2C"; g.fillRect(x + w * 0.355, cy + rMax * 0.98 - 2, w * 0.29, 3);
+        g.restore();
+        // 捲軸中心（白色、六個齒，會轉）
+        [x + w * 0.355, x + w * 0.645].forEach(cx => {
+          g.save(); g.translate(cx, cy); g.rotate(angle);
+          g.fillStyle = "#F4F0E8"; g.beginPath(); g.arc(0, 0, rMin * 0.92, 0, Math.PI * 2); g.fill();
+          g.fillStyle = "#3A3631"; g.beginPath(); g.arc(0, 0, rMin * 0.5, 0, Math.PI * 2); g.fill();
+          g.fillStyle = "#F4F0E8"; for (let k = 0; k < 6; k++) { g.save(); g.rotate(k * Math.PI / 3); g.fillRect(-rMin * 0.09, -rMin * 0.5, rMin * 0.18, rMin * 0.2); g.restore(); }
+          g.restore();
+        });
+        // 窗口的反光
+        g.save(); rr(g, x + w * 0.27, y + h * 0.37, w * 0.46, h * 0.22, h * 0.11); g.clip();
+        g.fillStyle = "rgba(255,255,255,.08)"; g.beginPath(); g.moveTo(x + w * 0.3, y + h * 0.37); g.lineTo(x + w * 0.42, y + h * 0.37); g.lineTo(x + w * 0.34, y + h * 0.59); g.lineTo(x + w * 0.22, y + h * 0.59); g.fill();
+        g.restore();
+      }
+      function background(o) {
+        const c = off(W, H), g = c.getContext("2d");
+        g.fillStyle = C.paper; g.fillRect(0, 0, W, H);
+        const sh = 14;
+        STRIPES.forEach((col, i) => { g.fillStyle = col; g.fillRect(0, 150 + i * sh * 1.6, W, sh); g.fillRect(0, H - 230 + i * sh * 1.6, W, sh); });
+        noise(g, W, H, 0.06, 3);
+        g.fillStyle = C.ink; g.font = `700 30px 'JetBrains Mono', monospace`; g.fillText("TabigrAm", 70, 110);
+        g.textAlign = "right"; g.fillStyle = C.sub; g.fillText(`${o.airport || ""}  ${o.date || ""}`, W - 70, 110); g.textAlign = "left";
+        return c;
+      }
+      // 一卷卡帶的所有素材（先畫好，每一格只要組合）
+      // 打開後的盒子底座：透明托盤、兩根卡榫，卡帶躺在裡面
+      function trayArt(w, h, body) {
+        const c = off(w, h), g = c.getContext("2d");
+        g.save(); g.shadowColor = "rgba(40,30,20,.22)"; g.shadowBlur = w * 0.04; g.shadowOffsetY = w * 0.02;
+        rr(g, 0, 0, w, h, w * 0.025); g.fillStyle = "rgba(236,230,220,.72)"; g.fill(); g.restore();
+        rr(g, w * 0.035, h * 0.06, w * 0.93, h * 0.88, w * 0.02); g.fillStyle = "rgba(210,202,190,.55)"; g.fill();
+        g.fillStyle = "rgba(255,255,255,.7)"; [0.355, 0.645].forEach(x => { g.beginPath(); g.arc(w * x, h * 0.5, w * 0.03, 0, Math.PI * 2); g.fill(); });
+        if (body) { const bw = w * 0.84, bh = bw / 1.567; g.drawImage(body, (w - bw) / 2, (h - bh) / 2 + h * 0.02, bw, bh); }
+        rr(g, 0, 0, w, h, w * 0.025); g.strokeStyle = "rgba(255,255,255,.95)"; g.lineWidth = w * 0.007; g.stroke();
+        const gl = g.createLinearGradient(0, 0, w, h); gl.addColorStop(0, "rgba(255,255,255,.3)"); gl.addColorStop(0.3, "rgba(255,255,255,0)");
+        rr(g, 0, 0, w, h, w * 0.025); g.fillStyle = gl; g.fill();
+        return c;
+      }
+      // 蓋子的內側：J 卡的背面（像曲目表）
+      function lidBackArt(w, h, o) {
+        const c = off(w, h), g = c.getContext("2d");
+        rr(g, 0, 0, w, h, w * 0.025); g.fillStyle = "rgba(240,236,228,.88)"; g.fill();
+        const px = w * 0.05, py = h * 0.07, pw = w * 0.9, ph = h * 0.86;
+        g.fillStyle = "#FBF7EF"; g.fillRect(px, py, pw, ph);
+        STRIPES.forEach((col, i) => { g.fillStyle = col; g.fillRect(px, py + i * h * 0.012, pw, h * 0.01); });
+        g.fillStyle = C.sub; g.font = `700 ${h * 0.045}px 'JetBrains Mono', monospace`;
+        g.fillText("SIDE A · DEPARTURE", px + pw * 0.05, py + ph * 0.25); g.fillText("SIDE B · HOMEWARD", px + pw * 0.55, py + ph * 0.25);
+        g.strokeStyle = "rgba(30,28,26,.15)"; g.lineWidth = 1.5;
+        for (let i = 0; i < 5; i++) [0.05, 0.55].forEach(x => { const y = py + ph * (0.38 + i * 0.11); g.beginPath(); g.moveTo(px + pw * x, y); g.lineTo(px + pw * (x + 0.4), y); g.stroke(); });
+        g.fillStyle = C.ink; g.font = `700 ${h * 0.04}px 'JetBrains Mono', monospace`; g.fillText(`${o.airport || ""}  ${o.date || ""}`, px + pw * 0.05, py + ph * 0.93);
+        rr(g, 0, 0, w, h, w * 0.025); g.strokeStyle = "rgba(255,255,255,.95)"; g.lineWidth = w * 0.007; g.stroke();
+        return c;
+      }
+      function prepare(o) {
+        const caseW = 820, caseH = Math.round(caseW / 1.57 * 1.02);
+        const meta = `${o.airport || ""} · ${o.date || ""}`;
+        const body = cassetteBody(900, o);
+        return { o, bg: background(o), caseImg: caseArt(caseW, caseH, { ...o, meta }), lidBack: lidBackArt(caseW, caseH, o), trayFull: trayArt(caseW, caseH, body), trayEmpty: trayArt(caseW, caseH, null), caseW, caseH, body, bodyW: 900 };
+      }
+      const ease = t => t < 0 ? 0 : t > 1 ? 1 : 1 - Math.pow(1 - t, 3);
+      // 時間軸（毫秒）：0 盒子 → 2.4s 盒子打開 → 3.6s 卡帶取出 → 6s 開始播放 → 播完 → 收尾
+      function timeline(audioMs) { const play0 = 6000, play1 = play0 + Math.max(1000, audioMs || 0); return { play0, play1, end: play1 + 3200 }; }
+      function frame(g, P, t, peaks, audioMs) {
+        const { o, bg, caseImg, lidBack, trayFull, trayEmpty, caseW, caseH, body, bodyW } = P, tl = timeline(audioMs);
+        g.drawImage(bg, 0, 0);
+        const bodyH = bodyW / 1.567, cx = (W - bodyW) / 2;
+        const caseX = (W - caseW) / 2;
+        const easeInOut = x => x <= 0 ? 0 : x >= 1 ? 1 : x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+        // 盒子：關著的時候輕輕浮著；1.5 秒起蓋子從下緣翻開；3.7 秒起整個盒子往下滑走
+        const lidA = easeInOut((t - 1500) / 1200) * 2.05;
+        const lift = easeInOut((t - 2500) / 1800);
+        const drop = ease((t - 3800) / 1100);
+        const caseY = 600 + (t < 1500 ? Math.sin(t / 700) * 7 : 0) + drop * 640, caseAlpha = 1 - drop;
+        if (caseAlpha > 0) {
+          g.save(); g.globalAlpha = caseAlpha;
+          g.drawImage(lift > 0 ? trayEmpty : trayFull, caseX, caseY);
+          const sy = Math.cos(lidA), hingeY = caseY + caseH, squeeze = 1 - 0.07 * (1 - Math.abs(sy));
+          const lw = caseW * squeeze, lx = caseX + (caseW - lw) / 2;
+          if (sy > 0.01) {
+            g.drawImage(caseImg, lx, hingeY - caseH * sy, lw, caseH * sy);
+            g.fillStyle = `rgba(30,20,10,${(1 - sy) * 0.35})`; g.fillRect(lx, hingeY - caseH * sy, lw, caseH * sy);
+          } else if (sy < -0.01) {
+            g.drawImage(lidBack, lx, hingeY, lw, caseH * -sy);
+            g.fillStyle = `rgba(30,20,10,${(1 + sy) * 0.25})`; g.fillRect(lx, hingeY, lw, caseH * -sy);
+          }
+          g.restore();
+        }
+        // 卡帶：從托盤裡升起來，途中微微傾斜，最後停在畫面中間
+        if (lift > 0) {
+          const s0 = (caseW * 0.84) / bodyW, scale = s0 + (1 - s0) * lift;
+          const fromCx = W / 2, fromCy = caseY + caseH / 2 + caseH * 0.02, toCy = 470 + bodyH / 2;
+          const settle = t > 4300 ? Math.sin(Math.min(1, (t - 4300) / 700) * Math.PI) * 10 : 0;
+          const ccy = fromCy + (toCy - fromCy) * lift - settle + (t > tl.play1 ? ease((t - tl.play1 - 1400) / 1200) * 40 : 0);
+          const rot = Math.sin(lift * Math.PI) * -0.11;
+          g.save();
+          g.translate(fromCx, ccy); g.rotate(rot); g.scale(scale, scale); g.translate(-W / 2, -bodyH / 2);
+          g.shadowColor = "rgba(40,30,20,.28)"; g.shadowBlur = 20 + lift * 30; g.shadowOffsetY = 6 + lift * 16;
+          g.drawImage(body, cx, 0); g.shadowBlur = 0; g.shadowOffsetY = 0;
+          const p = t < tl.play0 ? 0 : Math.min(1, (t - tl.play0) / (tl.play1 - tl.play0));
+          const spin = t < tl.play0 ? 0 : (Math.min(t, tl.play1) - tl.play0) / 1000 * 2.4 + (t > tl.play1 ? (1 - Math.exp(-(t - tl.play1) / 400)) * 1 : 0);
+          reels(g, cx, 0, bodyW, p, spin);
+          g.restore();
+        }
+        // 播放中：音量條、計時器
+        const playing = t >= tl.play0 && t <= tl.play1;
+        const baseY = 470 + bodyH + 140;
+        if (t > tl.play0 - 600) {
+          const a = Math.min(1, (t - tl.play0 + 600) / 600) * (t > tl.end - 1400 ? Math.max(0, (tl.end - t) / 1400) : 1);
+          g.save(); g.globalAlpha = a;
+          const ms = Math.max(0, Math.min(t, tl.play1) - tl.play0), s = Math.floor(ms / 1000);
+          g.fillStyle = C.ink; g.font = `800 64px 'JetBrains Mono', monospace`; g.textAlign = "center";
+          g.fillText(`${playing ? "▶" : "■"} 00:${String(s).padStart(2, "0")}`, W / 2, baseY);
+          g.font = `700 30px 'JetBrains Mono', monospace`; g.fillStyle = C.sub; g.fillText(`SIDE ${o.side} · ${o.sideLabel || ""}`, W / 2, baseY + 56);
+          // 音量條（依錄音事先算好的大小）
+          const n = 40, bw = 12, gap = 8, x0 = W / 2 - (n * (bw + gap) - gap) / 2, idx = peaks && peaks.length ? Math.floor(ms / 50) : 0;
+          for (let i = 0; i < n; i++) {
+            const v = playing && peaks ? (peaks[Math.max(0, idx - (n - 1 - i))] || 0) : 0.04;
+            const hh = 8 + v * 150;
+            g.fillStyle = i > n - 6 ? C.pink : C.aqua; g.globalAlpha = a * (0.35 + 0.65 * (i / n));
+            rr(g, x0 + i * (bw + gap), baseY + 150 - hh / 2, bw, hh, 5); g.fill();
+          }
+          g.restore();
+        }
+        // 標題（盒子關著的時候在上方，播放時在下方）
+        g.save(); g.textAlign = "center";
+        const f = TAPE_FONTS[o.font] || TAPE_FONTS.sans;
+        g.fillStyle = C.ink; g.globalAlpha = t < 900 ? t / 900 : 1;
+        g.font = `${f.w} 58px ${f.css}`; g.fillText(o.title, W / 2, H - 340);
+        g.font = `700 28px 'JetBrains Mono', monospace`; g.fillStyle = C.sub;
+        g.fillText(`${TAPE_NAME_EN} · ${o.airport || ""}`, W / 2, H - 290);
+        g.restore();
+        return t >= tl.end;
+      }
+      const TAPE_NAME_EN = "TRAVEL TAPE";
+      return { W, H, prepare, frame, timeline, caseArt, cassetteBody, defaultCover, SHELLS };
+    })();
+
+    // 錄音 → 每 50 毫秒的音量（畫音量條用）
+    async function decodeTapeAudio(blob) {
+      const AC = window.AudioContext || window.webkitAudioContext; const ac = new AC();
+      const buf = await new Promise((res, rej) => { blob.arrayBuffer().then(ab => ac.decodeAudioData(ab, res, rej)).catch(rej); });
+      const data = buf.getChannelData(0), step = Math.floor(buf.sampleRate * 0.05), peaks = [];
+      let max = 0;
+      for (let i = 0; i < data.length; i += step) { let s = 0; for (let j = i; j < Math.min(i + step, data.length); j++) s += data[j] * data[j]; const v = Math.sqrt(s / step); peaks.push(v); if (v > max) max = v; }
+      try { ac.close(); } catch (e) {}
+      return { buffer: buf, peaks: peaks.map(v => Math.min(1, v / (max || 1))), ms: Math.round(buf.duration * 1000) };
+    }
+    // 示範用的聲音：機場廣播的叮咚，加上一段柔和的和弦
+    async function demoTapeAudio() {
+      const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext, sr = 44100, dur = 9;
+      const ac = new OAC(1, sr * dur, sr);
+      const tone = (f, t0, len, vol, type) => { const o = ac.createOscillator(), gn = ac.createGain(); o.type = type || "sine"; o.frequency.value = f; gn.gain.setValueAtTime(0, t0); gn.gain.linearRampToValueAtTime(vol, t0 + 0.05); gn.gain.exponentialRampToValueAtTime(0.0001, t0 + len); o.connect(gn).connect(ac.destination); o.start(t0); o.stop(t0 + len + 0.1); };
+      tone(784, 0.3, 1.6, 0.35); tone(659, 0.95, 2.2, 0.35); tone(523, 1.6, 2.6, 0.3);
+      [[261.6, 329.6, 392], [220, 277.2, 329.6], [246.9, 311.1, 392]].forEach((ch, i) => ch.forEach(f => tone(f, 3 + i * 1.8, 2.4, 0.09, "triangle")));
+      const buf = await ac.startRendering();
+      const data = buf.getChannelData(0), step = Math.floor(sr * 0.05), peaks = [];
+      let max = 0; for (let i = 0; i < data.length; i += step) { let s = 0; for (let j = i; j < i + step && j < data.length; j++) s += data[j] * data[j]; const v = Math.sqrt(s / step); peaks.push(v); if (v > max) max = v; }
+      return { buffer: buf, peaks: peaks.map(v => v / (max || 1)), ms: dur * 1000 };
+    }
+
+    // ---------- 播放器：canvas 動畫＋聲音（同一套也拿來存成影片）----------
+    function stopTapePlayer() { if (tapePlayer) { tapePlayer.stop(); tapePlayer = null; } }
+    // iPhone 的 Safari 只在「按下去的那一刻」允許開始放聲音：一按就先把聲音解鎖，之後一直用同一個
+    let tapeAC = null;
+    function unlockTapeAudio() {
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+      if (!tapeAC || tapeAC.state === "closed") tapeAC = new AC();
+      if (tapeAC.state === "suspended") { try { tapeAC.resume(); } catch (e) {} }
+      try { const b = tapeAC.createBuffer(1, 1, 22050), s0 = tapeAC.createBufferSource(); s0.buffer = b; s0.connect(tapeAC.destination); s0.start(0); } catch (e) {}
+      return tapeAC;
+    }
+    async function runTapeAnimation(canvas, P, audio, opts = {}) {
+      const g = canvas.getContext("2d");
+      const ac = tapeAC || unlockTapeAudio();
+      if (ac.state === "suspended") { try { await ac.resume(); } catch (e) {} }
+      const tl = TapeArt.timeline(audio.ms);
+      let src = null, raf = 0, stopped = false, dest = null;
+      if (opts.record) { dest = ac.createMediaStreamDestination(); }
+      const t0 = ac.currentTime + 0.05;
+      src = ac.createBufferSource(); src.buffer = audio.buffer;
+      if (!opts.mute) src.connect(ac.destination);
+      if (dest) src.connect(dest);
+      src.start(t0 + tl.play0 / 1000);
+      const done = new Promise(resolve => {
+        const tick = () => {
+          if (stopped) return resolve(false);
+          const t = Math.max(0, (ac.currentTime - t0) * 1000);
+          const end = TapeArt.frame(g, P, t, audio.peaks, audio.ms);
+          if (opts.onProgress) opts.onProgress(Math.min(1, t / tl.end));
+          if (end) { resolve(true); return; }
+          raf = requestAnimationFrame(tick);
+        };
+        tick();
+      });
+      const player = { ac, dest, done, stop() { stopped = true; cancelAnimationFrame(raf); try { src.stop(); } catch (e) {} try { src.disconnect(); } catch (e) {} } };
+      return player;
+    }
+    const SHELL_KEYS = ["white", "black", "brown"];
+    function shellFor(seed) { let h = 0; for (const ch of String(seed || "")) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return SHELL_KEYS[h % SHELL_KEYS.length]; }
+    function tapeMeta(row) {
+      const d = new Date(row.created_at || Date.now());
+      return { shell: shellFor(row.id || row.created_at), side: row.side || "A", sideLabel: row.side === "B" ? "HOMEWARD" : "DEPARTURE", title: row.label || String(row.trip_title || "").replace(/^\d{2}\s/, "") || TAPE_NAME, font: row.title_font || "sans",
+        airport: row.airport || "", date: `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}` };
+    }
+    // 打開播放視窗（真的卡帶或示範）
+    async function showTapePlayer(meta, coverSrc, audio, demo) {
+      stopTapePlayer();
+      const box = document.getElementById("tapePlayBody");
+      box.innerHTML = `<div class="tape-stage"><canvas id="tapeCanvas" width="${TapeArt.W}" height="${TapeArt.H}" aria-label="旅行卡帶播放動畫"></canvas></div>
+        <div class="tape-ctrl">
+          <button type="button" class="pill-btn" id="tapeReplay">重播</button>
+          <button type="button" class="pill-btn primary" id="tapeExport">存成影片（約 ${Math.round(TapeArt.timeline(audio.ms).end / 1000)} 秒）</button>
+        </div>
+        <div class="tape-export-msg" id="tapeExportMsg">${demo ? "這是示範。真的卡帶，要在機場蓋章時才能錄。" : "影片會在手機上產生，不會上傳。產生時請保持畫面開著。"}</div>`;
+      openModalBackdrop("tapePlayModal");
+      await ensureTapeFonts(meta.title);
+      const cover = coverSrc ? await loadImg(coverSrc) : null;
+      const P = TapeArt.prepare({ ...meta, cover });
+      const canvas = document.getElementById("tapeCanvas");
+      const play = async () => { unlockTapeAudio(); stopTapePlayer(); tapePlayer = await runTapeAnimation(canvas, P, audio); };
+      document.getElementById("tapeReplay").onclick = play;
+      document.getElementById("tapeExport").onclick = () => { unlockTapeAudio(); exportTapeVideo(P, audio, meta); };
+      // 聲音沒被允許（例如沒有經過按鈕打開）：畫面上請使用者點一下開始
+      if (tapeAC && tapeAC.state !== "running") {
+        const stage = canvas.parentNode; stage.classList.add("tap-start");
+        stage.onclick = () => { stage.classList.remove("tap-start"); stage.onclick = null; play(); };
+      } else play();
+    }
+    // 存成影片：把同一段動畫＋聲音即時錄下來（MP4 優先，不支援就用 WebM）
+    async function exportTapeVideo(P, audio, meta) {
+      const msg = document.getElementById("tapeExportMsg"), btn = document.getElementById("tapeExport");
+      const canvas = document.createElement("canvas"); canvas.width = TapeArt.W; canvas.height = TapeArt.H;
+      if (!canvas.captureStream || !window.MediaRecorder) { msg.textContent = "這個瀏覽器不能產生影片，請換 Safari 或 Chrome 試試。"; return; }
+      const types = ["video/mp4;codecs=avc1.42E01E,mp4a.40.2", "video/mp4", "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"];
+      const type = types.find(t => { try { return MediaRecorder.isTypeSupported(t); } catch (e) { return false; } });
+      if (!type) { msg.textContent = "這個瀏覽器不能產生影片，請換 Safari 或 Chrome 試試。"; return; }
+      stopTapePlayer();
+      btn.disabled = true; btn.textContent = "產生中…";
+      const player = await runTapeAnimation(canvas, P, audio, { record: true, mute: true, onProgress: p => { msg.textContent = `產生影片中… ${Math.round(p * 100)}%（請保持畫面開著）`; } });
+      const stream = new MediaStream([...canvas.captureStream(30).getVideoTracks(), ...player.dest.stream.getAudioTracks()]);
+      const chunks = [], rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 5000000 });
+      rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+      const stopped = new Promise(r => { rec.onstop = r; });
+      rec.start(500);
+      // 預覽也跟著動
+      const view = document.getElementById("tapeCanvas"), vg = view && view.getContext("2d");
+      let mirror = 0; const mir = () => { if (vg) vg.drawImage(canvas, 0, 0); mirror = requestAnimationFrame(mir); }; mir();
+      await player.done; await new Promise(r => setTimeout(r, 300));
+      rec.stop(); await stopped; cancelAnimationFrame(mirror); player.stop();
+      const blob = new Blob(chunks, { type: type.split(";")[0] });
+      const ext = type.includes("mp4") ? "mp4" : "webm";
+      const file = new File([blob], `tabigram-tape-${meta.airport || "tape"}-side${meta.side}.${ext}`, { type: blob.type });
+      const url = URL.createObjectURL(blob);
+      btn.disabled = false; btn.textContent = "再存一次";
+      const canShare = navigator.canShare && navigator.canShare({ files: [file] });
+      msg.innerHTML = `影片好了（${(blob.size / 1048576).toFixed(1)} MB）　${canShare ? `<button type="button" class="pill-btn primary" id="tapeShareVid">分享</button>` : ""}<a class="pill-btn" href="${url}" download="${escapeHtml(file.name)}">存到手機</a>${ext === "webm" ? `<small>這個瀏覽器只能存成 WebM；要分享到 Instagram，建議用 iPhone 的 Safari 產生 MP4。</small>` : ""}`;
+      const sb = document.getElementById("tapeShareVid"); if (sb) sb.onclick = () => navigator.share({ files: [file] }).catch(() => {});
+      track("tape_video", ext);
+    }
+
+    // ---------- 蓋完章：看看能不能錄、能不能播放（放在蓋章視窗的下面）----------
+    function tapeChipHtml(side, title) { return `<div class="tape-chip" aria-hidden="true"><span>${side}</span><b>${escapeHtml(title || TAPE_NAME)}</b><i></i><i></i></div>`; }
+    async function tapeAfterStamp(item, kind) {
+      const box = document.getElementById("stampViewerBody"); if (!box) return;
+      const trip = getActiveTrip(), roles = tripTapeRoles(trip); if (!roles) return;
+      const code = stampAirportFor(item, kind);
+      const parts = [];
+      const rows = currentCloudUser ? await loadTapes(true) : null;
+      const has = side => rows && rows.find(r => r.trip_id === trip.id && r.side === side);
+      ["A", "B"].forEach(side => {
+        const r = roles[side];
+        if (kind !== "dep" || !r || r.itemId !== item.id || has(side)) return;
+        setTapeInvite(`${trip.id}|${side}`, { airport: code, until: Date.now() + 24 * 3600e3, tripTitle: trip.title });
+        parts.push(`<div class="tape-invite">${tapeChipHtml(side, trip.title.replace(/^\d{2}\s/, ""))}<div><b>錄下這卷${TAPE_NAME}的 ${TAPE_SIDE[side]}</b>
+          <p>${side === "A" ? "用 30 秒的聲音留下出發的這一刻，這趟最後一段航班落地時播放。" : "錄 30 秒給下一次的自己。下一趟旅行、30 天以後回到這座機場時播放。"}</p>
+          ${currentCloudUser ? `<button type="button" class="pill-btn primary" onclick="closeModalBackdrop('stampViewerModal'); openTapeWriter('${side}')">開始錄</button><small>也可以 24 小時內從選單「${TAPE_NAME}」再錄</small>`
+            : `<button type="button" class="pill-btn primary" onclick="closeModalBackdrop('stampViewerModal'); openCloudModal()">登入後才能錄</button><small>登入才不會因為清掉瀏覽器資料而不見</small>`}</div></div>`);
+      });
+      if (rows && kind === "arr" && roles.lastItemId === item.id) {
+        const a = has("A");
+        if (a && !a.opened_at) parts.push(`<div class="tape-invite">${tapeChipHtml("A", a.label || trip.title)}<div><b>A 面可以播放了</b><p>你在 ${escapeHtml(a.airport)} 錄給這趟旅程的聲音。</p><button type="button" class="pill-btn primary" onclick="closeModalBackdrop('stampViewerModal'); playTape('${a.id}', '${code}')">播放</button></div></div>`);
+      }
+      if (rows) rows.filter(r => r.side === "B" && !r.opened_at && r.airport === code && r.trip_id !== trip.id && Date.now() - new Date(r.created_at).getTime() >= 30 * 86400e3).forEach(b => {
+        parts.push(`<div class="tape-invite">${tapeChipHtml("B", b.label || b.trip_title)}<div><b>你回到 ${escapeHtml(code)} 了</b><p>「${escapeHtml(b.trip_title)}」的 B 面，可以播放了。</p><button type="button" class="pill-btn primary" onclick="closeModalBackdrop('stampViewerModal'); playTape('${b.id}', '${code}')">播放</button></div></div>`);
+      });
+      if (parts.length) box.insertAdjacentHTML("beforeend", parts.join(""));
+    }
+
+    // ---------- 錄音＋封面 ----------
+    function openTapeWriter(side, tripId) {
+      if (!currentCloudUser) return openCloudModal();
+      const trip = tripId ? (appState.trips || []).find(t => t.id === tripId) : getActiveTrip();
+      if (!trip) return;
+      const inv = tapeInvites()[`${trip.id}|${side}`];
+      const roles = tripTapeRoles(trip);
+      const airport = (inv && inv.airport) || (roles && roles[side] && roles[side].airport) || "";
+      if (!airport) return showToast("這趟旅程沒有航班，沒辦法錄");
+      tapeDraft = { side, tripId: trip.id, tripTitle: trip.title, airport, audio: null, audioType: "", audioMs: 0, cover: null, coverUrl: "", font: "sans", title: trip.title.replace(/^\d{2}\s/, "").slice(0, 40) };
+      document.getElementById("tapeWriteTitle").textContent = `${TAPE_NAME}・${TAPE_SIDE[side]}`;
+      document.getElementById("tapeLabelInput").value = tapeDraft.title;
+      document.getElementById("tapeRule").textContent = side === "A"
+        ? `在 ${airport} 錄。這趟最後一段航班落地、蓋入境章時播放。封存後就不能修改。`
+        : `在 ${airport} 錄。下一趟旅行、30 天以後再到 ${airport} 蓋章時播放。封存後就不能修改。`;
+      renderTapeRecorder(); renderTapeFonts(); drawTapeCoverPreview();
+      openModalBackdrop("tapeWriteModal");
+    }
+    function renderTapeRecorder() {
+      const d = tapeDraft, box = document.getElementById("tapeRecBox"); if (!box) return;
+      const recording = tapeRec && tapeRec.state === "recording";
+      box.innerHTML = `<div class="rec-wrap">
+          <button type="button" class="rec-btn${recording ? " on" : ""}" onclick="${recording ? "stopTapeRecording()" : "startTapeRecording()"}" aria-label="${recording ? "停止錄音" : "開始錄音"}"><span></span></button>
+          <svg class="rec-ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54"/><circle id="recRingArc" cx="60" cy="60" r="54" style="stroke-dasharray:339.3; stroke-dashoffset:339.3;"/></svg>
+        </div>
+        <div class="rec-time" id="recTime">${recording ? "00:00" : d.audio ? `錄好了 · ${(d.audioMs / 1000).toFixed(1)} 秒` : "按下開始錄，最多 30 秒"}</div>
+        <canvas class="rec-level" id="recLevel" width="600" height="80" aria-hidden="true"></canvas>
+        ${d.audio && !recording ? `<div class="rec-actions"><button type="button" class="pill-btn" onclick="previewTapeAudio(this)">▶ 聽聽看</button><button type="button" class="pill-btn" onclick="tapeDraft.audio=null; renderTapeRecorder()">重錄</button></div>` : ""}`;
+    }
+    async function startTapeRecording() {
+      if (!navigator.mediaDevices || !window.MediaRecorder) return showToast("這個瀏覽器不能錄音，請換 Safari 或 Chrome");
+      let stream;
+      try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
+      catch (e) { return showToast("沒有取得麥克風權限。到瀏覽器的網站設定打開麥克風再試一次。"); }
+      const type = ["audio/mp4", "audio/mp4;codecs=mp4a.40.2", "audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus"].find(t => { try { return MediaRecorder.isTypeSupported(t); } catch (e) { return false; } }) || "";
+      const chunks = [], rec = new MediaRecorder(stream, type ? { mimeType: type } : undefined);
+      tapeRec = rec; tapeDraft.audio = null;
+      const AC = window.AudioContext || window.webkitAudioContext, ac = new AC(), an = ac.createAnalyser(); an.fftSize = 512;
+      ac.createMediaStreamSource(stream).connect(an);
+      const lv = new Uint8Array(an.fftSize), t0 = performance.now();
+      rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop = () => {
+        stream.getTracks().forEach(t => t.stop()); try { ac.close(); } catch (e) {}
+        const ms = Math.min(TAPE_MAX_MS, Math.round(performance.now() - t0));
+        if (ms < 800) { tapeRec = null; renderTapeRecorder(); return showToast("太短了，再錄一次"); }
+        tapeDraft.audio = new Blob(chunks, { type: (rec.mimeType || type || "audio/webm").split(";")[0] });
+        tapeDraft.audioType = tapeDraft.audio.type; tapeDraft.audioMs = ms; tapeRec = null;
+        renderTapeRecorder();
+      };
+      rec.start(250);
+      renderTapeRecorder();
+      const tick = () => {
+        if (!tapeRec || tapeRec !== rec || rec.state !== "recording") return;
+        const ms = performance.now() - t0;
+        const el = document.getElementById("recTime"); if (el) el.textContent = `00:${String(Math.floor(ms / 1000)).padStart(2, "0")} / 00:30`;
+        const arc = document.getElementById("recRingArc"); if (arc) arc.style.strokeDashoffset = String(339.3 * (1 - Math.min(1, ms / TAPE_MAX_MS)));
+        an.getByteTimeDomainData(lv); let s = 0; for (let i = 0; i < lv.length; i++) { const v = (lv[i] - 128) / 128; s += v * v; }
+        const level = Math.min(1, Math.sqrt(s / lv.length) * 3.2);
+        const cv = document.getElementById("recLevel");
+        if (cv) { const g = cv.getContext("2d"); g.drawImage(cv, -10, 0); g.clearRect(cv.width - 10, 0, 10, cv.height); g.fillStyle = "#F29BB0"; const hh = 4 + level * 72; g.fillRect(cv.width - 8, (cv.height - hh) / 2, 6, hh); }
+        if (ms >= TAPE_MAX_MS) { rec.stop(); return; }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+      track("tape_rec");
+    }
+    function stopTapeRecording() { if (tapeRec && tapeRec.state === "recording") tapeRec.stop(); }
+    function previewTapeAudio(btn) {
+      if (!tapeDraft || !tapeDraft.audio) return;
+      const a = new Audio(URL.createObjectURL(tapeDraft.audio));
+      btn.textContent = "播放中…"; a.onended = () => { btn.textContent = "▶ 聽聽看"; };
+      a.play().catch(() => { btn.textContent = "▶ 聽聽看"; showToast("這個瀏覽器播不出這段錄音"); });
+    }
+    function renderTapeFonts() {
+      const box = document.getElementById("tapeFontPick"); if (!box) return;
+      box.innerHTML = Object.entries(TAPE_FONTS).map(([k, f]) => `<button type="button" class="font-chip${tapeDraft.font === k ? " on" : ""}" style="font-family:${f.css}; font-weight:${f.w};" onclick="tapeDraft.font='${k}'; renderTapeFonts(); drawTapeCoverPreview();">${f.label}</button>`).join("");
+    }
+    async function tapePickCover(input) {
+      const f = input.files && input.files[0]; input.value = "";
+      if (!f) return;
+      const c = await compressImageFile(f);
+      tapeDraft.cover = c.dataUrl; tapeDraft.coverImg = await loadImg(c.dataUrl);
+      drawTapeCoverPreview();
+    }
+    async function drawTapeCoverPreview() {
+      const cv = document.getElementById("tapeCoverPreview"); if (!cv || !tapeDraft) return;
+      tapeDraft.title = (document.getElementById("tapeLabelInput").value.trim() || tapeDraft.tripTitle.replace(/^\d{2}\s/, "")).slice(0, 40);
+      await ensureTapeFonts(tapeDraft.title);
+      const d = new Date(), meta = `${tapeDraft.airport} · ${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+      const art = TapeArt.caseArt(cv.width, cv.height, { side: tapeDraft.side, title: tapeDraft.title, font: tapeDraft.font, cover: tapeDraft.coverImg || null, meta });
+      const g = cv.getContext("2d"); g.clearRect(0, 0, cv.width, cv.height); g.drawImage(art, 0, 0);
+    }
+    async function sealTape() {
+      const d = tapeDraft; if (!d || !currentCloudUser) return;
+      if (!d.audio) return showToast("先錄一段聲音");
+      const btn = document.getElementById("tapeSealBtn");
+      if (!armTap(btn, "封存後不能修改，再按一次封存")) return;
+      clearTimeout(btn._armT); btn.dataset.armed = ""; btn.classList.remove("armed");
+      btn.disabled = true; btn.textContent = "封存中…";
+      const rid = () => (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, "") : Date.now().toString(36) + Math.random().toString(36).slice(2));
+      const uploaded = [];
+      try {
+        const store = sbClient.storage.from("tape-media");
+        const ext = /mp4|m4a|aac/.test(d.audioType) ? "m4a" : /ogg/.test(d.audioType) ? "ogg" : "webm";
+        const audio_path = `${currentCloudUser.id}/${rid()}.${ext}`;
+        let r = await store.upload(audio_path, d.audio, { contentType: ext === "m4a" ? "audio/mp4" : d.audioType, upsert: false });
+        if (r.error) throw r.error; uploaded.push(audio_path);
+        let cover_path = null;
+        if (d.cover) {
+          cover_path = `${currentCloudUser.id}/${rid()}.jpg`;
+          r = await store.upload(cover_path, await (await fetch(d.cover)).blob(), { contentType: "image/jpeg", upsert: false });
+          if (r.error) throw r.error; uploaded.push(cover_path);
+        }
+        const { error } = await sbClient.from("tapes").insert({ trip_id: d.tripId, trip_title: d.tripTitle.slice(0, 120), side: d.side, airport: d.airport, label: d.title.slice(0, 60),
+          audio_path, audio_ms: Math.max(300, Math.min(32000, d.audioMs)), cover_path, title_font: d.font });
+        if (error) throw error;
+        setTapeInvite(`${d.tripId}|${d.side}`, null);
+        track("tape_seal", d.side);
+        tapeRows = null;
+        closeModalBackdrop("tapeWriteModal");
+        showToast(`${TAPE_SIDE[d.side]}封存好了，收進卡帶架`);
+      } catch (e) {
+        if (uploaded.length) { try { await sbClient.storage.from("tape-media").remove(uploaded); } catch (er) {} }
+        showToast(/relation .*tapes|does not exist|tape-media|Bucket not found/i.test(e.message || "") ? `${TAPE_NAME}還在準備中，請稍後再試` : /duplicate|unique/i.test(e.message || "") ? "這一面已經錄過了" : "封存失敗：" + (e.message || e));
+      }
+      btn.disabled = false; btn.textContent = "封存這一面";
+    }
+    async function tapeSignedUrl(path) {
+      if (!path) return "";
+      const { data } = await sbClient.storage.from("tape-media").createSignedUrl(path, 900);
+      return data && data.signedUrl ? data.signedUrl : "";
+    }
+    async function playTape(id, airport) {
+      if (!currentCloudUser) return openCloudModal();
+      unlockTapeAudio();
+      showLogoLoader("取出卡帶…");
+      try {
+        const { data, error } = await sbClient.rpc("open_tape", { p_id: id, p_airport: airport || "" });
+        if (error) { hideLogoLoader(); return showToast(/not yet/.test(error.message) ? "還不能播放：要 30 天以後、回到同一座機場" : "播放失敗：" + error.message); }
+        let row = (tapeRows || []).find(r => r.id === id);
+        if (!row) row = ((await loadTapes(true)) || []).find(r => r.id === id) || {};
+        const [aUrl, cUrl] = await Promise.all([tapeSignedUrl(data.audio_path), tapeSignedUrl(row.cover_path)]);
+        const audio = await decodeTapeAudio(await (await fetch(aUrl)).blob());
+        hideLogoLoader();
+        await showTapePlayer(tapeMeta(row), cUrl, audio, false);
+        track("tape_play", row.side || "");
+        tapeRows = null;
+      } catch (e) { hideLogoLoader(); showToast("播放失敗，請稍後再試"); }
+    }
+    async function playDemoTape() {
+      unlockTapeAudio();
+      const audio = await demoTapeAudio();
+      await showTapePlayer({ shell: SHELL_KEYS[Math.floor(Math.random() * SHELL_KEYS.length)], side: "A", sideLabel: "DEPARTURE", title: "霓虹與海風", font: "dela", airport: "TPE", date: "2026.11.20" }, "", audio, true);
+      track("tape_demo");
+    }
+    // ---------- 卡帶架：每一卷是一個卡帶盒，封面一直看得到 ----------
+    async function openTapeShelf() {
+      openModalBackdrop("tapeShelfModal");
+      const box = document.getElementById("tapeShelfBody");
+      const how = `<button type="button" class="pill-btn" style="width:100%; justify-content:center; margin-top:12px;" onclick="playDemoTape()">${ic("tape")} 看看示範</button>
+        <div class="tape-how"><b>怎麼錄</b><p>出發那天在機場蓋出境章，會邀請你錄 <b>A 面</b>（30 秒的聲音），這趟最後落地時播放；回程在機場蓋章，可以錄 <b>B 面</b>，等下一趟、30 天以後回到同一座機場才播放。轉機的機場不算。封存後不能修改；播放時可以存成影片分享。</p></div>`;
+      if (!currentCloudUser) { box.innerHTML = how + `<button type="button" class="pill-btn primary" style="width:100%; justify-content:center; padding:12px; margin-top:10px;" onclick="closeModalBackdrop('tapeShelfModal'); openCloudModal()">登入後就能錄</button>`; return; }
+      box.innerHTML = `<div class="vault-empty">讀取中…</div>`;
+      const rows = await loadTapes(true);
+      if (!rows) { box.innerHTML = how + `<div class="vault-empty">${TAPE_NAME}還在準備中，請稍後再試。</div>`; return; }
+      const inv = tapeInvites(), byTrip = {};
+      rows.forEach(r => { (byTrip[r.trip_id] = byTrip[r.trip_id] || { title: r.trip_title, sides: {} }).sides[r.side] = r; });
+      Object.entries(inv).forEach(([k, v]) => { if (v.until < Date.now()) return; const [tid, side] = k.split("|"); const t = (byTrip[tid] = byTrip[tid] || { title: v.tripTitle, sides: {} }); if (!t.sides[side]) t.sides[side] = { pending: true, airport: v.airport }; });
+      const sideHtml = (tid, side, r) => {
+        if (!r) return `<div class="tape-side off"><b>${TAPE_SIDE[side]}</b><span>還沒錄</span></div>`;
+        if (r.pending) return `<div class="tape-side"><b>${TAPE_SIDE[side]}</b><span>在 ${escapeHtml(r.airport)} 可以錄</span><button type="button" class="mini-btn" onclick="closeModalBackdrop('tapeShelfModal'); openTapeWriter('${side}', '${escapeHtml(tid)}')">錄</button></div>`;
+        if (r.opened_at) return `<div class="tape-side"><b>${TAPE_SIDE[side]}</b><span>${escapeHtml(new Date(r.opened_at).toLocaleDateString())} 播放過</span><button type="button" class="mini-btn" onclick="closeModalBackdrop('tapeShelfModal'); playTape('${r.id}')">重播</button></div>`;
+        return `<div class="tape-side sealed"><b>${TAPE_SIDE[side]}</b><span>${side === "A" ? "這趟最後落地時播放" : `${escapeHtml(new Date(new Date(r.created_at).getTime() + 30 * 86400e3).toLocaleDateString())} 以後回到 ${escapeHtml(r.airport)} 播放`}</span></div>`;
+      };
+      const entries = Object.entries(byTrip);
+      box.innerHTML = (entries.map(([tid, t], i) => `<div class="tape-card"><canvas class="tape-case-thumb" id="tapeThumb${i}" width="300" height="196" aria-hidden="true"></canvas>
+        <div class="tape-card-body"><b>${escapeHtml(t.title || "")}</b>${sideHtml(tid, "A", t.sides.A)}${sideHtml(tid, "B", t.sides.B)}</div></div>`).join("")
+        || `<div class="vault-empty">還沒有${TAPE_NAME}。下次出發那天，在機場蓋出境章就能錄第一卷。</div>`) + how;
+      // 卡帶盒封面（照片要用短時間的私人連結讀）
+      entries.forEach(async ([tid, t], i) => {
+        const r = t.sides.A && !t.sides.A.pending ? t.sides.A : t.sides.B && !t.sides.B.pending ? t.sides.B : null;
+        const meta = r ? tapeMeta(r) : { side: "A", title: String(t.title || "").replace(/^\d{2}\s/, ""), font: "sans", airport: "", date: "" };
+        await ensureTapeFonts(meta.title);
+        const img = r && r.cover_path ? await loadImg(await tapeSignedUrl(r.cover_path)) : null;
+        const cv = document.getElementById("tapeThumb" + i); if (!cv) return;
+        cv.getContext("2d").drawImage(TapeArt.caseArt(cv.width, cv.height, { ...meta, cover: img, meta: `${meta.airport} · ${meta.date}` }), 0, 0);
+      });
+    }
+
+    // =====================================================================
+    // 想去清單：先把想去的地方丟進來，之後再排進天數（手動選一天，或依距離自動分配）
+    // =====================================================================
+    function wishNewId() { return "wish_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+    // 從 Google 地圖連結抓地名、座標（短網址 maps.app.goo.gl 抓不到，只保留連結）
+    function parseMapLink(u) {
+      const out = { url: u };
+      try {
+        const url = new URL(u);
+        const s = decodeURIComponent(url.pathname + url.search).replace(/\+/g, " ");
+        let m = s.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/) || s.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/) || s.match(/[?&](?:q|query|ll)=(-?\d+\.\d+),\s*(-?\d+\.\d+)/);
+        if (m) { out.lat = +m[1]; out.lng = +m[2]; }
+        m = s.match(/\/place\/([^/@]+)/); if (m) out.title = m[1].trim();
+        else { m = s.match(/[?&](?:q|query)=([^&]+)/); if (m && !/^-?\d+\.\d+,/.test(m[1])) out.title = m[1].trim(); }
+      } catch (e) {}
+      return out;
+    }
+    async function addWish() {
+      const inp = document.getElementById("wishInput"), raw = inp.value.trim();
+      if (!raw) return;
+      const trip = getActiveTrip(); trip.wishlist = trip.wishlist || [];
+      let w = { id: wishNewId(), title: raw.slice(0, 80), addedAt: Date.now() };
+      if (/^https?:\/\//i.test(raw)) {
+        const p = parseMapLink(raw);
+        w.mapUrl = /^https:\/\//i.test(raw) ? raw.slice(0, 500) : "";
+        w.title = p.title || prompt("這個地點叫什麼名字？", "") || "想去的地方";
+        if (isFinite(p.lat) && isFinite(p.lng)) { w.lat = p.lat; w.lng = p.lng; }
+      }
+      w.title = String(w.title).replace(/[<>"'`&\\]/g, "").slice(0, 80);
+      trip.wishlist.unshift(w);
+      inp.value = "";
+      saveAppState(); debouncedSyncToCloud(); renderWishlist();
+      track("wish_add", w.lat != null ? "geo" : "text");
+      if (w.lat == null) wishGeocode(trip, w);
+    }
+    // 沒有座標的：用地名查一次（只送出地名，和行程地點查詢一樣用 OpenStreetMap）
+    async function wishGeocode(trip, w) {
+      const city = (trip.days.find(d => d.locationPlace) || {}).locationPlace || "";
+      try {
+        const c = await geocodeStationOnline(city && !w.title.includes(city) ? `${w.title} ${city}` : w.title);
+        if (c && isFinite(c.lat)) { w.lat = +c.lat; w.lng = +c.lng; saveAppState(); renderWishlist(); }
+      } catch (e) {}
+    }
+    function removeWish(id) {
+      const trip = getActiveTrip();
+      trip.wishlist = (trip.wishlist || []).filter(w => w.id !== id);
+      saveAppState(); debouncedSyncToCloud(); renderWishlist();
+    }
+    function dayLabel(trip, di) { return trip.startDate ? `第 ${di + 1} 天・${shiftDateStr(trip.startDate, di).slice(5).replace("-", "/")}` : `第 ${di + 1} 天`; }
+    function dayTzFor(trip, di) {
+      for (let i = di; i >= 0; i--) { const its = trip.days[i].items || []; const last = its[its.length - 1]; if (last) return last.endTz || last.startTz || trip.homeTz; }
+      return trip.homeTz || "Asia/Taipei";
+    }
+    function minsToHHMM(m) { m = Math.max(0, Math.min(23 * 60 + 59, Math.round(m))); return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"); }
+    // 排進某一天：接在那天最後一個行程後面（至少 10:00），每個地方 1.5 小時，中間留 30 分鐘移動
+    function wishToItems(trip, di, wishes) {
+      const day = trip.days[di]; if (!day) return;
+      const its = day.items || [];
+      let t = Math.max(10 * 60, ...its.map(it => hhmmToMinutes(it.endTime || it.startTime || "00:00") + (Number(it.endDayOffset) || 0) * 1440).filter(x => x < 1440).map(x => x + 30));
+      const tz = dayTzFor(trip, di);
+      wishes.forEach(w => {
+        const start = Math.min(t, 21 * 60), end = Math.min(start + 90, 23 * 60 + 30);
+        its.push({ id: "item_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), type: "spot", title: w.title, subtitle: "", mood: "", startTz: tz, endTz: tz,
+          startTime: minsToHHMM(start), endTime: minsToHHMM(end), currency: "", cost: "", costLabel: "", extraExpenses: [], note: w.note || "", url: "", urlLabel: "",
+          mapUrl: w.mapUrl || (isFinite(w.lat) ? `https://www.google.com/maps/search/?api=1&query=${w.lat},${w.lng}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(w.title)}`),
+          photos: [], status: "normal", endDayOffset: 0, isPrivate: false, createdBy: currentCloudUser ? currentCloudUser.id : "" });
+        t = end + 30;
+      });
+      day.items = its.sort((a, b) => hhmmToMinutes(a.startTime) - hhmmToMinutes(b.startTime));
+      const ids = new Set(wishes.map(w => w.id));
+      trip.wishlist = (trip.wishlist || []).filter(w => !ids.has(w.id));
+    }
+    function wishToDay(id, di) {
+      const trip = getActiveTrip(), w = (trip.wishlist || []).find(x => x.id === id);
+      if (!w || !trip.days[di]) return;
+      wishToItems(trip, di, [w]);
+      saveAppState(); debouncedSyncToCloud(); renderAll(); renderWishlist();
+      showToast(`「${w.title}」排進${dayLabel(trip, di)}`);
+      track("wish_place", "manual");
+    }
+    // 依距離自動分配：位置相近的放同一天（k-means），每天裡面依最近的順序走
+    function planWishes(trip) {
+      const geo = (trip.wishlist || []).filter(w => isFinite(w.lat) && isFinite(w.lng));
+      const nDays = trip.days.length, k = Math.max(1, Math.min(nDays, geo.length));
+      if (!geo.length) return null;
+      const pts = geo.map(w => ({ w, x: w.lng * Math.cos(w.lat * Math.PI / 180), y: w.lat }));
+      const sorted = [...pts].sort((a, b) => a.x - b.x);
+      let cents = Array.from({ length: k }, (_, i) => ({ ...sorted[Math.floor((i + 0.5) * sorted.length / k)] }));
+      let asg = [];
+      for (let it = 0; it < 30; it++) {
+        asg = pts.map(p => { let bi = 0, bd = Infinity; cents.forEach((c, i) => { const d = (p.x - c.x) ** 2 + (p.y - c.y) ** 2; if (d < bd) { bd = d; bi = i; } }); return bi; });
+        cents = cents.map((c, i) => { const g = pts.filter((_, j) => asg[j] === i); return g.length ? { x: g.reduce((a, p) => a + p.x, 0) / g.length, y: g.reduce((a, p) => a + p.y, 0) / g.length } : c; });
+      }
+      // 一天最多 5 個，太多的移到最近、還有空位的那一群
+      const groups = cents.map((c, i) => ({ c, list: pts.filter((_, j) => asg[j] === i) }));
+      groups.forEach(g => { while (g.list.length > 5) { const p = g.list.pop(); const alt = groups.filter(h => h !== g && h.list.length < 5).sort((a, b) => ((p.x - a.c.x) ** 2 + (p.y - a.c.y) ** 2) - ((p.x - b.c.x) ** 2 + (p.y - b.c.y) ** 2))[0]; (alt || g).list.push(p); if (!alt) break; } });
+      const nonEmpty = groups.filter(g => g.list.length);
+      // 每一群配一天：有設定所在城市座標的天，配最近的那群；其他依序填空的天
+      const freeDays = trip.days.map((d, i) => i).sort((a, b) => (trip.days[a].items || []).length - (trip.days[b].items || []).length || a - b);
+      const used = new Set(), plan = [];
+      nonEmpty.forEach(g => {
+        let di = -1, bd = Infinity;
+        trip.days.forEach((d, i) => { if (used.has(i) || !d.locationCoord) return; const lx = d.locationCoord.lng * Math.cos(d.locationCoord.lat * Math.PI / 180), dd = (lx - g.c.x) ** 2 + (d.locationCoord.lat - g.c.y) ** 2; if (dd < bd) { bd = dd; di = i; } });
+        if (di < 0 || bd > 0.25) di = freeDays.find(i => !used.has(i));
+        if (di == null) di = freeDays[0];
+        used.add(di);
+        // 天內順序：從最西邊開始，每次走最近的
+        const rest = [...g.list].sort((a, b) => a.x - b.x), order = [rest.shift()];
+        while (rest.length) { const l = order[order.length - 1]; rest.sort((a, b) => ((a.x - l.x) ** 2 + (a.y - l.y) ** 2) - ((b.x - l.x) ** 2 + (b.y - l.y) ** 2)); order.push(rest.shift()); }
+        plan.push({ di, wishes: order.map(p => p.w) });
+      });
+      return plan.sort((a, b) => a.di - b.di);
+    }
+    let wishPlanCache = null;
+    function previewWishPlan() {
+      const trip = getActiveTrip(), plan = planWishes(trip);
+      const noGeo = (trip.wishlist || []).filter(w => !(isFinite(w.lat) && isFinite(w.lng)));
+      const box = document.getElementById("wishPlanBox");
+      if (!plan) { box.innerHTML = `<div class="vault-empty">清單裡的地方還沒有位置。貼 Google 地圖連結，或等一下讓 App 查好位置再試。</div>`; return; }
+      wishPlanCache = plan;
+      box.innerHTML = `<div class="wish-plan"><b>這樣排好嗎？</b>${plan.map(p => `<div class="wish-plan-day"><span>${escapeHtml(dayLabel(trip, p.di))}</span>${p.wishes.map(w => escapeHtml(w.title)).join(" → ")}</div>`).join("")}
+        ${noGeo.length ? `<small>沒有位置的 ${noGeo.length} 個先留在清單，可以手動排。</small>` : ""}
+        <div style="display:flex; gap:8px; margin-top:10px;"><button type="button" class="pill-btn primary" onclick="applyWishPlan()">排進去</button><button type="button" class="pill-btn" onclick="document.getElementById('wishPlanBox').innerHTML=''">先不要</button></div></div>`;
+    }
+    function applyWishPlan() {
+      const trip = getActiveTrip(); if (!wishPlanCache) return;
+      let n = 0;
+      wishPlanCache.forEach(p => { const live = p.wishes.filter(w => (trip.wishlist || []).some(x => x.id === w.id)); n += live.length; wishToItems(trip, p.di, live); });
+      wishPlanCache = null;
+      saveAppState(); debouncedSyncToCloud(); renderAll(); renderWishlist();
+      showToast(`排好了 ${n} 個地方，時間可以再調`);
+      track("wish_place", "auto");
+    }
+    function renderWishlist() {
+      const desk = window.innerWidth >= 1024;
+      const el = document.getElementById(desk ? "wishViewDesk" : "wishView"); if (!el) return;
+      const trip = getActiveTrip(), list = trip.wishlist || [];
+      const dayOpts = trip.days.map((d, i) => `<option value="${i}">${escapeHtml(dayLabel(trip, i))}</option>`).join("");
+      el.innerHTML = `<div class="form-card">
+          <div style="font-size:16px; font-weight:900; margin-bottom:4px; display:flex; align-items:center; gap:6px;">${ic("pin")} 想去清單</div>
+          <div style="font-size:12.5px; color:var(--sub); margin-bottom:10px;">先把想去的地方丟進來，不用想時間。之後一個一個排進某一天，或讓 App 依距離幫你分好。</div>
+          <div style="display:flex; gap:8px;"><input type="text" class="form-input" id="wishInput" placeholder="地名，或貼上 Google 地圖連結" onkeydown="if(event.key==='Enter'&&!event.isComposing)addWish()"><button type="button" class="pill-btn primary" onclick="addWish()">加入</button></div>
+          ${list.length > 1 ? `<button type="button" class="pill-btn" style="width:100%; justify-content:center; margin-top:10px;" onclick="previewWishPlan()">${ic("sparkle")} 依距離幫我排進天數</button>` : ""}
+          <div id="wishPlanBox"></div>
+        </div>
+        <div class="form-card">${list.map(w => `<div class="wish-row">
+            <div class="wish-main"><b>${escapeHtml(w.title)}</b><small>${isFinite(w.lat) ? "有位置" : "還沒有位置"}${w.mapUrl ? ` · <a href="${escapeHtml(w.mapUrl)}" target="_blank" rel="noopener">地圖</a>` : ""}</small></div>
+            <select class="form-select wish-day" aria-label="排進哪一天" onchange="if(this.value!=='')wishToDay('${w.id}', +this.value)"><option value="">排進…</option>${dayOpts}</select>
+            <button type="button" class="mini-btn delete-btn" onclick="removeWish('${w.id}')" aria-label="移除"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>`).join("") || `<div class="vault-empty">還是空的。看到喜歡的店、景點、展覽，先丟進來就好。</div>`}</div>
+        ${laterHtml(trip)}`;
+    }
+
+
+    // =====================================================================
+    // 下次還要去：這趟取消、沒去成的景點，自動收進一份跨旅程的清單
+    // 下次排到同一座城市時提醒，一鍵放回想去清單
+    // =====================================================================
+    const LATER_TYPES = new Set(["spot", "", undefined]);
+    function laterFromItem(item, day, on) {
+      appState.laterList = Array.isArray(appState.laterList) ? appState.laterList : [];
+      const id = "later_" + item.id;
+      appState.laterList = appState.laterList.filter(x => x.id !== id);
+      if (!on || !LATER_TYPES.has(item.type) || !item.title) return;
+      const trip = getActiveTrip();
+      appState.laterList.unshift({ id, title: String(item.title).slice(0, 80), city: String((day && day.locationPlace) || "").slice(0, 60),
+        mapUrl: /^https:\/\//i.test(item.mapUrl || "") ? item.mapUrl : "", tripTitle: String(trip.title || "").slice(0, 80), addedAt: Date.now() });
+      appState.laterList = appState.laterList.slice(0, 200);
+      showToast(`沒去成的「${item.title}」收進「下次還要去」`);
+      track("later_add");
+    }
+    function laterToWish(id) {
+      const trip = getActiveTrip(), x = (appState.laterList || []).find(l => l.id === id); if (!x) return;
+      trip.wishlist = trip.wishlist || [];
+      const w = { id: wishNewId(), title: x.title, addedAt: Date.now() };
+      if (x.mapUrl) { w.mapUrl = x.mapUrl; const p = parseMapLink(x.mapUrl); if (isFinite(p.lat)) { w.lat = p.lat; w.lng = p.lng; } }
+      trip.wishlist.unshift(w);
+      appState.laterList = appState.laterList.filter(l => l.id !== id);
+      saveAppState(); debouncedSyncToCloud(); renderWishlist();
+      if (w.lat == null) wishGeocode(trip, w);
+      track("later_use");
+    }
+    function laterAllToWish(ids) { ids.forEach(laterToWish); showToast(`放進了 ${ids.length} 個地方`); }
+    function laterRemove(id) { appState.laterList = (appState.laterList || []).filter(l => l.id !== id); saveAppState(); renderWishlist(); }
+    // 這趟的城市（每天的「所在城市」）有沒有上次沒去成的
+    function laterForTrip(trip) {
+      const cities = new Set((trip.days || []).map(d => String(d.locationPlace || "").trim()).filter(Boolean));
+      return (appState.laterList || []).filter(x => x.city && [...cities].some(c => c.includes(x.city) || x.city.includes(c)));
+    }
+    function laterHtml(trip) {
+      const all = appState.laterList || []; if (!all.length) return "";
+      const here = laterForTrip(trip), hereIds = new Set(here.map(x => x.id));
+      const groups = {};
+      all.forEach(x => { (groups[x.city || "其他"] = groups[x.city || "其他"] || []).push(x); });
+      return `<div class="form-card later-card">
+        <div style="font-size:16px; font-weight:900; margin-bottom:4px; display:flex; align-items:center; gap:6px;">${ic("flag")} 下次還要去</div>
+        <div style="font-size:12.5px; color:var(--sub); margin-bottom:8px;">之前取消、沒去成的地方，都收在這裡。</div>
+        ${here.length ? `<div class="later-hint">上次在 ${escapeHtml([...new Set(here.map(x => x.city))].join("、"))} 有 ${here.length} 個地方沒去成<button type="button" class="pill-btn primary" onclick="laterAllToWish(${escapeHtml(JSON.stringify(here.map(x => x.id)))})">全部放進想去清單</button></div>` : ""}
+        ${Object.entries(groups).map(([city, list]) => `<div class="vault-sec">${escapeHtml(city)}</div>${list.map(x => `<div class="wish-row${hereIds.has(x.id) ? " here" : ""}">
+          <div class="wish-main"><b>${escapeHtml(x.title)}</b><small>${escapeHtml(x.tripTitle || "")}${x.mapUrl ? ` · <a href="${escapeHtml(x.mapUrl)}" target="_blank" rel="noopener">地圖</a>` : ""}</small></div>
+          <button type="button" class="mini-btn" onclick="laterToWish('${x.id}')">放進這趟</button>
+          <button type="button" class="mini-btn delete-btn" onclick="laterRemove('${x.id}')" aria-label="移除"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button></div>`).join("")}`).join("")}
+      </div>`;
+    }
+
 
     // ---------- 護照頁：所有收集到的機場章 ----------
     function allAirportStamps() {
@@ -14762,6 +16181,13 @@ function initSupabaseClient() {
           const paths = (files || []).map(x => `${uid}/${f.name}/${x.name}`);
           if (paths.length) await bucket.remove(paths);
         }
+        // 1.5 旅行卡帶的錄音和封面（路徑：使用者ID/檔名）
+        try {
+          const tb = sbClient.storage.from("tape-media");
+          const { data: tf } = await tb.list(uid, { limit: 1000 });
+          const tp = (tf || []).map(x => `${uid}/${x.name}`);
+          if (tp.length) await tb.remove(tp);
+        } catch (e) {}
         // 2. 再刪資料表與登入帳號
         const { error } = await sbClient.rpc("delete_my_account");
         if (error) throw error;
@@ -15243,6 +16669,8 @@ function initSupabaseClient() {
       const daysToGo = trip && trip.startDate ? cdCalendarDaysBetween(cdLocalDateStr(), trip.startDate) : 99;
       const preTrip = tripsHaveContent([trip]) && daysToGo >= 0 && daysToGo <= 3 && !(st.preTrip || []).includes(trip.id);
       const valueMoment = tripsHaveContent(appState.trips) || (st.visits || 0) >= 2;
+      // 「開始的四步」還沒走完（也還沒按「我自己逛逛」）：先不跳，等新手導覽結束；快出發了例外
+      if (!preTrip && startGuideActive(trip)) return;
       if (preTrip || (valueMoment && now > (st.snoozeUntil || 0))) {
         if (!claimAutoTip()) return;
         track("a2hs", "card");

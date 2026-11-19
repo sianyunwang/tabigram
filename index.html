@@ -9440,11 +9440,13 @@
       if (syncTimeout) clearTimeout(syncTimeout);
       syncTimeout = setTimeout(async () => {
         const trip = getActiveTrip();
-        if (trip && trip.shareCode && isUserTripAdmin(trip, currentCloudUser)) {
+        if (trip && isUserTripAdmin(trip, currentCloudUser) && (trip.shareCode || tripsHaveContent([trip]))) {
+          // 登入後，有內容的旅程都自動存到雲端（不用先按「發佈」），換手機、電腦都看得到
           await publishActiveTripToCloud(true);
         } else if (trip && trip.shareCode) {
           await syncMyJournalToCloud(true);
         }
+        syncTimeout = null;
         if (text) text.textContent = "已同步";
         setTimeout(() => { if (badge && text.textContent === "已同步") badge.style.display = "none"; }, 2000);
       }, 1500);
@@ -10021,15 +10023,15 @@ function initSupabaseClient() {
     }
 
     // Owner publishes/updates Master Trip + syncs their own Journal
-    async function publishActiveTripToCloud(silent = false) {
-      if (!currentCloudUser) return alert("請先登入雲端帳號");
-      const trip = getActiveTrip();
+    async function publishActiveTripToCloud(silent = false, tripArg = null) {
+      if (!currentCloudUser) return silent ? undefined : alert("請先登入雲端帳號");
+      const trip = tripArg || getActiveTrip();
       if (!isUserTripAdmin(trip, currentCloudUser)) {
-        return alert("只有管理員或共同管理員可以修改共用主行程喔！");
+        return silent ? undefined : alert("只有管理員或共同管理員可以修改共用主行程喔！");
       }
 
-      const btn = document.getElementById("publishTripBtn");
-      btn.textContent = "上傳中...";
+      const btn = document.getElementById("publishTripBtn") || { textContent: "", innerHTML: "" };
+      if (!silent) btn.textContent = "上傳中...";
 
       if (!trip.shareCode) {
         // 第一次發佈：預設旅程的 ID 是 trip_1，每個人都一樣，會撞到別人的行程，所以換成唯一 ID
@@ -10056,6 +10058,7 @@ function initSupabaseClient() {
 
       if (tripErr) {
         btn.innerHTML = ic("upload") + " 發佈 / 更新共用行程";
+        if (silent) { console.warn("[TabigrAm] 上傳旅程失敗", tripErr.message); return; }
         return alert("發佈失敗：" + tripErr.message);
       }
 
@@ -10205,8 +10208,27 @@ function initSupabaseClient() {
         renderAll();
         resolveMissingCloudPhotos();
         if (needResyncActiveTrip) debouncedSyncToCloud();
+        await uploadLocalOnlyTrips();
+        lastCloudPullAt = Date.now();
       } catch (e) {}
     }
+    // 這台裝置上有內容、但還沒存到雲端的旅程：登入後自動補上傳
+    async function uploadLocalOnlyTrips() {
+      if (!currentCloudUser) return;
+      const todo = (appState.trips || []).filter(t => !t.shareCode && tripsHaveContent([t]) && isUserTripAdmin(t, currentCloudUser));
+      for (const t of todo) {
+        try { await publishActiveTripToCloud(true, t); } catch (e) { console.warn(e); }
+      }
+      if (todo.length) { saveAppState(); renderAll(); }
+    }
+    // 從別的裝置切回來時，重新抓一次雲端（例如電腦改完，打開手機就看到）
+    let lastCloudPullAt = 0;
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState !== "visible" || !currentCloudUser || !sbClient) return;
+      if (Date.now() - lastCloudPullAt < 60 * 1000 || syncTimeout) return;
+      lastCloudPullAt = Date.now();
+      pullAllCloudTripsAndMerge();
+    });
     // 控制右上角選單的展開與收合
     const LOCK_ICON_OPEN = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9.5" rx="2.4"/><path d="M8.5 11V8a3.5 3.5 0 0 1 6.8-1.2"/></svg>';
     const LOCK_ICON_CLOSED = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9.5" rx="2.4"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg>';

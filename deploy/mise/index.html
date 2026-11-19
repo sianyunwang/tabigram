@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TabigrAm.mise</title>
+<meta name="description" content="TabigrAm.mise：旅行生活選物與舊書攤。">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F2ECE0">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500;700;800&display=swap">
+<style>
+:root {
+  --paper: #F2ECE0; --paper2: #EAE2D2; --card: #FBF8F1; --ink: #22201C; --sub: #6D665A; --line: #D8CFBD;
+  --kraft: #D8C3A0; --kraft-ink: #4A3C26; --green: #2F4A3A; --accent: #B5462B;
+  --serif: 'Noto Serif TC', serif; --sans: 'Noto Sans TC', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; color: var(--ink); font: 16px/1.75 var(--sans); background: var(--paper);
+  background-image: radial-gradient(rgba(90,72,40,.05) 1px, transparent 1px), radial-gradient(rgba(90,72,40,.04) 1px, transparent 1px);
+  background-size: 7px 7px, 11px 11px; background-position: 0 0, 3px 5px;
+}
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+
+/* 招牌 */
+.sign { text-align: center; padding: 46px 0 18px; position: relative; }
+.sign .top { font: 700 12px/1 var(--mono); letter-spacing: .32em; color: var(--sub); }
+.sign h1 { font: 900 clamp(44px, 10vw, 96px)/1 var(--serif); margin: 14px 0 0; letter-spacing: -.01em; }
+.sign h1 i { font-style: normal; color: var(--green); }
+.sign .ul { display: block; width: min(420px, 70%); height: 10px; margin: 8px auto 0; }
+.sign p { font: 500 15px/1.6 var(--serif); color: var(--sub); margin: 14px 0 0; }
+.open { position: absolute; right: 4px; top: 30px; transform: rotate(8deg); border: 2px solid var(--accent); color: var(--accent); border-radius: 6px; padding: 4px 10px 2px; font: 800 11px/1.3 var(--mono); letter-spacing: .14em; text-align: center; opacity: .85; }
+.open b { display: block; font-size: 15px; letter-spacing: .2em; }
+
+/* 分類：像書架上的分類牌 */
+.shelf-tabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 18px 0 8px; }
+.shelf-tabs a { text-decoration: none; padding: 6px 14px 5px; background: var(--card); border: 1.5px solid var(--line); border-radius: 4px; font: 700 14px/1.4 var(--serif); }
+.shelf-tabs a.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.shelf-tabs small { font: 600 11px var(--mono); color: var(--sub); margin-left: 4px; }
+.shelf-tabs a.on small { color: #BDB4A3; }
+.tagline { display: flex; gap: 6px 12px; justify-content: center; flex-wrap: wrap; margin: 6px 0 0; font-size: 13px; color: var(--sub); }
+.tagline a { text-decoration: none; } .tagline a:hover, .tagline a.on { color: var(--ink); text-decoration: underline; }
+
+/* 層板 */
+.board { margin: 30px 0 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 40px 26px; padding-bottom: 20px; }
+.item { position: relative; text-decoration: none; display: block; }
+.item .ph { position: relative; aspect-ratio: 1; background: var(--card) center/cover no-repeat; border-radius: 3px; box-shadow: 0 1px 0 rgba(0,0,0,.05), 0 10px 22px -14px rgba(60,40,10,.45); transition: transform .25s; }
+.item:hover .ph { transform: translateY(-3px); }
+.item.book .ph { border-radius: 2px 5px 5px 2px; }
+.item.book .ph::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 14px; background: linear-gradient(90deg, rgba(0,0,0,.22), rgba(0,0,0,.04) 70%, transparent); border-radius: 2px 0 0 2px; }
+.item.book .ph::after { content: ""; position: absolute; inset: 4px -5px 4px auto; width: 5px; background: repeating-linear-gradient(0deg, #F3EEE2 0 2px, #DCD3C2 2px 3px); border-radius: 0 3px 3px 0; z-index: -1; }
+/* 吊牌 */
+.tag-p { position: absolute; right: -8px; top: 16px; transform: rotate(6deg); background: var(--kraft); color: var(--kraft-ink); font: 800 13px/1 var(--mono); padding: 8px 10px 8px 18px; border-radius: 3px 3px 3px 3px; clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%); box-shadow: 0 4px 8px -4px rgba(0,0,0,.35); }
+.tag-p::before { content: ""; position: absolute; left: 9px; top: 50%; width: 5px; height: 5px; margin-top: -2.5px; border-radius: 50%; background: var(--paper); }
+.item .k { font: 700 11px/1 var(--mono); letter-spacing: .12em; color: var(--sub); margin-top: 14px; display: flex; gap: 6px; align-items: center; }
+.item h2 { font: 700 18px/1.4 var(--serif); margin: 6px 0 2px; }
+.item .mk { font-size: 13px; color: var(--sub); }
+.collab { display: inline-block; font: 800 10px/1 var(--sans); letter-spacing: .06em; color: var(--accent); border: 1px solid currentColor; border-radius: 3px; padding: 3px 5px 2px; }
+.empty { text-align: center; color: var(--sub); padding: 60px 0; font-family: var(--serif); }
+
+/* 商品頁 */
+.detail { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 44px; margin: 34px 0 30px; align-items: start; }
+.back { background: none; border: 0; padding: 0; cursor: pointer; font: 700 13px var(--mono); color: var(--sub); margin-top: 26px; }
+.gal .main { aspect-ratio: 1; background: var(--card) center/cover no-repeat; border-radius: 4px; box-shadow: 0 16px 34px -22px rgba(60,40,10,.55); }
+.gal .th { display: flex; gap: 10px; margin-top: 12px; }
+.gal .th button { width: 64px; height: 64px; border-radius: 3px; border: 2px solid transparent; background: var(--card) center/cover no-repeat; cursor: pointer; padding: 0; }
+.gal .th button.on { border-color: var(--ink); }
+.info .k { font: 700 12px/1 var(--mono); letter-spacing: .14em; color: var(--sub); display: flex; gap: 8px; align-items: center; }
+.info h1 { font: 900 clamp(26px, 4vw, 36px)/1.3 var(--serif); margin: 10px 0 6px; }
+.info .mk { color: var(--sub); }
+.price { display: inline-block; margin: 18px 0 4px; background: var(--kraft); color: var(--kraft-ink); font: 800 20px/1 var(--mono); padding: 10px 16px 9px; border-radius: 3px; transform: rotate(-1.5deg); }
+.price-note { font-size: 12px; color: var(--sub); }
+.buy { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin: 20px 0 8px; padding: 15px 18px; border: 0; border-radius: 999px; background: var(--ink); color: var(--paper); font: 700 16px var(--sans); cursor: pointer; text-decoration: none; }
+.buy:hover { background: var(--green); }
+.buy-note { font-size: 12px; color: var(--sub); line-height: 1.6; }
+.desc { margin-top: 26px; font-family: var(--serif); font-size: 16.5px; line-height: 1.95; }
+.desc p { margin: 0 0 1em; }
+.spec { margin-top: 18px; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 14px; color: var(--sub); }
+/* 借書卡 */
+.libcard { margin-top: 22px; background: #FBF6E8; border: 1px solid #E2D6BC; border-radius: 3px; padding: 14px 16px 10px; font-size: 14px;
+  background-image: repeating-linear-gradient(180deg, transparent 0 31px, rgba(181,70,43,.18) 31px 32px); background-position: 0 40px; }
+.libcard .h { font: 800 11px/1 var(--mono); letter-spacing: .2em; color: var(--accent); margin-bottom: 10px; }
+.libcard div { display: grid; grid-template-columns: 70px 1fr; line-height: 32px; }
+.libcard b { font-weight: 700; color: var(--sub); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 20px; }
+.tags a { font-size: 13px; text-decoration: none; padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); }
+
+/* 店規 */
+.rules { margin: 50px 0 0; border-top: 2px solid var(--ink); padding: 18px 0 50px; display: grid; grid-template-columns: 180px 1fr; gap: 20px; font-size: 13px; color: var(--sub); line-height: 1.8; }
+.rules h3 { margin: 0; font: 800 12px/1.4 var(--mono); letter-spacing: .16em; color: var(--ink); }
+.rules ul { margin: 0; padding-left: 1.2em; }
+.foot { font: 600 12px var(--mono); color: var(--sub); text-align: center; padding: 0 0 40px; }
+
+/* 離開提醒 */
+.leave { position: fixed; inset: 0; background: rgba(34,32,28,.45); display: grid; place-items: center; padding: 16px; z-index: 50; }
+.leave[hidden] { display: none; }
+.leave .box { background: var(--card); border-radius: 12px; max-width: 420px; width: 100%; padding: 24px 22px 18px; box-shadow: 0 30px 60px -20px rgba(0,0,0,.4); }
+.leave h2 { font: 800 20px/1.4 var(--serif); margin: 0 0 8px; }
+.leave p { font-size: 14px; color: var(--sub); margin: 0 0 6px; }
+.leave .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+.leave .row button, .leave .row a { border: 0; border-radius: 999px; padding: 10px 16px; font: 700 14px var(--sans); cursor: pointer; text-decoration: none; }
+.leave .no { background: var(--paper2); }
+.leave .go { background: var(--ink); color: var(--paper); }
+.preview-flag { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); background: var(--accent); color: #fff; font: 700 13px var(--sans); padding: 8px 14px; border-radius: 999px; z-index: 40; }
+.sample { text-align: center; font: 700 11px var(--mono); letter-spacing: .2em; color: var(--accent); margin-top: 8px; }
+
+@media (max-width: 760px) {
+  .detail { grid-template-columns: 1fr; gap: 24px; }
+  .rules { grid-template-columns: 1fr; gap: 8px; }
+  .open { right: 0; top: 14px; transform: rotate(8deg) scale(.85); }
+  .board { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 16px; }
+  .item h2 { font-size: 16px; }
+  .tag-p { font-size: 11px; right: -4px; }
+}
+@media (prefers-reduced-motion: reduce) { .item .ph { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="empty">整理貨架中…</div></div>
+<div class="leave" id="leave" hidden role="dialog" aria-modal="true" aria-labelledby="leaveH">
+  <div class="box">
+    <h2 id="leaveH">即將前往賣家的頁面</h2>
+    <p id="leaveShop"></p>
+    <p>TabigrAm 只介紹、不販售：付款、出貨、發票、退換貨都由賣家負責。價格與庫存以賣家頁面為準。</p>
+    <div class="row"><button type="button" class="no" id="leaveNo">先不要</button><a class="go" id="leaveGo" href="#" target="_blank" rel="noopener noreferrer">前往 ↗</a></div>
+  </div>
+</div>
+<script>
+const SUPABASE_URL = "https://pjgjxvahhauqluassiuo.supabase.co";
+const SUPABASE_KEY = "sb_publishable_6FOfxpsIuTDrJq0BFCAW6w_uzp-IhVX";
+const H = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const img = p => !p ? "" : /^(https?:|\.\.\/|data:)/.test(p) ? p : `${SUPABASE_URL}/storage/v1/object/public/content/${String(p).split("/").map(encodeURIComponent).join("/")}`;
+const cssUrl = u => `url('${String(u || "").replace(/[\s"'()<>&\\]/g, c => "%" + c.charCodeAt(0).toString(16).toUpperCase().padStart(2, "0"))}')`;
+const safeHttps = u => /^https:\/\/[^\s"'<>]+$/.test(String(u || "")) ? u : "";
+const params = () => new URLSearchParams(location.search);
+const KIND = { goods: "選物", book: "書", zine: "誌", print: "印刷品", other: "其他" };
+const SHELF = [["", "全部"], ["goods", "選物"], ["books", "書與誌"], ["print", "印刷品"], ["other", "其他"]];
+const isBook = k => k === "book" || k === "zine";
+
+// ===== 範例（還沒有上架的商品時顯示）：畫出來的示意圖，不是真的商品 =====
+const svg = body => "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'><rect width='600' height='600' fill='#EFE8DA'/>${body}</svg>`);
+const SAMPLE = [
+  { id: "sample-pouch", title: "旅行用亞麻束口袋", maker: "TabigrAm 範例", kind: "goods", price_text: "NT$ 480", shop_name: "賣家的網站", shop_url: "https://example.com/", tags: ["收納", "布物"],
+    description: "裝充電線、零錢、車票的小袋子。洗過的亞麻會越用越軟。\n\n這是範例商品，在後台「選物」上架之後，這裡就會換成真的。", spec: "22×28cm · 亞麻 100%",
+    cover: svg("<path d='M190 200 Q300 170 410 200 L430 470 Q300 500 170 470 Z' fill='#C9B48E'/><path d='M190 200 Q300 230 410 200' stroke='#8C7650' stroke-width='5' fill='none'/><circle cx='250' cy='212' r='8' fill='#5D4B30'/><path d='M250 212 Q230 260 240 300' stroke='#5D4B30' stroke-width='4' fill='none'/>") },
+  { id: "sample-book", title: "在京都，慢慢走", maker: "某位旅行作家", kind: "book", price_text: "NT$ 360", shop_name: "出版社", shop_url: "https://example.com/", book_author: "某位旅行作家", publisher: "範例出版社", pub_year: "2024", tags: ["京都", "散文"],
+    description: "一本可以放進外套口袋的散步書。\n\n這是範例商品。", spec: "平裝 · 192 頁 · 12.8×18.8cm",
+    cover: svg("<rect x='170' y='110' width='260' height='380' rx='6' fill='#2F4A3A'/><rect x='200' y='170' width='200' height='4' fill='#E9DFC9'/><text x='300' y='250' font-family='serif' font-size='34' fill='#F2ECE0' text-anchor='middle'>在京都</text><text x='300' y='296' font-family='serif' font-size='34' fill='#F2ECE0' text-anchor='middle'>慢慢走</text><circle cx='300' cy='390' r='36' fill='none' stroke='#E9DFC9' stroke-width='3'/>") },
+  { id: "sample-print", title: "鐵道車票明信片組", maker: "TabigrAm 範例", kind: "print", price_text: "NT$ 150", shop_name: "賣家的網站", shop_url: "https://example.com/", is_affiliate: true, tags: ["鐵道", "明信片"],
+    description: "六張一組的車票造型明信片。\n\n這是範例商品（標示「合作」的示範）。", spec: "10×15cm · 6 張",
+    cover: svg("<g transform='rotate(-6 300 300)'><rect x='140' y='190' width='320' height='200' rx='10' fill='#F7F2E6' stroke='#B5462B' stroke-width='4'/><text x='170' y='250' font-family='monospace' font-size='26' fill='#22201C'>TAIPEI → HUALIEN</text><text x='170' y='300' font-family='monospace' font-size='18' fill='#6D665A'>No. 0001 · 自強號</text><rect x='170' y='330' width='120' height='28' fill='#B5462B'/></g>") },
+  { id: "sample-zine", title: "第一張地鐵票（試刊號）", maker: "TabigrAm.zine", kind: "zine", price_text: "NT$ 120", shop_name: "TabigrAm", shop_url: "https://example.com/", book_author: "TabigrAm 編輯部", publisher: "TabigrAm", pub_year: "2025", condition: "", tags: ["誌", "東京"],
+    description: "Zine 的紙本小冊子示意。\n\n這是範例商品。", spec: "A5 · 騎馬釘 · 24 頁",
+    cover: svg("<rect x='180' y='120' width='240' height='340' fill='#F4C430'/><text x='300' y='230' font-family='serif' font-weight='900' font-size='40' fill='#22201C' text-anchor='middle'>ZINE</text><text x='300' y='280' font-family='monospace' font-size='18' fill='#22201C' text-anchor='middle'>No.00</text>") },
+];
+let ITEMS = [], usingSample = false;
+
+function track(e, d) {
+  try {
+    if (navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true || localStorage.getItem("TG_ANALYTICS_OFF") === "1" || usingSample) return;
+    fetch(`${SUPABASE_URL}/rest/v1/rpc/track`, { method: "POST", keepalive: true, headers: { ...H, "Content-Type": "application/json" }, body: JSON.stringify({ events: [d ? { e, d: String(d).replace(/[^A-Za-z0-9_.:/-]/g, "").slice(0, 40) } : { e }] }) }).catch(() => {});
+  } catch (e) {}
+}
+async function load() {
+  try {
+    const r = await Promise.race([fetch(`${SUPABASE_URL}/rest/v1/mise_items?select=id,title,maker,kind,price_text,description,spec,book_author,publisher,pub_year,condition,shop_name,shop_url,is_affiliate,tags,cover,photo2,photo3,photo4,featured&status=eq.published&order=featured.desc,sort.asc,published_at.desc`, { headers: H }), new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 8000))]);
+    ITEMS = r.ok ? await r.json() : [];
+  } catch (e) { ITEMS = []; }
+  if (!ITEMS.length) { ITEMS = SAMPLE; usingSample = true; }
+}
+async function loadPreview(id) {
+  await new Promise((res, rej) => { const s = document.createElement("script"); s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const { data } = await sb.from("mise_items").select("*").eq("id", id).maybeSingle();
+  return data;
+}
+
+const signHtml = () => `<header class="sign">
+    <div class="top">旅行生活選物 · 舊書攤</div>
+    <h1>TabigrAm<i>.mise</i></h1>
+    <svg class="ul" viewBox="0 0 400 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2 6 Q100 1 200 5 T398 4" stroke="#22201C" stroke-width="2" fill="none"/></svg>
+    <p>帶著走的小東西、路上讀的書。看到喜歡的，就去作者的店裡帶走它。</p>
+    <div class="open" aria-hidden="true"><b>OPEN</b>營業中</div>
+    ${usingSample ? `<div class="sample">範例商品 · SAMPLE</div>` : ""}
+  </header>`;
+const rulesHtml = () => `<section class="rules">
+    <h3>關於這間店</h3>
+    <ul>
+      <li><b>TabigrAm 只介紹、不販售。</b>商品由品牌、創作者或出版社在自己的通路販售；付款、出貨、發票、退換貨與七天鑑賞期，都由賣家負責。</li>
+      <li>價格、規格、庫存以賣家頁面為準，可能有變動。</li>
+      <li>標示「<span class="collab">合作</span>」的商品，透過連結購買時 TabigrAm 可能獲得分潤，不會增加你的花費。</li>
+      <li>點「前往購買」會離開 TabigrAm，賣家網站的隱私權與交易條款，請以該網站為準。</li>
+      <li>對商品有疑問請直接聯絡賣家；商品資訊有誤，或你認為商品侵害權利，請寫信到 <a href="mailto:support@tabigram.info">support@tabigram.info</a>，我們會盡快確認、必要時下架。</li>
+    </ul>
+  </section>
+  <div class="foot">由 <a href="../">TabigrAm</a> 經營 · 測試版</div>`;
+function shelfHtml(on, tag) {
+  const n = k => ITEMS.filter(x => !k || (k === "books" ? isBook(x.kind) : x.kind === k)).length;
+  const tags = {}; ITEMS.forEach(x => (x.tags || []).forEach(t => tags[t] = (tags[t] || 0) + 1));
+  return `<nav class="shelf-tabs" aria-label="分類">${SHELF.filter(([k]) => !k || n(k)).map(([k, l]) => `<a href="${k ? `?shelf=${k}` : "./"}" data-go="${k ? `?shelf=${k}` : ""}" class="${on === k && !tag ? "on" : ""}">${l}<small>${n(k)}</small></a>`).join("")}</nav>
+    <div class="tagline">${Object.entries(tags).sort((a, b) => b[1] - a[1]).slice(0, 14).map(([t]) => `<a href="?tag=${encodeURIComponent(t)}" data-go="?tag=${encodeURIComponent(t)}" class="${t === tag ? "on" : ""}">#${esc(t)}</a>`).join("")}</div>`;
+}
+function itemHtml(x) {
+  return `<a class="item ${isBook(x.kind) ? "book" : ""}" href="?id=${encodeURIComponent(x.id)}" data-go="?id=${encodeURIComponent(x.id)}">
+      <div class="ph" style="background-image:${cssUrl(img(x.cover))}" role="img" aria-label="${esc(x.title)}"></div>
+      ${x.price_text ? `<span class="tag-p">${esc(x.price_text)}</span>` : ""}
+      <div class="k">${esc(KIND[x.kind] || "")}${x.is_affiliate ? ` <span class="collab">合作</span>` : ""}</div>
+      <h2>${esc(x.title)}</h2>
+      <div class="mk">${esc(isBook(x.kind) && x.book_author ? x.book_author : x.maker)}</div>
+    </a>`;
+}
+function renderList() {
+  const p = params(), sh = p.get("shelf") || "", tag = p.get("tag") || "";
+  const list = ITEMS.filter(x => (!sh || (sh === "books" ? isBook(x.kind) : x.kind === sh)) && (!tag || (x.tags || []).includes(tag)));
+  document.title = "TabigrAm.mise";
+  $app.innerHTML = signHtml() + shelfHtml(sh, tag) + `<section class="board">${list.map(itemHtml).join("") || `<div class="empty">這一格還空著</div>`}</section>` + rulesHtml();
+  wire();
+}
+function rich(t) { return String(t || "").split(/\n{2,}/).map(p => `<p>${esc(p).replace(/\n/g, "<br>")}</p>`).join(""); }
+function renderItem(x, preview) {
+  const pics = [x.cover, x.photo2, x.photo3, x.photo4].filter(Boolean);
+  const shop = safeHttps(x.shop_url);
+  document.title = `${x.title}｜TabigrAm.mise`;
+  $app.innerHTML = `<button type="button" class="back" data-go="">← TabigrAm.mise</button>
+    <section class="detail">
+      <div class="gal"><div class="main" id="galMain" role="img" aria-label="${esc(x.title)}" style="background-image:${cssUrl(img(pics[0]))}"></div>
+        ${pics.length > 1 ? `<div class="th">${pics.map((p, i) => `<button type="button" class="${i ? "" : "on"}" data-pic="${esc(img(p))}" aria-label="第 ${i + 1} 張" style="background-image:${cssUrl(img(p))}"></button>`).join("")}</div>` : ""}</div>
+      <div class="info">
+        <div class="k">${esc(KIND[x.kind] || "")}${x.is_affiliate ? ` <span class="collab">合作</span>` : ""}</div>
+        <h1>${esc(x.title)}</h1>
+        <div class="mk">${esc(x.maker || "")}</div>
+        ${x.price_text ? `<div class="price">${esc(x.price_text)}</div><div class="price-note">以賣家頁面標示的價格為準</div>` : ""}
+        ${shop ? `<a class="buy" href="${esc(shop)}" target="_blank" rel="noopener noreferrer" id="buyBtn">前往${esc(x.shop_name || "賣家頁面")}購買 ↗</a>
+          <div class="buy-note">TabigrAm 只介紹、不經手交易；付款、出貨、退換貨由賣家負責。${x.is_affiliate ? "這是合作連結，透過它購買 TabigrAm 可能獲得分潤，不會增加你的花費。" : ""}</div>` : ""}
+        <div class="desc">${rich(x.description)}</div>
+        ${x.spec ? `<div class="spec">${esc(x.spec)}</div>` : ""}
+        ${isBook(x.kind) && (x.book_author || x.publisher || x.pub_year || x.condition) ? `<div class="libcard"><div class="h">BOOK CARD · 借書卡</div>
+          ${x.book_author ? `<div><b>作者</b><span>${esc(x.book_author)}</span></div>` : ""}
+          ${x.publisher ? `<div><b>出版</b><span>${esc(x.publisher)}</span></div>` : ""}
+          ${x.pub_year ? `<div><b>年份</b><span>${esc(x.pub_year)}</span></div>` : ""}
+          ${x.condition ? `<div><b>書況</b><span>${esc(x.condition)}</span></div>` : ""}</div>` : ""}
+        ${(x.tags || []).length ? `<div class="tags">${x.tags.map(t => `<a href="?tag=${encodeURIComponent(t)}" data-go="?tag=${encodeURIComponent(t)}">#${esc(t)}</a>`).join("")}</div>` : ""}
+      </div>
+    </section>` + rulesHtml() + (preview ? `<div class="preview-flag">預覽（還沒上架，只有你看得到）</div>` : "");
+  document.querySelectorAll("[data-pic]").forEach(b => b.addEventListener("click", () => {
+    $("galMain").style.backgroundImage = cssUrl(b.dataset.pic);
+    document.querySelectorAll("[data-pic]").forEach(o => o.classList.toggle("on", o === b));
+  }));
+  const bb = $("buyBtn");
+  if (bb) bb.addEventListener("click", e => {
+    // 每次瀏覽只提醒一次「要離開 TabigrAm 了」
+    let seen = false; try { seen = sessionStorage.getItem("TG_MISE_LEAVE") === "1"; } catch (er) {}
+    track("mise_out", x.id);
+    if (seen) return;
+    e.preventDefault();
+    $("leaveShop").textContent = `你會前往「${x.shop_name || new URL(shop).hostname}」。`;
+    $("leaveGo").href = shop; $("leave").hidden = false; $("leaveGo").focus();
+  });
+  wire();
+  window.scrollTo(0, 0);
+  if (!preview) track("mise_view", x.id);
+}
+function closeLeave() { $("leave").hidden = true; }
+const $ = id => document.getElementById(id);
+$("leaveNo").addEventListener("click", closeLeave);
+$("leaveGo").addEventListener("click", () => { try { sessionStorage.setItem("TG_MISE_LEAVE", "1"); } catch (e) {} setTimeout(closeLeave, 50); });
+$("leave").addEventListener("click", e => { if (e.target.id === "leave") closeLeave(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeLeave(); });
+
+function wire() { document.querySelectorAll("[data-go]").forEach(a => a.addEventListener("click", e => { e.preventDefault(); go(a.dataset.go); })); }
+function go(q) { history.pushState({}, "", q || location.pathname); route(); window.scrollTo(0, 0); }
+function route() {
+  const id = params().get("id");
+  if (id) { const x = ITEMS.find(i => i.id === id); if (x) return renderItem(x); }
+  renderList();
+}
+window.addEventListener("popstate", route);
+
+const $app = $("app");
+(async () => {
+  const p = params(), id = p.get("id");
+  if (id && p.get("preview")) { try { const x = await loadPreview(id); if (x) { ITEMS = [x]; return renderItem(x, x.status !== "published"); } } catch (e) {} }
+  await load();
+  track("mise_open");
+  route();
+})();
+</script>
+</body>
+</html>

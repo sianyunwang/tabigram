@@ -9,8 +9,10 @@
 <link rel="icon" href="../favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@700;900&family=JetBrains+Mono:wght@500;700;800&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="../plans/card.js"></script>
 <style>
 /* 果醬派對管理頁：沿用 App 的 Paper 主題（再生紙灰、國際橘） */
 :root {
@@ -243,6 +245,15 @@ h2 { font-size: 18px; font-weight: 900; margin: 0; }
 .hbar .v { font: 700 12.5px var(--mono); color: var(--ink); text-align: right; min-width: 3.2em; }
 .empty-note { font-size: 13px; color: var(--sub); padding: 8px 0; }
 .tip { position: fixed; pointer-events: none; z-index: 200; background: var(--ink); color: var(--paper); font-size: 12px; padding: 6px 9px; border-radius: 8px; transform: translate(-50%, calc(-100% - 10px)); white-space: nowrap; display: none; }
+.agreement h2 { font-size: 22px; margin: 4px 0 12px; } .agreement h3 { font-size: 16px; margin: 22px 0 6px; } .agreement p, .agreement li { font-size: 14.5px; } .agreement blockquote { margin: 10px 0; padding: 8px 12px; background: #FFF1D6; border-radius: 10px; font-size: 13px; }
+details.spec summary { cursor: pointer; }
+/* 手寫簽名板 */
+.sigpad-wrap { position: relative; border: 1.5px dashed var(--line); border-radius: 14px; background: #fff; overflow: hidden; }
+.sigpad-wrap::after { content: ""; position: absolute; left: 6%; right: 6%; bottom: 34px; border-bottom: 1.5px solid #D6D2CA; pointer-events: none; }
+.sigpad { display: block; width: 100%; height: 190px; touch-action: none; cursor: crosshair; position: relative; z-index: 1; }
+.sigpad-hint { position: absolute; left: 0; right: 0; top: 50%; translate: 0 -60%; text-align: center; color: #A8A39A; font-size: 14px; pointer-events: none; }
+.sigpad-wrap.signed .sigpad-hint { display: none; }
+.sigpad-x { position: absolute; left: 6%; bottom: 40px; color: #A8A39A; font: 700 16px var(--mono); pointer-events: none; }
 table.mini { width: 100%; border-collapse: collapse; font-size: 13px; }
 table.mini th, table.mini td { text-align: left; padding: 7px 6px; border-bottom: 1px solid var(--line); }
 table.mini th { font-size: 12px; color: var(--sub); font-weight: 800; }
@@ -281,6 +292,11 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const urlOf = (bucket, path) => path ? (/^https?:\/\//.test(path) ? path : `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${String(path).split("/").map(encodeURIComponent).join("/")}`) : "";
 const publicUrl = path => urlOf("stickers", path);
+// 放進 style="…url('…')" 的網址：把引號、括號、角括號等編碼掉，避免有人改資料庫塞程式碼進來
+const cssUrl = u => `url('${String(u || "").replace(/[\s"'()<>&\\]/g, c => "%" + c.charCodeAt(0).toString(16).toUpperCase().padStart(2, "0"))}')`;
+const safeColor = (c, d) => /^#[0-9a-f]{6}$/i.test(String(c || "")) ? c : d;
+const safeNum = (n, d) => { const x = Number(n); return Number.isFinite(x) ? Math.max(0, Math.min(1, x)) : d; };
+const safeHttps = u => /^https:\/\/[^\s"'<>]+$/.test(String(u || "")) ? u : "";
 const slugify = s => String(s || "").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
 const fmtTime = t => { if (!t) return ""; const d = new Date(t); return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
 
@@ -309,9 +325,12 @@ const TAB_DEF = [
   { k: "themes", label: "主題", perm: "can_themes" },
   { k: "polaroid", label: "拍立得", perm: "can_polaroid" },
   { k: "zine", label: "Zine", perm: "can_zine" },
+  { k: "mise", label: "選物", perm: "can_mise" },
+  { k: "plans", label: "旅行提案", perm: "can_plans" },
   { k: "announce", label: "公告與通知", admin: true },
   { k: "settings", label: "App 設定", admin: true },
   { k: "creators", label: "創作者", admin: true },
+  { k: "agreement", label: "合約", admin: true },
   { k: "feedback", label: "意見回饋", admin: true, badge: "fbCount" },
 ];
 async function boot() {
@@ -329,9 +348,19 @@ async function boot() {
     if (a.error) return renderMessage("還沒完成設定", "找不到管理員設定。請先在 Supabase 的 SQL Editor 執行 SUPABASE_STICKER_ADMIN.sql。");
     me = { admin: !!a.data, email: (user.email || "").toLowerCase(), creator: null, v3: false };
   } else {
-    me = { admin: !!r.data.admin, email: r.data.email, creator: r.data.creator, v3: true };
+    me = { admin: !!r.data.admin, email: r.data.email, creator: r.data.creator, v3: true, agreement: r.data.agreement || null, signed: r.data.signed !== false };
   }
   if (!me.admin && !me.creator) return renderMessage("這個帳號沒有權限", `目前登入的是 ${me.email || "（沒有 Email）"}。創作者請把這個 Email 給 TabigrAm 管理員加入名單；管理員請換成管理員的帳號登入。`);
+  // 創作者：有生效的合約但還沒簽，先簽署
+  if (!me.admin && me.agreement && !me.signed) {
+    const { count } = await T(sb.from("creator_signatures").select("id", { count: "exact", head: true }).eq("email", me.email));
+    me.signedBefore = (count || 0) > 0;
+    return renderSignAgreement();
+  }
+  if (!me.admin && me.v3) {
+    const who = $("who");
+    if (who && !$("myAgBtn")) { const b = document.createElement("button"); b.className = "btn ghost sm"; b.id = "myAgBtn"; b.type = "button"; b.textContent = "我的授權合約"; b.addEventListener("click", showMyAgreement); who.insertBefore(b, $("signOutBtn")); }
+  }
   const tabs = TAB_DEF.filter(t => me.admin ? true : (!t.admin && me.creator && me.creator[t.perm]));
   $("tabs").innerHTML = tabs.map(t => `<button type="button" data-tab="${t.k}">${t.label}${t.badge ? ` <span class="tab-n" id="${t.badge}"></span>` : ""}</button>`).join("");
   $("tabs").hidden = false;
@@ -344,8 +373,9 @@ async function refreshBadges() {
   loadFeedback().then(updateFbCount);
   if (!me.v3) return;
   let n = 0;
-  for (const t of ["sticker_packs", "themes", "polaroid_frames", "zine_articles"]) {
-    const { count } = await T(sb.from(t).select("id", { count: "exact", head: true }).eq("status", "review"));
+  for (const t of ["sticker_packs", "themes", "polaroid_frames", "zine_articles", "mise_items", "trip_plans"]) {
+    const { count, error } = await T(sb.from(t).select("id", { count: "exact", head: true }).eq("status", "review"));
+    if (error) continue;   // 還沒執行第五版 SQL 的表先跳過
     n += count || 0;
   }
   const el = $("reviewCount"); if (el) el.textContent = n ? String(n) : "";
@@ -361,10 +391,11 @@ async function showTab(k) {
     if (k === "dash") await renderDash();
     else if (k === "review") await renderReview();
     else if (k === "stickers") { await loadPacks(); renderList(); }
-    else if (k === "themes" || k === "polaroid" || k === "zine") await renderContentList(k);
+    else if (CT[k]) await renderContentList(k);
     else if (k === "announce") await renderAnnounce();
     else if (k === "settings") await renderSettings();
     else if (k === "creators") await renderCreators();
+    else if (k === "agreement") await renderAgreementAdmin();
     else if (k === "feedback") { await loadFeedback(); renderFeedback(); }
   } catch (e) {
     $("app").innerHTML = `<section class="card center"><h1>這一頁讀不出來</h1><p>${esc(e && e.message || e)}</p><button class="btn ghost" type="button" onclick="location.reload()">重新整理</button></section>`;
@@ -434,7 +465,6 @@ async function loadPacks() {
 }
 function renderList() {
   draft = null;
-  const hasNaobao = packs.some(p => p.id === "naobao");
   const rows = packs.map((p, i) => `<article class="card pack">
       <span class="cover">${p.cover ? `<img src="${esc(publicUrl(p.cover))}" alt="">` : ""}</span>
       <div style="min-width:0;">
@@ -453,14 +483,10 @@ function renderList() {
   $("app").innerHTML = `
     <h1>貼紙包</h1>
     <p class="lead">${me.admin ? "上架的貼紙包會出現在果醬派對，使用者按「收藏」後才會出現在分享卡的「貼圖」裡。<b>本季精選</b>（建議最多 3 組）排在最前面，其他收在「看全部」。" : "你的貼紙包：存成草稿、送出審核，管理員上架後就會出現在 TabigrAm 的果醬派對。"}</p>
-    <details class="spec"><summary><b>上傳規範</b>（點開）</summary>${SPEC.stickers}</details>
+    ${specCard("stickers")}
     <div class="bar"><span class="kicker">${packs.length} 包 · ${packs.filter(p => p.status === "published").length} 包上架中</span><button class="btn go" type="button" id="newBtn">＋ 新增貼紙包</button></div>
     <div class="list">${rows || `<section class="card center"><div class="kicker">EMPTY</div><h2 style="margin-top:6px;">還沒有貼紙包</h2><p>按「新增貼紙包」上傳第一包。</p></section>`}</div>
-    ${me.admin && !hasNaobao ? `<section class="card" style="margin-top:12px; display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
-      <span class="cover"><img src="../stickers/naobao/cover.png" alt=""></span>
-      <div style="flex:1; min-width:200px;"><h2>把「跟著蛋白一起去旅行」搬進來</h2><div class="pack-meta">目前這包放在網站檔案裡。搬進來之後，就能在這裡改名、調順序、上下架。</div></div>
-      <button class="btn dark" type="button" id="importBtn">一鍵搬進來</button>
-    </section>` : ""}`;
+    `;
   $("newBtn").addEventListener("click", () => openEditor(null));
   const ib = $("importBtn"); if (ib) ib.addEventListener("click", importNaobao);
   document.querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => openEditor(b.dataset.edit)));
@@ -494,7 +520,7 @@ async function togglePublish(id, btn) {
 async function moveRow(table, list, i, d, after) {
   const j = i + d; if (j < 0 || j >= list.length) return;
   const l = list.slice(); [l[i], l[j]] = [l[j], l[i]];
-  const res = await Promise.all(l.map((p, k) => T(sb.from(table).update({ sort: (k + 1) * 10 }).eq("id", p.id))));
+  const res = await Promise.all(l.map((p, k) => T(sb.from(table).update({ sort: (k + 1) * 10, updated_at: new Date().toISOString() }).eq("id", p.id))));
   const bad = res.find(r => r.error); if (bad) toast("順序更新失敗：" + bad.error.message, 5000);
   await after();
 }
@@ -507,6 +533,7 @@ function fileToImage(file) {
     img.src = url;
   });
 }
+const MAX_STICKERS = 8;   // 一包最多 8 張：App 的果醬派對、分享卡貼圖列都照這個數字排版
 async function prepImage(file) {
   if (!/^image\//.test(file.type)) throw new Error(`${file.name} 不是圖片`);
   const { img, url } = await fileToImage(file);
@@ -570,9 +597,12 @@ function openEditor(id) {
     items: (p.items || []).map(x => ({ path: x.path, preview: publicUrl(x.path), name: x.name || "", name_en: x.name_en || "" })),
     removed: [],
   } : { isNew: true, id: "", name: "", name_en: "", artist: me.creator ? me.creator.display_name : "", artist_en: "", url: "", status: "draft", review_note: "", cover: null, items: [], removed: [] };
+  draft.snap = packSnap(draft);
   renderEditor();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
+// 可比較的欄位（不含預覽圖、檔案本身）：離開前跟這份比對，才知道有沒有改過
+function packSnap(d) { return JSON.stringify([d.id, d.name, d.name_en, d.artist, d.artist_en, d.url, d.cover && d.cover.path, d.items.map(x => [x.path, x.name, x.name_en])]); }
 function renderEditor() {
   const d = draft;
   const locked = !me.admin && d.status === "published";
@@ -602,7 +632,7 @@ function renderEditor() {
         </section>
         <section class="card section">
           <div class="section-head"><h2>貼紙 <span class="kicker" style="margin-left:6px;">${d.items.length} 張</span></h2><p>檔名寫「中文:English」會自動填好名稱</p></div>
-          <label class="drop" id="stkDrop"><b>選擇貼紙圖片</b>（可以一次選很多張），或拖到這裡<br><span style="font-size:12px;">建議 PNG 透明背景</span><input type="file" accept="image/png,image/webp,image/jpeg" multiple id="stkInput" hidden></label>
+          <label class="drop" id="stkDrop"><b>選擇貼紙圖片</b>（可以一次選多張，最多 8 張），或拖到這裡<br><span style="font-size:12px;">建議 PNG 透明背景</span><input type="file" accept="image/png,image/webp,image/jpeg" multiple id="stkInput" hidden></label>
           <div class="stk-list" style="margin-top:12px;">${d.items.map((x, i) => `<div class="stk">
               <div class="stk-img"><span class="stk-no">${String(i + 1).padStart(2, "0")}</span>${x.blob ? `<span class="stk-new">新</span>` : ""}<img src="${esc(x.preview)}" alt=""></div>
               <input data-i="${i}" data-k="name" value="${esc(x.name)}" placeholder="中文名稱" aria-label="第 ${i + 1} 張中文名稱">
@@ -645,7 +675,7 @@ function readFields() {
 }
 function bindEditor() {
   $("backBtn").addEventListener("click", () => { if (hasUnsaved() && !confirm("還沒儲存，確定要離開嗎？")) return; draft = null; renderList(); });
-  ["fName", "fNameEn", "fArtist", "fArtistEn", "fUrl", "fId"].forEach(id => { const el = $(id); if (el) el.addEventListener("input", () => { readFields(); renderPreview(); }); });
+  ["fName", "fNameEn", "fArtist", "fArtistEn", "fUrl", "fId"].forEach(id => { const el = $(id); if (el) el.addEventListener("input", () => { readFields(); draft.touched = true; renderPreview(); }); });
   wireDrop("coverDrop", "coverInput", async files => {
     try { readFields(); const r = await prepImage(files[0]); if (draft.cover && draft.cover.path) draft.removed.push(draft.cover.path); draft.cover = { blob: r.blob, preview: r.preview }; renderEditor(); }
     catch (e) { toast(e.message, 4000); }
@@ -653,6 +683,9 @@ function bindEditor() {
   wireDrop("stkDrop", "stkInput", async files => {
     readFields();
     let jpg = 0;
+    const room = MAX_STICKERS - draft.items.length;
+    if (room <= 0) return toast(`一包最多 ${MAX_STICKERS} 張貼紙`, 4000);
+    if (files.length > room) { toast(`一包最多 ${MAX_STICKERS} 張，這次只加入前 ${room} 張`, 5000); files = files.slice(0, room); }
     for (const f of files) {
       try { const r = await prepImage(f); if (r.jpg) jpg++; const [zh, en] = splitName(nameFromFile(f)); draft.items.push({ blob: r.blob, preview: r.preview, name: zh, name_en: en }); }
       catch (e) { toast(e.message, 4000); }
@@ -664,17 +697,24 @@ function bindEditor() {
   const swap = (i, j) => { readFields(); const a = draft.items; [a[i], a[j]] = [a[j], a[i]]; draft.touched = true; renderEditor(); };
   document.querySelectorAll("[data-up]").forEach(b => b.addEventListener("click", () => swap(+b.dataset.up, +b.dataset.up - 1)));
   document.querySelectorAll("[data-down]").forEach(b => b.addEventListener("click", () => swap(+b.dataset.down, +b.dataset.down + 1)));
-  document.querySelectorAll("[data-rm]").forEach(b => b.addEventListener("click", () => { readFields(); const [x] = draft.items.splice(+b.dataset.rm, 1); if (x.path) draft.removed.push(x.path); renderEditor(); }));
+  document.querySelectorAll("[data-rm]").forEach(b => b.addEventListener("click", () => { readFields(); const [x] = draft.items.splice(+b.dataset.rm, 1); if (x.path) draft.removed.push(x.path); if (draft.cover && x.path && draft.cover.path === x.path) draft.cover = null; renderEditor(); }));
   bindWorkflow((status, note) => savePack(status, note));
   const db = $("deleteBtn"); if (db) db.addEventListener("click", deletePack);
 }
-function hasUnsaved() { return draft && (draft.touched || (draft.isNew ? (draft.items.length || draft.name) : (draft.items.some(x => x.blob) || draft.removed.length || (draft.cover && draft.cover.blob)))); }
+function hasUnsaved() {
+  if (!draft) return false;
+  if (draft.isNew) return !!(draft.items.length || draft.name);
+  if (document.getElementById("fName")) readFields();
+  return draft.items.some(x => x.blob) || draft.removed.length > 0 || !!(draft.cover && draft.cover.blob) || packSnap(draft) !== draft.snap;
+}
 
+let uploaded = [];
 async function savePack(status, note) {
   readFields();
   const d = draft;
   if (!d.name) return toast("請填中文包名");
   if (!d.items.length) return toast("至少要有一張貼紙");
+  if (d.items.length > MAX_STICKERS) return toast(`一包最多 ${MAX_STICKERS} 張，請先移除 ${d.items.length - MAX_STICKERS} 張`, 5000);
   if (d.url && !/^https:\/\//.test(d.url)) return toast("作品連結請用 https:// 開頭");
   if (d.items.some(x => !x.name)) return toast("每張貼紙都要有中文名稱");
   if (d.isNew) {
@@ -686,38 +726,49 @@ async function savePack(status, note) {
   const msg = $("saveMsg");
   try {
     const stamp = Date.now().toString(36);
+    uploaded = [];
     const up = async (blob, name) => {
       const path = `${d.id}/${stamp}-${name}.png`;
       const { error } = await T(sb.storage.from("stickers").upload(path, blob, { contentType: "image/png", upsert: false, cacheControl: "31536000" }), 60000);
       if (error) throw new Error("上傳圖片失敗：" + error.message);
+      uploaded.push(path);
       return path;
     };
     const toUpload = d.items.filter(x => x.blob).length + (d.cover && d.cover.blob ? 1 : 0);
     let done = 0;
     const tick = () => { msg.textContent = `上傳中… ${done}/${toUpload}`; };
     tick();
-    if (d.cover && d.cover.blob) { d.cover.path = await up(d.cover.blob, "cover"); delete d.cover.blob; done++; tick(); }
+    // 先記在 newPath，整個存成功才換掉；失敗時原本的檔案還在，可以直接重試
+    if (d.cover && d.cover.blob) { d.cover.newPath = await up(d.cover.blob, "cover"); done++; tick(); }
     for (let i = 0; i < d.items.length; i++) {
       const x = d.items[i];
-      if (x.blob) { x.path = await up(x.blob, String(i + 1).padStart(2, "0")); delete x.blob; done++; tick(); }
+      if (x.blob) { x.newPath = await up(x.blob, String(i + 1).padStart(2, "0")); done++; tick(); }
     }
+    const pathOf = x => x.newPath || x.path;
     msg.textContent = "儲存中…";
     const next = status || d.status || "draft";
     const row = {
       id: d.id, name: d.name, name_en: d.name_en || d.name, artist: d.artist, artist_en: d.artist_en || d.artist, url: d.url,
-      cover: d.cover ? d.cover.path : d.items[0].path,
-      items: d.items.map(x => ({ path: x.path, name: x.name, name_en: x.name_en || x.name })),
+      cover: d.cover ? pathOf(d.cover) : pathOf(d.items[0]),
+      items: d.items.map(x => ({ path: pathOf(x), name: x.name, name_en: x.name_en || x.name })),
       published: next === "published", updated_at: new Date().toISOString(),
     };
     if (me.v3) { row.status = next; if (me.admin && next === "rejected") row.review_note = note || ""; if (me.admin && next === "published") row.review_note = ""; }
     if (d.isNew) row.sort = (packs.length + 1) * 10;
     const { error } = d.isNew ? await T(sb.from("sticker_packs").insert(row)) : await T(sb.from("sticker_packs").update(row).eq("id", d.id));
     if (error) throw new Error("儲存失敗：" + error.message);
-    if (d.removed.length) await T(sb.storage.from("stickers").remove(d.removed));
+    uploaded = [];
+    // 封面可能就是某一張貼紙（同一個檔案）：還在用的不能刪
+    const inUse = new Set([row.cover, ...row.items.map(x => x.path)]);
+    const toRemove = [...new Set(d.removed)].filter(p => !inUse.has(p));
+    if (toRemove.length) await T(sb.storage.from("stickers").remove(toRemove));
     toast({ published: "已上架，App 重新整理後就看得到", review: "已送出審核，管理員發布後就會上架", rejected: "已退回給創作者", draft: "已存成草稿" }[next] || "已儲存");
     draft = null;
     await loadPacks(); renderList(); if (me.admin) refreshBadges();
   } catch (e) {
+    // 這次傳上去、但沒存進資料表的圖：刪掉，不要留在雲端
+    if (uploaded.length) { const junk = uploaded; uploaded = []; T(sb.storage.from("stickers").remove(junk)); }
+    [d.cover, ...d.items].forEach(x => { if (x) delete x.newPath; });
     toast(e.message, 6000);
     msg.textContent = "沒有儲存成功，可以再試一次。";
     buttons.forEach(b => b.disabled = false);
@@ -728,17 +779,18 @@ async function deletePack() {
   if (!confirm(`確定要刪除「${d.name}」嗎？雲端上的圖片也會一起刪掉，沒辦法復原。`)) return;
   const { error } = await T(sb.from("sticker_packs").delete().eq("id", d.id));
   if (error) return toast("刪除失敗：" + error.message, 5000);
-  const paths = [...d.items.map(x => x.path), d.cover && d.cover.path, ...d.removed].filter(Boolean);
+  const paths = [...new Set([...d.items.map(x => x.path), d.cover && d.cover.path, ...d.removed].filter(Boolean))];
   if (paths.length) await T(sb.storage.from("stickers").remove(paths));
   toast("已刪除"); draft = null;
   await loadPacks(); renderList();
 }
 async function importNaobao() {
   const btn = $("importBtn"); btn.disabled = true; btn.textContent = "搬運中…";
+  const done = [];
   try {
     const p = BUILTIN_NAOBAO, stamp = Date.now().toString(36);
     const grab = async f => { const r = await fetch(`../stickers/${p.id}/${f}`); if (!r.ok) throw new Error(`找不到 ${f}`); return r.blob(); };
-    const put = async (blob, name) => { const path = `${p.id}/${stamp}-${name}.png`; const { error } = await T(sb.storage.from("stickers").upload(path, blob, { contentType: "image/png", cacheControl: "31536000" }), 60000); if (error) throw new Error(error.message); return path; };
+    var put = async (blob, name) => { const path = `${p.id}/${stamp}-${name}.png`; const { error } = await T(sb.storage.from("stickers").upload(path, blob, { contentType: "image/png", cacheControl: "31536000" }), 60000); if (error) throw new Error(error.message); done.push(path); return path; };
     const cover = await put(await grab(p.cover), "cover");
     const items = [];
     for (let i = 0; i < p.items.length; i++) { const [f, zh, en] = p.items[i]; items.push({ path: await put(await grab(f), String(i + 1).padStart(2, "0")), name: zh, name_en: en }); btn.textContent = `搬運中… ${i + 1}/${p.items.length}`; }
@@ -749,6 +801,7 @@ async function importNaobao() {
     toast("搬好了，已經上架");
     await loadPacks(); renderList();
   } catch (e) {
+    if (done.length) T(sb.storage.from("stickers").remove(done));
     toast("搬運失敗：" + e.message, 6000); btn.disabled = false; btn.textContent = "一鍵搬進來";
   }
 }
@@ -757,10 +810,12 @@ async function importNaobao() {
 // 主題、拍立得相框、Zine：共用清單與編輯器
 // =====================================================================
 const SPEC = {
-  stickers: `<b>貼紙</b>：PNG 透明背景，最長邊 512px 以上（上傳時會自動縮到 512px），單張處理後 1MB 以內；一包建議 8～24 張。<br><b>封面</b>：正方形 PNG，主角置中。<br><b>檔名</b>寫成「中文:English」（例如 <code>出發囉:Let's go.png</code>）會自動填好名稱。<br><b>不可以</b>：別人的商標、官方 logo、真實人物肖像、照片直接去背。`,
+  stickers: `<b>貼紙</b>：PNG 透明背景，最長邊 512px 以上（上傳時會自動縮到 512px），單張處理後 1MB 以內；<b>一包最多 8 張</b>（4×2 剛好排滿，挑起來也不累）。<br><b>封面</b>：正方形 PNG，主角置中。<br><b>檔名</b>寫成「中文:English」（例如 <code>出發囉:Let's go.png</code>）會自動填好名稱。<br><b>不可以</b>：別人的商標、官方 logo、真實人物肖像、照片直接去背。`,
   themes: `一組主題 = 三層圖片＋一組文字顏色，套在 9:16 限動卡上。<br><b>① 背景</b>：1080×1920（直式 9:16），JPG，壓縮後 900KB 以內。主要內容避開最上面、最下面各 250px（Instagram 會蓋住）。<br><b>② 紙卡材質</b>：512×512，JPG，要能<b>無縫拼接</b>（左右、上下接起來看不出接縫），顏色偏淺、不要有明顯圖案，文字要能放在上面。<br><b>③ 裝飾層</b>：1080×1920 <b>透明 PNG</b>，放在最上層的花邊、膠帶、手繪；中間的卡片區（左右各留 90px、上下 420～1500px 之間）盡量保持透明，不要擋到行程文字。<br><b>文字顏色</b>：主要文字、次要文字、強調色三個，和紙卡顏色的對比要夠（主要文字對比 4.5:1 以上）。`,
   polaroid: `<b>相框</b>：1200×1440 <b>透明 PNG</b>，照片的位置挖空（透明），邊框、底部寫字區做成不透明。<br><b>照片框位置</b>：用比例填（0～1），例如左邊 0.08、上面 0.07、寬 0.84、高 0.70。預覽裡藍橘色的就是照片會放的地方。<br><b>字的顏色</b>：底部寫字區的文字顏色。<br>處理後 2MB 以內。`,
   zine: `<b>封面</b>：1600×1000（16:10），JPG，壓縮後 600KB 以內；主角放中間，左右兩側可能被裁掉。<br><b>內文圖片</b>：寬 1600px 以內（會自動縮），JPG，每張 500KB 以內，一篇建議 3～8 張。<br><b>文字</b>：一篇 1 分鐘內讀完（約 300～500 字）。段落之間空一行；<code>**粗體**</code> 可以用。<br><b>區塊</b>：段落、圖片（可加圖說）、引言、旅行小物／小提醒、地點卡（名稱＋一句話＋地圖連結）。<br>照片要是自己拍的或有授權；合作內容請在文末註明。`,
+  mise: `<b>主圖</b>：1200×1200 正方形 JPG，500KB 以內；商品放中間、背景乾淨（米白、淺灰、木桌都可以），不要加文字、價格或浮水印。<br><b>其他圖片</b>（選填，最多 3 張）：細節、使用情境、尺寸對照；書可以放內頁。<br><b>價格</b>：寫含稅的售價，例如 <code>NT$ 380</code>；以賣家頁面為準，價格變了請回來更新。<br><b>販售連結</b>：必填，https 開頭（自己的網站、Pinkoi、出版社頁面…）。分潤或合作連結請勾選「合作連結」，頁面會標示。<br><b>不能刊登</b>：菸酒、藥品、醫療器材、保健食品、食品與化妝品、刀械、仿冒品。二手書請寫書況。`,
+  plans: `<b>封面</b>：1200×1500（4:5）JPG，600KB 以內；會用在提案頁和分享小卡上，主角放中間偏上。<br><b>行程</b>：用「新的一天」分天，每天放 3～8 個「行程點」（時間、地點、一兩句說明、地圖連結）。<br><b>分享碼</b>：第一次儲存後自動產生 6 碼，不能改；可以在右邊下載含 QR Code 的限動小卡（1080×1920）。<br><b>第三方的行程</b>：請先取得作者同意，並填「出處」。營業時間、票價這類容易變動的資訊，請寫「出發前再確認」。`,
   zinePaper: `<b>Zine 紙張材質</b>：1024×1024 JPG，<b>必須無縫拼接</b>，600KB 以內。<br>色調偏淺（像米白、淺灰的再生紙），紋理要細，不要有明顯的污點或圖案（重複時會一直出現）。<br>做法建議：掃描真的紙張（300dpi）→ 裁一塊 → 用 Photoshop「濾鏡 → 其他 → 畫面錯位 Offset」修掉接縫。<br>上傳後網站會用「顯示大小」那個數字把它鋪滿整個頁面。`,
 };
 const CT = {
@@ -781,13 +836,43 @@ const CT = {
   zine: {
     table: "zine_articles", name: "Zine 文章", folder: "zine", perm: "can_zine",
     slots: [{ key: "cover", label: "封面", w: 1600, h: 1000, fit: "cover", fmt: "jpeg", maxKB: 600 }],
-    thumb: r => r.cover, lead: "TabigrAm.zine：輕薄的旅行小誌，一篇 1 分鐘讀完。作家存草稿、送審，管理員發布。",
+    thumb: r => r.cover, lead: "TabigrAm.zine：輕薄的旅行小誌，一篇 1 分鐘讀完。作家存草稿、送審，管理員發布。", site: "../zine/",
+  },
+  mise: {
+    table: "mise_items", name: "選物", folder: "mise", perm: "can_mise",
+    slots: [
+      { key: "cover", label: "主圖", w: 1200, h: 1200, fit: "cover", fmt: "jpeg", maxKB: 500, sq: true },
+      { key: "photo2", label: "圖片 2", w: 1200, h: 1200, fit: "cover", fmt: "jpeg", maxKB: 500, sq: true, optional: true },
+      { key: "photo3", label: "圖片 3", w: 1200, h: 1200, fit: "cover", fmt: "jpeg", maxKB: 500, sq: true, optional: true },
+      { key: "photo4", label: "圖片 4", w: 1200, h: 1200, fit: "cover", fmt: "jpeg", maxKB: 500, sq: true, optional: true },
+    ],
+    thumb: r => r.cover, lead: "TabigrAm.mise：旅行生活選物與舊書攤。創作者上傳商品圖、說明和販售連結；TabigrAm 只介紹、連結出去，不經手交易。", site: "../mise/",
+  },
+  plans: {
+    table: "trip_plans", name: "旅行提案", folder: "plans", perm: "can_plans",
+    slots: [{ key: "cover", label: "封面", w: 1200, h: 1500, fit: "cover", fmt: "jpeg", maxKB: 600 }],
+    thumb: r => r.cover, lead: "旅行提案：創作者、第三方整理好的行程，給使用者瀏覽、收藏，不能共同編輯。每篇有一組分享碼，可以下載含 QR Code 的限動小卡。", site: "../plans/",
   },
 };
+const MISE_KIND = { goods: "選物", book: "書", zine: "誌", print: "印刷品", other: "其他" };
+// Zine 可選字型：都是 Google Fonts 上免費、可以商用的開源字型
+const ZINE_FONTS = {
+  serif: { label: "明體（思源宋體）", family: "Noto Serif TC", q: "Noto+Serif+TC:wght@500;700;900" },
+  sans: { label: "黑體（思源黑體）", family: "Noto Sans TC", q: "Noto+Sans+TC:wght@400;700;900" },
+  kai: { label: "楷體（霞鶩文楷）", family: "LXGW WenKai TC", q: "LXGW+WenKai+TC:wght@400;700" },
+  round: { label: "圓體（粉圓）", family: "Huninn", q: "Huninn" },
+  hand: { label: "手寫感（芫荽）", family: "Iansui", q: "Iansui" },
+};
+function loadFont(k) {
+  const f = ZINE_FONTS[k]; if (!f || document.getElementById("font-" + k)) return;
+  const l = document.createElement("link"); l.id = "font-" + k; l.rel = "stylesheet"; l.href = `https://fonts.googleapis.com/css2?family=${f.q}&display=swap`; document.head.appendChild(l);
+}
+const fontCss = (k, d) => `'${(ZINE_FONTS[k] || ZINE_FONTS[d]).family}', serif`;
 let crows = [];
 async function renderContentList(kind) {
   const ct = CT[kind];
   if (!me.v3) { $("app").innerHTML = v3Message(ct.name); return; }
+  if (kind === "zine") await loadIssues();
   const { data, error } = await T(sb.from(ct.table).select("*").order("sort", { ascending: true }).order("created_at", { ascending: false }));
   if (error) { $("app").innerHTML = needV3(error) ? v3Message(ct.name) : `<section class="card center"><h1>讀不到${esc(ct.name)}</h1><p>${esc(error.message)}</p></section>`; return; }
   crows = (data || []).filter(r => me.admin || r.owner_email === me.email);
@@ -797,23 +882,25 @@ async function renderContentList(kind) {
       <span class="thumb ${ct.contain ? "contain" : ""}">${th ? `<img src="${esc(urlOf("content", th))}" alt="" loading="lazy">` : ""}</span>
       <div style="min-width:0;">
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;"><span class="pack-name">${esc(r.title || r.name || r.id)}</span>${r.featured && r.status === "published" ? `<span class="pill star">★ 精選</span>` : ""}${statusPill(r.status)}</div>
-        <div class="row-meta">${kind === "zine" ? `${esc(r.author_name || "—")}${r.issue ? ` · ${esc(r.issue)}` : ""}` : `${esc(r.artist || "—")}`}${me.admin && r.owner_email ? ` · ${esc(r.owner_email)}` : ""} · 更新 ${esc(fmtTime(r.updated_at))}</div>
+        <div class="row-meta">${kind === "mise" ? `${esc(MISE_KIND[r.kind] || "")} · ${esc(r.maker || "—")}${r.price_text ? ` · ${esc(r.price_text)}` : ""}` : kind === "plans" ? `${esc(r.author_name || "—")} · ${Number(r.days) || 1} 天${r.code ? ` · 分享碼 ${esc(r.code)}` : ""}` : kind === "zine" ? `${esc(r.author_name || "—")}${r.issue_id && issues.find(x => x.id === r.issue_id) ? ` · ${esc(issueLabel(issues.find(x => x.id === r.issue_id)))}` : ""}` : `${esc(r.artist || "—")}`}${me.admin && r.owner_email ? ` · ${esc(r.owner_email)}` : ""} · 更新 ${esc(fmtTime(r.updated_at))}</div>
         ${r.status === "rejected" && r.review_note ? `<div class="note-box">退回原因：${esc(r.review_note)}</div>` : ""}
       </div>
       <div class="pack-actions">
         ${me.admin ? `<div class="order"><button class="icon-btn" type="button" data-move="${i}:-1" ${i === 0 ? "disabled" : ""} aria-label="往前">↑</button><button class="icon-btn" type="button" data-move="${i}:1" ${i === crows.length - 1 ? "disabled" : ""} aria-label="往後">↓</button></div>` : ""}
         <button class="btn soft sm" type="button" data-gedit="${esc(r.id)}">${!me.admin && r.status === "published" ? "查看" : "編輯"}</button>
-        ${kind === "zine" ? `<a class="btn ghost sm" href="../zine/?id=${encodeURIComponent(r.id)}${r.status === "published" ? "" : "&preview=1"}" target="_blank" rel="noopener">預覽</a>` : ""}
+        ${ct.site ? `<a class="btn ghost sm" href="${ct.site}?id=${encodeURIComponent(r.id)}${r.status === "published" ? "" : "&preview=1"}" target="_blank" rel="noopener">預覽</a>` : ""}
         ${me.admin && r.status === "published" ? `<button class="btn ${r.featured ? "soft" : "ghost"} sm" type="button" data-gfeat="${esc(r.id)}">${r.featured ? "取消精選" : "★ 精選"}</button>` : ""}
       </div>
     </article>`;
   }).join("");
   $("app").innerHTML = `
     <h1>${esc(ct.name)}</h1>
-    <p class="lead">${esc(ct.lead)}</p>
-    <details class="spec"><summary><b>上傳規範</b>（點開）</summary>${SPEC[kind]}</details>
+    <p class="lead">${esc(ct.lead)}${ct.site ? ` <a href="${ct.site}" target="_blank" rel="noopener">開啟網站 ↗</a>` : ""}</p>
+    ${specCard(kind)}
+    ${kind === "zine" && me.admin ? issuesSectionHtml() : ""}
     <div class="bar"><span class="kicker">${crows.length} 個 · ${crows.filter(r => r.status === "published").length} 個上架中${me.admin ? ` · ${crows.filter(r => r.status === "review").length} 個待審核` : ""}</span><button class="btn go" type="button" id="gNewBtn">＋ 新增${esc(ct.name)}</button></div>
     <div class="list">${rows || `<section class="card center"><div class="kicker">EMPTY</div><h2 style="margin-top:6px;">還沒有${esc(ct.name)}</h2></section>`}</div>`;
+  if (kind === "zine") bindIssues();
   $("gNewBtn").addEventListener("click", () => openGEditor(kind, null));
   document.querySelectorAll("[data-gedit]").forEach(b => b.addEventListener("click", () => openGEditor(kind, b.dataset.gedit)));
   document.querySelectorAll("[data-gfeat]").forEach(b => b.addEventListener("click", () => toggleFeatured(ct.table, crows, b.dataset.gfeat, b, () => renderContentList(kind))));
@@ -823,10 +910,19 @@ async function openGEditor(kind, id, preset) {
   const ct = CT[kind];
   let r = preset || (id ? crows.find(x => x.id === id) : null);
   if (id && !r) { const { data } = await T(sb.from(ct.table).select("*").eq("id", id).maybeSingle()); r = data; }
-  gdraft = r ? { kind, isNew: false, ...JSON.parse(JSON.stringify(r)), files: {}, dirty: false }
+  // 選物的 kind 欄位（類別）跟編輯器的 kind（內容種類）同名：改叫 mise_kind
+  if (r && kind === "mise") { r = { ...r, mise_kind: r.kind }; delete r.kind; }
+  gdraft = r ? { kind, isNew: false, ...JSON.parse(JSON.stringify(r)), files: {}, dirty: false, removed: [] }
     : { kind, isNew: true, id: "", name: "", name_en: "", artist: me.creator ? me.creator.display_name : "", artist_en: "", url: "", status: "draft",
         title: "", subtitle: "", issue: "", author_name: me.creator ? me.creator.display_name : "", author_url: "", tags: [], blocks: [],
-        colors: { text: "#191919", sub: "#6E6A63", accent: "#FF4F00" }, photo_window: { x: 0.08, y: 0.07, w: 0.84, h: 0.7 }, caption_color: "#191919", files: {}, dirty: false };
+        colors: { text: "#191919", sub: "#6E6A63", accent: "#FF4F00" }, photo_window: { x: 0.08, y: 0.07, w: 0.84, h: 0.7 }, caption_color: "#191919", files: {}, dirty: false, removed: [], issue_id: null,
+        maker: me.creator ? me.creator.display_name : "", mise_kind: "goods", price_text: "", description: "", spec: "", book_author: "", publisher: "", pub_year: "", condition: "", shop_name: "", shop_url: "", is_affiliate: false,
+        source_name: "", source_url: "", cities: [], style: {} };
+  if (!gdraft.style) gdraft.style = {};
+  if (!gdraft.colors) gdraft.colors = { text: "#191919", sub: "#6E6A63", accent: "#FF4F00" };
+  if (!gdraft.photo_window) gdraft.photo_window = { x: 0.08, y: 0.07, w: 0.84, h: 0.7 };
+  if (!Array.isArray(gdraft.blocks)) gdraft.blocks = [];
+  if (kind === "zine") await loadIssues();
   renderGEditor();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -837,15 +933,46 @@ function slotPreview(d, slot) {
 function renderGEditor() {
   const d = gdraft, ct = CT[d.kind];
   const locked = !me.admin && d.status === "published";
-  const isZine = d.kind === "zine";
+  const isZine = d.kind === "zine", isMise = d.kind === "mise", isPlan = d.kind === "plans";
   const field = (id, label, val, ph, opts = {}) => `<div class="field ${opts.full ? "full" : ""}"><label for="${id}">${label}</label><input id="${id}" value="${esc(val || "")}" placeholder="${esc(ph || "")}" ${opts.attrs || ""}>${opts.hint ? `<span class="hint">${opts.hint}</span>` : ""}</div>`;
-  const common = isZine ? `
+  const area = (id, label, val, ph, hint) => `<div class="field full"><label for="${id}">${label}</label><textarea id="${id}" placeholder="${esc(ph || "")}" style="min-height:110px;">${esc(val || "")}</textarea>${hint ? `<span class="hint">${hint}</span>` : ""}</div>`;
+  const fontSel = (id, label, cur, def) => `<div class="field"><label for="${id}">${label}</label><select id="${id}">${Object.entries(ZINE_FONTS).map(([k, f]) => `<option value="${k}" ${(cur || def) === k ? "selected" : ""}>${f.label}</option>`).join("")}</select></div>`;
+  const common = isMise ? `
+      ${field("gTitle", "商品名稱", d.title, "旅行用亞麻束口袋", { full: true, attrs: 'maxlength="60"' })}
+      <div class="field"><label for="gKind">類別</label><select id="gKind">${Object.entries(MISE_KIND).map(([k, v]) => `<option value="${k}" ${d.mise_kind === k ? "selected" : ""}>${v}</option>`).join("")}</select></div>
+      ${field("gMaker", "品牌／創作者", d.maker, "例如：蛋白人")}
+      ${field("gPrice", "售價（顯示用）", d.price_text, "NT$ 380", { hint: "含稅售價；以賣家頁面為準" })}
+      ${field("gShopName", "販售通路名稱", d.shop_name, "例如：Pinkoi、作者官網", {})}
+      ${field("gShopUrl", "販售連結（必填）", d.shop_url, "https://…", { full: true, attrs: 'inputmode="url"' })}
+      <div class="field full"><label class="check" style="border:0; padding:0;"><input type="checkbox" id="gAff" ${d.is_affiliate ? "checked" : ""}><span><b>這是分潤／合作連結</b>（頁面會標示「合作」，依公平會推薦代言規範需要揭露）</span></label></div>
+      ${area("gDesc", "介紹", d.description, "為什麼適合帶去旅行？一兩段就好。", "段落之間空一行。")}
+      ${field("gSpec", "規格（選填）", d.spec, "尺寸 22×28cm · 亞麻 · 日本製", { full: true })}
+      <div class="field full" id="bookFields" ${["book", "zine"].includes(d.mise_kind) ? "" : "hidden"}><div class="fields" style="margin:0;">
+        ${field("gBookAuthor", "作者", d.book_author, "")}
+        ${field("gPublisher", "出版社／發行", d.publisher, "")}
+        ${field("gPubYear", "出版年", d.pub_year, "2025")}
+        ${field("gCondition", "書況（二手書填）", d.condition, "八成新，書口有黃斑")}
+      </div></div>
+      ${field("gTags", "標籤（用逗號分開）", (d.tags || []).join(", "), "收納, 京都, 文具")}`
+    : isPlan ? `
+      ${field("gTitle", "提案標題", d.title, "京都東山・慢慢走的三天", { full: true, attrs: 'maxlength="60"' })}
+      ${field("gSubtitle", "一句話介紹", d.subtitle, "不趕景點，每天只排一個區域", { full: true, attrs: 'maxlength="100"' })}
+      ${field("gAuthor", "作者", d.author_name, "作者名稱")}
+      ${field("gAuthorUrl", "作者連結（選填）", d.author_url, "https://…", { attrs: 'inputmode="url"' })}
+      ${field("gCities", "城市（用逗號分開）", (d.cities || []).join(", "), "京都, 大阪")}
+      ${field("gTags", "標籤（用逗號分開）", (d.tags || []).join(", "), "秋天, 散步, 親子")}
+      ${field("gSourceName", "出處（第三方的提案必填）", d.source_name, "例如：某某部落格")}
+      ${field("gSourceUrl", "出處連結", d.source_url, "https://…", { attrs: 'inputmode="url"' })}`
+    : isZine ? `
       ${field("gTitle", "標題", d.title, "京都秋天，只走一條街", { full: true, attrs: 'maxlength="60"' })}
       ${field("gSubtitle", "副標題（一句話）", d.subtitle, "從出町柳走到下鴨神社的半日提案", { full: true, attrs: 'maxlength="100"' })}
       ${field("gAuthor", "作者", d.author_name, "作者名稱")}
       ${field("gAuthorUrl", "作者連結（選填）", d.author_url, "https://…", { attrs: 'inputmode="url"' })}
-      ${field("gIssue", "期數／專欄（選填）", d.issue, "No.01 秋")}
-      ${field("gTags", "標籤（用逗號分開）", (d.tags || []).join(", "), "京都, 散步, 咖啡")}`
+      <div class="field"><label for="gIssueId">屬於哪一期</label><select id="gIssueId"><option value="">（還沒分期）</option>${issues.map(x => `<option value="${esc(x.id)}" ${x.id === d.issue_id ? "selected" : ""}>${esc(issueLabel(x))}${x.published ? "" : "（未發布）"}</option>`).join("")}</select></div>
+      ${field("gIssue", "專欄名稱（選填）", d.issue, "散步提案")}
+      ${field("gTags", "標籤（用逗號分開）", (d.tags || []).join(", "), "京都, 散步, 咖啡")}
+      ${fontSel("gFontTitle", "標題字型", d.style.title_font, "serif")}
+      ${fontSel("gFontBody", "內文字型", d.style.body_font, "sans")}`
     : `
       ${field("gName", "名稱（中文）", d.name, "", { attrs: 'maxlength="40"' })}
       ${field("gNameEn", "名稱（英文）", d.name_en, "", { attrs: 'maxlength="60"' })}
@@ -873,21 +1000,21 @@ function renderGEditor() {
                 ${(d.files[slot.key] && d.files[slot.key].warn || []).map(w => `<div class="slot-warn">⚠ ${esc(w)}</div>`).join("")}
               </div>
             </div>`).join("")}
-          <details class="spec" style="margin-top:14px;"><summary><b>上傳規範</b></summary>${SPEC[d.kind]}</details>
+          <div style="margin-top:14px;">${specCard(d.kind)}</div>
         </section>
         ${d.kind === "themes" ? `<section class="card section"><div class="section-head"><h2>文字顏色</h2><p>放在紙卡上的字</p></div>
           <div class="fields">
-            <div class="field"><label>主要文字</label><input type="color" id="cText" value="${esc(d.colors.text || "#191919")}"></div>
-            <div class="field"><label>次要文字</label><input type="color" id="cSub" value="${esc(d.colors.sub || "#6E6A63")}"></div>
-            <div class="field"><label>強調色</label><input type="color" id="cAccent" value="${esc(d.colors.accent || "#FF4F00")}"></div>
+            <div class="field"><label>主要文字</label><input type="color" id="cText" value="${safeColor(d.colors.text, "#191919")}"></div>
+            <div class="field"><label>次要文字</label><input type="color" id="cSub" value="${safeColor(d.colors.sub, "#6E6A63")}"></div>
+            <div class="field"><label>強調色</label><input type="color" id="cAccent" value="${safeColor(d.colors.accent, "#FF4F00")}"></div>
           </div></section>` : ""}
         ${d.kind === "polaroid" ? `<section class="card section"><div class="section-head"><h2>照片框位置</h2><p>比例 0～1：左、上、寬、高</p></div>
           <div class="num-row">${["x", "y", "w", "h"].map(k => `<div class="field"><label>${{ x: "左", y: "上", w: "寬", h: "高" }[k]}</label><input type="number" step="0.01" min="0" max="1" data-win="${k}" value="${esc(d.photo_window[k])}"></div>`).join("")}</div>
-          <div class="field" style="margin-top:10px;"><label>寫字區文字顏色</label><input type="color" id="cCap" value="${esc(d.caption_color || "#191919")}"></div></section>` : ""}
-        ${isZine ? zineBlocksHtml(d) : ""}
+          <div class="field" style="margin-top:10px;"><label>寫字區文字顏色</label><input type="color" id="cCap" value="${safeColor(d.caption_color, "#191919")}"></div></section>` : ""}
+        ${isZine || isPlan ? zineBlocksHtml(d) : ""}
         ${!d.isNew && (me.admin || ["draft", "rejected"].includes(d.status)) ? `<section class="card section" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;"><div style="flex:1; min-width:200px;"><h2>刪除</h2><div class="pack-meta">刪除後沒辦法復原。</div></div><button class="btn danger" type="button" id="gDelete">刪除</button></section>` : ""}
         <div class="save-bar">
-          <span class="msg" id="gMsg">${isZine && !d.isNew ? `<a href="../zine/?id=${encodeURIComponent(d.id)}&preview=1" target="_blank" rel="noopener" style="color:inherit;">在網站上預覽 ↗</a>` : esc(statusLead(d))}</span>
+          <span class="msg" id="gMsg">${ct.site && !d.isNew ? `<a href="${ct.site}?id=${encodeURIComponent(d.id)}&preview=1" target="_blank" rel="noopener" style="color:inherit;">在網站上預覽 ↗</a>` : esc(statusLead(d))}</span>
           ${locked ? "" : workflowButtons(d)}
         </div>
       </div>
@@ -902,25 +1029,55 @@ function renderGPreview() {
   if (d.kind === "themes") {
     const bg = slotPreview(d, CT.themes.slots[0]), paper = slotPreview(d, CT.themes.slots[1]), ov = slotPreview(d, CT.themes.slots[2]);
     el.innerHTML = `<div class="phone"><div class="phone-cap">限動卡上的樣子（虛線是安全範圍）</div>
-      <div class="mini-preview" style="${bg ? `background-image:url('${bg}')` : "background:#C9C4BA"}">
-        <div class="card-paper" style="${paper ? `background-image:url('${paper}');` : "background:#F6F3EC;"} color:${esc(d.colors.text)}">
-          <span style="color:${esc(d.colors.accent)}; font-weight:900; font-family:var(--mono);">DAY 01</span>
-          <b>京都・哲學之道</b><span style="color:${esc(d.colors.sub)}">09:30 → 11:00 · 南禪寺</span>
+      <div class="mini-preview" style="${bg ? `background-image:${cssUrl(bg)}` : "background:#C9C4BA"}">
+        <div class="card-paper" style="${paper ? `background-image:${cssUrl(paper)};` : "background:#F6F3EC;"} color:${safeColor(d.colors.text, "#191919")}">
+          <span style="color:${safeColor(d.colors.accent, "#FF4F00")}; font-weight:900; font-family:var(--mono);">DAY 01</span>
+          <b>京都・哲學之道</b><span style="color:${safeColor(d.colors.sub, "#6E6A63")}">09:30 → 11:00 · 南禪寺</span>
         </div>
-        ${ov ? `<div class="overlay" style="background-image:url('${ov}')"></div>` : ""}
+        ${ov ? `<div class="overlay" style="background-image:${cssUrl(ov)}"></div>` : ""}
         <div class="safe-guide"><i style="left:8.3%; right:8.3%; top:21.9%; bottom:21.9%;"></i><i style="left:0; right:0; top:0; height:13%; border-radius:0; border-color:rgba(0,0,0,.25);"></i><i style="left:0; right:0; bottom:0; height:13%; border-radius:0; border-color:rgba(0,0,0,.25);"></i></div>
       </div></div>`;
   } else if (d.kind === "polaroid") {
-    const fr = slotPreview(d, CT.polaroid.slots[0]), w = d.photo_window;
+    const fr = slotPreview(d, CT.polaroid.slots[0]), pw = d.photo_window || {};
+    const w = { x: safeNum(pw.x, .08), y: safeNum(pw.y, .07), w: safeNum(pw.w, .84), h: safeNum(pw.h, .7) };
     el.innerHTML = `<div class="phone"><div class="phone-cap">相框（藍橘色是照片的位置）</div>
-      <div class="pf-preview"><div class="photo" style="left:${w.x * 100}%; top:${w.y * 100}%; width:${w.w * 100}%; height:${w.h * 100}%;"></div>${fr ? `<div class="frame" style="background-image:url('${fr}')"></div>` : ""}
-      <div style="position:absolute; left:0; right:0; bottom:6%; text-align:center; font-weight:800; color:${esc(d.caption_color)};">京都・秋天</div></div></div>`;
+      <div class="pf-preview"><div class="photo" style="left:${w.x * 100}%; top:${w.y * 100}%; width:${w.w * 100}%; height:${w.h * 100}%;"></div>${fr ? `<div class="frame" style="background-image:${cssUrl(fr)}"></div>` : ""}
+      <div style="position:absolute; left:0; right:0; bottom:6%; text-align:center; font-weight:800; color:${safeColor(d.caption_color, "#191919")};">京都・秋天</div></div></div>`;
+  } else if (d.kind === "mise") {
+    const cv = slotPreview(d, CT.mise.slots[0]);
+    el.innerHTML = `<div class="phone"><div class="phone-cap">選物店上的樣子</div>
+      <div class="p-sheet" style="padding:0; overflow:hidden; background:#FBF8F1;">
+        <div style="aspect-ratio:1; background:${cv ? `${cssUrl(cv)} center/cover` : "var(--card2)"};"></div>
+        <div style="padding:12px;"><div class="kicker">${esc(MISE_KIND[d.mise_kind] || "")}${d.is_affiliate ? " · 合作" : ""}</div><div class="p-name" style="font-size:17px; margin-top:4px;">${esc(d.title || "商品名稱")}</div><div class="p-by" style="margin-top:4px;">${esc(d.maker || "")}</div>
+        <div style="display:inline-block; margin-top:10px; padding:4px 10px; background:#E9DCC2; font-family:var(--mono); font-weight:800; border-radius:3px;">${esc(d.price_text || "NT$ —")}</div></div>
+      </div>${d.shop_url && !/^https:\/\//.test(d.shop_url) ? `<div class="slot-warn" style="margin-top:8px;">⚠ 販售連結要用 https:// 開頭</div>` : ""}</div>`;
+  } else if (d.kind === "plans") {
+    const cv = slotPreview(d, CT.plans.slots[0]);
+    const days = d.blocks.filter(b => b.type === "day").length || 1;
+    el.innerHTML = `<div class="phone"><div class="phone-cap">提案頁上的樣子</div>
+      <div class="p-sheet" style="padding:0; overflow:hidden;">
+        <div style="aspect-ratio:4/5; background:${cv ? `${cssUrl(cv)} center/cover` : "var(--card2)"};"></div>
+        <div style="padding:12px;"><div class="kicker">${days} 天 · ${esc((d.cities || []).join("、") || "城市")}</div><div class="p-name" style="font-size:17px; margin-top:4px;">${esc(d.title || "提案標題")}</div><div class="p-by" style="margin-top:4px;">${esc(d.subtitle || "")}</div><div class="p-by" style="margin-top:8px;">文：${esc(d.author_name || "—")}${d.source_name ? ` · 出處：${esc(d.source_name)}` : ""}</div></div>
+      </div>
+      <div style="margin-top:12px;">${d.code ? `<div class="kicker">分享碼 ${esc(d.code)}</div><button class="btn dark sm" type="button" id="planCardBtn" style="margin-top:8px;">下載分享小卡（限動）</button>` : `<div class="empty-note">第一次儲存後會產生分享碼，才能下載分享小卡。</div>`}</div></div>`;
+    const cb = $("planCardBtn");
+    if (cb) cb.addEventListener("click", async () => {
+      if (!window.TGPlanCard || !window.qrcode) return toast("QR Code 元件沒載入，請重新整理");
+      cb.disabled = true; cb.textContent = "產生中…";
+      try {
+        const url = `${location.origin}/plans/?c=${d.code}`;
+        const blob = await TGPlanCard.render({ title: d.title, subtitle: d.subtitle, days, cities: d.cities, author: d.author_name, code: d.code, url, cover: cv });
+        const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `tabigram-plan-${d.code}.png`; a.click();
+      } catch (e) { toast("產生失敗：" + e.message, 5000); }
+      cb.disabled = false; cb.textContent = "下載分享小卡（限動）";
+    });
   } else {
     const cv = slotPreview(d, CT.zine.slots[0]);
+    loadFont(d.style.title_font || "serif");
     el.innerHTML = `<div class="phone"><div class="phone-cap">Zine 列表上的樣子</div>
       <div class="p-sheet" style="padding:0; overflow:hidden;">
-        <div style="aspect-ratio:16/10; background:${cv ? `url('${cv}') center/cover` : "var(--card2)"};"></div>
-        <div style="padding:12px;"><div class="kicker">${esc(d.issue || "TabigrAm.zine")}</div><div class="p-name" style="font-size:17px; margin-top:4px;">${esc(d.title || "標題")}</div><div class="p-by" style="margin-top:4px;">${esc(d.subtitle || "")}</div><div class="p-by" style="margin-top:8px;">文：${esc(d.author_name || "—")} · ${Math.max(1, Math.ceil(zineChars(d) / 450))} 分鐘</div></div>
+        <div style="aspect-ratio:16/10; background:${cv ? `${cssUrl(cv)} center/cover` : "var(--card2)"};"></div>
+        <div style="padding:12px;"><div class="kicker">${esc(d.issue || "TabigrAm.zine")}</div><div class="p-name" style="font-size:17px; margin-top:4px; font-family:${fontCss(d.style.title_font, "serif")};">${esc(d.title || "標題")}</div><div class="p-by" style="margin-top:4px;">${esc(d.subtitle || "")}</div><div class="p-by" style="margin-top:8px;">文：${esc(d.author_name || "—")} · ${Math.max(1, Math.ceil(zineChars(d) / 450))} 分鐘</div></div>
       </div></div>`;
   }
 }
@@ -929,6 +1086,14 @@ function readGFields() {
   const set = (k, id) => { const x = v(id); if (x !== null) d[k] = x; };
   set("title", "gTitle"); set("subtitle", "gSubtitle"); set("author_name", "gAuthor"); set("author_url", "gAuthorUrl"); set("issue", "gIssue");
   set("name", "gName"); set("name_en", "gNameEn"); set("artist", "gArtist"); set("artist_en", "gArtistEn"); set("url", "gUrl");
+  if ($("gIssueId")) d.issue_id = $("gIssueId").value || null;
+  set("maker", "gMaker"); set("price_text", "gPrice"); set("shop_name", "gShopName"); set("shop_url", "gShopUrl"); set("description", "gDesc"); set("spec", "gSpec");
+  set("book_author", "gBookAuthor"); set("publisher", "gPublisher"); set("pub_year", "gPubYear"); set("condition", "gCondition");
+  set("source_name", "gSourceName"); set("source_url", "gSourceUrl");
+  if ($("gKind")) { d.mise_kind = $("gKind").value; const bf = $("bookFields"); if (bf) bf.hidden = !["book", "zine"].includes(d.mise_kind); }
+  if ($("gAff")) d.is_affiliate = $("gAff").checked;
+  if ($("gCities")) d.cities = $("gCities").value.split(/[,，、]/).map(s => s.trim()).filter(Boolean).slice(0, 8);
+  if ($("gFontTitle")) d.style = { ...d.style, title_font: $("gFontTitle").value, body_font: $("gFontBody").value };
   if ($("gTags")) d.tags = $("gTags").value.split(/[,，、]/).map(s => s.trim()).filter(Boolean).slice(0, 8);
   if (d.isNew) set("id", "gId");
   if ($("cText")) d.colors = { text: $("cText").value, sub: $("cSub").value, accent: $("cAccent").value };
@@ -939,24 +1104,28 @@ function readGFields() {
 function bindGEditor() {
   const d = gdraft, ct = CT[d.kind];
   $("gBack").addEventListener("click", () => { if (d.dirty && !confirm("還沒儲存，確定要離開嗎？")) return; gdraft = null; renderContentList(d.kind); });
-  document.querySelectorAll("#app input, #app textarea").forEach(el => el.addEventListener("input", () => { d.dirty = true; readGFields(); renderGPreview(); }));
+  document.querySelectorAll("#app input, #app textarea, #app select").forEach(el => el.addEventListener("input", () => { d.dirty = true; readGFields(); renderGPreview(); }));
   ct.slots.forEach(slot => wireDrop(`drop_${slot.key}`, `inp_${slot.key}`, async files => {
-    try { readGFields(); d.files[slot.key] = await processImage(files[0], slot); d.dirty = true; renderGEditor(); }
+    try { readGFields(); d.files[slot.key] = await processImage(files[0], slot); if (d[slot.key]) d.removed.push(d[slot.key]); d.dirty = true; renderGEditor(); }
     catch (e) { toast(e.message, 5000); }
   }));
-  if (d.kind === "zine") bindZineBlocks();
+  if (d.kind === "zine" || d.kind === "plans") bindZineBlocks();
+  document.querySelectorAll("#app input[type=checkbox], #app select").forEach(el => el.addEventListener("change", () => { d.dirty = true; readGFields(); renderGPreview(); }));
   bindWorkflow((status, note) => saveG(status, note));
   const del = $("gDelete"); if (del) del.addEventListener("click", deleteG);
 }
 async function saveG(status, note) {
   readGFields();
   const d = gdraft, ct = CT[d.kind];
-  const label = d.kind === "zine" ? d.title : d.name;
-  if (!label) return toast(d.kind === "zine" ? "請填標題" : "請填中文名稱");
-  if ((d.url && !/^https:\/\//.test(d.url)) || (d.author_url && !/^https:\/\//.test(d.author_url))) return toast("連結請用 https:// 開頭");
+  const titled = ["zine", "mise", "plans"].includes(d.kind);
+  const label = titled ? d.title : d.name;
+  if (!label) return toast(titled ? "請填標題" : "請填中文名稱");
+  if (["url", "author_url", "shop_url", "source_url"].some(k => d[k] && !/^https:\/\//.test(d[k]))) return toast("連結請用 https:// 開頭");
   const next = status || d.status || "draft";
   if (next !== "draft") {
-    const miss = ct.slots.filter(s => !(d.files[s.key] || d[s.key]) && !(d.kind === "themes" && s.key === "overlay"));
+    if (d.kind === "mise" && !d.shop_url) return toast("送審前請填販售連結");
+    if (d.kind === "plans" && !d.blocks.some(b => b.type === "stop")) return toast("送審前請至少加一個行程點");
+    const miss = ct.slots.filter(s => !(d.files[s.key] || d[s.key]) && !s.optional && !(d.kind === "themes" && s.key === "overlay"));
     if (miss.length) return toast(`還缺：${miss.map(s => s.label).join("、")}`);
   }
   if (d.isNew) {
@@ -976,7 +1145,7 @@ async function saveG(status, note) {
     };
     msg.textContent = "上傳圖片中…";
     for (const slot of ct.slots) if (d.files[slot.key]) { d[slot.key] = await up(d.files[slot.key], slot.key); delete d.files[slot.key]; }
-    if (d.kind === "zine") {
+    if (d.kind === "zine" || d.kind === "plans") {
       for (let i = 0; i < d.blocks.length; i++) { const b = d.blocks[i]; if (b._file) { b.src = await up(b._file, "img" + (i + 1)); delete b._file; delete b._preview; } }
     }
     msg.textContent = "儲存中…";
@@ -986,11 +1155,20 @@ async function saveG(status, note) {
     let row;
     if (d.kind === "themes") row = { ...base, name: d.name, name_en: d.name_en || d.name, artist: d.artist, artist_en: d.artist_en || d.artist, url: d.url, background: d.background || "", paper: d.paper || "", overlay: d.overlay || "", colors: d.colors };
     else if (d.kind === "polaroid") row = { ...base, name: d.name, name_en: d.name_en || d.name, artist: d.artist, artist_en: d.artist_en || d.artist, url: d.url, frame: d.frame || "", photo_window: d.photo_window, caption_color: d.caption_color };
-    else row = { ...base, title: d.title, subtitle: d.subtitle, issue: d.issue, author_name: d.author_name, author_url: d.author_url, tags: d.tags, cover: d.cover || "",
+    else if (d.kind === "mise") row = { ...base, title: d.title, maker: d.maker, kind: d.mise_kind || "goods", price_text: d.price_text, description: d.description, spec: d.spec,
+      book_author: d.book_author, publisher: d.publisher, pub_year: d.pub_year, condition: d.condition, shop_name: d.shop_name, shop_url: d.shop_url, is_affiliate: !!d.is_affiliate, tags: d.tags,
+      cover: d.cover || "", photo2: d.photo2 || "", photo3: d.photo3 || "", photo4: d.photo4 || "" };
+    else if (d.kind === "plans") row = { ...base, title: d.title, subtitle: d.subtitle, author_name: d.author_name, author_url: d.author_url, source_name: d.source_name, source_url: d.source_url,
+      cities: d.cities || [], tags: d.tags, cover: d.cover || "", days: Math.max(1, d.blocks.filter(b => b.type === "day").length),
+      blocks: d.blocks.map(b => { const o = { ...b }; delete o._file; delete o._preview; delete o._warn; return o; }) };
+    else row = { ...base, style: d.style || {}, issue_id: d.issue_id || null, title: d.title, subtitle: d.subtitle, issue: d.issue, author_name: d.author_name, author_url: d.author_url, tags: d.tags, cover: d.cover || "",
       blocks: d.blocks.map(b => { const o = { ...b }; delete o._file; delete o._preview; delete o._warn; return o; }), read_minutes: Math.max(1, Math.ceil(zineChars(d) / 450)) };
     if (d.isNew) row.sort = 100;
     const { error } = d.isNew ? await T(sb.from(ct.table).insert(row)) : await T(sb.from(ct.table).update(row).eq("id", d.id));
     if (error) throw new Error("儲存失敗：" + error.message);
+    // 換掉、刪掉的舊圖片順手從雲端清掉（別人的檔案刪不掉，不影響）
+    const old = (d.removed || []).filter(p => p && !/^https?:/.test(p));
+    if (old.length) await T(sb.storage.from("content").remove(old));
     toast({ published: "已上架", review: "已送出審核", rejected: "已退回給創作者", draft: "已存成草稿" }[next] || "已儲存");
     const kind = d.kind; gdraft = null;
     await renderContentList(kind); if (me.admin) refreshBadges();
@@ -1009,9 +1187,13 @@ async function deleteG() {
 }
 
 // ---------- Zine 區塊 ----------
-const BLK = { text: "段落", image: "圖片", quote: "引言", tip: "旅行小物／小提醒", place: "地點卡" };
+const BLK_ZINE = { text: "段落", image: "圖片", quote: "引言", tip: "旅行小物／小提醒", place: "地點卡" };
+const BLK_PLAN = { day: "新的一天", stop: "行程點", tip: "小提醒", image: "圖片" };
+let BLK = BLK_ZINE;
 function zineChars(d) { return (d.blocks || []).reduce((n, b) => n + String(b.text || "").length + String(b.title || "").length, 0) + String(d.subtitle || "").length; }
 function zineBlocksHtml(d) {
+  const plan = d.kind === "plans"; BLK = plan ? BLK_PLAN : BLK_ZINE;
+  let dayN = 0;
   const b2 = (b, i) => {
     const ta = (k, ph) => `<textarea data-bi="${i}" data-bk="${k}" placeholder="${esc(ph)}">${esc(b[k] || "")}</textarea>`;
     const inp = (k, ph) => `<input data-bi="${i}" data-bk="${k}" value="${esc(b[k] || "")}" placeholder="${esc(ph)}">`;
@@ -1020,11 +1202,13 @@ function zineBlocksHtml(d) {
     else if (b.type === "image") body = `<div class="blk-img">${b._preview || b.src ? `<img src="${esc(b._preview || urlOf("content", b.src))}" alt="">` : ""}<label class="btn soft sm" style="cursor:pointer;">選擇圖片<input type="file" accept="image/png,image/jpeg,image/webp" data-bimg="${i}" hidden></label></div>${(b._warn || []).map(w => `<div class="slot-warn">⚠ ${esc(w)}</div>`).join("")}${inp("caption", "圖說（選填）")}`;
     else if (b.type === "quote") body = ta("text", "引言內容") + inp("by", "說的人（選填）");
     else if (b.type === "tip") body = inp("title", "例如：旅行好物｜折疊水壺") + ta("text", "一兩句說明");
+    else if (b.type === "day") body = `<div class="kicker" style="margin-bottom:6px;">第 ${++dayN} 天</div>` + inp("title", "這一天的主題，例如：東山散步");
+    else if (b.type === "stop") body = `<div style="display:grid; grid-template-columns:110px 1fr; gap:8px;">${inp("time", "09:30")}${inp("title", "地點，例如：南禪寺")}</div>` + ta("text", "一兩句說明：怎麼去、待多久、推薦什麼") + inp("link", "地圖連結（選填，https://…）");
     else if (b.type === "place") body = inp("title", "地點名稱，例如：下鴨神社") + ta("text", "一句話介紹") + inp("link", "地圖連結（選填，https://…）");
     return `<div class="blk"><div class="blk-head"><span class="kicker">${String(i + 1).padStart(2, "0")} · ${BLK[b.type]}</span>
       <button class="icon-btn" type="button" data-bup="${i}" ${i === 0 ? "disabled" : ""} aria-label="往上">↑</button><button class="icon-btn" type="button" data-bdown="${i}" ${i === d.blocks.length - 1 ? "disabled" : ""} aria-label="往下">↓</button><button class="icon-btn rm" type="button" data-brm="${i}" aria-label="移除" style="color:var(--danger);">✕</button></div>${body}</div>`;
   };
-  return `<section class="card section"><div class="section-head"><h2>內文</h2><p>約 ${zineChars(d)} 字 · 一篇 300～500 字最剛好</p></div>
+  return `<section class="card section"><div class="section-head"><h2>${plan ? "行程" : "內文"}</h2><p>${plan ? `${d.blocks.filter(b => b.type === "day").length || 0} 天 · ${d.blocks.filter(b => b.type === "stop").length} 個行程點` : `約 ${zineChars(d)} 字 · 一篇 300～500 字最剛好`}</p></div>
     ${d.blocks.map(b2).join("") || `<div class="empty-note">還沒有內容。用下面的按鈕加一段。</div>`}
     <div class="blk-add">${Object.entries(BLK).map(([k, v]) => `<button class="btn soft sm" type="button" data-badd="${k}">＋ ${v}</button>`).join("")}</div></section>`;
 }
@@ -1032,14 +1216,307 @@ function bindZineBlocks() {
   const d = gdraft;
   const rerender = () => { readGFields(); d.dirty = true; renderGEditor(); };
   document.querySelectorAll("[data-badd]").forEach(b => b.addEventListener("click", () => { readGFields(); d.blocks.push({ type: b.dataset.badd }); d.dirty = true; renderGEditor(); }));
-  document.querySelectorAll("[data-brm]").forEach(b => b.addEventListener("click", () => { readGFields(); d.blocks.splice(+b.dataset.brm, 1); rerender(); }));
+  document.querySelectorAll("[data-brm]").forEach(b => b.addEventListener("click", () => { readGFields(); const [x] = d.blocks.splice(+b.dataset.brm, 1); if (x && x.src) d.removed.push(x.src); rerender(); }));
   const mv = (i, j) => { readGFields(); [d.blocks[i], d.blocks[j]] = [d.blocks[j], d.blocks[i]]; rerender(); };
   document.querySelectorAll("[data-bup]").forEach(b => b.addEventListener("click", () => mv(+b.dataset.bup, +b.dataset.bup - 1)));
   document.querySelectorAll("[data-bdown]").forEach(b => b.addEventListener("click", () => mv(+b.dataset.bdown, +b.dataset.bdown + 1)));
   document.querySelectorAll("[data-bimg]").forEach(inp => inp.addEventListener("change", async () => {
     const f = inp.files[0]; if (!f) return;
-    try { readGFields(); const r = await processImage(f, { w: 1600, h: 1600, fit: "max", fmt: "jpeg", maxKB: 500 }); const b = d.blocks[+inp.dataset.bimg]; b._file = r; b._preview = r.preview; b._warn = r.warn; d.dirty = true; renderGEditor(); }
+    try { readGFields(); const r = await processImage(f, { w: 1600, h: 1600, fit: "max", fmt: "jpeg", maxKB: 500 }); const b = d.blocks[+inp.dataset.bimg]; if (b.src) d.removed.push(b.src); b._file = r; b._preview = r.preview; b._warn = r.warn; d.dirty = true; renderGEditor(); }
     catch (e) { toast(e.message, 5000); }
+  }));
+}
+
+// =====================================================================
+// 製作規範：圖解＋可以下載的製作範本（PNG，在 Photoshop／Procreate 裡當底圖）
+// =====================================================================
+const SPEC_SVG = {
+  stickers: `<svg viewBox="0 0 220 220" width="150" aria-hidden="true"><rect x="10" y="10" width="200" height="200" fill="#F3F1EC" stroke="#D6D2CA"/><rect x="26" y="26" width="168" height="168" fill="none" stroke="#FF4F00" stroke-dasharray="5 4"/><circle cx="110" cy="110" r="70" fill="#fff" stroke="#191919" stroke-width="2"/><circle cx="110" cy="110" r="62" fill="#FFE6DA"/><text x="110" y="114" font-size="12" text-anchor="middle" fill="#191919" font-weight="700">主角</text><text x="110" y="205" font-size="10" text-anchor="middle" fill="#6E6A63">512×512 · 白邊 6～10px</text></svg>`,
+  themes: `<svg viewBox="0 0 120 213" width="120" aria-hidden="true"><rect x="1" y="1" width="118" height="211" rx="6" fill="#E5E0D5" stroke="#D6D2CA"/><rect x="1" y="1" width="118" height="28" fill="rgba(25,25,25,.15)"/><rect x="1" y="184" width="118" height="28" fill="rgba(25,25,25,.15)"/><rect x="10" y="47" width="100" height="120" rx="5" fill="#F6F3EC" stroke="#FF4F00" stroke-dasharray="4 3"/><text x="60" y="18" font-size="7" text-anchor="middle" fill="#191919">0–250 IG 會蓋住</text><text x="60" y="200" font-size="7" text-anchor="middle" fill="#191919">1670–1920 IG 會蓋住</text><text x="60" y="104" font-size="7.5" text-anchor="middle" fill="#191919">行程卡片區</text><text x="60" y="114" font-size="6.5" text-anchor="middle" fill="#6E6A63">左右 90 · 上下 420–1500</text><text x="60" y="124" font-size="6.5" text-anchor="middle" fill="#6E6A63">裝飾層這裡保持透明</text></svg>`,
+  polaroid: `<svg viewBox="0 0 120 144" width="120" aria-hidden="true"><rect x="1" y="1" width="118" height="142" fill="#FBF9F4" stroke="#D6D2CA"/><rect x="10" y="10" width="100" height="101" fill="#6E8FB5" opacity=".55" stroke="#FF4F00" stroke-dasharray="4 3"/><text x="60" y="62" font-size="7.5" text-anchor="middle" fill="#191919">照片（挖空透明）</text><text x="60" y="72" font-size="6.5" text-anchor="middle" fill="#191919">左 0.08 上 0.07 寬 0.84 高 0.70</text><text x="60" y="130" font-size="7.5" text-anchor="middle" fill="#6E6A63">寫字區</text></svg>`,
+  mise: `<svg viewBox="0 0 120 120" width="120" aria-hidden="true"><rect x="1" y="1" width="118" height="118" fill="#F3F1EC" stroke="#D6D2CA"/><rect x="22" y="22" width="76" height="76" fill="none" stroke="#FF4F00" stroke-dasharray="4 3"/><text x="60" y="58" font-size="8" text-anchor="middle" fill="#191919">商品放中間</text><text x="60" y="70" font-size="6.5" text-anchor="middle" fill="#6E6A63">1200×1200 · 不加字</text></svg>`,
+  plans: `<svg viewBox="0 0 120 150" width="110" aria-hidden="true"><rect x="1" y="1" width="118" height="148" fill="#D9D3C7" stroke="#D6D2CA"/><rect x="12" y="12" width="96" height="90" fill="none" stroke="#FF4F00" stroke-dasharray="4 3"/><text x="60" y="58" font-size="8" text-anchor="middle" fill="#191919">主角放這裡</text><text x="60" y="125" font-size="6.5" text-anchor="middle" fill="#6E6A63">1200×1500 · 下方可能被裁</text></svg>`,
+  zine: `<svg viewBox="0 0 160 100" width="160" aria-hidden="true"><rect x="1" y="1" width="158" height="98" fill="#D9D3C7" stroke="#D6D2CA"/><rect x="25" y="1" width="110" height="98" fill="none" stroke="#FF4F00" stroke-dasharray="4 3"/><text x="80" y="52" font-size="8" text-anchor="middle" fill="#191919">主角放中間</text><text x="80" y="62" font-size="6.5" text-anchor="middle" fill="#6E6A63">1600×1000 · 左右可能被裁</text></svg>`,
+};
+const TEMPLATES = {
+  stickers: [{ label: "貼紙範本 512×512", w: 512, h: 512, draw(g, W, H) { g.strokeStyle = "#FF4F00"; g.setLineDash([12, 8]); g.lineWidth = 3; g.strokeRect(24, 24, W - 48, H - 48); g.setLineDash([]); label(g, "主角放在虛線裡；外圍留 6～10px 白邊；背景要透明", W / 2, H - 10, 16); } }],
+  themes: [{ label: "背景／裝飾層範本 1080×1920", w: 1080, h: 1920, draw(g, W, H) {
+    g.fillStyle = "rgba(25,25,25,.18)"; g.fillRect(0, 0, W, 250); g.fillRect(0, H - 250, W, 250);
+    g.strokeStyle = "#FF4F00"; g.lineWidth = 6; g.setLineDash([24, 16]); g.strokeRect(90, 420, W - 180, 1080); g.setLineDash([]);
+    label(g, "0–250：Instagram 會蓋住", W / 2, 140, 40); label(g, "1670–1920：Instagram 會蓋住", W / 2, H - 110, 40);
+    label(g, "行程卡片區（左右 90、上下 420–1500）", W / 2, 960, 40); label(g, "裝飾層在這塊盡量保持透明", W / 2, 1020, 34);
+  } }, { label: "紙卡材質範本 512×512", w: 512, h: 512, draw(g, W, H) { g.strokeStyle = "rgba(255,79,0,.6)"; g.lineWidth = 2; g.setLineDash([8, 6]); g.beginPath(); g.moveTo(W / 2, 0); g.lineTo(W / 2, H); g.moveTo(0, H / 2); g.lineTo(W, H / 2); g.stroke(); label(g, "要能無縫拼接（上下左右接得起來）", W / 2, H - 14, 16); } }],
+  polaroid: [{ label: "相框範本 1200×1440", w: 1200, h: 1440, draw(g, W, H) {
+    g.fillStyle = "#FBF9F4"; g.fillRect(0, 0, W, H); g.clearRect(W * .08, H * .07, W * .84, H * .7);
+    g.strokeStyle = "#FF4F00"; g.lineWidth = 5; g.setLineDash([20, 14]); g.strokeRect(W * .08, H * .07, W * .84, H * .7); g.setLineDash([]);
+    label(g, "照片位置：這裡要挖空（透明）", W / 2, H * .42, 40); label(g, "左 0.08 上 0.07 寬 0.84 高 0.70（可以改，在後台填）", W / 2, H * .47, 30);
+    label(g, "寫字區", W / 2, H * .88, 40);
+  } }],
+  zine: [{ label: "封面範本 1600×1000", w: 1600, h: 1000, draw(g, W, H) { g.fillStyle = "#D9D3C7"; g.fillRect(0, 0, W, H); g.strokeStyle = "#FF4F00"; g.lineWidth = 6; g.setLineDash([24, 16]); g.strokeRect(250, 0, W - 500, H); g.setLineDash([]); label(g, "主角放在虛線裡（手機上左右可能被裁掉）", W / 2, H / 2, 44); } }],
+};
+function label(g, t, x, y, size) { g.setLineDash([]); g.font = `700 ${size}px 'Noto Sans TC', sans-serif`; g.textAlign = "center"; g.lineWidth = size / 5; g.strokeStyle = "rgba(255,255,255,.9)"; g.strokeText(t, x, y); g.fillStyle = "#191919"; g.fillText(t, x, y); }
+function downloadTemplate(kind, i) {
+  const t = TEMPLATES[kind][i], c = document.createElement("canvas"); c.width = t.w; c.height = t.h;
+  t.draw(c.getContext("2d"), t.w, t.h);
+  c.toBlob(b => { const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `tabigram-template-${kind}-${t.w}x${t.h}.png`; a.click(); }, "image/png");
+}
+function specCard(kind) {
+  const open = !me.admin;   // 創作者預設展開
+  return `<details class="spec" ${open ? "open" : ""}><summary><b>製作規範與範本</b>${open ? "" : "（點開）"}</summary>
+    <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; margin-top:10px;">
+      <div style="flex:none;">${SPEC_SVG[kind] || ""}</div>
+      <div style="flex:1; min-width:240px;">${SPEC[kind]}
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;">${(TEMPLATES[kind] || []).map((t, i) => `<button type="button" class="btn soft sm" data-tpl="${kind}:${i}">下載${esc(t.label)}</button>`).join("")}</div>
+      </div>
+    </div></details>`;
+}
+document.addEventListener("click", e => { const b = e.target.closest && e.target.closest("[data-tpl]"); if (b) { const [k, i] = b.dataset.tpl.split(":"); downloadTemplate(k, +i); } });
+
+// =====================================================================
+// Zine 期數（管理員）：一季一期；首頁放當季號，過季的收進往期書架
+// =====================================================================
+let issues = [];
+const SEASON = { spring: "春", summer: "夏", autumn: "秋", winter: "冬", special: "特別號" };
+const issueLabel = x => `No.${String(x.number).padStart(2, "0")} ${x.name || SEASON[x.season] || ""}${x.title ? `・${x.title}` : ""}`;
+async function loadIssues() {
+  const { data, error } = await T(sb.from("zine_issues").select("*").order("starts_on", { ascending: false }));
+  issues = error ? [] : (data || []);
+  return !error;
+}
+function issuesSectionHtml() {
+  const today = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+  const current = issues.filter(x => x.published && x.starts_on <= today).sort((a, b) => b.starts_on.localeCompare(a.starts_on))[0];
+  return `<section class="card" style="margin-bottom:14px;">
+    <div class="section-head"><h2>期數</h2><p>開始日期到了就自動變成「當季號」，舊的自動收進往期書架</p></div>
+    ${issues.length ? `<table class="mini"><thead><tr><th>期數</th><th>開始</th><th>狀態</th><th></th></tr></thead><tbody>${issues.map((x, i) => `<tr><td>${esc(issueLabel(x))}</td><td>${esc(x.starts_on)}</td><td>${x.id === (current && current.id) ? `<span class="pill on">當季號</span>` : x.published ? (x.starts_on > today ? `<span class="pill review">已排程</span>` : `<span class="pill draft">往期</span>`) : `<span class="pill draft">未發布</span>`}</td><td style="text-align:right;"><button class="btn soft sm" type="button" data-issue="${i}">編輯</button></td></tr>`).join("")}</tbody></table>` : `<div class="empty-note">還沒有期數。沒有期數時，Zine 首頁會列出所有文章。</div>`}
+    <div style="margin-top:10px;"><button class="btn go sm" type="button" id="issueNew">＋ 新增一期</button></div>
+    <div id="issueEdit"></div></section>`;
+}
+function bindIssues() {
+  const nb = $("issueNew"); if (!nb) return;
+  nb.addEventListener("click", () => openIssue(null));
+  document.querySelectorAll("[data-issue]").forEach(b => b.addEventListener("click", () => openIssue(issues[+b.dataset.issue])));
+}
+function openIssue(x) {
+  const today = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+  const m = new Date(Date.now() + 8 * 3600e3).getUTCMonth() + 1;
+  const guess = m >= 3 && m <= 5 ? "spring" : m >= 6 && m <= 8 ? "summer" : m >= 9 && m <= 11 ? "autumn" : "winter";
+  const it = x || { id: "", number: (issues[0] ? issues[0].number + 1 : 1), name: SEASON[guess], title: "", season: guess, year: new Date().getFullYear(), starts_on: today, intro: "", cover: "", paper: "", paper_scale: 512, accent: "#FF4F00", published: false };
+  const files = {};
+  $("issueEdit").innerHTML = `<div class="card" style="margin-top:12px; border-color:var(--ink);"><div class="fields">
+    <div class="field"><label>代號（英文，例如 2026-autumn）</label><input id="iId" value="${esc(it.id)}" ${x ? "readonly" : ""} placeholder="${it.year}-${guess}"></div>
+    <div class="field"><label>期數號碼</label><input id="iNum" type="number" min="0" value="${esc(it.number)}"></div>
+    <div class="field"><label>季節</label><select id="iSeason">${Object.entries(SEASON).map(([k, v]) => `<option value="${k}" ${it.season === k ? "selected" : ""}>${v}</option>`).join("")}</select></div>
+    <div class="field"><label>名稱（顯示在期數旁邊）</label><input id="iName" value="${esc(it.name)}" placeholder="秋"></div>
+    <div class="field full"><label>這一期的標題</label><input id="iTitle" value="${esc(it.title)}" placeholder="慢慢走的秋天"></div>
+    <div class="field full"><label>前言（一兩句）</label><textarea id="iIntro" style="min-height:70px;">${esc(it.intro)}</textarea></div>
+    <div class="field"><label>開始日期（這天起成為當季號）</label><input id="iStart" type="date" value="${esc(it.starts_on)}"></div>
+    <div class="field"><label>主色</label><input id="iAccent" type="color" value="${safeColor(it.accent, "#FF4F00")}"></div>
+  </div>
+  <div class="slot" style="margin-top:14px;"><div class="slot-img">${it.cover ? `<img src="${esc(urlOf("content", it.cover))}" alt="">` : ""}</div><div><b>這一期的封面</b> <span class="kicker">1600×1000 · JPG</span><label class="drop" style="margin-top:8px;" id="iCoverDrop"><b>選擇圖片</b><input type="file" accept="image/*" id="iCoverInp" hidden></label><div id="iCoverMsg"></div></div></div>
+  <div class="slot"><div class="slot-img sq" style="${it.paper ? `background:${cssUrl(urlOf("content", it.paper))} 0 0 / 55px;` : ""}"></div><div><b>這一期的紙張（選填）</b> <span class="kicker">1024×1024 · 無縫 JPG</span><label class="drop" style="margin-top:8px;" id="iPaperDrop"><b>選擇紙張</b>，沒有就用「App 設定」裡的<input type="file" accept="image/*" id="iPaperInp" hidden></label><div id="iPaperMsg"></div></div></div>
+  <label class="check" style="margin-top:10px;"><input type="checkbox" id="iPub" ${it.published ? "checked" : ""}><span><b>發布</b>開始日期到了就會出現在 Zine 首頁</span></label>
+  <div style="display:flex; gap:8px; margin-top:12px;"><button class="btn dark sm" type="button" id="iSave">儲存這一期</button><button class="btn soft sm" type="button" id="iCancel">取消</button></div></div>`;
+  const pick = (dropId, inpId, msgId, key, spec) => wireDrop(dropId, inpId, async fs => { try { files[key] = await processImage(fs[0], spec); $(msgId).innerHTML = files[key].warn.map(w => `<div class="slot-warn">⚠ ${esc(w)}</div>`).join("") + `<div class="slot-warn" style="color:var(--ok);">已選好，儲存時上傳</div>`; } catch (e) { toast(e.message, 5000); } });
+  pick("iCoverDrop", "iCoverInp", "iCoverMsg", "cover", { w: 1600, h: 1000, fit: "cover", fmt: "jpeg", maxKB: 600 });
+  pick("iPaperDrop", "iPaperInp", "iPaperMsg", "paper", { w: 1024, h: 1024, fit: "cover", fmt: "jpeg", maxKB: 600 });
+  $("iCancel").addEventListener("click", () => { $("issueEdit").innerHTML = ""; });
+  $("iSave").addEventListener("click", async () => {
+    const id = x ? x.id : (slugify($("iId").value) || `${new Date().getFullYear()}-${$("iSeason").value}`);
+    const row = { id, number: +$("iNum").value || 0, season: $("iSeason").value, name: $("iName").value.trim(), title: $("iTitle").value.trim(), intro: $("iIntro").value.trim(), starts_on: $("iStart").value || today, accent: $("iAccent").value, published: $("iPub").checked, year: +($("iStart").value || today).slice(0, 4), updated_at: new Date().toISOString() };
+    for (const key of ["cover", "paper"]) if (files[key]) {
+      const path = `zine/issues/${id}/${Date.now().toString(36)}-${key}.jpg`;
+      const { error } = await T(sb.storage.from("content").upload(path, files[key].blob, { contentType: "image/jpeg", cacheControl: "31536000" }), 60000);
+      if (error) return toast("上傳失敗：" + error.message, 5000);
+      row[key] = path;
+    }
+    const { error } = x ? await T(sb.from("zine_issues").update(row).eq("id", id)) : await T(sb.from("zine_issues").insert(row));
+    if (error) return toast(needV3(error) ? "請先執行 SUPABASE_ADMIN_V4.sql" : "儲存失敗：" + error.message, 5000);
+    toast("已儲存"); renderContentList("zine");
+  });
+  $("issueEdit").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+// =====================================================================
+// 創作者授權合約：簽署（創作者）與管理（管理員）
+// =====================================================================
+function mdToHtml(md) {
+  const inline = t => esc(t).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`(.+?)`/g, "<code>$1</code>");
+  const out = []; let list = null;
+  const close = () => { if (list) { out.push(`</${list}>`); list = null; } };
+  String(md || "").split("\n").forEach(line => {
+    const l = line.replace(/\s+$/, "");
+    if (/^#{1,3} /.test(l)) { close(); const n = l.match(/^#+/)[0].length; out.push(`<h${n + 1}>${inline(l.replace(/^#+ /, ""))}</h${n + 1}>`); }
+    else if (/^\s*[-*] /.test(l)) { if (list !== "ul") { close(); out.push("<ul>"); list = "ul"; } out.push(`<li>${inline(l.replace(/^\s*[-*] /, ""))}</li>`); }
+    else if (/^\d+\. /.test(l)) { if (list !== "ol") { close(); out.push("<ol>"); list = "ol"; } out.push(`<li>${inline(l.replace(/^\d+\. /, ""))}</li>`); }
+    else if (/^> /.test(l)) { close(); out.push(`<blockquote>${inline(l.slice(2))}</blockquote>`); }
+    else if (/^---+$/.test(l)) { close(); out.push("<hr>"); }
+    else if (l.trim()) { close(); out.push(`<p>${inline(l)}</p>`); }
+    else close();
+  });
+  close();
+  return out.join("");
+}
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+function printAgreement(ag, sig) {
+  const w = window.open("", "_blank");
+  if (!w) return toast("瀏覽器擋住了新視窗，請允許後再試");
+  w.document.write(`<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><title>${esc(ag.title)} ${esc(ag.version)}</title>
+    <style>body{font:15px/1.8 'Noto Sans TC',sans-serif;color:#191919;max-width:760px;margin:40px auto;padding:0 20px}h2{font-size:22px}h3{font-size:16px;margin-top:22px}.sig{margin-top:36px;border:1.5px solid #191919;padding:16px 20px;border-radius:8px}.sig div{margin:4px 0}code{font-size:12px;word-break:break-all}@media print{body{margin:0}}</style></head><body>
+    ${mdToHtml(ag.body)}
+    ${sig ? `<div class="sig"><b>電子簽署紀錄</b><div>合約版本：${esc(sig.version)}</div><div>簽署人（真實姓名）：${esc(sig.legal_name)}</div><div>顯示名稱：${esc(sig.display_name || "")}</div><div>登入 Email：${esc(sig.email)}</div><div>簽署時間：${esc(new Date(sig.agreed_at).toLocaleString("zh-TW", { timeZone: "Asia/Taipei" }))}（台北時間）</div><div>合約內容雜湊值（SHA-256）：<code>${esc(sig.body_sha256)}</code></div>${safeSigPng(sig.signature_png) ? `<div style="margin-top:10px;">手寫簽名：<br><img src="${safeSigPng(sig.signature_png)}" alt="手寫簽名" style="max-width:300px; max-height:130px; border-bottom:1.5px solid #191919; margin-top:4px;"></div>${sig.signature_sha256 ? `<div>簽名圖雜湊值（SHA-256）：<code>${esc(sig.signature_sha256)}</code></div>` : ""}` : ""}</div>` : ""}
+    <script>setTimeout(()=>print(),400)<\/script></body></html>`);
+  w.document.close();
+}
+// 手寫簽名板：手指、觸控筆、滑鼠都可以；輸出時裁掉空白、縮成寬 600 以內的透明 PNG
+function setupSigPad(canvas, wrap) {
+  const g = canvas.getContext("2d");
+  let dpr = 1, strokes = [], cur = null, ink = 0;
+  const size = () => {
+    dpr = Math.max(1, window.devicePixelRatio || 1);
+    const r = canvas.getBoundingClientRect();
+    canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.height * dpr);
+    redraw();
+  };
+  const pt = e => { const r = canvas.getBoundingClientRect(); return { x: (e.clientX - r.left) * dpr, y: (e.clientY - r.top) * dpr, p: e.pressure || 0.5 }; };
+  const drawStroke = st => {
+    g.lineCap = "round"; g.lineJoin = "round"; g.strokeStyle = "#191919";
+    for (let i = 1; i < st.length; i++) {
+      const a = st[i - 1], b = st[i];
+      g.lineWidth = (1.8 + (b.p || 0.5) * 2.2) * dpr;
+      g.beginPath(); g.moveTo(a.x, a.y);
+      const m = i < st.length - 1 ? { x: (b.x + st[i + 1].x) / 2, y: (b.y + st[i + 1].y) / 2 } : b;
+      g.quadraticCurveTo(b.x, b.y, m.x, m.y); g.stroke();
+    }
+    if (st.length === 1) { g.fillStyle = "#191919"; g.beginPath(); g.arc(st[0].x, st[0].y, 1.8 * dpr, 0, Math.PI * 2); g.fill(); }
+  };
+  function redraw() { g.clearRect(0, 0, canvas.width, canvas.height); strokes.forEach(drawStroke); }
+  canvas.addEventListener("pointerdown", e => { e.preventDefault(); canvas.setPointerCapture(e.pointerId); cur = [pt(e)]; strokes.push(cur); wrap.classList.add("signed"); redraw(); });
+  canvas.addEventListener("pointermove", e => {
+    if (!cur) return; e.preventDefault();
+    const q = pt(e), l = cur[cur.length - 1];
+    if (Math.hypot(q.x - l.x, q.y - l.y) < 1.5 * dpr) return;
+    ink += Math.hypot(q.x - l.x, q.y - l.y) / dpr; cur.push(q); redraw();
+  });
+  const end = () => { cur = null; };
+  canvas.addEventListener("pointerup", end); canvas.addEventListener("pointercancel", end); canvas.addEventListener("pointerleave", end);
+  size();
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { if (!strokes.length) size(); }, 150); });
+  return {
+    // 太短（例如只點一下）不算簽名
+    isEmpty: () => ink < 40,
+    clear: () => { strokes = []; ink = 0; wrap.classList.remove("signed"); redraw(); },
+    toPng: () => {
+      const all = strokes.flat(); if (!all.length) return "";
+      const pad = 12 * dpr;
+      const x0 = Math.max(0, Math.min(...all.map(p => p.x)) - pad), y0 = Math.max(0, Math.min(...all.map(p => p.y)) - pad);
+      const x1 = Math.min(canvas.width, Math.max(...all.map(p => p.x)) + pad), y1 = Math.min(canvas.height, Math.max(...all.map(p => p.y)) + pad);
+      const k = Math.min(1, 600 / (x1 - x0)), out = document.createElement("canvas");
+      out.width = Math.max(1, Math.round((x1 - x0) * k)); out.height = Math.max(1, Math.round((y1 - y0) * k));
+      out.getContext("2d").drawImage(canvas, x0, y0, x1 - x0, y1 - y0, 0, 0, out.width, out.height);
+      return out.toDataURL("image/png");
+    },
+  };
+}
+const safeSigPng = u => /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(String(u || "")) ? u : "";
+// 創作者第一次進來（或合約改版）：先簽署才能上傳
+async function renderSignAgreement() {
+  const { data: ag, error } = await T(sb.from("creator_agreements").select("*").eq("version", me.agreement).maybeSingle());
+  if (error || !ag) return renderMessage("讀不到合約", "請稍後再試，或聯絡 TabigrAm 管理員。");
+  $("tabs").hidden = true;
+  $("app").innerHTML = `<h1>上傳作品前，請先簽署授權合約</h1>
+    <p class="lead">這份合約說明你的作品怎麼在 TabigrAm 使用：<b>著作權還是你的</b>、非專屬授權、可以隨時要求下架。請完整讀過再簽署。${me.signedBefore ? "<br>合約有更新，需要重新簽署新版本。" : ""}</p>
+    <section class="card agreement" style="max-height:60vh; overflow:auto; line-height:1.85;">${mdToHtml(ag.body)}</section>
+    <section class="card section"><div class="fields">
+      <div class="field"><label for="sgLegal">真實姓名（簽署用，不會公開）</label><input id="sgLegal" maxlength="60" autocomplete="name"></div>
+      <div class="field"><label for="sgDisplay">顯示名稱（作品上標示的名字）</label><input id="sgDisplay" maxlength="40" value="${esc((me.creator && me.creator.display_name) || "")}"></div>
+      <div class="field full"><label>登入 Email</label><input value="${esc(me.email)}" readonly></div>
+      <div class="field full"><label>手寫簽名</label>
+        <div class="sigpad-wrap" id="sgWrap"><canvas class="sigpad" id="sgPad" role="img" aria-label="手寫簽名區：用手指、觸控筆或滑鼠簽名"></canvas><span class="sigpad-x" aria-hidden="true">×</span><span class="sigpad-hint">請用手指、觸控筆或滑鼠在這裡簽名</span></div>
+        <div style="display:flex; gap:10px; align-items:center; margin-top:8px; flex-wrap:wrap;"><button class="btn soft sm" type="button" id="sgClear">重寫</button><span class="hint">簽名會和簽署紀錄一起保存，不會公開。</span></div>
+      </div>
+    </div>
+    <label class="check"><input type="checkbox" id="sgRead"><span><b>我已經完整讀過，並同意這份合約（版本 ${esc(ag.version)}）</b></span></label>
+    <label class="check"><input type="checkbox" id="sgOwn"><span><b>我上傳的作品是自己創作的，或已經取得授權</b></span></label>
+    <label class="check"><input type="checkbox" id="sgAge"><span><b>我已滿 18 歲</b>（未滿 18 歲請先取得法定代理人同意）</span></label>
+    <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;"><button class="btn go" type="button" id="sgBtn">簽署</button><button class="btn soft" type="button" id="sgPrint">先列印／存成 PDF 看看</button></div></section>`;
+  $("sgPrint").addEventListener("click", () => printAgreement(ag, null));
+  const pad = setupSigPad($("sgPad"), $("sgWrap"));
+  $("sgClear").addEventListener("click", () => pad.clear());
+  $("sgBtn").addEventListener("click", async () => {
+    const legal = $("sgLegal").value.trim();
+    if (legal.length < 2) return toast("請輸入真實姓名");
+    if (pad.isEmpty()) { $("sgWrap").scrollIntoView({ behavior: "smooth", block: "center" }); return toast("請在簽名區手寫簽名"); }
+    if (!$("sgRead").checked || !$("sgOwn").checked || !$("sgAge").checked) return toast("請勾選三個確認項目");
+    const btn = $("sgBtn"); btn.disabled = true;
+    const row = { version: ag.version, legal_name: legal, display_name: $("sgDisplay").value.trim(), body_sha256: await sha256Hex(ag.body), email: me.email, signature_png: pad.toPng() };
+    const { data, error: e2 } = await T(sb.from("creator_signatures").insert(row).select().maybeSingle());
+    btn.disabled = false;
+    if (e2) return toast(/signature_png|signature_sha256/.test(e2.message) ? "簽署功能正在更新，請稍後再試，或聯絡 TabigrAm 管理員。" : /signature required/.test(e2.message) ? "請在簽名區手寫簽名" : "簽署失敗：" + e2.message, 6000);
+    toast("簽署完成，謝謝你！", 4000);
+    me.signed = true;
+    if (confirm("簽署完成。要現在列印或存成 PDF 留存嗎？")) printAgreement(ag, data || { ...row, agreed_at: new Date().toISOString() });
+    booted = false; boot();
+  });
+}
+async function showMyAgreement() {
+  const { data: sigs } = await T(sb.from("creator_signatures").select("*").eq("email", me.email).order("agreed_at", { ascending: false }));
+  const sig = (sigs || [])[0];
+  if (!sig) return toast("你還沒有簽署紀錄");
+  const { data: ag } = await T(sb.from("creator_agreements").select("*").eq("version", sig.version).maybeSingle());
+  if (!ag) return toast("讀不到合約內容");
+  printAgreement(ag, sig);
+}
+// 管理員：合約版本與簽署紀錄
+async function renderAgreementAdmin() {
+  if (!me.v3) { $("app").innerHTML = v3Message("合約"); return; }
+  const [a, s2] = await Promise.all([T(sb.from("creator_agreements").select("*").order("created_at", { ascending: false })), T(sb.from("creator_signatures").select("*").order("agreed_at", { ascending: false }))]);
+  if (a.error) { $("app").innerHTML = `<section class="card center"><h1>還沒開啟合約功能</h1><p>請先在 Supabase 的 SQL Editor 執行 <b>SUPABASE_ADMIN_V4.sql</b>。</p></section>`; return; }
+  const ags = a.data || [], sigs = s2.data || [];
+  const active = ags.find(x => x.active);
+  $("app").innerHTML = `<h1>創作者授權合約</h1>
+    <p class="lead">發布一個版本後，創作者第一次進後台、或合約改版時，都要先簽署才能上傳。<b>沒有發布任何版本時，創作者不需要簽署</b>。草案請先給律師看過。</p>
+    ${active ? `<div class="spec" style="margin-bottom:12px;">目前生效：<b>${esc(active.version)}</b>・${sigs.filter(x => x.version === active.version).length} 位已簽署</div>` : `<div class="note-box" style="margin-bottom:12px;">目前沒有生效的合約：創作者可以直接上傳，不用簽署。</div>`}
+    <div class="list">${ags.map((x, i) => `<article class="card"><div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;"><span class="pack-name">${esc(x.title)} ${esc(x.version)}</span><span class="pill ${x.active ? "on" : "draft"}">${x.active ? "● 生效中" : "未生效"}</span><span class="sp" style="flex:1;"></span>
+        <button class="btn soft sm" type="button" data-agv="${i}">看／列印</button><button class="btn soft sm" type="button" data-age="${i}">以這版為基礎改新版</button>${x.active ? "" : `<button class="btn go sm" type="button" data-agp="${i}">發布這版</button>`}</div>
+        ${/【.+?】/.test(x.body) ? `<div class="note-box">還有「【…】」沒有填（例如營運者名稱、聯絡 Email），發布前請先改好。</div>` : ""}</article>`).join("") || `<div class="empty-note">還沒有合約版本。</div>`}</div>
+    <div id="agEdit"></div>
+    <div class="bar"><span class="kicker">簽署紀錄 · ${sigs.length} 筆</span></div>
+    <section class="card" style="overflow-x:auto;"><table class="mini"><thead><tr><th>Email</th><th>真實姓名</th><th>簽名</th><th>顯示名稱</th><th>版本</th><th>時間</th><th></th></tr></thead><tbody>
+      ${sigs.map((x, i) => `<tr><td>${esc(x.email)}</td><td>${esc(x.legal_name)}</td><td>${safeSigPng(x.signature_png) ? `<img src="${safeSigPng(x.signature_png)}" alt="手寫簽名" style="height:34px; max-width:110px; object-fit:contain; background:#fff; border-radius:6px;">` : `<span class="hint">—</span>`}</td><td>${esc(x.display_name)}</td><td>${esc(x.version)}</td><td>${esc(fmtTime(x.agreed_at))}</td><td><button class="btn soft sm" type="button" data-sgp="${i}" style="padding:4px 10px;">列印</button></td></tr>`).join("") || `<tr><td colspan="7" class="empty-note">還沒有人簽署</td></tr>`}
+    </tbody></table></section>`;
+  document.querySelectorAll("[data-agv]").forEach(b => b.addEventListener("click", () => printAgreement(ags[+b.dataset.agv], null)));
+  document.querySelectorAll("[data-sgp]").forEach(b => b.addEventListener("click", () => { const sg = sigs[+b.dataset.sgp]; const ag = ags.find(x => x.version === sg.version); if (ag) printAgreement(ag, sg); }));
+  document.querySelectorAll("[data-agp]").forEach(b => b.addEventListener("click", async () => {
+    const x = ags[+b.dataset.agp];
+    if (/【.+?】/.test(x.body)) return toast("合約裡還有「【…】」沒有填，請先改好再發布", 5000);
+    if (!confirm(`發布 ${x.version}？所有創作者下次進後台都要簽署這一版才能上傳。`)) return;
+    const { error } = await T(sb.from("creator_agreements").update({ active: true }).eq("version", x.version));
+    toast(error ? "發布失敗：" + error.message : "已發布", 4000); renderAgreementAdmin();
+  }));
+  document.querySelectorAll("[data-age]").forEach(b => b.addEventListener("click", () => {
+    const x = ags[+b.dataset.age];
+    const n = Math.max(0, ...ags.map(y => parseInt(String(y.version).replace(/\D/g, ""), 10) || 0)) + 1;
+    const signedThis = sigs.some(y => y.version === x.version);
+    $("agEdit").innerHTML = `<section class="card" style="margin:12px 0; border-color:var(--ink);"><div class="fields">
+      <div class="field"><label>新版本代號</label><input id="agVer" value="${signedThis || x.active ? "v" + n : esc(x.version)}"></div>
+      <div class="field"><label>標題</label><input id="agTitle" value="${esc(x.title)}"></div>
+      <div class="field full"><label>合約內容（Markdown：## 標題、1. 條列、**粗體**）</label><textarea id="agBody" style="min-height:420px; font-size:13.5px;">${esc(x.body)}</textarea></div></div>
+      <p class="row-meta">${signedThis ? "這一版已經有人簽過，內容不能再改，存檔會變成新的版本。" : "這一版還沒有人簽過，可以直接修改。"}</p>
+      <div style="display:flex; gap:8px; margin-top:10px;"><button class="btn dark sm" type="button" id="agSave">儲存（先不發布）</button><button class="btn soft sm" type="button" id="agCancel">取消</button></div></section>`;
+    $("agCancel").addEventListener("click", () => { $("agEdit").innerHTML = ""; });
+    $("agSave").addEventListener("click", async () => {
+      const ver = $("agVer").value.trim(), row = { version: ver, title: $("agTitle").value.trim() || x.title, body: $("agBody").value };
+      if (!ver) return toast("請填版本代號");
+      const sameAsOld = ver === x.version;
+      if (sameAsOld && (signedThis || x.active)) return toast("這一版已經有人簽過或正在生效，請換一個新的版本代號");
+      const { error } = sameAsOld ? await T(sb.from("creator_agreements").update(row).eq("version", ver)) : await T(sb.from("creator_agreements").insert({ ...row, active: false }));
+      toast(error ? "儲存失敗：" + error.message : "已儲存，確認內容後按「發布這版」", 5000); if (!error) renderAgreementAdmin();
+    });
+    $("agEdit").scrollIntoView({ behavior: "smooth", block: "start" });
   }));
 }
 
@@ -1048,7 +1525,7 @@ function bindZineBlocks() {
 // =====================================================================
 async function renderReview() {
   if (!me.v3) { $("app").innerHTML = v3Message("審核"); return; }
-  const kinds = [["stickers", "sticker_packs", "貼紙包"], ["themes", "themes", "主題"], ["polaroid", "polaroid_frames", "拍立得"], ["zine", "zine_articles", "Zine"]];
+  const kinds = [["stickers", "sticker_packs", "貼紙包"], ["themes", "themes", "主題"], ["polaroid", "polaroid_frames", "拍立得"], ["zine", "zine_articles", "Zine"], ["mise", "mise_items", "選物"], ["plans", "trip_plans", "旅行提案"]];
   const all = [];
   for (const [k, t, label] of kinds) {
     const { data } = await T(sb.from(t).select("*").eq("status", "review").order("submitted_at", { ascending: true }));
@@ -1063,7 +1540,9 @@ async function renderReview() {
       </article>`).join("") || `<section class="card center"><div class="kicker">ALL CLEAR</div><h2 style="margin-top:6px;">沒有待審核的內容</h2></section>`}</div>`;
   document.querySelectorAll("[data-rv]").forEach(b => b.addEventListener("click", async () => {
     const x = all[+b.dataset.rv];
-    if (x.k === "stickers") { await loadPacks(); tab = "stickers"; openEditor(x.r.id); }
+    const hl = k => document.querySelectorAll("[data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === k));
+    hl(x.k); history.replaceState(null, "", "#" + x.k); tab = x.k;
+    if (x.k === "stickers") { await loadPacks(); openEditor(x.r.id); }
     else { crows = [x.r]; openGEditor(x.k, x.r.id, x.r); }
   }));
 }
@@ -1159,7 +1638,7 @@ async function renderSettings() {
         <div class="field full"><label>客服 Email</label><input id="lMail" value="${esc(links.support_email || "")}" placeholder="support@tabigram.info"></div>
       </div><div style="margin-top:12px;"><button class="btn dark sm" type="button" id="sLinks">儲存連結</button></div></section>
     <section class="card section"><div class="section-head"><h2>TabigrAm.zine 頁面</h2><p>紙張材質、名稱、強調色</p></div>
-      <div class="slot"><div class="slot-img sq" id="zpPrev" style="${zine.paper ? `background:url('${esc(urlOf("content", zine.paper))}') 0 0 / 55px;` : ""}"></div>
+      <div class="slot"><div class="slot-img sq" id="zpPrev" style="${zine.paper ? `background:${cssUrl(urlOf("content", zine.paper))} 0 0 / 55px;` : ""}"></div>
         <div><b>紙張材質</b> <span class="kicker">1024×1024 · JPG · 無縫</span>
           <label class="drop" style="margin-top:8px;" id="zpDrop"><b>選擇紙張圖片</b>，或拖到這裡<input type="file" accept="image/png,image/jpeg,image/webp" id="zpInput" hidden></label>
           <div id="zpWarn"></div>
@@ -1178,7 +1657,7 @@ async function renderSettings() {
     save("links", v, "連結已更新");
   });
   wireDrop("zpDrop", "zpInput", async files => {
-    try { paperFile = await processImage(files[0], { w: 1024, h: 1024, fit: "cover", fmt: "jpeg", maxKB: 600 }); $("zpPrev").style.background = `url('${paperFile.preview}') 0 0 / 55px`; $("zpWarn").innerHTML = paperFile.warn.map(w => `<div class="slot-warn">⚠ ${esc(w)}</div>`).join("") + `<div class="slot-warn" style="color:var(--ok);">已選好，按「儲存 Zine 設定」才會上傳</div>`; }
+    try { paperFile = await processImage(files[0], { w: 1024, h: 1024, fit: "cover", fmt: "jpeg", maxKB: 600 }); $("zpPrev").style.background = `${cssUrl(paperFile.preview)} 0 0 / 55px`; $("zpWarn").innerHTML = paperFile.warn.map(w => `<div class="slot-warn">⚠ ${esc(w)}</div>`).join("") + `<div class="slot-warn" style="color:var(--ok);">已選好，按「儲存 Zine 設定」才會上傳</div>`; }
     catch (e) { toast(e.message, 5000); }
   });
   $("sZine").addEventListener("click", async () => {
@@ -1201,7 +1680,7 @@ async function renderCreators() {
   const { data, error } = await T(sb.from("creators").select("*").order("created_at", { ascending: false }));
   if (error) { $("app").innerHTML = needV3(error) ? v3Message("創作者名單") : `<section class="card center"><p>${esc(error.message)}</p></section>`; return; }
   const list = data || [];
-  const perms = [["can_stickers", "貼紙"], ["can_themes", "主題"], ["can_polaroid", "拍立得"], ["can_zine", "Zine"]];
+  const perms = [["can_stickers", "貼紙"], ["can_themes", "主題"], ["can_polaroid", "拍立得"], ["can_zine", "Zine"], ["can_mise", "選物"], ["can_plans", "旅行提案"]];
   $("app").innerHTML = `<h1>創作者</h1><p class="lead">加入名單的人，用這個 Email 登入 TabigrAm 後打開 <b>${esc(location.origin)}/admin/</b>，就能上傳、存草稿、送審（只看得到自己的內容）。發布由你決定。</p>
     <section class="card"><div class="section-head"><h2>新增創作者</h2><p>用對方登入 TabigrAm 的 Email</p></div>
       <div class="fields">
@@ -1212,7 +1691,7 @@ async function renderCreators() {
       </div><div style="margin-top:12px;"><button class="btn go sm" type="button" id="cAdd">加入名單</button></div></section>
     <div class="bar"><span class="kicker">${list.length} 位 · ${list.filter(c => c.active).length} 位啟用中</span></div>
     <section class="card" style="overflow-x:auto;"><table class="mini"><thead><tr><th>Email</th><th>名稱</th>${perms.map(([, l]) => `<th>${l}</th>`).join("")}<th>啟用</th><th></th></tr></thead><tbody>
-      ${list.map((c, i) => `<tr><td>${esc(c.email)}</td><td>${esc(c.display_name)}</td>${perms.map(([k]) => `<td><input type="checkbox" data-cp="${i}:${k}" ${c[k] ? "checked" : ""}></td>`).join("")}<td><input type="checkbox" data-cp="${i}:active" ${c.active ? "checked" : ""}></td><td><button class="btn danger" type="button" data-cdel="${i}" style="padding:4px 10px;">移除</button></td></tr>`).join("") || `<tr><td colspan="8" class="empty-note">還沒有創作者</td></tr>`}
+      ${list.map((c, i) => `<tr><td>${esc(c.email)}</td><td>${esc(c.display_name)}</td>${perms.map(([k]) => `<td><input type="checkbox" data-cp="${i}:${k}" ${c[k] ? "checked" : ""}></td>`).join("")}<td><input type="checkbox" data-cp="${i}:active" ${c.active ? "checked" : ""}></td><td><button class="btn danger" type="button" data-cdel="${i}" style="padding:4px 10px;">移除</button></td></tr>`).join("") || `<tr><td colspan="10" class="empty-note">還沒有創作者</td></tr>`}
     </tbody></table></section>`;
   $("cAdd").addEventListener("click", async () => {
     const email = $("cEmail").value.trim().toLowerCase();
@@ -1247,9 +1726,14 @@ const EV_LABEL = {
 async function renderDash() {
   if (!me.v3) { $("app").innerHTML = v3Message("數據"); return; }
   const from = new Date(Date.now() + 8 * 3600e3 - (dashDays - 1) * 86400e3).toISOString().slice(0, 10);
-  const { data, error } = await T(sb.from("metrics_daily").select("day,event,dim,count").gte("day", from).limit(20000));
-  if (error) { $("app").innerHTML = needV3(error) ? v3Message("數據") : `<section class="card center"><p>${esc(error.message)}</p></section>`; return; }
-  const rows = data || [];
+  // 分頁讀：資料多的時候不會被截掉
+  const rows = [];
+  for (let off = 0; off < 200000; off += 1000) {
+    const { data, error } = await T(sb.from("metrics_daily").select("day,event,dim,count").gte("day", from).order("day").range(off, off + 999));
+    if (error) { $("app").innerHTML = needV3(error) ? v3Message("數據") : `<section class="card center"><p>${esc(error.message)}</p></section>`; return; }
+    rows.push(...(data || []));
+    if (!data || data.length < 1000) break;
+  }
   const sum = (ev, dim) => rows.filter(r => r.event === ev && (dim == null || r.dim === dim)).reduce((a, r) => a + Number(r.count), 0);
   const byDim = ev => { const m = {}; rows.filter(r => r.event === ev).forEach(r => { m[r.dim || "—"] = (m[r.dim || "—"] || 0) + Number(r.count); }); return Object.entries(m).sort((a, b) => b[1] - a[1]); };
   const days = []; for (let i = dashDays - 1; i >= 0; i--) days.push(new Date(Date.now() + 8 * 3600e3 - i * 86400e3).toISOString().slice(0, 10));
@@ -1319,9 +1803,7 @@ function renderFeedback() {
     $("app").innerHTML = `<section class="card center"><h1>還讀不到回饋</h1><p>請先在 Supabase 的 SQL Editor 執行 SUPABASE_ADMIN_V2.sql（讓管理員可以讀取回饋）。</p><p style="font-size:12px;">${esc(fbError)}</p></section>`;
     return;
   }
-  const q = fbFilter.q.trim().toLowerCase();
-  const list = feedback.filter(f => (fbFilter.cat === "all" || f.category === fbFilter.cat) && (!fbFilter.open || !f.handled)
-    && (!q || `${f.message} ${f.email || ""} ${f.page_info || ""}`.toLowerCase().includes(q)));
+  const list = fbVisible();
   const count = c => feedback.filter(f => (c === "all" || f.category === c) && (!fbFilter.open || !f.handled)).length;
   const chip = (k, label) => `<button type="button" class="chip ${fbFilter.cat === k ? "on" : ""}" data-cat="${k}">${label} ${count(k)}</button>`;
   const fmt = t => { const d = new Date(t); return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
@@ -1333,7 +1815,23 @@ function renderFeedback() {
       <button type="button" class="chip ${fbFilter.open ? "on" : ""}" id="fbOpen">只看待處理</button>
       <input class="fb-search" id="fbSearch" type="search" placeholder="搜尋內容、Email（例如「車站資料」）" value="${esc(fbFilter.q)}">
     </div>
-    <div class="list">${list.map(f => `<article class="card fb ${f.handled ? "done" : ""}">
+    <div class="list" id="fbList">${fbListHtml(list, fmt)}</div>`;
+  bindFeedbackActions();
+  document.querySelectorAll("[data-cat]").forEach(b => b.addEventListener("click", () => { fbFilter.cat = b.dataset.cat; renderFeedback(); }));
+  $("fbOpen").addEventListener("click", () => { fbFilter.open = !fbFilter.open; renderFeedback(); });
+  const si = $("fbSearch");
+  const run = () => { fbFilter.q = si.value; clearTimeout(si._t); si._t = setTimeout(() => { $("fbList").innerHTML = fbListHtml(fbVisible(), fmt); bindFeedbackActions(); }, 250); };
+  si.addEventListener("input", e => { if (!e.isComposing) run(); });
+  si.addEventListener("compositionend", run);
+}
+function fbVisible() {
+  const q = fbFilter.q.trim().toLowerCase();
+  return feedback.filter(f => (fbFilter.cat === "all" || f.category === fbFilter.cat) && (!fbFilter.open || !f.handled)
+    && (!q || `${f.message} ${f.email || ""} ${f.page_info || ""}`.toLowerCase().includes(q)));
+}
+function bindFeedbackActions() { document.querySelectorAll("[data-handled]").forEach(b => b.addEventListener("click", () => toggleHandled(Number(b.dataset.handled), b))); }
+function fbListHtml(list, fmt) {
+  return `${list.map(f => `<article class="card fb ${f.handled ? "done" : ""}">
         <div class="fb-head"><span class="fb-cat ${esc(f.category)}">${esc(FB_CAT[f.category] || f.category)}</span><span>${esc(fmt(f.created_at))}</span>${f.email ? `<a href="mailto:${esc(f.email)}">${esc(f.email)}</a>` : `<span>沒有留 Email</span>`}</div>
         <div class="fb-msg">${esc(f.message)}</div>
         ${f.page_info ? `<div class="fb-info">${esc(f.page_info)}</div>` : ""}
@@ -1341,12 +1839,7 @@ function renderFeedback() {
           ${f.email ? `<a class="btn soft sm" href="mailto:${esc(f.email)}?subject=${encodeURIComponent("TabigrAm 回覆你的意見")}">回信</a>` : ""}
           <button class="btn ${f.handled ? "ghost" : "dark"} sm" type="button" data-handled="${f.id}">${f.handled ? "改回待處理" : "已處理"}</button>
         </div>
-      </article>`).join("") || `<section class="card center"><div class="kicker">ALL CLEAR</div><h2 style="margin-top:6px;">沒有符合的回饋</h2></section>`}</div>`;
-  document.querySelectorAll("[data-cat]").forEach(b => b.addEventListener("click", () => { fbFilter.cat = b.dataset.cat; renderFeedback(); }));
-  $("fbOpen").addEventListener("click", () => { fbFilter.open = !fbFilter.open; renderFeedback(); });
-  const si = $("fbSearch");
-  si.addEventListener("input", () => { fbFilter.q = si.value; clearTimeout(si._t); si._t = setTimeout(() => { renderFeedback(); const n = $("fbSearch"); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 250); });
-  document.querySelectorAll("[data-handled]").forEach(b => b.addEventListener("click", () => toggleHandled(Number(b.dataset.handled), b)));
+      </article>`).join("") || `<section class="card center"><div class="kicker">ALL CLEAR</div><h2 style="margin-top:6px;">沒有符合的回饋</h2></section>`}`;
 }
 async function toggleHandled(id, btn) {
   const f = feedback.find(x => x.id === id); if (!f) return;

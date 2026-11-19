@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
 <meta name="description" content="TabigrAm：排行程、搭車、等航班，到旅程結束蓋上一枚章。把每一趟旅行，好好收起來。">
 <meta property="og:title" content="TabigrAm 亮點介紹">
 <meta property="og:description" content="排行程、搭車、等航班，到旅程結束蓋上一枚章。把每一趟旅行，好好收起來。">
@@ -14,7 +15,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
 :root { padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); color-scheme: light; }
 body { margin: 0; }
@@ -118,7 +119,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .end .txt { display: grid; gap: 8px; min-width: 0; }
 
 /* 目錄 */
-.toc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-bottom: 24px; }
+.toc { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin-bottom: 24px; }
 .toc a { background: var(--sheet); padding: 14px 16px; color: var(--ink); text-decoration: none; display: grid; gap: 2px; min-width: 0; }
 .toc a:hover, .toc a:focus-visible { background: var(--accent-soft); outline: none; }
 .toc b { font-size: 15px; }
@@ -166,6 +167,43 @@ figcaption b { color: var(--ink); }
 .end .url { font-family: var(--f-mono); font-size: 15px; color: var(--accent); font-weight: 700; user-select: all; }
 .note { font-size: 12.5px; color: var(--sub); margin-top: 18px; }
 
+/* 插畫家貼紙：一張貼紙紙 */
+.stk-sheet { position: relative; background: var(--sheet); border: 1px solid var(--line); border-radius: 22px; padding: 26px 20px 18px; box-shadow: 0 16px 36px var(--shadow);
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px 8px; }
+.stk-sheet::before { content: "TRAVEL WITH NAOBAO"; position: absolute; top: 10px; left: 20px; font-family: var(--f-mono); font-size: 10.5px; font-weight: 700; letter-spacing: .14em; color: var(--sub); }
+.stk-sheet figure { margin: 8px 0 0; display: grid; justify-items: center; gap: 4px; }
+.stk-sheet img { width: 100%; max-width: 92px; aspect-ratio: 1; object-fit: contain; filter: drop-shadow(0 3px 4px rgba(0,0,0,.18)); transition: transform .2s ease; }
+.stk-sheet figure:nth-child(odd) img { rotate: -6deg; }
+.stk-sheet figure:nth-child(3n) img { rotate: 7deg; }
+.stk-sheet figure:hover img { transform: scale(1.08); }
+.stk-sheet figcaption { font-size: 12px; text-align: center; line-height: 1.35; }
+.credit { margin-top: 18px; font-size: 14px; color: var(--sub); }
+.credit a { color: var(--ink); font-weight: 700; }
+/* TabigrAm.zine 預告 */
+.zine-tease { display: grid; grid-template-columns: 1fr 320px; gap: 48px; align-items: center; padding-block: 52px; border-top: 1px dashed var(--line); }
+.zcard { position: relative; justify-self: center; width: 100%; max-width: 300px; aspect-ratio: 3 / 4; background: #EFEBE2; color: #1F1D1A; border-radius: 4px; padding: 30px 24px 22px;
+  box-shadow: 0 18px 40px var(--shadow); rotate: 2deg; display: flex; flex-direction: column;
+  background-image: radial-gradient(rgba(90,72,40,.07) 1px, transparent 1px); background-size: 6px 6px; }
+.zcard::before { content: ""; position: absolute; top: -12px; left: 50%; width: 96px; height: 26px; translate: -50% 0; rotate: -3deg; background: rgba(240,222,170,.85); }
+.zcard .k { font-family: var(--f-mono); font-size: 10px; letter-spacing: .3em; font-weight: 700; }
+.zcard .m { position: relative; font-family: 'Noto Serif TC', serif; font-weight: 900; font-size: 34px; line-height: 1; margin-top: 14px; letter-spacing: -.01em; }
+.zcard .m span { display: block; }
+.zcard .m span + span { position: absolute; inset: 0; color: #FF4F00; mix-blend-mode: multiply; translate: 2px 2px; opacity: .85; }
+.zcard .t { font-family: 'Noto Serif TC', serif; font-size: 13.5px; line-height: 1.7; margin-top: 16px; color: #5F5B54; }
+.zcard .list { margin-top: auto; border-top: 1.5px solid #1F1D1A; padding-top: 10px; font-family: 'Noto Serif TC', serif; font-size: 13px; display: grid; gap: 4px; }
+.zcard .list b { font-family: var(--f-mono); font-size: 11px; color: #FF4F00; margin-right: 6px; }
+.soon { display: inline-block; margin-top: 18px; font-family: var(--f-mono); font-size: 12px; font-weight: 700; letter-spacing: .12em; color: var(--accent); border: 1.5px solid var(--accent); border-radius: 6px; padding: 4px 10px 3px; }
+.invite { margin-top: 22px; padding: 16px 18px; border-left: 3px solid var(--accent); background: var(--sheet); border-radius: 0 12px 12px 0; font-family: 'Noto Serif TC', serif; font-size: 15.5px; line-height: 1.85; max-width: 34em; }
+.invite small { display: block; margin-top: 6px; font-family: var(--f-body); font-size: 13px; color: var(--sub); }
+.invite a { color: var(--ink); font-weight: 700; text-underline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .stk-sheet img { transition: none; } }
+@media (max-width: 860px) {
+  .zine-tease { grid-template-columns: 1fr; gap: 32px; padding-block: 40px; }
+}
+@media (max-width: 520px) {
+  .stk-sheet { padding: 26px 12px 14px; gap: 12px 4px; }
+  .stk-sheet figcaption { font-size: 11px; }
+}
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; padding-top: 36px; }
   .fan { height: 380px; max-width: 420px; width: 100%; justify-self: center; }
@@ -223,7 +261,9 @@ figcaption b { color: var(--ink); }
     <a href="#budget"><b>預算</b><small>還剩多少一眼看懂</small></a>
     <a href="#stamp"><b>機場戳章</b><small>人在機場才蓋得到</small></a>
     <a href="#cards"><b>分享卡</b><small>自己選卡片、配顏色</small></a>
+    <a href="#stickers"><b>插畫家貼紙</b><small>把心情貼上卡片</small></a>
     <a href="#more"><b>更多小細節</b><small>旅伴、離線、匯入、AI</small></a>
+    <a href="#zine"><b>旅行小誌</b><small>籌備中</small></a>
     <a href="#hello"><b>開始使用</b><small>給朋友的一句話</small></a>
   </nav>
 
@@ -382,8 +422,32 @@ figcaption b { color: var(--ink); }
     </script>
   </section>
 
+  <section class="feat" id="stickers">
+    <div class="copy">
+      <div class="tag">07 · Stickers</div>
+      <h2>插畫家畫的貼紙，替旅途添一點表情</h2>
+      <p class="say">做分享卡時按「貼圖」，就能把插畫家的貼紙貼上卡片。第一套是蛋白人的「跟著蛋白一起去旅行」，八張旅途上一定用得到的心情，免費使用。</p>
+      <ul class="points">
+        <li><span><b>想放哪裡就放哪裡</b>：拖曳移動，拉角落調整大小、轉個角度；疊在照片上也可以調整前後。</span></li>
+        <li><span><b>一張卡片，貼幾張都行</b>：出發那天貼「出發囉」，逛到免稅店貼「是免稅不是免費」。</span></li>
+        <li><span><b>創作者的名字跟著作品</b>：每一套貼紙都標示作者，點進去就能看到更多作品。</span></li>
+      </ul>
+      <p class="credit">插畫：<a href="https://www.instagram.com/naobao_draw/" target="_blank" rel="noopener">蛋白人 naobao</a></p>
+    </div>
+    <div class="stk-sheet" role="group" aria-label="跟著蛋白一起去旅行：8 張貼紙">
+        <figure><img src="https://pjgjxvahhauqluassiuo.supabase.co/storage/v1/object/public/stickers/naobao/mwmgnypu-01.png" alt="蛋白人貼紙：出發囉" loading="lazy" width="92" height="92"><figcaption>出發囉</figcaption></figure>
+        <figure><img src="https://pjgjxvahhauqluassiuo.supabase.co/storage/v1/object/public/stickers/naobao/mwmgnypu-02.png" alt="蛋白人貼紙：塊陶" loading="lazy" width="92" height="92"><figcaption>塊陶</figcaption></figure>
+        <figure><img src="https://pjgjxvahhauqluassiuo.supabase.co/storage/v1/object/public/stickers/naobao/mwmgnypu-03.png" alt="蛋白人貼紙：拍照就擺 pose" loading="lazy" width="92" height="92"><figcaption>拍照就擺 pose</figcaption></figure>
+        <figure><img src="https://pjgjxvahhauqluassiuo.supabase.co/storage/v1/object/public/stickers/naobao/mwmgnypu-04.png" alt="蛋白人貼紙：好吃還想再吃" loading="lazy" width="92" height="92"><figcaption>好吃還想再吃</figcaption></figure>
+        <figure><img src="https://pjgjxvahhauqluassiuo.supabase.co/storage/v1/object/public/stickers/naobao/mwmgnypu-05.png" alt="蛋白人貼紙：是免稅不是免費" loading="lazy" width="92" height="92"><figcaption>是免稅不是免費</figcaption></figure>
+        <figure><img src="https://pjgjxvahhauqluassiuo.supabase.co/storage/v1/object/public/stickers/naobao/mwmgnypu-06.png" alt="蛋白人貼紙：嚇一跳" loading="lazy" width="92" height="92"><figcaption>嚇一跳</figcaption></figure>
+        <figure><img src="https://pjgjxvahhauqluassiuo.supabase.co/storage/v1/object/public/stickers/naobao/mwmgnypu-07.png" alt="蛋白人貼紙：100 分" loading="lazy" width="92" height="92"><figcaption>100 分</figcaption></figure>
+        <figure><img src="https://pjgjxvahhauqluassiuo.supabase.co/storage/v1/object/public/stickers/naobao/mwmgnypu-08.png" alt="蛋白人貼紙：每天都值得慶祝" loading="lazy" width="92" height="92"><figcaption>每天都值得慶祝</figcaption></figure>
+    </div>
+  </section>
+
   <section class="more" id="more">
-    <div class="tag">07 · Details</div>
+    <div class="tag">08 · Details</div>
     <h2 style="font-size:clamp(26px,3.4vw,36px);font-weight:900;line-height:1.3;margin-top:8px;">還有這些，讓旅行更順手</h2>
     <div class="grid6">
       <div class="mini"><div class="k">TOGETHER</div><h3>和旅伴一起編輯</h3><p>用邀請碼共享行程，大家一起改。打卡、照片、心情和蓋過的章是你自己的，不會被看到。</p></div>
@@ -392,6 +456,22 @@ figcaption b { color: var(--ink); }
       <div class="mini"><div class="k">AI CHECK</div><h3>請 AI 幫你檢查</h3><p>一鍵匯出行程，丟給 ChatGPT、Claude 或 Gemini，看看轉乘時間夠不夠、哪天太累。</p></div>
       <div class="mini"><div class="k">中文 / EN</div><h3>中英雙語</h3><p>手機是英文就自動用英文，車站顯示英文站名、旁邊附上當地寫法。很適合帶外國朋友來台灣玩。</p></div>
       <div class="mini"><div class="k">MAPS</div><h3>一鍵開地圖</h3><p>每個地點都能直接用 Google 地圖或 Apple 地圖打開，想用哪個自己選。</p></div>
+    </div>
+  </section>
+
+  <section class="zine-tease" id="zine">
+    <div class="copy">
+      <div class="tag">Coming · TabigrAm.zine</div>
+      <h2 style="font-size:clamp(26px,3.4vw,36px);font-weight:900;line-height:1.3;margin-top:8px;">一分鐘讀完的旅行小誌，正在慢慢成形</h2>
+      <p class="say" style="color:var(--sub);margin-top:12px;max-width:34em;">TabigrAm.zine 是我們正在試做的一本旅行小誌。每一篇只說一件事：一條值得慢慢走的街、一件陪你上路的小物、一個還想再回去的地方。不長，一分鐘就能讀完，像一張可以收進口袋的紙。</p>
+      <span class="soon">籌備中 · IN THE MAKING</span>
+      <p class="invite">若你也習慣把旅途化為文字，誠摯邀請你與我們聯繫，一起讓這本小誌慢慢長出樣子。<small>來信請寄 <a href="mailto:editor@tabigram.info">editor@tabigram.info</a></small></p>
+    </div>
+    <div class="zcard" aria-hidden="true">
+      <div class="k">A TINY TRAVEL ZINE</div>
+      <div class="m"><span>TabigrAm.zine</span><span>TabigrAm.zine</span></div>
+      <div class="t">一個提案、一件好物、<br>一個好地方。</div>
+      <div class="list"><div><b>01</b>只走一條街</div><div><b>02</b>口袋裡的小東西</div><div><b>03</b>想再回去的地方</div></div>
     </div>
   </section>
 

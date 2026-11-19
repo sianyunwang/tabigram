@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>隱私權政策｜TabigrAm</title>
+  <meta name="description" content="TabigrAm 如何收集、使用與保護你的資料。" />
+  <meta name="theme-color" content="#F6F3EC" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F6F3EC;
+      --card: #FFFFFF;
+      --ink: #191919;
+      --sub: #6E6A63;
+      --border: #E2DDD3;
+      --accent: #C84B31;
+      --accent-soft: #F9EBE8;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.8;
+      font-size: 15.5px;
+    }
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: max(env(safe-area-inset-top, 0px), 28px) 16px 64px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Dela Gothic One', sans-serif;
+      font-size: 18px;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    h1 {
+      font-family: 'Dela Gothic One', 'Noto Sans TC', sans-serif;
+      font-weight: 400;
+      font-size: clamp(28px, 6vw, 38px);
+      line-height: 1.25;
+      margin: 28px 0 6px;
+    }
+    .updated { color: var(--sub); font-size: 13px; margin: 0 0 24px; }
+    .summary {
+      background: var(--accent-soft);
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-bottom: 28px;
+    }
+    .summary h2 { margin-top: 0; font-size: 16px; }
+    .summary ul { margin: 0; padding-left: 1.2em; }
+    h2 {
+      font-size: 18px;
+      font-weight: 900;
+      margin: 32px 0 8px;
+      padding-top: 4px;
+    }
+    h3 { font-size: 15.5px; font-weight: 900; margin: 18px 0 4px; }
+    p { margin: 6px 0 10px; text-wrap: pretty; }
+    ul { padding-left: 1.2em; margin: 6px 0 12px; }
+    li { margin: 3px 0; text-wrap: pretty; }
+    .table-wrap { overflow-x: auto; margin: 8px 0 14px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    th { background: #FAF8F4; font-weight: 900; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    a { color: var(--accent); font-weight: 700; }
+    .contact {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-top: 10px;
+    }
+    .contact a { font-size: 17px; }
+    .back {
+      display: inline-block;
+      margin-top: 36px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #FFFFFF;
+      text-decoration: none;
+      font-weight: 900;
+      font-size: 14px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #15130F; --card: #1F1C18; --ink: #EFEAE0; --sub: #A39C90; --border: #3A352E; --accent: #E46B4E; --accent-soft: #3B231D; }
+      th { background: #2A2620; }
+      .back { background: #EFEAE0; color: #15130F; }
+    }
+    @media (max-width: 480px) {
+      body { font-size: 15px; }
+      th, td { padding: 9px 10px; }
+    }
+    .site-foot { margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--sub); display: flex; flex-wrap: wrap; gap: 6px 14px; }
+    .site-foot a { color: var(--sub); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <a class="brand" href="./">TabigrAm</a>
+
+    <h1>隱私權政策</h1>
+    <p class="updated">最後更新：2026 年 11 月 19 日</p>
+
+    <section class="summary">
+      <h2>重點摘要</h2>
+      <ul>
+        <li>行程資料預設存在<b>你自己的裝置</b>上；登入後才會備份到雲端。</li>
+        <li>我們<b>不放廣告、不賣資料、不使用 Google Analytics 這類第三方追蹤或分析工具</b>。為了改善服務，只記錄<b>匿名的使用次數</b>（例如「今天有幾台裝置打開」「分享卡被儲存了幾次」），不含帳號、Email、裝置代號、IP 或位置，你也可以在個人設定關掉。</li>
+        <li>你的私人筆記、照片、額外消費、打卡位置<b>只有你自己看得到</b>，不會分享給旅伴。</li>
+        <li>定位只在你按「我到了」時記錄一次，<b>不會在背景追蹤</b>，也可以隨時清除。</li>
+        <li>「點選車站」的「用我的位置」只在這台裝置上找最近的車站，<b>位置不會存下來，也不會傳到任何伺服器</b>。</li>
+        <li>蓋機場章時，只在這台裝置上確認你是否在機場附近；<b>只記下機場代號和蓋章時間，不存你的座標</b>。</li>
+        <li>查詢航班時，只會送出航班編號、日期和機場代號，<b>不包含你的身分或位置</b>。</li>
+        <li>你可以隨時要求刪除帳號與所有雲端資料。</li>
+      </ul>
+    </section>
+
+    <h2>1. 我們是誰</h2>
+    <p>TabigrAm（以下稱「本服務」）是一個個人經營的旅行行程規劃網頁 App，網址為 <a href="https://tabigram.info">tabigram.info</a>。本政策說明本服務如何處理你的個人資料。使用本服務的規則，請見<a href="terms.html">服務條款</a>。</p>
+
+    <h2>2. 我們收集哪些資料</h2>
+
+    <h3>不登入也能使用</h3>
+    <p>不登入時，你建立的行程、照片與設定<b>只存在你使用的瀏覽器裡</b>（瀏覽器的本機儲存空間），不會傳到我們的伺服器。</p>
+
+    <h3>登入雲端帳號後</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>資料</th><th>內容</th><th>用途</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>帳號資料</td>
+            <td>你用 Google 帳號登入時同意分享的 Email 與 Google 名稱。本服務只提供 Google 帳號登入，不保存任何密碼。</td>
+            <td>登入、辨識你的帳號</td>
+          </tr>
+          <tr>
+            <td>顯示名稱</td>
+            <td>你在個人設定中填寫的名稱</td>
+            <td>讓旅伴在成員清單中認出你</td>
+          </tr>
+          <tr>
+            <td>共用行程</td>
+            <td>行程標題、日期、時間、地點、交通、費用、清單等</td>
+            <td>備份，以及和你邀請的旅伴同步</td>
+          </tr>
+          <tr>
+            <td>私人手札</td>
+            <td>私人行程、筆記、心情印章、額外消費、照片說明</td>
+            <td>備份與跨裝置同步，<b>只有你看得到</b></td>
+          </tr>
+          <tr>
+            <td>打卡位置</td>
+            <td>你在行程卡片按「我到了」並同意記錄時，當下的定位座標與時間。只在按下的那一刻記錄一次，不會在背景持續追蹤</td>
+            <td>畫出你的足跡地圖，<b>只有你看得到</b></td>
+          </tr>
+          <tr>
+            <td>機場章</td>
+            <td>你在航班卡片按「蓋出境章」「蓋入境章」時，機場代號與蓋章時間。是否在機場附近，只在你的裝置上判斷，不會記下或上傳你的座標</td>
+            <td>顯示在航班卡片、護照頁與分享卡上，<b>只有你看得到</b></td>
+          </tr>
+          <tr>
+            <td>照片</td>
+            <td>你上傳到行程卡片的照片（上傳前會先在裝置上壓縮）</td>
+            <td>備份與跨裝置同步，<b>只有你看得到</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>頭像圖片只存在你自己的裝置上，不會上傳。</p>
+
+    <h3>你主動填寫時</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>資料</th><th>內容</th><th>用途</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>意見回饋</td>
+            <td>回饋類型、內容、選填的 Email、瀏覽器與裝置型號</td>
+            <td>改善 App、回覆你的問題</td>
+          </tr>
+          <tr>
+            <td>主題商店通知</td>
+            <td>Email、選填的想看主題</td>
+            <td>主題包上架時寄信通知你，不會寄其他廣告</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>不想再收到主題商店通知，寄信到下方信箱就會把你從名單移除。</p>
+
+    <h2>3. 誰看得到你的資料</h2>
+    <ul>
+      <li><b>你邀請的旅伴</b>：用 6 碼邀請碼加入同一趟旅程的人，看得到該旅程的共用行程內容，以及成員的 Email 與顯示名稱。</li>
+      <li><b>你的私人內容</b>（私人行程、筆記、照片、額外消費、打卡位置）：只有你自己看得到，旅伴與管理員都看不到。</li>
+      <li><b>本服務的經營者</b>：基於維運需要，技術上可以存取資料庫；除了處理你的請求或排除問題之外，不會查看你的內容。</li>
+      <li>我們<b>不會出售、出租或交換</b>你的個人資料給任何人。</li>
+    </ul>
+
+    <h2>4. 我們使用的外部服務</h2>
+    <p>為了提供功能，本服務會使用以下第三方服務。這些服務會依各自的隱私權政策處理收到的資料。</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>服務</th><th>用途</th><th>會收到的資料</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Supabase</td><td>帳號登入、雲端資料庫、照片儲存</td><td>第 2 節所列的雲端資料</td></tr>
+          <tr><td>Google</td><td>「使用 Google 帳號登入」</td><td>你同意分享的 Email 與名稱</td></tr>
+          <tr><td>GitHub Pages</td><td>網站主機</td><td>瀏覽網站時的 IP 位址等連線紀錄</td></tr>
+          <tr><td>Open-Meteo</td><td>天氣與日出日落</td><td>你填寫的城市或地點</td></tr>
+          <tr><td>航班資料：交通部 TDX 運輸資料流通服務、桃園國際機場、AirLabs</td><td>「用航班編號帶入時刻」與航班卡片上的即時航班資訊（航廈、登機門、預計時間、狀態）</td><td>航班編號、日期、機場代號。查詢由本服務的伺服器（Supabase）代為送出，這些服務看不到你的 IP 位址或帳號</td></tr>
+          <tr><td>機場資料（OurAirports、mwgg/Airports）</td><td>全球機場的名稱、座標與時區，事先整理好放在本網站</td><td>不傳送任何資料；只是從本網站下載機場清單</td></tr>
+          <tr><td>ExchangeRate-API（open.er-api.com）</td><td>有設定預算時，把不同幣別換算成預算的幣別</td><td>不傳送任何你的資料；只下載當天匯率</td></tr>
+          <tr><td>OpenStreetMap（Nominatim）</td><td>把車站、地點名稱轉成地圖座標</td><td>行程中的車站或地點名稱</td></tr>
+          <tr><td>車站與路線資料（OpenStreetMap、臺鐵開放資料）</td><td>「點選車站」的路線、車站資料，事先整理好放在本網站</td><td>不傳送任何資料；只是從本網站下載路線檔</td></tr>
+          <tr><td>Esri（OpenStreetMap 等資料）</td><td>顯示足跡地圖的底圖</td><td>瀏覽網站時的 IP 位址，以及你正在看的地圖範圍（不包含你的打卡位置）</td></tr>
+          <tr><td>Google Fonts、jsDelivr、cdnjs</td><td>載入字型與程式元件</td><td>瀏覽網站時的 IP 位址等連線紀錄</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>本服務<b>沒有使用</b> Google Analytics、廣告追蹤、社群追蹤像素等任何第三方分析或廣告工具。</p>
+    <h3>匿名使用統計</h3>
+    <p>為了知道哪些功能有人在用、哪裡容易出問題，App 會把「發生了什麼事」以匿名方式送到我們自己的資料庫（Supabase），資料庫<b>只保存每天、每種事件的總次數</b>，例如：</p>
+    <ul>
+      <li>今天有幾台裝置打開 App（以手機／電腦、是否加到主畫面分類）、新的或回訪的裝置數。</li>
+      <li>建立旅程、新增行程、使用「選車站」的地區、查詢台鐵高鐵班次、儲存分享卡（依版型）、使用貼紙（依貼紙包）的次數。</li>
+      <li>註冊、登入的次數（依 Google 或 Email），以及同步失敗、程式出錯的次數。</li>
+    </ul>
+    <p>統計<b>不包含</b>你的帳號、Email、裝置代號、IP 位址、位置、行程內容、站名或照片，也無法用來辨識你。「今天有沒有算過」「第一次使用的日期」只記在你自己的瀏覽器裡，不會送出。</p>
+    <p>你可以在「個人設定」取消勾選「協助改善 TabigrAm」來關閉；瀏覽器開啟「不要追蹤（Do Not Track）」或「全球隱私控制（GPC）」時也會自動關閉。</p>
+
+    <h2>5. 資料存放在哪裡、保存多久</h2>
+    <ul>
+      <li><b>你的裝置</b>：資料存在瀏覽器的本機儲存空間，直到你刪除旅程或清除瀏覽器的網站資料。為了讓你沒有網路時也能打開 App，瀏覽器也會暫存網頁本身與字型（不包含你的行程內容以外的個人資料）。</li>
+      <li><b>雲端</b>：資料存放在 Supabase 的伺服器，保存到你刪除旅程或帳號為止。旅程建立者刪除旅程時，雲端上的整趟旅程與所有成員的手札會一併刪除；旅伴刪除旅程則是退出，只會刪除自己的手札與照片。</li>
+    </ul>
+
+    <h2>6. 資料安全</h2>
+    <ul>
+      <li>網站全程使用 HTTPS 加密連線。</li>
+      <li>雲端資料庫設有存取權限：每個人只能讀寫自己的資料，旅程內容只有成員看得到。</li>
+      <li>照片存放在非公開的儲存空間，只有上傳者本人可以存取。</li>
+    </ul>
+    <p>沒有任何網路服務能保證百分之百安全，但我們會盡力保護你的資料。</p>
+
+    <h2>7. 你的權利</h2>
+    <p>依據中華民國《個人資料保護法》，你可以隨時：</p>
+    <ul>
+      <li>查詢或閱覽你的個人資料</li>
+      <li>要求更正你的資料</li>
+      <li>要求停止使用，或刪除你的帳號與所有雲端資料</li>
+    </ul>
+    <p>你可以在 App 中自行刪除旅程；登入後，也可以到「個人設定 → 刪除帳號」自行刪除帳號，雲端上你建立的旅程、手札與照片會一併刪除。也可以透過下方聯絡方式提出請求，我們會盡快處理。</p>
+
+    <h2>8. 兒童隱私</h2>
+    <p>本服務不是為 13 歲以下的兒童設計，也不會刻意收集兒童的個人資料。</p>
+
+    <h2>9. 政策更新</h2>
+    <p>本政策可能因功能調整而更新，更新時會修改本頁上方的日期。如果有重大變更，會在 App 內另行告知。</p>
+
+    <h2>10. 聯絡我們</h2>
+    <div class="contact">
+      對本政策或你的個人資料有任何問題，請寄信到：<br>
+      <a href="mailto:support@tabigram.info">support@tabigram.info</a>
+    </div>
+
+    <a class="back" href="./">← 回到 TabigrAm</a>
+    <footer class="site-foot">
+      <span>© 2026 TabigrAm. All rights reserved.</span>
+      <a href="terms.html">服務條款</a>
+      <a href="privacy.html">隱私權政策</a>
+    </footer>
+  </main>
+</body>
+</html>

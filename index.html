@@ -6691,9 +6691,9 @@
             : `<div class="ed-stkbar"><span class="ed-stkhint">點貼紙包看全部貼紙</span></div>`;
         let row;
         if (pk) {
-          row = `<div class="ed-row ed-stkrow"><button type="button" class="ed-back" onclick="edStickerPack=null;edRender()" aria-label="返回">‹</button>${pk.items.map(([f, zh, enName], i) => `<button type="button" class="ed-art" onclick="edPreviewArtSticker('${pk.id}', ${i})" title="${escapeHtml(en ? enName : zh)}" aria-label="${escapeHtml(en ? enName : zh)}"><img src="${artStickerSrc(pk, f)}" alt="" decoding="async"></button>`).join("")}</div>`;
+          row = `<div class="ed-row ed-stkrow"><button type="button" class="ed-back" onclick="edStickerPack=null;edRender()" aria-label="返回">‹</button>${pk.items.map(([f, zh, enName], i) => `<button type="button" class="ed-art" onclick="edPreviewArtSticker('${pk.id}', ${i})" title="${escapeHtml(en ? enName : zh)}" aria-label="${escapeHtml(en ? enName : zh)}"><img crossorigin="anonymous" src="${artStickerSrc(pk, f)}" alt="" decoding="async"></button>`).join("")}</div>`;
         } else {
-          row = `<div class="ed-row ed-stkrow">${STICKER_PACKS.map(p => `<button type="button" class="ed-pack-cover" onclick="edStickerPack='${p.id}';edRender()"><span><img src="${artStickerSrc(p, p.cover || p.items[0][0])}" alt="" decoding="async"></span><small>${escapeHtml(en ? p.nameEn : p.name)}</small></button>`).join("")}
+          row = `<div class="ed-row ed-stkrow">${STICKER_PACKS.map(p => `<button type="button" class="ed-pack-cover" onclick="edStickerPack='${p.id}';edRender()"><span><img crossorigin="anonymous" src="${artStickerSrc(p, p.cover || p.items[0][0])}" alt="" decoding="async"></span><small>${escapeHtml(en ? p.nameEn : p.name)}</small></button>`).join("")}
             <span class="ed-stkdiv" aria-hidden="true"></span>${emojis.map(e => `<button type="button" class="ed-emoji" onclick="addEmojiStickerToStory('${escapeHtml(e)}');edRender()">${escapeHtml(e)}</button>`).join("")}</div>`;
         }
         const tools = `<div class="ed-row ed-stktools"><button type="button" class="ed-chip" onclick="promptCustomStoryEmojiSticker()">自訂表情</button><button type="button" class="ed-chip" onclick="triggerAddStickerPolaroidUpload()">＋ 拍立得照片</button>${(currentShareItem.photos || []).length ? `<button type="button" class="ed-chip" onclick="addExistingPhotoAsPolaroidSticker(${selectedSharePhotoIndex})">＋ 用這個行程的照片</button>` : ""}</div>`;
@@ -6906,7 +6906,7 @@
         pv.addEventListener("click", e => { if (e.target === pv) pv.classList.remove("open"); });
         document.getElementById("shareModal").appendChild(pv);
       }
-      pv.innerHTML = `<button type="button" class="ed-stkpv-img" onclick="document.getElementById('edStkPreview').classList.remove('open'); addArtStickerToStory('${pack.id}', ${idx})" aria-label="${escapeHtml(en ? it[2] : it[1])}"><img src="${artStickerSrc(pack, it[0])}" alt=""></button>
+      pv.innerHTML = `<button type="button" class="ed-stkpv-img" onclick="document.getElementById('edStkPreview').classList.remove('open'); addArtStickerToStory('${pack.id}', ${idx})" aria-label="${escapeHtml(en ? it[2] : it[1])}"><img crossorigin="anonymous" src="${artStickerSrc(pack, it[0])}" alt=""></button>
         <div class="ed-stkpv-name">${escapeHtml(en ? it[2] : it[1])}</div>
         <div class="ed-stkpv-hint">再點一下，貼到卡片上</div>`;
       requestAnimationFrame(() => pv.classList.add("open"));
@@ -6919,7 +6919,12 @@
       const src = artStickerSrc(pack, it[0]);
       let img = artStickerImgCache.get(src);
       if (!img) {
-        try { img = await loadImageElement(src); } catch (e) { showToast("貼紙載入失敗，請檢查網路"); return; }
+        // 第一次失敗（例如手機裡留著舊版快取的圖），換一個網址繞過快取再試一次
+        try { img = await loadImageElement(src); }
+        catch (e) {
+          try { img = await loadImageElement(src + (src.includes("?") ? "&" : "?") + "r=" + Date.now()); }
+          catch (e2) { showToast("貼紙載入失敗，請檢查網路"); return; }
+        }
         artStickerImgCache.set(src, img);
       }
       // 寬 300（以 1080 寬的卡片計），高度照原圖比例
@@ -13485,14 +13490,14 @@ function initSupabaseClient() {
       const en = window.TG_LANG === "en";
       box.innerHTML = STICKER_PACKS.map(pk => `<div class="form-card jam-pack">
           <div class="jam-pack-head">
-            <span class="jam-cover"><img src="${artStickerSrc(pk, pk.cover || pk.items[0][0])}" alt=""></span>
+            <span class="jam-cover"><img crossorigin="anonymous" src="${artStickerSrc(pk, pk.cover || pk.items[0][0])}" alt=""></span>
             <div style="min-width:0;">
               <div class="jam-kicker">已上架・免費</div>
               <div class="jam-name">${escapeHtml(en ? pk.nameEn : pk.name)}</div>
               <div class="jam-by" data-notr>${en ? "Illustrations: " : "插畫："}${escapeHtml(en ? pk.artistEn : pk.artist)}${pk.url ? ` · <a href="${pk.url}" target="_blank" rel="noopener">${en ? "See more work" : "看更多作品"}</a>` : ""}</div>
             </div>
           </div>
-          <div class="jam-grid">${pk.items.map(([f, zh, enName]) => `<span title="${escapeHtml(en ? enName : zh)}"><img src="${artStickerSrc(pk, f)}" alt="${escapeHtml(en ? enName : zh)}" loading="lazy" decoding="async"></span>`).join("")}</div>
+          <div class="jam-grid">${pk.items.map(([f, zh, enName]) => `<span title="${escapeHtml(en ? enName : zh)}"><img crossorigin="anonymous" src="${artStickerSrc(pk, f)}" alt="${escapeHtml(en ? enName : zh)}" loading="lazy" decoding="async"></span>`).join("")}</div>
           <div class="jam-how">做分享卡時，按「貼圖」就找得到這組貼紙。</div>
         </div>`).join("");
     }

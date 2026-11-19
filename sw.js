@@ -3,7 +3,7 @@
 // - 字型與程式元件（Google Fonts、jsDelivr）：先用存好的，背景再更新
 // - 雲端資料、天氣、地圖座標：不存，直接連線（離線時 App 會先把變更存在裝置上）
 // 改了這個檔案或想強制更新時，把 CACHE 的版本號加 1
-const CACHE = "tabigram-v44";
+const CACHE = "tabigram-v45";
 const CORE = ["./", "index.html", "privacy.html", "terms.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "logo-ring.png", "favicon.png", "sample-route-card.jpg", "sample-flight-card.jpg", "sample-stamp-card.jpg", "sample-memory-card.jpg", "sample-recap-card.jpg", "sample-route-card-en.jpg", "sample-flight-card-en.jpg", "sample-stamp-card-en.jpg", "sample-memory-card-en.jpg", "sample-recap-card-en.jpg", "fonts/tg-fill.woff2", "i18n/en.js", "privacy-en.html", "terms-en.html", "airports.json"];
 const ASSET_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "unpkg.com"];
 
@@ -46,10 +46,11 @@ self.addEventListener("fetch", event => {
   if (url.pathname.includes("/storage/v1/object/public/stickers/")) {
     event.respondWith(
       caches.open(CACHE).then(async c => {
+        // 只用、只存「讀得到內容」的版本：不透明的快取圖不能畫進分享卡，會讓貼紙載入失敗
         const hit = await c.match(req);
-        if (hit) return hit;
-        const res = await fetch(req);
-        if (res.ok || res.type === "opaque") c.put(req, res.clone());
+        if (hit && hit.type !== "opaque") return hit;
+        const res = await fetch(req.mode === "no-cors" ? new Request(req.url, { mode: "cors", credentials: "omit" }) : req);
+        if (res.ok && res.type !== "opaque") c.put(req.url, res.clone());
         return res;
       })
     );

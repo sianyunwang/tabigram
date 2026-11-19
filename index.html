@@ -27,7 +27,7 @@
       var lang = q || saved || (/^zh/i.test(nav) ? "zh" : "en");
       window.TG_LANG = lang;
       document.documentElement.lang = lang === "en" ? "en" : "zh-TW";
-      if (lang === "en") document.write('<script src="i18n/en.js?v=857a04bd"><\/script>');
+      if (lang === "en") document.write('<script src="i18n/en.js?v=3b3dc8bd"><\/script>');
     })();
   </script>
   <script>
@@ -2556,6 +2556,7 @@
             <button class="dropdown-item" onclick="exportTripMarkdownForAI(); toggleHeaderDropdown();">匯出給 AI 健檢</button>
             <button class="dropdown-item" onclick="exportBackupJSON(); toggleHeaderDropdown();">備份到這台裝置 <span class="hd-soon" id="backupAgeLabel"></span></button>
             <button class="dropdown-item" onclick="document.getElementById('backupImportInput').click(); toggleHeaderDropdown();">從備份檔還原</button>
+            <button class="dropdown-item" onclick="restoreAutoBackup(); toggleHeaderDropdown();">從自動備份還原</button>
             <input type="file" id="backupImportInput" accept=".json,application/json" style="display:none;" onchange="importBackupJSON(event)" />
             <button class="dropdown-item a2hs-menu-item" onclick="openA2hsGuide(); toggleHeaderDropdown();">加到主畫面</button>
 
@@ -4189,6 +4190,10 @@
      * 2. STATE & PERSISTENCE
      *************************************************************************/
     const STORAGE_KEY = "TABIGRAM_STATE_V4_CLEAN";
+    // 安全鎖：還沒從手機讀出你的資料之前，任何地方都不准存檔（避免空白的預設資料蓋掉你的行程）
+    let appStateLoaded = false;
+    // 自動備份：每次打開 App、讀到有內容的行程時，先在手機另存一份，出事時可以從選單還原
+    const AUTO_BACKUP_KEY = "TABIGRAM_STATE_AUTOBACKUP";
     const LEGACY_KEYS = [];
 
     let appState = {
@@ -4247,6 +4252,9 @@
           const parsed = JSON.parse(raw);
           if (parsed && Array.isArray(parsed.trips) && parsed.trips.length > 0) {
             appState = Object.assign(appState, parsed);
+            if (tripsHaveContent(parsed.trips)) {
+              try { localStorage.setItem(AUTO_BACKUP_KEY, JSON.stringify({ at: Date.now(), raw })); } catch (e) {}
+            }
           }
         }
       } catch (e) {}
@@ -4270,6 +4278,30 @@
           }
         });
       });
+      appStateLoaded = true;
+      applyLanguageDefaults();
+    }
+    // 英文版的預設值（家鄉時區用手機的時區）：一定要在讀完資料「之後」才做
+    function applyLanguageDefaults() {
+      if (window.TG_LANG !== "en" || appState.defaultHomeTz) return;
+      let tz = "";
+      try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) {}
+      if (!tz) return;
+      appState.defaultHomeTz = tz;
+      (appState.trips || []).forEach(t => { if (!tripsHaveContent([t]) && (!t.homeTz || t.homeTz === "Asia/Taipei")) t.homeTz = tz; });
+      saveAppState();
+    }
+    function restoreAutoBackup() {
+      let b = null;
+      try { b = JSON.parse(localStorage.getItem(AUTO_BACKUP_KEY) || "null"); } catch (e) {}
+      if (!b || !b.raw) return alert("這台裝置上還沒有自動備份。");
+      let trips = [];
+      try { trips = (JSON.parse(b.raw).trips || []).filter(t => tripsHaveContent([t])); } catch (e) {}
+      const when = new Date(b.at).toLocaleString();
+      if (!confirm(`要還原 ${when} 的自動備份嗎？\n裡面有 ${trips.length} 趟有行程的旅行：\n${trips.slice(0, 5).map(t => "・" + (t.title || "未命名旅行")).join("\n")}\n\n目前手機上的資料會先另外備份一份，再換成這份。`)) return;
+      try { localStorage.setItem(AUTO_BACKUP_KEY + "_BEFORE_RESTORE", JSON.stringify({ at: Date.now(), raw: localStorage.getItem(STORAGE_KEY) || "" })); } catch (e) {}
+      localStorage.setItem(STORAGE_KEY, b.raw);
+      location.reload();
     }
 
     /*
@@ -4389,6 +4421,7 @@
     }
 
     function writeStateToLocalStorage(quiet) {
+      if (!appStateLoaded) return;
       try {
         localStorage.setItem(STORAGE_KEY, serializeStateForLocal());
       } catch (e) {
@@ -4397,6 +4430,7 @@
     }
 
     function saveAppState() {
+      if (!appStateLoaded) { console.warn("[TabigrAm] 資料還沒讀完，略過這次存檔"); return; }
       let needsFlush = false;
       if (photoDbReady) {
         const referenced = new Set();
@@ -4611,16 +4645,7 @@
       // 英文版：隱私權政策、服務條款連到英文頁
       document.querySelectorAll('a[href="privacy.html"]').forEach(a => a.setAttribute("href", "privacy-en.html"));
       document.querySelectorAll('a[href="terms.html"]').forEach(a => a.setAttribute("href", "terms-en.html"));
-      // 來台旅客：家鄉時區預設用手機的時區（不是台北）
-      if (!appState.defaultHomeTz) {
-        let tz = "";
-        try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) {}
-        if (tz) {
-          appState.defaultHomeTz = tz;
-          (appState.trips || []).forEach(t => { if (!tripsHaveContent([t]) && (!t.homeTz || t.homeTz === "Asia/Taipei")) t.homeTz = tz; });
-          saveAppState();
-        }
-      }
+      // 來台旅客的家鄉時區：移到 applyLanguageDefaults（讀完資料後才做），這裡不能碰資料
       // 首頁範例卡：英文版用英文卡
       document.querySelectorAll('#landingScreen img[src^="sample-"]').forEach(im => {
         const src = im.getAttribute("src");

@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TabigrAm 旅行提案</title>
+<meta name="description" content="TabigrAm 旅行提案：創作者整理好的行程，輸入分享碼或掃 QR Code 打開。">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F3EFE6">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700;800&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="card.js"></script>
+<style>
+:root { --paper: #F3EFE6; --card: #FFFFFF; --ink: #191919; --sub: #6E6A63; --line: #E1DBCF; --accent: #FF4F00; --soft: #FFF1E8;
+  --serif: 'Noto Serif TC', serif; --sans: 'Noto Sans TC', system-ui, sans-serif; --mono: 'JetBrains Mono', ui-monospace, monospace; }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.7 var(--sans); }
+a { color: inherit; } button, input { font: inherit; color: inherit; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 22px 0 14px; border-bottom: 2.5px solid var(--ink); }
+.top .brand { font: 800 18px var(--mono); text-decoration: none; }
+.top .brand span { color: var(--accent); }
+.top small { font: 700 12px var(--sans); color: var(--sub); }
+.hero { padding: 40px 0 10px; }
+.hero h1 { font: 900 clamp(32px, 7vw, 56px)/1.15 var(--serif); margin: 0; }
+.hero p { color: var(--sub); margin: 12px 0 0; max-width: 34em; }
+.codebox { display: flex; gap: 8px; margin-top: 22px; max-width: 420px; }
+.codebox input { flex: 1; min-width: 0; padding: 13px 16px; border: 2px solid var(--ink); border-radius: 12px; background: var(--card); font: 800 20px var(--mono); letter-spacing: .2em; text-transform: uppercase; }
+.codebox button, .btn { border: 0; border-radius: 12px; padding: 12px 18px; background: var(--ink); color: #fff; font-weight: 800; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.btn.soft { background: var(--card); color: var(--ink); border: 1.5px solid var(--line); }
+.btn.go { background: var(--accent); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.err { color: #C0392B; font-size: 14px; margin-top: 8px; min-height: 1.4em; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 22px; margin: 34px 0 40px; }
+.pc { text-decoration: none; background: var(--card); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 26px -18px rgba(0,0,0,.35); display: block; transition: transform .2s; }
+.pc:hover { transform: translateY(-3px); }
+.pc .cv { aspect-ratio: 4/5; background: #E4DED2 center/cover no-repeat; position: relative; }
+.stamp { position: absolute; right: 12px; bottom: -22px; width: 58px; height: 58px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; text-align: center; font: 900 22px/1 var(--mono); transform: rotate(8deg); box-shadow: 0 6px 12px -6px rgba(0,0,0,.4); }
+.stamp small { display: block; font: 800 10px/1 var(--sans); margin-top: 3px; }
+.pc .tx { padding: 16px 16px 18px; }
+.pc .k { font: 700 12px var(--mono); color: var(--sub); letter-spacing: .06em; }
+.pc h2 { font: 800 19px/1.4 var(--serif); margin: 6px 0 4px; }
+.pc p { margin: 0; font-size: 14px; color: var(--sub); }
+.sample { font: 700 11px var(--mono); letter-spacing: .2em; color: var(--accent); margin-top: 14px; }
+
+/* 提案頁 */
+.plan-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 34px; padding: 30px 0 20px; align-items: end; }
+.plan-hero .cv { aspect-ratio: 4/5; border-radius: 18px; background: #E4DED2 center/cover no-repeat; position: relative; box-shadow: 0 18px 40px -26px rgba(0,0,0,.5); }
+.plan-hero .cv .stamp { width: 76px; height: 76px; font-size: 28px; right: -14px; bottom: 30px; }
+.plan-hero h1 { font: 900 clamp(28px, 5vw, 44px)/1.25 var(--serif); margin: 8px 0 10px; text-wrap: balance; }
+.plan-hero .lede { font: 500 18px/1.6 var(--serif); color: var(--sub); margin: 0 0 16px; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--sub); }
+.meta b { color: var(--ink); }
+.code-chip { display: inline-flex; gap: 8px; align-items: center; margin-top: 18px; padding: 8px 14px; border: 2px dashed var(--ink); border-radius: 10px; font: 800 18px var(--mono); letter-spacing: .14em; background: var(--card); }
+.code-chip small { font: 700 11px var(--sans); letter-spacing: 0; color: var(--sub); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.tags span { font-size: 12px; padding: 2px 10px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); }
+
+.days { margin: 20px 0 0; }
+.day { margin: 34px 0 0; }
+.day-h { display: flex; align-items: baseline; gap: 12px; border-bottom: 2px solid var(--ink); padding-bottom: 8px; position: sticky; top: 0; background: var(--paper); z-index: 2; padding-top: 8px; }
+.day-h .n { font: 800 14px var(--mono); color: #fff; background: var(--ink); padding: 3px 10px; border-radius: 6px; }
+.day-h h2 { font: 800 22px/1.3 var(--serif); margin: 0; }
+.stops { list-style: none; margin: 0; padding: 0 0 0 0; position: relative; }
+.stop { display: grid; grid-template-columns: 70px 18px 1fr; gap: 0 12px; padding: 16px 0 4px; }
+.stop .t { font: 800 15px var(--mono); text-align: right; padding-top: 2px; }
+.stop .dot { position: relative; }
+.stop .dot::before { content: ""; position: absolute; left: 50%; top: 8px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--soft); }
+.stop .dot::after { content: ""; position: absolute; left: 50%; top: 26px; bottom: -22px; width: 2px; margin-left: -1px; background: var(--line); }
+.stop:last-child .dot::after { display: none; }
+.stop h3 { font: 800 18px/1.4 var(--sans); margin: 0; }
+.stop p { margin: 4px 0 0; color: #3D3A35; }
+.stop a.map { font-size: 13px; font-weight: 700; color: var(--accent); text-decoration: none; display: inline-block; margin-top: 4px; }
+.tip { margin: 16px 0 0 100px; background: var(--soft); border-radius: 12px; padding: 12px 16px; font-size: 15px; }
+.tip b { display: block; }
+.pimg { margin: 18px 0 0 100px; }
+.pimg img { width: 100%; border-radius: 12px; display: block; }
+.pimg figcaption { font-size: 13px; color: var(--sub); margin-top: 6px; }
+.note { margin: 40px 0 0; padding: 14px 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--sub); }
+.foot { font: 600 12px var(--mono); color: var(--sub); text-align: center; padding: 30px 0 50px; }
+.back { background: none; border: 0; padding: 0; font: 700 13px var(--mono); color: var(--sub); cursor: pointer; margin-top: 18px; }
+
+/* 分享小卡 */
+.modal { position: fixed; inset: 0; background: rgba(25,25,25,.55); display: grid; place-items: center; padding: 16px; z-index: 50; }
+.modal[hidden] { display: none; }
+.modal .box { background: var(--card); border-radius: 18px; padding: 18px; width: min(420px, 100%); max-height: calc(100vh - 32px); overflow: auto; text-align: center; }
+.modal img { width: 100%; max-width: 300px; border-radius: 12px; box-shadow: 0 10px 30px -16px rgba(0,0,0,.5); display: block; margin: 0 auto; }
+.modal .row { display: flex; gap: 8px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+.modal p { font-size: 13px; color: var(--sub); margin: 10px 0 0; }
+.toast { position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 20px); opacity: 0; background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 999px; font-size: 14px; font-weight: 700; transition: .25s; z-index: 60; pointer-events: none; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.preview-flag { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); background: var(--accent); color: #fff; font: 700 13px var(--sans); padding: 8px 14px; border-radius: 999px; z-index: 40; }
+@media (max-width: 720px) {
+  .plan-hero { grid-template-columns: 1fr; gap: 20px; }
+  .plan-hero .cv { aspect-ratio: 4/3; }
+  .plan-hero .cv .stamp { right: 14px; bottom: -20px; }
+  .stop { grid-template-columns: 52px 14px 1fr; gap: 0 10px; }
+  .tip, .pimg { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .pc, .toast { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><a class="brand" href="./" data-go="">TabigrAm<span>.</span>plans</a><small>旅行提案 · 測試版</small></header>
+  <main id="app"><p style="color:var(--sub); padding:40px 0;">讀取中…</p></main>
+  <div class="foot">由 <a href="../">TabigrAm</a> 出版</div>
+</div>
+<div class="modal" id="cardModal" hidden role="dialog" aria-modal="true" aria-label="分享小卡">
+  <div class="box">
+    <img id="cardImg" alt="分享小卡">
+    <div class="row"><button class="btn go" type="button" id="cardShare">分享</button><a class="btn soft" id="cardDl" download>存成圖片</a><button class="btn soft" type="button" id="cardClose">關閉</button></div>
+    <p>可以直接貼到 Instagram 限時動態。朋友掃 QR Code，或在這一頁輸入分享碼就能打開。</p>
+  </div>
+</div>
+<script>
+const SUPABASE_URL = "https://pjgjxvahhauqluassiuo.supabase.co";
+const SUPABASE_KEY = "sb_publishable_6FOfxpsIuTDrJq0BFCAW6w_uzp-IhVX";
+const H = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const img = p => !p ? "" : /^(https?:|\.\.\/|data:)/.test(p) ? p : `${SUPABASE_URL}/storage/v1/object/public/content/${String(p).split("/").map(encodeURIComponent).join("/")}`;
+const cssUrl = u => `url('${String(u || "").replace(/[\s"'()<>&\\]/g, c => "%" + c.charCodeAt(0).toString(16).toUpperCase().padStart(2, "0"))}')`;
+const safeHttps = u => /^https:\/\/[^\s"'<>]+$/.test(String(u || "")) ? u : "";
+const $ = id => document.getElementById(id);
+const params = () => new URLSearchParams(location.search);
+const shareUrl = code => `${location.origin}${location.pathname.replace(/index\.html$/, "")}?c=${code}`;
+
+const SAMPLE = [{
+  id: "sample-kyoto-3days", code: "SAMPLE", title: "京都東山・慢慢走的三天", subtitle: "不趕景點，每天只排一個區域，留時間給咖啡和書店。", author_name: "TabigrAm 編輯部", cities: ["京都"], tags: ["秋天", "散步"], days: 3,
+  cover: "../sample-memory-card.jpg",
+  blocks: [
+    { type: "day", title: "東山：清水寺到祇園" },
+    { type: "stop", time: "08:00", title: "清水寺", text: "早上人少，從五条坂走上去。待 1 小時。", link: "https://maps.google.com/?q=清水寺" },
+    { type: "stop", time: "10:00", title: "二年坂・三年坂", text: "邊走邊逛，石板路很滑，穿好走的鞋。" },
+    { type: "tip", title: "小提醒", text: "這是範例提案。在後台「旅行提案」上架後，這裡就會換成真的內容。" },
+    { type: "stop", time: "13:00", title: "八坂神社", text: "午餐後從東大路散步過去。" },
+    { type: "day", title: "左京：哲學之道" },
+    { type: "stop", time: "09:30", title: "南禪寺", text: "水路閣拍照、喝一杯抹茶。" },
+    { type: "stop", time: "11:00", title: "哲學之道", text: "一路往北走到銀閣寺，大約 40 分鐘。" },
+    { type: "day", title: "出町柳：河邊的早上" },
+    { type: "stop", time: "09:00", title: "鴨川三角洲", text: "跳烏龜石，買一杯咖啡坐河邊。" },
+    { type: "stop", time: "10:30", title: "下鴨神社・糺之森", text: "森林裡的參道，慢慢走。", link: "https://maps.google.com/?q=下鴨神社" },
+  ],
+}];
+let PLANS = [], usingSample = false;
+
+function track(e, d) {
+  try {
+    if (navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true || usingSample) return;
+    fetch(`${SUPABASE_URL}/rest/v1/rpc/track`, { method: "POST", keepalive: true, headers: { ...H, "Content-Type": "application/json" }, body: JSON.stringify({ events: [d ? { e, d: String(d).replace(/[^A-Za-z0-9_.:/-]/g, "").slice(0, 40) } : { e }] }) }).catch(() => {});
+  } catch (e) {}
+}
+function toast(t) { let el = $("toast"); if (!el) { el = document.createElement("div"); el.id = "toast"; el.className = "toast"; el.setAttribute("role", "status"); document.body.appendChild(el); } el.textContent = t; el.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 2200); }
+async function getJSON(url) {
+  const r = await Promise.race([fetch(url, { headers: H }), new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 8000))]);
+  if (!r.ok) throw new Error(String(r.status)); return r.json();
+}
+const COLS = "id,code,title,subtitle,author_name,author_url,source_name,source_url,cities,tags,days,cover,blocks,featured";
+async function loadAll() {
+  try { PLANS = await getJSON(`${SUPABASE_URL}/rest/v1/trip_plans?select=${COLS}&status=eq.published&order=featured.desc,sort.asc,published_at.desc`); } catch (e) { PLANS = []; }
+  if (!PLANS.length) { PLANS = SAMPLE; usingSample = true; }
+}
+async function byCode(code) {
+  code = String(code || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const local = PLANS.find(p => p.code === code); if (local) return local;
+  if (!/^[A-Z0-9]{6}$/.test(code)) return null;
+  try { const r = await getJSON(`${SUPABASE_URL}/rest/v1/trip_plans?select=${COLS}&status=eq.published&code=eq.${code}`); return r[0] || null; } catch (e) { return null; }
+}
+async function loadPreview(id) {
+  await new Promise((res, rej) => { const s = document.createElement("script"); s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const { data } = await sb.from("trip_plans").select("*").eq("id", id).maybeSingle();
+  return data;
+}
+
+function renderHome() {
+  document.title = "TabigrAm 旅行提案";
+  $app.innerHTML = `<section class="hero">
+      <h1>別人走過、<br>整理好的旅行。</h1>
+      <p>創作者和旅人分享的行程提案。看到喜歡的，記下分享碼、存下分享小卡，出發前再拿出來。</p>
+      <form class="codebox" id="codeForm"><input id="codeIn" maxlength="7" placeholder="分享碼" aria-label="分享碼" autocomplete="off" autocapitalize="characters"><button type="submit">打開</button></form>
+      <div class="err" id="codeErr" role="alert"></div>
+      ${usingSample ? `<div class="sample">範例提案 · SAMPLE</div>` : ""}
+    </section>
+    <section class="grid">${PLANS.map(p => `<a class="pc" href="?c=${esc(p.code)}" data-go="?c=${esc(p.code)}">
+        <div class="cv" style="background-image:${cssUrl(img(p.cover))}"><span class="stamp">${Number(p.days) || 1}<small>天</small></span></div>
+        <div class="tx"><div class="k">${esc((p.cities || []).join(" · "))}</div><h2>${esc(p.title)}</h2><p>${esc(p.subtitle || "")}</p></div>
+      </a>`).join("")}</section>`;
+  $("codeForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const p = await byCode($("codeIn").value);
+    if (!p) { $("codeErr").textContent = "找不到這組分享碼，請再確認一次（6 個英文或數字）。"; return; }
+    go(`?c=${p.code}`);
+  });
+  wire();
+}
+function renderPlan(p, preview) {
+  document.title = `${p.title}｜TabigrAm 旅行提案`;
+  const days = (p.blocks || []).filter(b => b.type === "day").length || Number(p.days) || 1;
+  let dayN = 0, open = false, html = "";
+  const close = () => open ? "</ol></section>" : "";
+  for (const b of p.blocks || []) {
+    if (b.type === "day") { html += close(); dayN++; open = true; html += `<section class="day"><div class="day-h"><span class="n">DAY ${String(dayN).padStart(2, "0")}</span><h2>${esc(b.title || `第 ${dayN} 天`)}</h2></div><ol class="stops">`; continue; }
+    if (!open) { open = true; dayN = dayN || 1; html += `<section class="day"><ol class="stops">`; }
+    if (b.type === "stop") html += `<li class="stop"><div class="t">${esc(b.time || "")}</div><div class="dot"></div><div><h3>${esc(b.title || "")}</h3>${b.text ? `<p>${esc(b.text)}</p>` : ""}${safeHttps(b.link) ? `<a class="map" href="${esc(b.link)}" target="_blank" rel="noopener">地圖 ↗</a>` : ""}</div></li>`;
+    else if (b.type === "tip") html += `</ol><div class="tip"><b>${esc(b.title || "小提醒")}</b>${esc(b.text || "")}</div><ol class="stops">`;
+    else if (b.type === "image" && b.src) html += `</ol><figure class="pimg"><img src="${esc(img(b.src))}" alt="${esc(b.caption || "")}" loading="lazy">${b.caption ? `<figcaption>${esc(b.caption)}</figcaption>` : ""}</figure><ol class="stops">`;
+  }
+  html += close();
+  const au = safeHttps(p.author_url), src = safeHttps(p.source_url);
+  $app.innerHTML = `<button type="button" class="back" data-go="">← 所有提案</button>
+    <section class="plan-hero">
+      <div class="cv" role="img" aria-label="${esc(p.title)}" style="background-image:${cssUrl(img(p.cover))}"><span class="stamp">${days}<small>天</small></span></div>
+      <div>
+        <div class="meta"><span><b>${esc((p.cities || []).join("、") || "—")}</b></span><span>${days} 天</span></div>
+        <h1>${esc(p.title)}</h1>
+        ${p.subtitle ? `<p class="lede">${esc(p.subtitle)}</p>` : ""}
+        <div class="meta"><span>文／${au ? `<a href="${esc(au)}" target="_blank" rel="noopener">${esc(p.author_name)}</a>` : esc(p.author_name || "—")}</span>${p.source_name ? `<span>出處：${src ? `<a href="${esc(src)}" target="_blank" rel="noopener">${esc(p.source_name)}</a>` : esc(p.source_name)}</span>` : ""}</div>
+        ${p.code && !preview ? `<div class="code-chip">${esc(p.code)} <small>分享碼</small></div>` : ""}
+        <div class="actions">
+          ${p.code && !preview ? `<button class="btn go" type="button" id="cardBtn">產生分享小卡</button><button class="btn soft" type="button" id="copyBtn">複製連結</button>` : ""}
+          <button class="btn soft" type="button" disabled title="之後會串接 TabigrAm App">加入我的行程（即將推出）</button>
+        </div>
+        ${(p.tags || []).length ? `<div class="tags">${p.tags.map(t => `<span>#${esc(t)}</span>`).join("")}</div>` : ""}
+      </div>
+    </section>
+    <div class="days">${html}</div>
+    <p class="note">營業時間、交通、票價可能會變動，出發前請再確認。這份提案由作者提供，TabigrAm 負責整理與刊登。</p>
+    ${preview ? `<div class="preview-flag">預覽（還沒上架，只有你看得到）</div>` : ""}`;
+  wire();
+  const cb = $("cardBtn"); if (cb) cb.addEventListener("click", () => openCard(p, days, cb));
+  const cp = $("copyBtn"); if (cp) cp.addEventListener("click", async () => { try { await navigator.clipboard.writeText(shareUrl(p.code)); toast("已複製連結"); } catch (e) { prompt("複製這個連結", shareUrl(p.code)); } });
+  window.scrollTo(0, 0);
+  if (!preview) track("plan_view", p.id);
+}
+let cardFile = null;
+async function openCard(p, days, btn) {
+  if (!window.TGPlanCard || !window.qrcode) return toast("分享小卡元件沒載入，請重新整理");
+  btn.disabled = true; btn.textContent = "產生中…";
+  try {
+    const blob = await TGPlanCard.render({ title: p.title, subtitle: p.subtitle, days, cities: p.cities, author: p.author_name, code: p.code, url: shareUrl(p.code), cover: img(p.cover) ? new URL(img(p.cover), location.href).href : "" });
+    cardFile = new File([blob], `tabigram-plan-${p.code}.png`, { type: "image/png" });
+    const u = URL.createObjectURL(blob);
+    $("cardImg").src = u; $("cardDl").href = u; $("cardDl").download = cardFile.name;
+    $("cardShare").hidden = !(navigator.canShare && navigator.canShare({ files: [cardFile] }));
+    $("cardModal").hidden = false;
+    track("plan_card", p.id);
+  } catch (e) { toast("產生失敗，請再試一次"); }
+  btn.disabled = false; btn.textContent = "產生分享小卡";
+}
+$("cardClose").addEventListener("click", () => { $("cardModal").hidden = true; });
+$("cardModal").addEventListener("click", e => { if (e.target.id === "cardModal") $("cardModal").hidden = true; });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("cardModal").hidden = true; });
+$("cardShare").addEventListener("click", async () => { try { await navigator.share({ files: [cardFile] }); } catch (e) {} });
+
+function wire() { document.querySelectorAll("[data-go]").forEach(a => a.addEventListener("click", e => { e.preventDefault(); go(a.dataset.go); })); }
+function go(q) { history.pushState({}, "", q || location.pathname); route(); window.scrollTo(0, 0); }
+async function route() {
+  const q = params();
+  if (q.get("c")) { const p = await byCode(q.get("c")); if (p) return renderPlan(p); }
+  if (q.get("id")) { const p = PLANS.find(x => x.id === q.get("id")); if (p) return renderPlan(p); }
+  renderHome();
+  if (q.get("c")) $("codeErr").textContent = "找不到這組分享碼，可能已經下架了。";
+}
+window.addEventListener("popstate", route);
+
+const $app = $("app");
+(async () => {
+  const q = params(), id = q.get("id");
+  if (id && q.get("preview")) { try { const p = await loadPreview(id); if (p) return renderPlan(p, p.status !== "published"); } catch (e) {} }
+  await loadAll();
+  track("plans_open");
+  route();
+})();
+</script>
+</body>
+</html>

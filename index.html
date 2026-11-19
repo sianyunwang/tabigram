@@ -27,7 +27,7 @@
       var lang = q || saved || (/^zh/i.test(nav) ? "zh" : "en");
       window.TG_LANG = lang;
       document.documentElement.lang = lang === "en" ? "en" : "zh-TW";
-      if (lang === "en") document.write('<script src="i18n/en.js?v=0f7893ba"><\/script>');
+      if (lang === "en") document.write('<script src="i18n/en.js?v=74f70a7a"><\/script>');
     })();
   </script>
   <script>
@@ -1885,6 +1885,11 @@
     .transit-conn.tc-cancel .tc-route, .transit-conn.tc-cancel .tc-leg { opacity: .5; text-decoration: line-through; text-decoration-thickness: 1px; }
     .transit-conn.tc-cancel::before { background: repeating-linear-gradient(#B9B3A8 0 6px, transparent 6px 11px); }
     .transit-conn.now::before { box-shadow: 0 0 0 3px var(--accent-soft); }
+    .tg-notice { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; padding: 9px 12px; border-radius: 14px; background: #EDEBE6; color: var(--ink); font-size: 13px; font-weight: 700; line-height: 1.45; }
+    .tg-notice.warn { background: var(--accent); color: #fff; }
+    .tg-notice span { flex: 1; min-width: 0; }
+    .tg-notice a { color: inherit; font-weight: 900; white-space: nowrap; }
+    .tg-notice button { border: 0; background: none; color: inherit; font-size: 18px; line-height: 1; cursor: pointer; padding: 0 2px; opacity: .7; }
     .now-pin { margin: -4px 0 12px; padding: 10px 12px; border-radius: 16px; border: 1.5px solid var(--accent); background: var(--accent-soft); }
     .now-pin .np-head { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; color: var(--sub); }
     .now-pin .np-title { font-size: 16px; font-weight: 900; margin-top: 4px; line-height: 1.35; overflow-wrap: anywhere; }
@@ -2636,6 +2641,7 @@
             <button class="dropdown-item" onclick="openFeedback(); toggleHeaderDropdown();">意見回饋</button>
             <button class="dropdown-item" onclick="showLanding(); toggleHeaderDropdown();">關於 TabigrAm</button>
             <a class="dropdown-item zh-only" href="highlights/" style="text-decoration:none;">功能亮點</a>
+            <a class="dropdown-item" id="menuZineLink" href="zine/" style="text-decoration:none; display:none;">TabigrAm.zine</a>
 
             <div class="hd-prefs">
               <div class="hd-pref">
@@ -3718,6 +3724,7 @@
             <option value="apple">Apple 地圖</option>
             <option value="ask">每次問我</option>
           </select>
+          <label class="sheet-check" style="margin-top:8px; font-size:12.5px;"><input type="checkbox" id="profileAnalyticsCheck" onchange="appState.analyticsOff = !this.checked; saveAppState();" /> 協助改善 TabigrAm：送出匿名使用統計（只有次數，沒有個資）</label>
           <label class="sheet-check" style="margin-top:8px; font-size:12.5px;"><input type="checkbox" id="profileNaverKoreaCheck" onchange="appState.naverInKorea = this.checked; saveAppState();" /> 在韓國的地點改用 NAVER 地圖（Google 地圖在韓國幾乎不能導航）</label>
         </div>
 
@@ -4812,12 +4819,13 @@
       if (STATION_COORDS[clean]) return { lat: STATION_COORDS[clean][0], lng: STATION_COORDS[clean][1] };
       if (STATION_COORDS[name.trim()]) return { lat: STATION_COORDS[name.trim()][0], lng: STATION_COORDS[name.trim()][1] };
       if (appState.geoCache && appState.geoCache[clean]) return appState.geoCache[clean];
+      let best = null, score = 0;
       for (const k in STATION_COORDS) {
-        if (clean.includes(k) || k.includes(clean)) {
-          return { lat: STATION_COORDS[k][0], lng: STATION_COORDS[k][1] };
-        }
+        if (k.length < 2 || !(clean.includes(k) || k.includes(clean))) continue;
+        const sc = (clean.endsWith(k) || k.endsWith(clean) ? 100 : 0) + Math.min(k.length, clean.length);
+        if (sc > score) { score = sc; best = k; }
       }
-      return null;
+      return best ? { lat: STATION_COORDS[best][0], lng: STATION_COORDS[best][1] } : null;
     }
 
     async function geocodeStationOnline(name, tzHint) {
@@ -6053,13 +6061,15 @@
       }
       if (origin && dest && origin.trim() === dest.trim()) origin = "";
       if (pinned && (!dest || !origin)) { openMapLink(pinned, null); return; }   // 沒有上一站：照舊打開儲存的地點
-      const korea = appState.naverInKorea !== false && isKoreaItem(item, dest);
+      const naverOn = appState.naverInKorea != null ? appState.naverInKorea !== false : !(window.TG_FLAGS && window.TG_FLAGS.naver_korea === false);
+      const korea = naverOn && isKoreaItem(item, dest);
       const app = appState.mapApp || "google";
       if (app === "ask") { openMapAppChooser(dest, origin, korea); return; }
       openMapSearch(dest, korea ? "naver" : app, origin);
     }
 
     function openMapSearch(query, app, origin) {
+      track("map_open", `${app || "google"}_${origin ? "route" : "search"}`);
       if (app === "naver") {
         // NAVER 地圖沒有座標時沒辦法帶起點，先打開目的地（App 裡按「길찾기」就能規劃路線）
         const q = String(query || "").replace(/\s*車站$/, "");
@@ -6622,6 +6632,8 @@
         if (idx !== -1) day.items[idx] = payload;
       } else {
         day.items.push(payload);
+        track("item_add", payload.type || "spot");
+        try { if (!localStorage.getItem("TG_METRIC_FIRST_ITEM")) { localStorage.setItem("TG_METRIC_FIRST_ITEM", "1"); track("first_item"); } } catch (e) {}
       }
 
       day.items.sort((a, b) => hhmmToMinutes(a.startTime) - hhmmToMinutes(b.startTime));
@@ -6754,6 +6766,7 @@
 
     function createNewTripProject(opts) {
       opts = opts || {};
+      track("trip_new", "blank");
       const newId = "trip_" + Date.now();
       appState.trips.push({
         id: newId,
@@ -7066,6 +7079,7 @@
       });
       try { initSwatchDropdowns(); renderRecentStoryEmojis(); } catch (e) { console.warn(e); }
       openModalBackdrop("shareModal");
+      track("share_open", tplSelect.value);
       edTab = "tpl";
       try { onShareTemplateChange(); edRender(); } catch (e) { console.warn(e); }
 
@@ -7333,14 +7347,16 @@
 
     // 插畫家貼紙包（目前免費開放）。圖片放在 stickers/<包名>/，第一次用到時下載，之後存在手機裡
     // 內建的貼紙包（網站裡的檔案）：雲端貼紙包讀不到時的備援；雲端有同一個 id 的話以雲端為準
+    const NAOBAO_CDN = "https://pjgjxvahhauqluassiuo.supabase.co/storage/v1/object/public/stickers/naobao/mwmgnypu-";
     const BUILTIN_STICKER_PACKS = [
       {
-        id: "naobao", name: "跟著蛋白一起去旅行", nameEn: "Travel with naobao", cover: "cover.png",
+        // 圖檔放在 Supabase 的 stickers 空間（後台上架的那一份），不再跟著網站一起上傳
+        id: "naobao", name: "跟著蛋白一起去旅行", nameEn: "Travel with naobao", cover: NAOBAO_CDN + "cover.png",
         artist: "蛋白人", artistEn: "naobao", url: "https://www.instagram.com/naobao_draw/",
         items: [
-          ["01.png", "出發囉", "Let's GO"], ["02.png", "塊陶", "Hurry up"], ["03.png", "拍照就擺 pose", "Give you big heart"],
-          ["04.png", "好吃還想再吃", "Yumyum"], ["05.png", "是免稅不是免費", "It's tax free, not for free"], ["06.png", "嚇一跳", "Bingbong"],
-          ["07.png", "100 分", "Excellent"], ["08.png", "每天都值得慶祝", "Happy birthday"],
+          [NAOBAO_CDN + "01.png", "出發囉", "Let's GO"], [NAOBAO_CDN + "02.png", "塊陶", "Hurry up"], [NAOBAO_CDN + "03.png", "拍照就擺 pose", "Give you big heart"],
+          [NAOBAO_CDN + "04.png", "好吃還想再吃", "Yumyum"], [NAOBAO_CDN + "05.png", "是免稅不是免費", "It's tax free, not for free"], [NAOBAO_CDN + "06.png", "嚇一跳", "Bingbong"],
+          [NAOBAO_CDN + "07.png", "100 分", "Excellent"], [NAOBAO_CDN + "08.png", "每天都值得慶祝", "Happy birthday"],
         ],
       },
     ];
@@ -7363,6 +7379,7 @@
         showToast("已從貼圖移除");
       } else {
         ids.push(id);
+        track("sticker_collect", id);
         showToast("收藏好了！做分享卡時按「貼圖」就找得到");
       }
       appState.stickerCollection = ids;
@@ -7428,6 +7445,7 @@
       const pack = STICKER_PACKS.find(p => p.id === packId);
       const it = pack && pack.items[idx];
       if (!it) return;
+      track("sticker_use", packId);
       const src = artStickerSrc(pack, it[0]);
       let img = artStickerImgCache.get(src);
       if (!img) {
@@ -8262,16 +8280,12 @@
       const nodes = [];
       const segments = [];
 
-      let lastKnownCoord = detectDayTargetCoord(getActiveDay(), getActiveTrip());
+      const partGeo = (transitRailGeo && transitRailGeo.itemId === item.id) ? transitRailGeo.legs : [];
+      const endPt = (g, last) => g && g.length ? { lat: g[last ? g.length - 1 : 0].lat, lng: g[last ? g.length - 1 : 0].lng } : null;
       legs.forEach((leg, i) => {
         const col = getLineBrandColor(leg.line, i, leg.customColor, lineColorHint(item, legs));
-        let cFrom = lookupStationCoordSync(leg.from);
-        if (cFrom) lastKnownCoord = cFrom;
-        else cFrom = { lat: lastKnownCoord.lat + 0.015, lng: lastKnownCoord.lng + 0.015 };
-
-        let cTo = lookupStationCoordSync(leg.to);
-        if (cTo) lastKnownCoord = cTo;
-        else cTo = { lat: lastKnownCoord.lat + 0.015, lng: lastKnownCoord.lng + 0.02 };
+        const cFrom = endPt(partGeo[i], false) || lookupStationCoordSync(leg.from);
+        const cTo = endPt(partGeo[i], true) || lookupStationCoordSync(leg.to);
 
         const sFrom = lookupSchematicPoint(leg.from);
         const sTo = lookupSchematicPoint(leg.to);
@@ -8292,6 +8306,28 @@
         segments.push({ fromIdx: nodes.length - 2, toIdx: nodes.length - 1, type: "ride", color: col });
       });
 
+      // 查不到座標的站：放在前後已知的站之間；只有一邊知道，就沿著上一段的方向往前排
+      {
+        const known = nodes.map((n, i) => n.coord ? i : -1).filter(i => i >= 0);
+        const base = detectDayTargetCoord(getActiveDay(), getActiveTrip());
+        nodes.forEach((n, i) => {
+          if (n.coord) return;
+          const p = [...known].reverse().find(k => k < i), q = known.find(k => k > i);
+          if (p != null && q != null) {
+            const t = (i - p) / (q - p), a = nodes[p].coord, b = nodes[q].coord;
+            n.coord = { lat: a.lat + (b.lat - a.lat) * t, lng: a.lng + (b.lng - a.lng) * t };
+          } else if (p != null || q != null) {
+            const k = p != null ? p : q, dir = p != null ? 1 : -1;
+            const k2 = known[known.indexOf(k) - dir];
+            const a = nodes[k].coord;
+            let vy = 0.01, vx = 0;   // 沒有方向可參考：往北
+            if (k2 != null) { const b = nodes[k2].coord, len = Math.hypot(a.lat - b.lat, a.lng - b.lng); if (len > 0.002) { vy = (a.lat - b.lat) / len * 0.01; vx = (a.lng - b.lng) / len * 0.01; } }
+            const steps = Math.abs(i - k);
+            n.coord = { lat: a.lat + vy * steps, lng: a.lng + vx * steps };
+          } else n.coord = { lat: base.lat + i * 0.01, lng: base.lng + i * 0.01 };
+          known.push(i); known.sort((x, y) => x - y);
+        });
+      }
       const allHaveSchem = nodes.every(n => !!n.schem);
       const rawPts = [];
       const stationRawPtIndices = [];
@@ -8365,10 +8401,32 @@
           const n2 = nodes[seg.toIdx].coord;
           const dLat = n2.lat - n1.lat;
           const dLng = (n2.lng - n1.lng) * Math.cos((n1.lat * Math.PI) / 180);
-          const geoDeg = Math.hypot(dLng, dLat) || 0.008;
+          let geoDeg = Math.hypot(dLng, dLat) || 0.008;
 
           let vx = dLng / geoDeg;
           let vy = -dLat / geoDeg;
+          // 很近的步行轉乘（例如阪神／阪急神戸三宮，相距不到 400 公尺）：虛線順著下一段的方向，不要畫回頭線；
+          // 下一段剛好往回走（例如阿波座→難波，再從大阪難波往西北），虛線改成轉 90 度，兩條線才不會疊在一起
+          if (seg.type === "walk" && Math.hypot(dLng, dLat) < 0.004) {
+            const dirOf = sg => {
+              if (!sg) return null;
+              const a = nodes[sg.fromIdx].coord, b = nodes[sg.toIdx].coord;
+              const ex = (b.lng - a.lng) * Math.cos((a.lat * Math.PI) / 180), ey = -(b.lat - a.lat), el = Math.hypot(ex, ey);
+              return el > 0 ? { x: ex / el, y: ey / el } : null;
+            };
+            const nxt = dirOf(segments[s + 1]), prv = dirOf(segments[s - 1]);
+            const want = nxt || prv;
+            if (want) {
+              if (nxt && prv && nxt.x * prv.x + nxt.y * prv.y < -0.75) {
+                // 往下一段要去的那一側轉；下一段剛好正對著回來時，才看兩站的實際相對位置
+                const toward = nxt.x * -prv.y + nxt.y * prv.x;
+                const own = Math.hypot(dLng, dLat) > 0 ? { x: dLng, y: -dLat } : { x: prv.y, y: -prv.x };
+                const side = Math.abs(toward) > 0.2 ? (toward > 0 ? 1 : -1) : (own.x * -prv.y + own.y * prv.x >= 0 ? 1 : -1);
+                vx = -prv.y * side; vy = prv.x * side;
+              } else { vx = want.x; vy = want.y; }
+              geoDeg = 0.008;
+            }
+          }
 
           const angle = Math.atan2(vy, vx);
           let snapVx = Math.cos(Math.round(angle / (Math.PI / 4)) * (Math.PI / 4));
@@ -9338,16 +9396,19 @@
       if (!bits.some(b => !b.startsWith("日期"))) return Promise.resolve(true);   // 只有日期的一般卡片不用每次提醒
       document.getElementById("shareWarnList").innerHTML = bits.map(b => `<li>${escapeHtml(b)}</li>`).join("");
       document.getElementById("shareWarnOff").checked = false;
+      track("share_warn", "shown");
       openModalBackdrop("shareWarnModal");
       return new Promise(res => { shareWarnResolve = res; });
     }
     function closeShareWarn(go) {
+      if (go) track("share_warn", "continue");
       if (go && document.getElementById("shareWarnOff").checked) { appState.shareWarnOff = true; saveAppState(); }
       closeModalBackdrop("shareWarnModal");
       if (shareWarnResolve) { shareWarnResolve(go); shareWarnResolve = null; }
     }
     async function shareOrSaveStoryImage() {
       if (!(await confirmShareSensitive())) return;
+      track("share_save", document.getElementById("shareTemplateSelect").value);
       const canvas = document.getElementById("storyCanvas");
       const prevSel = activeStickerId;
       const prevTransit = transitMapUnlocked;
@@ -10058,10 +10119,118 @@
     let sbClient = null;
     let currentCloudUser = null;
 
+    // =====================================================================
+    // 匿名使用統計：只送「事件名稱＋分類」，伺服器只記每天的次數（沒有帳號、裝置代號、IP、位置）
+    // 事件說明：專案裡的 ANALYTICS.md。瀏覽器開「不要追蹤」或在個人設定關掉就不送
+    // =====================================================================
+    const tgMetricQueue = [];
+    let tgMetricTimer = null;
+    function metricsOff() {
+      try {
+        if (navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true) return true;
+        if (typeof appState !== "undefined" && appState && appState.analyticsOff) return true;
+        if (window.TG_FLAGS && window.TG_FLAGS.analytics === false) return true;
+      } catch (e) {}
+      return false;
+    }
+    function flushMetrics() {
+      clearTimeout(tgMetricTimer);
+      if (!tgMetricQueue.length || metricsOff()) { tgMetricQueue.length = 0; return; }
+      const events = tgMetricQueue.splice(0, 40);
+      try {
+        fetch(`${SUPABASE_URL}/rest/v1/rpc/track`, {
+          method: "POST", keepalive: true,
+          headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+          body: JSON.stringify({ events })
+        }).catch(() => {});
+      } catch (e) {}
+    }
+    function track(e, d) {
+      if (metricsOff()) return;
+      tgMetricQueue.push(d ? { e, d: String(d).replace(/[^A-Za-z0-9_.:/-]/g, "").slice(0, 40) } : { e });
+      clearTimeout(tgMetricTimer);
+      if (tgMetricQueue.length >= 30) flushMetrics(); else tgMetricTimer = setTimeout(flushMetrics, 5000);
+    }
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flushMetrics(); });
+    // 每台裝置每天一次：今天有沒有用、新的還是回來的、平台、語言（只在這台裝置記日期，不送任何代號）
+    function trackDaily() {
+      track("open");
+      if (!navigator.onLine) track("offline_open");
+      let st = {};
+      try { st = JSON.parse(localStorage.getItem("TG_METRIC_DAY") || "{}"); } catch (e) {}
+      const today = cdLocalDateStr();
+      if (st.day === today) return;
+      const first = st.first || today;
+      const age = cdCalendarDaysBetween(first, today);
+      const pf = detectPlatform();
+      const mode = isStandaloneApp() ? "pwa" : pf.inApp ? "inapp" : "web";
+      track("dev_day", `${pf.android ? "android" : pf.ios ? "ios" : "desktop"}-${mode}`);
+      track("ret", age <= 0 ? "new" : age === 1 ? "d1" : age <= 7 ? "d2_7" : age <= 30 ? "d8_30" : "d31");
+      track("lang", window.TG_LANG === "en" ? "en" : "zh");
+      if (document.documentElement.classList.contains("landing-open")) track("landing_view");
+      try { localStorage.setItem("TG_METRIC_DAY", JSON.stringify({ day: today, first })); } catch (e) {}
+    }
+    window.addEventListener("load", () => setTimeout(trackDaily, 1500));
+    let tgErrCount = 0;
+    window.addEventListener("error", () => { if (++tgErrCount <= 3) track("js_error"); });
+
+    // =====================================================================
+    // 後台可以改的 App 設定：通知條、功能開關、連結（app_config），沒網路時用上次存的
+    // =====================================================================
+    window.TG_FLAGS = {};
+    window.TG_CFG = {};
+    function applyAppConfig(cfg) {
+      window.TG_CFG = cfg || {};
+      window.TG_FLAGS = (cfg && cfg.flags) || {};
+      const jam = document.querySelector('#headerDropdownMenu [onclick*="openArchiveModalWithEmail"]');
+      if (jam) jam.style.display = window.TG_FLAGS.jam_party === false ? "none" : "";
+      const zl = document.getElementById("menuZineLink");
+      if (zl) zl.style.display = window.TG_FLAGS.zine_link ? "" : "none";
+      renderAppNotice();
+    }
+    async function loadAppConfig() {
+      try { const c = JSON.parse(localStorage.getItem("TG_CFG_CACHE") || "null"); if (c) applyAppConfig(c); } catch (e) {}
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/app_config?select=key,value`, { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } });
+        if (!res.ok) return;   // 還沒執行 SUPABASE_ADMIN_V3.sql
+        const rows = await res.json();
+        const cfg = Object.fromEntries((rows || []).map(r => [r.key, r.value || {}]));
+        try { localStorage.setItem("TG_CFG_CACHE", JSON.stringify(cfg)); } catch (e) {}
+        applyAppConfig(cfg);
+      } catch (e) {}
+    }
+    window.addEventListener("load", () => setTimeout(loadAppConfig, 600));
+    function noticeKey(n) { let h = 0; for (const ch of `${n.text}|${n.link}`) h = (h * 31 + ch.charCodeAt(0)) | 0; return String(h); }
+    function renderAppNotice() {
+      const n = (window.TG_CFG || {}).notice || {};
+      let el = document.getElementById("tgNotice");
+      const today = cdLocalDateStr();
+      const dismissed = (appState.noticeDismissed || "") === noticeKey(n);
+      const text = window.TG_LANG === "en" && n.text_en ? n.text_en : n.text;
+      if (!n.on || !text || (n.until && today > n.until) || dismissed) { if (el) el.remove(); return; }
+      if (!el) {
+        el = document.createElement("div");
+        el.id = "tgNotice";
+        const header = document.getElementById("appTopHeader");
+        if (header && header.parentNode) header.parentNode.insertBefore(el, header); else document.body.prepend(el);
+        track("notice", "view");
+      }
+      el.className = "tg-notice" + (n.level === "warn" ? " warn" : "");
+      el.setAttribute("data-notr", "");
+      el.innerHTML = `<span>${escapeHtml(text)}</span>${/^https:\/\//.test(n.link || "") ? `<a href="${escapeHtml(n.link)}" target="_blank" rel="noopener" onclick="track('notice','click')">${window.TG_LANG === "en" ? "More" : "看看"} ›</a>` : ""}<button type="button" aria-label="關閉" onclick="dismissAppNotice()">×</button>`;
+    }
+    function dismissAppNotice() {
+      appState.noticeDismissed = noticeKey(((window.TG_CFG || {}).notice) || {});
+      saveAppState();
+      const el = document.getElementById("tgNotice"); if (el) el.remove();
+    }
+
+
     
     // --- Auto-Sync Engine ---
     // 同步狀態：記下最後一次成功的時間、失敗的原因，畫面上說清楚「存在哪、有沒有同步成功」
     function noteCloudSync(ok, err) {
+      if (!ok) track("sync_fail");
       const st = appState.cloudSync = appState.cloudSync || {};
       if (ok) { st.at = Date.now(); st.err = ""; }
       else st.err = String(err || (navigator.onLine ? "連線失敗" : "目前離線")).slice(0, 120);
@@ -10196,8 +10365,16 @@ function initSupabaseClient() {
       }
 
       sbClient.auth.onAuthStateChange(async (event, session) => {
+        const wasSignedIn = !!currentCloudUser;
         currentCloudUser = session ? session.user : null;
         updateCloudButtonBadge();
+        if (currentCloudUser && event === "SIGNED_IN" && !wasSignedIn) {
+          // 匿名統計：新帳號（建立不到 3 分鐘）算註冊，其他算登入
+          const u = currentCloudUser, provider = (u.app_metadata && u.app_metadata.provider) === "google" ? "google" : "email";
+          const fresh = u.created_at && Date.now() - new Date(u.created_at).getTime() < 3 * 60 * 1000;
+          const key = "TG_METRIC_AUTH_" + u.id.slice(0, 8);
+          if (!sessionStorage.getItem(key)) { sessionStorage.setItem(key, "1"); track(fresh ? "signup" : "login", provider); }
+        }
         if (currentCloudUser && event === "SIGNED_IN") {
           await pullAllCloudTripsAndMerge();
         }
@@ -11031,6 +11208,7 @@ function initSupabaseClient() {
         appState.trips[existIdx] = mergeMasterWithPersonalJournal(mergedTrip, localPriv);
       } else {
         appState.trips.push(mergedTrip);
+        track("trip_new", "join");
       }
 
       appState.activeTripId = mergedTrip.id;
@@ -11326,6 +11504,7 @@ function initSupabaseClient() {
       await refreshDayListShare();
     }
     async function shareDayListCard() {
+      track("daylist_card");
       const c = await drawDayListCard();
       const trip = getActiveTrip();
       await shareCanvasViaNativeOrDownload(c, `tabigram-day${(appState.activeDayIndex || 0) + 1}-${Date.now()}.png`);
@@ -11451,6 +11630,8 @@ function initSupabaseClient() {
       document.getElementById("profileShowHomeTzCheck").checked = !!appState.showHomeTz;
       const mapSel = document.getElementById("profileMapAppSelect");
       if (mapSel) mapSel.value = appState.mapApp || "google";
+      const ac2 = document.getElementById("profileAnalyticsCheck");
+      if (ac2) ac2.checked = !appState.analyticsOff;
       const nk = document.getElementById("profileNaverKoreaCheck");
       if (nk) nk.checked = appState.naverInKorea !== false;
       const box = document.getElementById("profileAvatarPreviewBox");
@@ -12740,6 +12921,7 @@ function initSupabaseClient() {
     function commitCsvImport() {
       const result = csvImportState.analysis;
       if (!result || result.error || !result.entries.length) return;
+      { const n = result.entries.length; track("csv_import", n <= 20 ? "1_20" : n <= 50 ? "21_50" : "51_"); }
       const opts = getCsvImportOptions();
       let trip;
       if (opts.mode === "new") {
@@ -12755,6 +12937,7 @@ function initSupabaseClient() {
         });
         trip.days = [];
         appState.trips.push(trip);
+        track("trip_new", "csv");
       } else {
         trip = getActiveTrip();
       }
@@ -13441,6 +13624,7 @@ function initSupabaseClient() {
       setTimeout(() => landingAction("start"), 300);
     });
     function landingAction(kind) {
+      track("landing_cta", kind);
       if (shouldGuideInApp()) { openInAppGuide(kind); return; }   // 在 LINE、IG 裡：先提醒換到瀏覽器
       hideLanding();
       if (kind === "login") {
@@ -13725,6 +13909,7 @@ function initSupabaseClient() {
       tintStampRings(body);
     }
     function openMemories() {
+      track("memories_open");
       closeModalBackdrop("memoryDetailModal");
       renderMemories();
       const v = document.getElementById("memoriesView");
@@ -14604,6 +14789,7 @@ function initSupabaseClient() {
     }
     let jamShowAll = false;
     function openArchiveModalWithEmail() {
+      track("jam_open");
       renderJamShowcase();
       openArchiveModal();
       const inp = document.getElementById("waitlistEmailInput");
@@ -14786,11 +14972,13 @@ function initSupabaseClient() {
       if (document.getElementById("checkinAutoCheck").checked && withLocation) { appState.checkinAuto = true; saveAppState(); }
       if (withLocation) recordCheckin(id);
       else {
+        track("checkin", "noloc");
         const item = findActiveDayItem(id);
         if (item && item.status !== "done") toggleItemStatus(id, "done");
       }
     }
     function recordCheckin(itemId) {
+      track("checkin", "loc");
       if (!("geolocation" in navigator)) return alert("這個瀏覽器不支援定位。");
       showLogoLoader("定位中…");
       navigator.geolocation.getCurrentPosition(pos => {
@@ -15012,6 +15200,7 @@ function initSupabaseClient() {
     }
     // 能跳就跳；回傳 false 代表這個環境沒有可靠的自動跳法
     function openInExternalBrowser(action) {
+      track("inapp_guide", "jump"); flushMetrics();
       const pf = detectPlatform();
       const url = inAppTargetUrl(action);
       if (inAppBrowserName() === "LINE") {
@@ -15035,6 +15224,7 @@ function initSupabaseClient() {
       else prompt("複製這個網址，貼到瀏覽器打開：", url);
     }
     function skipInAppGuide(action) {
+      track("inapp_guide", "stay");
       inAppGuideSkipped = true;
       closeModalBackdrop("inAppModal");
       if (action === "google") {
@@ -15046,6 +15236,7 @@ function initSupabaseClient() {
     }
     // action：start / join / login（入口頁的按鈕）或 google（Google 登入）
     function openInAppGuide(action) {
+      track("inapp_guide", "shown");
       const pf = detectPlatform();
       const app = inAppBrowserName();
       const browser = pf.android ? "Chrome" : "Safari";
@@ -15106,6 +15297,7 @@ function initSupabaseClient() {
       const valueMoment = tripsHaveContent(appState.trips) || (st.visits || 0) >= 2;
       if (preTrip || (valueMoment && now > (st.snoozeUntil || 0))) {
         if (!claimAutoTip()) return;
+        track("a2hs", "card");
         if (preTrip) { st.preTrip = [...(st.preTrip || []), trip.id].slice(-20); saveAppState(); }
         card.classList.add("show");
       }
@@ -15140,7 +15332,8 @@ function initSupabaseClient() {
       let s = String(n || "").replace(/〈.*?〉|[（(].*?[)）]/g, "").replace(/\s+/g, "").toLowerCase();
       s = s.replace(/^(京成|京急|モノレール|地下鉄|東武|西武|京王|小田急|阪急|阪神|京阪|近鉄|南海|jr)/, "");
       s = s.replace(/[澀澤驛廣濱櫻黑惠戶邊關藏鐵龍齋國學會條圓臺壽淺繩團賣讀區濟營圖兩樂萬實發縣]/g, ch => RAIL_KANJI[ch] || ch);
-      return s.replace("台北車站", "台北").replace(/ヶ/g, "ケ").replace(/(駅|站|station)$/, "");
+      s = s.replace("台北車站", "台北").replace(/ヶ/g, "ケ").replace(/(駅|站|station)$/, "");
+      return s === "なんば" ? "難波" : s;
     }
     function railMeters(a, b) {
       if (a.lat == null || b.lat == null) return null;
@@ -15829,6 +16022,7 @@ function initSupabaseClient() {
     // 全程都是台鐵（可以跨好幾條線，例如台北→花蓮），或只有一段高鐵，才查得到班次
     // 走法裡的火車段（台鐵可以連續好幾段；高鐵一段）。前後可以有捷運、輕軌（例如捷運中山→台北→台鐵→瑞芳）
     function railTimetableSys(o) {
+      if (window.TG_FLAGS && window.TG_FLAGS.timetable === false) return null;   // 後台可以關掉
       if (!o || !o.legs || !o.legs.length || RP.region !== "taiwan") return null;
       const idx = o.legs.map((g, i) => (g.L.g === "台鐵" || g.L.g === "台灣高鐵" ? i : -1)).filter(i => i >= 0);
       if (!idx.length) return null;
@@ -15864,10 +16058,14 @@ function initSupabaseClient() {
             headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
             body: JSON.stringify({ sys: sysInfo.sys, from: sysInfo.from, to: sysInfo.to, date })
           });
-          data = await res.json();
+          data = await res.json().catch(() => ({}));
+          // 函式還沒部署：Supabase 回 404 { code: "NOT_FOUND" }，沒有 error 欄位
+          if (res.status === 404 || (data && data.code === "NOT_FOUND")) data = { ok: false, error: "not_deployed" };
+          else if (data && !data.ok && !data.error) data = { ok: false, error: data.message || `http_${res.status}` };
         } catch (e) { data = { ok: false, error: navigator.onLine ? "network" : "offline" }; }
         if (data && data.ok) railShowTimetable.cache.set(key, data);
       }
+      track("timetable", data && data.ok ? `${sysInfo.sys}_ok` : "err");
       if (!RP.tt || RP.tt.i !== i) return;   // 使用者已經關掉或換了一個走法
       RP.tt = { ...RP.tt, status: data && data.ok ? "ok" : "err", data };
       railRender();
@@ -15880,7 +16078,7 @@ function initSupabaseClient() {
       if (tt.status === "loading") return h + `<div class="rp-msg">正在查時刻表…</div></div>`;
       const d = tt.data || {};
       if (tt.status === "err") {
-        const msg = /tdx_not_configured|not found|404|Function not found/i.test(d.error || "") ? "時刻表服務還沒開啟（管理員：在 Supabase 部署 rail-timetable）。可以先選走法，時間自己填。"
+        const msg = /not_deployed|tdx_not_configured|not found|404/i.test(d.error || "") ? "時刻表服務還沒開啟（管理員：在 Supabase 部署 rail-timetable）。可以先選走法，時間自己填。"
           : d.error === "unknown_station" ? "時刻表裡找不到這個車站。可以先選走法，時間自己填。"
           : d.error === "offline" ? "現在沒有網路，查不到時刻表。" : "暫時查不到時刻表，請稍後再試。";
         return h + `<div class="rp-msg">${msg}</div></div>`;
@@ -15906,6 +16104,7 @@ function initSupabaseClient() {
       return h + `<div class="rp-tt-src">時刻表：交通部 TDX</div></div>`;
     }
     function railPickTrain(k) {
+      if (RP.tt) track("train_pick", RP.tt.sys);
       const tt = RP.tt, t = tt && tt.data && tt.data.trains[k];
       if (!t) return;
       const o = RP._opts[tt.i];
@@ -15956,6 +16155,7 @@ function initSupabaseClient() {
     function railFinish() {
       const legs = RP.legs;
       if (!legs.length) return;
+      track("rail_pick", RP.region);
       const box = document.getElementById("transitLegsContainer");
       box.querySelectorAll(".leg-item").forEach(row => {
         if (!row.querySelector(".leg-from").value.trim() && !row.querySelector(".leg-to").value.trim()) row.remove();
@@ -16198,7 +16398,7 @@ function initSupabaseClient() {
       closeModalBackdrop("a2hsModal");
       if (outcome === "accepted") { a2hsState().done = true; saveAppState(); }
     }
-    window.addEventListener("appinstalled", () => { a2hsState().done = true; saveAppState(); });
+    window.addEventListener("appinstalled", () => { a2hsState().done = true; saveAppState(); track("a2hs", "done"); });
     window.addEventListener("load", () => {
       const st = a2hsState();
       st.visits = (st.visits || 0) + 1;
@@ -16348,7 +16548,7 @@ function initSupabaseClient() {
     // =====================================================================
     // 更新公告：改版時只要修改 WHATS_NEW（版本號換新，內容換新），老朋友打開會看到一次
     // =====================================================================
-    const WHATS_NEW = {
+    let WHATS_NEW = {
       version: "2026.11.19-naobao",
       date: "2026.11.19",
       items: [
@@ -16358,10 +16558,29 @@ function initSupabaseClient() {
         ["有話想說，我都在", "TabigrAm 還在封測，難免有迷路的時候。卡卡的地方、想要的功能，或只是想分享你的旅行，都歡迎從選單的「意見回饋」告訴我，每一則我都會認真看。"]
       ]
     };
+    // 後台發布的更新公告（app_announcements）：有的話換掉上面內建的這一則
+    async function loadCloudAnnouncement() {
+      const toWn = row => {
+        const en = window.TG_LANG === "en";
+        return { version: "db:" + row.version, date: String(row.date || "").replace(/-/g, "."), cloud: true,
+          items: (row.items || []).map(it => { const t = String((en && it.en) || it.zh || ""); const m = t.split(/[：｜|]/); return m.length > 1 ? [m[0].trim(), m.slice(1).join("：").trim()] : [t, ""]; }).filter(x => x[0]) };
+      };
+      try { const c = JSON.parse(localStorage.getItem("TG_WN_CACHE") || "null"); if (c && c.version) WHATS_NEW = toWn(c); } catch (e) {}
+      try {
+        const res = await Promise.race([
+          fetch(`${SUPABASE_URL}/rest/v1/app_announcements?select=version,date,title,title_en,items&published=eq.true&order=date.desc,id.desc&limit=1`, { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } }),
+          new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 3000))
+        ]);
+        if (!res.ok) return;
+        const rows = await res.json();
+        if (rows && rows[0] && (rows[0].items || []).length) { WHATS_NEW = toWn(rows[0]); try { localStorage.setItem("TG_WN_CACHE", JSON.stringify(rows[0])); } catch (e) {} }
+      } catch (e) {}
+    }
     function openWhatsNew() {
+      track("whatsnew", "view");
       document.getElementById("whatsNewDate").textContent = WHATS_NEW.date;
       document.getElementById("whatsNewList").innerHTML = WHATS_NEW.items
-        .map(([title, text]) => `<li><b>${escapeHtml(title)}</b>${escapeHtml(text)}</li>`).join("");
+        .map(([title, text]) => `<li><b>${escapeHtml(title)}</b>${text ? escapeHtml(text) : ""}</li>`).join("");
       openModalBackdrop("whatsNewModal");
     }
     function closeWhatsNew() {
@@ -16369,7 +16588,8 @@ function initSupabaseClient() {
       saveAppState();
       closeModalBackdrop("whatsNewModal");
     }
-    window.addEventListener("load", () => {
+    window.addEventListener("load", async () => {
+      await loadCloudAnnouncement();
       // 第一次來的新朋友不用看更新公告（他們看的是歡迎頁）
       const isNewcomer = document.documentElement.classList.contains("landing-open") || !tripsHaveContent(appState.trips);
       if (isNewcomer) { if (appState.whatsNewSeen !== WHATS_NEW.version) { appState.whatsNewSeen = WHATS_NEW.version; saveAppState(); } return; }

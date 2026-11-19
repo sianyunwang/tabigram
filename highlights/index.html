@@ -8,6 +8,7 @@
 <meta property="og:description" content="排行程、搭車、等航班，到旅程結束蓋上一枚章。把每一趟旅行，好好收起來。">
 <meta property="og:image" content="https://tabigram.info/og-image.png">
 <meta property="og:url" content="https://tabigram.info/highlights/">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="icon" href="../favicon.png">
 <title>TabigrAm 亮點介紹</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -72,7 +73,7 @@ p { margin: 0; }
 .topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 10px max(16px, env(safe-area-inset-left, 0px)); background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 21; background: var(--paper); }
 .topbar .in { max-width: 1040px; margin: 0 auto; display: flex; align-items: center; gap: 10px; }
-.topbar .mini-ring { width: 28px; aspect-ratio: 1; background: var(--accent); -webkit-mask: url(logo-ring.png) center / contain no-repeat; mask: url(logo-ring.png) center / contain no-repeat; }
+.topbar .mini-ring { width: 28px; aspect-ratio: 1; background: var(--accent); -webkit-mask: url(../logo-ring.svg) center / contain no-repeat; mask: url(../logo-ring.svg) center / contain no-repeat; }
 .topbar b { font-family: var(--f-display); font-weight: 400; font-size: 18px; }
 .topbar .sp { flex: 1; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 999px; font-weight: 900; text-decoration: none; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
@@ -88,7 +89,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .hero-cta small { color: var(--sub); font-size: 13px; width: 100%; }
 .brandrow { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
 .ring { width: clamp(64px, 9vw, 96px); aspect-ratio: 1; flex: none; background: var(--accent);
-  -webkit-mask: url(logo-ring.png) center / contain no-repeat; mask: url(logo-ring.png) center / contain no-repeat;
+  -webkit-mask: url(../logo-ring.svg) center / contain no-repeat; mask: url(../logo-ring.svg) center / contain no-repeat;
   animation: spin 18s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .ring, .end .ring { animation: none; } }

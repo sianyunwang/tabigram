@@ -27,7 +27,7 @@
       var lang = q || saved || (/^zh/i.test(nav) ? "zh" : "en");
       window.TG_LANG = lang;
       document.documentElement.lang = lang === "en" ? "en" : "zh-TW";
-      if (lang === "en") document.write('<script src="i18n/en.js?v=3b3dc8bd"><\/script>');
+      if (lang === "en") document.write('<script src="i18n/en.js?v=0f7893ba"><\/script>');
     })();
   </script>
   <script>
@@ -145,6 +145,7 @@
 
   <!-- 手機 App 圖示：黑底白色圓形 LOGO（透明桌布模式也清楚）；分頁小圖示：透明底 PNG -->
   <link rel="apple-touch-icon" href="icon-512.png" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="icon" type="image/png" href="favicon.png" />
 
   <!-- Fonts: Dela Gothic One + JetBrains Mono + Noto Sans TC（襯線字型改成用到時才載入） -->
@@ -1517,7 +1518,8 @@
     .ed-chip.danger { color: #B23A20; }
     .ed-selbar span { font-size: 12px; font-weight: 800; color: var(--sub); }
     .ed-emoji { flex: none; width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border); background: var(--card); font-size: 21px; cursor: pointer; }
-    .ed-stk { height: 156px; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+    .ed-stk { min-height: 156px; display: flex; flex-direction: column; gap: 6px; }   /* 不要固定高度：以前會把「自訂表情」「拍立得照片」按鈕下半截切掉 */
+    .ed-stktools { padding-bottom: 2px; }
     .ed-stkbar { height: 32px; flex: none; display: flex; align-items: center; gap: 6px; font-size: 13px; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
     .ed-stkbar::-webkit-scrollbar { display: none; }
     .ed-stkbar > span:first-child { font-size: 12px; color: var(--sub); font-weight: 800; }
@@ -1597,8 +1599,8 @@
     /* ---------- TABIGRAM 圓形 LOGO：載入動畫與旅程完成章 ---------- */
     .tg-ring {
       background: currentColor;
-      -webkit-mask: url("logo-ring.png") center / contain no-repeat;
-              mask: url("logo-ring.png") center / contain no-repeat;
+      -webkit-mask: url("logo-ring.svg") center / contain no-repeat;
+              mask: url("logo-ring.svg") center / contain no-repeat;
     }
     /* 印章裡的 LOGO：Safari 在「疊色＋遮罩」時會畫不出來，改用先上好色的圖片 */
     .tg-ring.tinted { -webkit-mask: none; mask: none; background: transparent center / contain no-repeat; }
@@ -1775,6 +1777,10 @@
     .jam-grid span { aspect-ratio: 1; border-radius: 12px; background: var(--card2, #EBE9E4); display: grid; place-items: center; padding: 4px; }
     .jam-grid img { width: 100%; height: 100%; object-fit: contain; }
     .jam-how { font-size: 12px; color: var(--sub); margin-top: 10px; }
+    .jam-own { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
+    .jam-own .pill-btn { flex: none; padding: 6px 12px; }
+    .jam-more { width: 100%; margin: 0 0 12px; border: 1px dashed var(--border); background: none; color: var(--sub); border-radius: 14px; padding: 11px; font: 800 13px var(--sans); cursor: pointer; }
+    .jam-collect { width: 100%; justify-content: center; padding: 10px; margin-top: 12px; }
     .jam-invite { padding: 16px; }
     .jam-invite .jam-kicker { margin-bottom: 6px; }
     .theme-teaser-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
@@ -1841,6 +1847,59 @@
     .a2hs-step b { display: block; font-size: 15px; margin: 3px 0 6px; }
     .a2hs-step svg { width: 100%; height: auto; display: block; border-radius: 14px; background: #EDEBE6; }
     .a2hs-note { font-size: 12.5px; color: var(--sub); background: #EDEBE6; border-radius: 12px; padding: 10px 12px; line-height: 1.6; }
+    .rp-ttbtn { display: block; margin-top: 8px; padding: 7px 10px; border-radius: 10px; background: rgba(255,255,255,.65); border: 1px dashed var(--accent); color: var(--accent); font: 800 12.5px var(--sans); text-align: center; }
+    .rp-tt { margin: -2px 0 10px; padding: 10px; border-radius: 0 0 16px 16px; background: var(--card); border: 1px solid var(--border); border-top: 0; }
+    .rp-tt-h { font-size: 12.5px; font-weight: 900; color: var(--sub); margin-bottom: 6px; }
+    .rp-tt-note { font-size: 11.5px; color: #9A5B00; background: #FFF1D6; border-radius: 10px; padding: 6px 9px; margin-bottom: 6px; line-height: 1.5; }
+    .rp-tt-src { font-size: 10.5px; color: var(--sub); text-align: right; margin-top: 6px; }
+    .rp-train { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; border-bottom: 1px solid var(--border); background: none; padding: 9px 4px; cursor: pointer; font-family: var(--sans); color: var(--ink); text-align: left; }
+    .rp-train:last-of-type { border-bottom: 0; }
+    .rp-train:hover { background: var(--accent-soft); }
+    .rp-train .tt-time { font: 800 14px var(--mono); flex: none; }
+    .rp-train .tt-time sup { font-size: 9px; color: var(--accent); }
+    .rp-train .tt-dur { font-size: 11.5px; color: var(--sub); font-weight: 700; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rp-train .tt-type { font-size: 11px; font-weight: 900; color: #fff; background: var(--c); border-radius: 6px; padding: 1px 7px; flex: none; }
+    .rp-train .tt-no { font: 800 12px var(--mono); color: var(--sub); width: 4.2em; text-align: right; flex: none; }
+    .tt-share { width: 100%; justify-content: center; padding: 10px; margin-bottom: 10px; }
+    .transit-conn { position: relative; margin: -4px 0 8px 18px; padding: 7px 6px 7px 20px; cursor: pointer; border-radius: 14px; }
+    .transit-conn::before { content: ""; position: absolute; left: 0; top: 3px; bottom: 3px; width: 5px; border-radius: 5px; background: var(--stripe, #B9B3A8); }
+    .transit-conn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .tc-row { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 10px; }
+    .tc-route { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; flex: 1 1 auto; min-width: 0; font-size: 14px; font-weight: 800; overflow-wrap: anywhere; }
+    .tc-route .ar { color: var(--sub); font-weight: 700; }
+    .tc-route .rsign, .tc-leg .rsign { --s: 24px; }
+    .tc-meta { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--sub); white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+    .tc-tag { font-size: 11px; font-weight: 900; color: #B23A20; background: #FBE3DD; border-radius: 999px; padding: 1px 8px; }
+    .transit-conn.open { margin-left: 6px; padding: 10px 12px 12px 26px; background: var(--card); border: 1px solid var(--border); cursor: default; }
+    .transit-conn.open::before { left: 11px; top: 12px; bottom: 12px; }
+    .tc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12.5px; font-weight: 800; color: var(--sub); }
+    .tc-x { border: 0; background: none; color: var(--sub); font: 800 12px var(--sans); cursor: pointer; padding: 2px 0 2px 8px; white-space: nowrap; }
+    .tc-leg { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 7px; margin-top: 8px; font-size: 13.5px; font-weight: 800; }
+    .tc-leg .st { flex: 1 1 8em; min-width: 0; line-height: 1.35; overflow-wrap: anywhere; }
+    .tc-leg small { margin-left: auto; color: var(--sub); font-weight: 700; font-size: 11.5px; text-align: right; overflow-wrap: anywhere; }
+    .tc-xf { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 6px; margin: 6px 0 0 2px; font-size: 12px; font-weight: 800; color: var(--sub); }
+    .tc-acts { display: flex; gap: 6px; margin-top: 12px; }
+    .tc-merge { display: block; width: 100%; margin-top: 8px; border: 1px dashed var(--border); background: none; color: var(--sub); border-radius: 12px; padding: 8px; font: 800 12.5px var(--sans); cursor: pointer; }
+    .tc-acts .pill-btn { flex: 1 1 0; min-width: 0; justify-content: center; padding: 8px 4px; white-space: nowrap; }
+    .tc-acts .pill-btn.on { background: #FBE3DD; border-color: #F2C1B5; color: #B23A20; }
+    .transit-conn.tc-cancel .tc-route, .transit-conn.tc-cancel .tc-leg { opacity: .5; text-decoration: line-through; text-decoration-thickness: 1px; }
+    .transit-conn.tc-cancel::before { background: repeating-linear-gradient(#B9B3A8 0 6px, transparent 6px 11px); }
+    .transit-conn.now::before { box-shadow: 0 0 0 3px var(--accent-soft); }
+    .now-pin { margin: -4px 0 12px; padding: 10px 12px; border-radius: 16px; border: 1.5px solid var(--accent); background: var(--accent-soft); }
+    .now-pin .np-head { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; color: var(--sub); }
+    .now-pin .np-title { font-size: 16px; font-weight: 900; margin-top: 4px; line-height: 1.35; overflow-wrap: anywhere; }
+    .now-pin .np-sub { font-size: 12.5px; color: var(--sub); margin-top: 2px; line-height: 1.45; overflow-wrap: anywhere; }
+    .now-pin .np-btns { display: flex; gap: 8px; margin-top: 8px; }
+    .now-pin .np-btns .pill-btn { flex: 1; justify-content: center; padding: 8px; }
+    .sync-line { font-size: 12.5px; color: var(--sub); line-height: 1.6; background: #EDEBE6; border-radius: 12px; padding: 9px 12px; }
+    .sync-line.ok { color: #16803C; background: #E3F3E8; }
+    .sync-line.bad { color: #B23A20; background: #FBE3DD; }
+    html[data-mode="dark"] body .sync-line { background: rgba(255,255,255,0.06); }
+    .inapp-why { margin: 0 0 14px; padding-left: 20px; font-size: 13.5px; line-height: 1.7; }
+    .inapp-btn { width: 100%; justify-content: center; padding: 11px; margin-bottom: 10px; }
+    .inapp-steps-title { font-size: 12.5px; font-weight: 800; color: var(--sub); margin: 6px 0 10px; }
+    .inapp-stay { display: block; margin: 6px auto 4px; background: none; border: 0; color: var(--sub); font: 700 13px var(--sans); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 6px; }
+    .inapp-stay-note { font-size: 11.5px; color: var(--sub); text-align: center; line-height: 1.5; }
     .a2hs-toast { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 16px); transform: translateX(-50%); z-index: 2400; background: var(--ink); color: #fff; border-radius: 999px; padding: 10px 18px; font-weight: 900; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
 
     /* =====================================================================
@@ -2129,6 +2188,11 @@
     .hd-menu .dropdown-item:hover, .hd-menu .dropdown-item:focus-visible { background: rgba(0,0,0,.05); outline: none; }
     .hd-menu .hd-account { font-weight: 900; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; line-height: 24px; }
     .hd-sec { margin: 6px 6px 0; padding: 8px 6px 3px; border-top: 1px solid var(--border); font-size: 11px; font-weight: 800; letter-spacing: .12em; color: var(--sub); }
+    .hd-group > summary { list-style: none; cursor: pointer; }
+    .hd-group > summary::-webkit-details-marker { display: none; }
+    .hd-group .hd-chev { margin-left: auto; font-style: normal; font-size: 11px; color: var(--sub); transition: transform .15s; }
+    .hd-group[open] .hd-chev { transform: rotate(90deg); }
+    .hd-group > button.dropdown-item { padding-left: 24px; font-size: 13.5px; }
     .hd-soon { margin-left: auto; font-size: 10.5px; font-weight: 900; color: var(--accent); }
     .hd-prefs { margin: 6px 6px 0; padding: 8px 4px 2px; border-top: 1px solid var(--border); display: grid; gap: 8px; }
     .hd-pref { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 800; color: var(--sub); }
@@ -2293,11 +2357,12 @@
     .rp-grp { font-size: 11.5px; font-weight: 800; color: var(--sub); letter-spacing: .06em; margin: 12px 2px 6px; }
     .rp-lines { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px 4px; }
     .rp-line { display: flex; flex-direction: column; align-items: center; gap: 5px; border: 0; background: none; cursor: pointer; padding: 5px 0; font-family: var(--sans); border-radius: 12px; color: var(--ink); }
-    .rp-line small { font-size: 10.5px; font-weight: 700; line-height: 1.25; text-align: center; overflow-wrap: anywhere; }
+    .rp-line small { font-size: 10.5px; font-weight: 700; line-height: 1.25; text-align: center; overflow-wrap: break-word; max-width: 100%; }
     .rp-line .hint { font-size: 9.5px; font-weight: 800; color: #B23A20; margin-top: -3px; }
     .rp-line .hint.gate { color: #9A5B00; }
     .rp-line.on { background: var(--card2, #EDEBE6); }
-    .rp-strip-h { display: flex; align-items: center; gap: 8px; margin: 14px 2px 4px; font-size: 13.5px; font-weight: 900; }
+    .rp-strip-h { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; margin: 14px 2px 4px; font-size: 13.5px; font-weight: 900; overflow-wrap: anywhere; }
+    .rp-strip-h .rsign { flex: none; }
     .rp-strip-h em { font-style: normal; color: var(--sub); font-weight: 600; font-size: 11.5px; margin-left: auto; }
     .rp-strip { overflow-x: auto; scroll-snap-type: x proximity; margin: 0 -12px; padding: 2px 12px 8px; scrollbar-width: none; }
     .rp-strip::-webkit-scrollbar { display: none; }
@@ -2314,21 +2379,22 @@
     .rp-st.xf .dot { width: 18px; height: 18px; border-color: #191919; }
     .rp-st.from .dot { background: var(--ink); border-color: var(--ink); transform: scale(1.3); }
     .rp-st .rsign { --s: 28px; margin-top: 6px; }
-    .rp-st .nm { writing-mode: vertical-rl; text-orientation: upright; text-align: start; font-size: 12.5px; font-weight: 700; letter-spacing: .02em; line-height: 1.15; margin-top: 6px; min-height: 64px; }
+    .rp-st .nm { writing-mode: vertical-rl; text-orientation: upright; text-align: start; font-size: 12.5px; font-weight: 700; letter-spacing: .02em; line-height: 1.15; margin-top: 6px; min-height: 64px; max-height: 132px; }   /* 長站名：超過高度就分成兩、三直行，不會把整排拉得很長 */
     .rp-st .nm .tcy { text-combine-upright: all; -webkit-text-combine: horizontal; font-family: 'Barlow Semi Condensed', var(--sans); letter-spacing: 0; }
     .rp-st .nm .side { text-orientation: mixed; }
     .rp-st.from .nm { font-weight: 900; }
     .rp-st .xmini { display: flex; flex-direction: column; gap: 2px; margin-top: 4px; }
     .rp-st .xmini i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); display: block; }
     .rp-route { width: 100%; text-align: left; border: 1.5px solid var(--accent); background: var(--accent-soft); color: var(--ink); border-radius: 16px; padding: 10px 12px; cursor: pointer; font-family: var(--sans); }
-    .rp-route .rt { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .rp-route .rt { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 8px; }
     .rp-route .rt b { font-size: 16px; font-weight: 900; }
-    .rp-route .rt span { font-size: 11.5px; font-weight: 800; color: var(--accent); white-space: nowrap; }
+    .rp-route .rt span { font-size: 11.5px; font-weight: 800; color: var(--accent); margin-left: auto; text-align: right; }
     .rp-route .why { font-size: 11.5px; color: var(--sub); font-weight: 600; margin-bottom: 6px; }
-    .rp-leg { display: flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 800; padding: 3px 0; }
-    .rp-leg .rsign { --s: 24px; }
-    .rp-leg small { color: var(--sub); font-weight: 700; margin-left: auto; white-space: nowrap; font-size: 11.5px; }
-    .rp-xfer { display: flex; align-items: center; gap: 6px; margin: 1px 0 1px 11px; padding: 2px 0 2px 12px; border-left: 2px dotted #B9B3A8; font-size: 12px; font-weight: 800; }
+    .rp-leg { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 7px; font-size: 13.5px; font-weight: 800; padding: 3px 0; }
+    .rp-leg .rsign { --s: 24px; flex: none; }
+    .rp-leg-st { flex: 1 1 9em; min-width: 0; line-height: 1.35; overflow-wrap: anywhere; }
+    .rp-leg small { color: var(--sub); font-weight: 700; margin-left: auto; flex: 0 1 auto; max-width: 100%; text-align: right; line-height: 1.35; overflow-wrap: anywhere; font-size: 11.5px; }
+    .rp-xfer { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; overflow-wrap: anywhere; margin: 1px 0 1px 11px; padding: 2px 0 2px 12px; border-left: 2px dotted #B9B3A8; font-size: 12px; font-weight: 800; }
     .rp-xt { display: inline-flex; align-items: center; border-radius: 999px; padding: 1px 8px; font-size: 11px; font-weight: 900; white-space: nowrap; }
     .rp-xt.same { background: #E3F3E8; color: #16803C; }
     .rp-xt.gate { background: #FFF1D6; color: #9A5B00; }
@@ -2552,13 +2618,17 @@
             <button class="dropdown-item" onclick="openArchiveModalWithEmail(); toggleHeaderDropdown();">果醬派對 <span class="hd-soon">新貼紙</span></button>
 
             <div class="hd-sec">工具</div>
-            <button class="dropdown-item" onclick="openCsvImportModal(); toggleHeaderDropdown();">試算表匯入 / 範本</button>
             <button class="dropdown-item" onclick="exportTripMarkdownForAI(); toggleHeaderDropdown();">匯出給 AI 健檢</button>
-            <button class="dropdown-item" onclick="exportBackupJSON(); toggleHeaderDropdown();">備份到這台裝置 <span class="hd-soon" id="backupAgeLabel"></span></button>
-            <button class="dropdown-item" onclick="document.getElementById('backupImportInput').click(); toggleHeaderDropdown();">從備份檔還原</button>
-            <button class="dropdown-item" onclick="restoreAutoBackup(); toggleHeaderDropdown();">從自動備份還原</button>
-            <input type="file" id="backupImportInput" accept=".json,application/json" style="display:none;" onchange="importBackupJSON(event)" />
             <button class="dropdown-item a2hs-menu-item" onclick="openA2hsGuide(); toggleHeaderDropdown();">加到主畫面</button>
+            <!-- 匯入、備份、還原收在第二層，選單不會一長串 -->
+            <details class="hd-group">
+              <summary class="dropdown-item">匯入、備份、還原<i class="hd-chev" aria-hidden="true">▸</i></summary>
+              <button class="dropdown-item" onclick="openCsvImportModal(); toggleHeaderDropdown();">試算表匯入 / 範本</button>
+              <button class="dropdown-item" onclick="exportBackupJSON(); toggleHeaderDropdown();">備份到這台裝置 <span class="hd-soon" id="backupAgeLabel"></span></button>
+              <button class="dropdown-item" onclick="document.getElementById('backupImportInput').click(); toggleHeaderDropdown();">從備份檔還原</button>
+              <button class="dropdown-item" onclick="restoreAutoBackup(); toggleHeaderDropdown();">從自動備份還原</button>
+            </details>
+            <input type="file" id="backupImportInput" accept=".json,application/json" style="display:none;" onchange="importBackupJSON(event)" />
 
             <div class="hd-sec">說明</div>
             <button class="dropdown-item" onclick="openGuide(); toggleHeaderDropdown();">使用教學</button>
@@ -2735,6 +2805,16 @@
       <div id="a2hsGuideBody"></div>
     </div>
   </div>
+  <!-- 在 LINE、IG 這類 App 裡打開時：提醒換到手機的瀏覽器（要蓋在入口頁上面） -->
+  <div class="modal-backdrop" id="inAppModal" style="z-index: 16000;">
+    <div class="modal-sheet" style="max-width: 440px;">
+      <div class="modal-header">
+        <div class="modal-title" id="inAppGuideTitle">換到瀏覽器打開</div>
+        <button class="pill-btn" onclick="closeModalBackdrop('inAppModal')" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div id="inAppGuideBody"></div>
+    </div>
+  </div>
     
   <!-- 使用教學 -->
   <div class="modal-backdrop" id="guideModal">
@@ -2786,8 +2866,8 @@
         <p>行程存在哪裡，看你有沒有登入：</p>
         <ol class="guide-steps">
           <li><div><b>登入（最推薦）</b><small>登入後行程自動同步到雲端，換手機、換電腦登入同一個帳號就回來了。</small></div></li>
-          <li><div><b>備份到這台裝置</b><small>選單 →「備份到這台裝置」，會存一個備份檔。可以傳到雲端硬碟或 LINE 給自己保管。</small></div></li>
-          <li><div><b>從備份檔還原</b><small>換手機時，選單 →「從備份檔還原」，選剛才的檔案。</small></div></li>
+          <li><div><b>備份到這台裝置</b><small>選單 →「匯入、備份、還原」→「備份到這台裝置」，會存一個備份檔。可以傳到雲端硬碟或 LINE 給自己保管。</small></div></li>
+          <li><div><b>從備份檔還原</b><small>換手機時，選單 →「匯入、備份、還原」→「從備份檔還原」，選剛才的檔案。</small></div></li>
         </ol>
         <p class="guide-warn"><b>只存在這台裝置的東西：</b>沒登入時的所有行程，以及「旅程回憶」裡上傳的精選照片。清除瀏覽器資料、換手機前，記得先備份。</p>
         <div class="guide-actions">
@@ -2800,7 +2880,7 @@
         <h3>用試算表一次匯入整趟行程</h3>
         <p>行程很多的時候，在電腦上用 Excel 或 Google 試算表填好，一次匯入，比一筆一筆輸入快很多。</p>
         <ol class="guide-steps">
-          <li><div><b>下載範本</b><small>選單 →「試算表匯入／範本」→ 下載「填寫範例」。範例裡已經有幾筆行程，照著改最快。</small></div></li>
+          <li><div><b>下載範本</b><small>選單 →「匯入、備份、還原」→「試算表匯入／範本」→ 下載「填寫範例」。範例裡已經有幾筆行程，照著改最快。</small></div></li>
           <li><div><b>填寫行程</b><small>用 Excel、Numbers 或 Google 試算表打開。一列就是一個行程，不用的欄位留空就好。</small></div></li>
           <li><div><b>存成 CSV</b><small>Excel：另存新檔 → 選「CSV UTF-8」。Google 試算表：檔案 → 下載 → 逗號分隔值 (.csv)。</small></div></li>
           <li><div><b>匯入並確認</b><small>回到「試算表匯入」，選剛才的檔案。匯入前會先預覽，有看不懂的地方會標出來。</small></div></li>
@@ -2889,6 +2969,8 @@
     </div>
   </div>
     <section class="trip-countdown-card" id="tripCountdownCard" style="display:none;" aria-live="off"></section>
+    <!-- 正在進行的行程：釘在今日卡片下面，不用滑來滑去找 -->
+    <section class="now-pin" id="nowPinCard" style="display:none;"></section>
 
     <section class="day-weather-card" id="stickyWeatherCard">
       <!-- 長天數 (>14天) 週次 / 日期快速跳轉器 -->
@@ -3287,6 +3369,23 @@
   </div>
 
   <!-- Modal 3: 分享旅程 (Preview-First + Compact Single-Row Selectors + Collapsible Tool Drawers) -->
+  <!-- 分享前提醒：卡片上的個人資訊 -->
+  <div class="modal-backdrop" id="shareWarnModal" style="z-index: 2400;">
+    <div class="modal-sheet" style="max-width: 400px;">
+      <div class="modal-header">
+        <div class="modal-title">分享前看一下</div>
+        <button class="pill-btn" onclick="closeShareWarn(false)" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="a2hs-note" style="margin-bottom:10px;">這張卡片上可能有：</div>
+      <ul id="shareWarnList" style="margin:0 0 10px; padding-left:20px; font-size:13.5px; line-height:1.7;"></ul>
+      <div style="font-size:12.5px; color:var(--sub); line-height:1.6; margin-bottom:12px;">公開發文前，可以用貼圖蓋住、換一個卡片樣式，或等回家再發。</div>
+      <label class="sheet-check" style="font-size:12.5px; margin-bottom:12px;"><input type="checkbox" id="shareWarnOff" /> 以後不要再提醒</label>
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="pill-btn" style="flex:1; justify-content:center; padding:11px;" onclick="closeShareWarn(false)">回去修改</button>
+        <button type="button" class="pill-btn primary" style="flex:1; justify-content:center; padding:11px;" onclick="closeShareWarn(true)">繼續分享</button>
+      </div>
+    </div>
+  </div>
   <div class="modal-backdrop ed-mode" id="shareModal">
     <div class="modal-sheet" style="max-width: 500px; padding: 14px;">
       <div class="ed-top">
@@ -3486,8 +3585,9 @@
 
       <!-- 狀態 A：尚未登入 (訪客模式) -->
       <div id="cloudLoggedOutBox" class="form-card">
-        <div style="font-size:13px; color:var(--sub); line-height:1.5; margin-bottom:12px;">
-          登入後行程會備份到雲端，也能用邀請碼和旅伴共享。
+        <div class="sync-line" style="margin-bottom:12px;">
+          <b>現在還沒登入：</b>行程只存在這台裝置的瀏覽器裡，清除瀏覽器資料或換手機就會不見。<span id="cloudLocalBackupAge"></span><br>
+          登入後會自動備份到雲端，也能用邀請碼和旅伴共享。
         </div>
         <button type="button" id="googleSignInBtn" class="google-signin-btn" onclick="cloudSignInWithGoogle()">
           <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg><span id="googleSignInText">使用 Google 帳號登入</span>
@@ -3506,6 +3606,7 @@
           </div>
           <button type="button" class="mini-btn delete-btn" onclick="signOutCloud()">登出</button>
         </div>
+        <div id="cloudSyncStatusLine" class="sync-line" style="margin:-4px 0 12px;"></div>
 
         <!-- 目前旅程的雲端協作卡片 -->
         <div class="form-card">
@@ -3617,6 +3718,7 @@
             <option value="apple">Apple 地圖</option>
             <option value="ask">每次問我</option>
           </select>
+          <label class="sheet-check" style="margin-top:8px; font-size:12.5px;"><input type="checkbox" id="profileNaverKoreaCheck" onchange="appState.naverInKorea = this.checked; saveAppState();" /> 在韓國的地點改用 NAVER 地圖（Google 地圖在韓國幾乎不能導航）</label>
         </div>
 
         <button type="button" class="pill-btn primary" style="width:100%; justify-content:center; padding:11px; margin-top:14px;" onclick="saveUserProfileSettings()">儲存個人設定</button>
@@ -3723,6 +3825,20 @@
   </div>
 
   <!-- 倒數分享卡片 -->
+  <!-- Timetable 分享卡：當天的精簡列表畫成一張卡 -->
+  <div class="modal-backdrop" id="dayListShareModal">
+    <div class="modal-sheet" style="max-width: 420px;">
+      <div class="modal-header">
+        <div class="modal-title">今天去了哪些地方</div>
+        <button class="pill-btn" onclick="closeModalBackdrop('dayListShareModal')" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div style="text-align:center;">
+        <img id="dayListSharePreview" alt="當天行程分享卡預覽" style="width:100%; max-width:min(280px, calc((100dvh - 300px) * 0.5625)); min-width:180px; aspect-ratio:9/16; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.18);" />
+      </div>
+      <label class="sheet-check" style="margin:12px 0 4px; font-size:12.5px;"><input type="checkbox" id="dayListShowTime" checked onchange="refreshDayListShare()" /> 顯示時間</label>
+      <button type="button" class="pill-btn primary" style="width:100%; justify-content:center; padding:11px; margin-top:8px;" onclick="shareDayListCard()">儲存／分享</button>
+    </div>
+  </div>
   <div class="modal-backdrop" id="countdownShareModal">
     <div class="modal-sheet" style="max-width: 420px;">
       <div class="modal-header">
@@ -4989,8 +5105,10 @@
       trackEl.style.background = `linear-gradient(90deg, #1E293B 0%, #1E293B ${Math.max(0, srPct - 6)}%, #38BDF8 ${srPct}%, #FACC15 ${noonPct}%, #FB923C ${ssPct}%, #1E293B ${Math.min(100, ssPct + 6)}%, #0F172A 100%)`;
 
       let dotsHtml = "";
+      const barNums = spotNumbers(day.items);
       day.items.forEach((item, idx) => {
-        if (item.status === "cancelled") return;
+        if (item.status === "cancelled" || isConnectorItem(item)) return;   // 日照條只標景點（交通是細條，不編號）
+        idx = barNums.get(item.id) - 1;
         const pct = hhmmToPercent(item.startTime || "09:00");
         const isDone = item.status === "done";
         dotsHtml += `
@@ -5344,7 +5462,7 @@
       const regs = region && railData[region] ? [railData[region]] : Object.values(railData);
       for (const d of regs) {
         for (const L of (d && d.lines) || []) {
-          if (kind === "line") { if (L.en && (L.n === name || name.endsWith(L.n))) return L.en; continue; }
+          if (kind === "line") { if (L.en && (L.n === name || name.endsWith(L.n) || (L.old || []).includes(name))) return L.en; continue; }
           const st = L.st.find(x => x.en && (x.n === name || x.alt === name));
           if (st) return st.en;
         }
@@ -5383,6 +5501,241 @@
       return item.subtitle || "";
     }
 
+    // =====================================================================
+    // 交通細條（J3）：鐵路、地鐵、巴士畫成夾在景點之間的一條線；航班、船班、自駕維持完整卡片
+    // - 收起：一行「站牌 起站 → 站牌 終站」＋出發時間・所需時間・換幾次，沒有按鈕，點一下展開
+    // - 展開：每一段、換車方式，和「編輯／分享／地圖／未搭乘」
+    // - 交通沒有「完成」：時間過了就當作搭了；沒搭就按「未搭乘」（變灰、車資不算進預算），按「復原」改回來
+    // - 編號只算景點
+    // =====================================================================
+    const expandedConnIds = new Set();
+    function isConnectorItem(item) {
+      return !!item && item.type === "transit" && Array.isArray(item.transitLegs) && item.transitLegs.length > 0 && !isFerryItem(item);
+    }
+    function spotNumbers(items) {
+      const m = new Map(); let n = 0;
+      (items || []).forEach(it => { if (!isConnectorItem(it)) m.set(it.id, ++n); });
+      return m;
+    }
+    function toggleConnector(id) {
+      if (expandedConnIds.has(id)) expandedConnIds.delete(id); else expandedConnIds.add(id);
+      renderTimelineCards();
+    }
+    const connLoading = new Set();
+    // 這一段搭的是哪條線（有車站資料就用資料；沒有就用存下來的顏色、站號做一個簡單的站牌）
+    function connLegLine(leg) {
+      const reg = leg.railRegion;
+      if (reg && !railData[reg] && !connLoading.has(reg)) {
+        connLoading.add(reg);
+        loadRail(reg).then(() => renderTimelineCards()).catch(() => {});
+      }
+      const d = reg && railData[reg];
+      if (d) {
+        const L = (leg.lineKey && d.lines.find(x => x.k === leg.lineKey)) || d.lines.find(x => x.n === leg.line || (x.old || []).includes(leg.line));
+        if (L) return L;
+      }
+      const code = (String(leg.fromNo || leg.toNo || "").match(/^[A-Za-z]+/) || [""])[0];
+      if (!leg.customColor && !code) return null;
+      return { c: leg.customColor || "#8A8A8A", sg: "metro", code, g: "", n: leg.line || "" };
+    }
+    function connStation(L, name) {
+      if (!L || !Array.isArray(L.st) || !name) return null;
+      const keys = railNameVariants(name).map(railNorm).filter(Boolean);
+      return L.st.find(s => keys.includes(railNorm(s.n)) || (s.alt && keys.includes(railNorm(s.alt))) || (s.en && keys.includes(railNorm(s.en)))) || null;
+    }
+    function connDurationMin(item) {
+      const a = hhmmToMinutes(item.startTime || "09:00");
+      let b = hhmmToMinutes(item.endTime || item.startTime || "09:00") + 1440 * (item.endDayOffset || 0);
+      if (b < a) b += 1440;
+      return b - a;
+    }
+    function fmtDurMin(m) {
+      if (window.TG_LANG === "en") return m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? ` ${m % 60} min` : ""}` : `${m} min`;
+      return m >= 60 ? `${Math.floor(m / 60)} 小時${m % 60 ? ` ${m % 60} 分` : ""}` : `${m} 分`;
+    }
+    function connectorHtml(item, tripStartedNow) {
+      const legs = item.transitLegs, first = legs[0], last = legs[legs.length - 1];
+      const Ls = legs.map(connLegLine);
+      const nm = (n, reg) => escapeHtml(window.TG_LANG === "en" ? railEnText(n, "st", reg) : n);
+      const sg = (L, no) => L ? railSign(L, no || "", 24) : "";
+      const mins = connDurationMin(item);
+      const isThrough = i => { const a = Ls[i - 1], b = Ls[i]; return !!(a && b && a.g === "台鐵" && b.g === "台鐵"); };
+      const xfers = legs.filter((l, i) => i > 0 && !isThrough(i)).length;
+      const isCancel = item.status === "cancelled";
+      const en = window.TG_LANG === "en";
+      const meta = en
+        ? `${item.startTime || ""} · ${fmtDurMin(mins)} · ${xfers ? `${xfers} transfer${xfers > 1 ? "s" : ""}` : "direct"}`
+        : `${item.startTime || ""}・${fmtDurMin(mins)}・${xfers ? `換 ${xfers} 次` : "直達"}`;
+      if (!expandedConnIds.has(item.id)) {
+        return `<div class="tc-row">
+            <span class="tc-route">${sg(Ls[0], first.fromNo)}<span>${nm(first.from, first.railRegion)}</span><span class="ar">→</span>${sg(Ls[Ls.length - 1], last.toNo)}<span>${nm(last.to, last.railRegion)}</span></span>
+            <span class="tc-meta">${isCancel ? `<b class="tc-tag">未搭乘</b>` : ""}${escapeHtml(meta)}</span>
+          </div>`;
+      }
+      let h = `<div class="tc-head"><span>${escapeHtml(item.startTime || "")} → ${escapeHtml(item.endTime || "")}・${escapeHtml(fmtDurMin(mins))}${isCancel ? ` <b class="tc-tag">未搭乘</b>` : ""}</span><button type="button" class="tc-x" onclick="event.stopPropagation(); toggleConnector('${item.id}')">收起 ▴</button></div>`;
+      legs.forEach((leg, i) => {
+        const L = Ls[i];
+        if (i > 0) {
+          const pL = Ls[i - 1], pTo = connStation(pL, legs[i - 1].to), cFrom = connStation(L, leg.from);
+          const badge = pL && L && pL.st && L.st && pTo && cFrom ? railXt(railXfer(pL, pTo, L, cFrom))
+            : (leg.isOutTransfer ? `<span class="rp-xt walk">出站轉乘</span>` : "");
+          h += isThrough(i) ? `<div class="tc-xf">經過 ${nm(legs[i - 1].to, legs[i - 1].railRegion)} <span class="rp-xt through">同一班車，不用換車</span></div>`
+            : `<div class="tc-xf">在 ${nm(legs[i - 1].to, legs[i - 1].railRegion)} 換車 ${badge}</div>`;
+        }
+        const a = connStation(L, leg.from), b = connStation(L, leg.to);
+        const hops = L && L.st && a && b ? railHops(L, L.st.indexOf(a), L.st.indexOf(b)) : 0;
+        const lineName = L && L.st ? railLineName(L) : (leg.line || "");
+        const small = [lineName, leg.trainNo, hops ? `${hops} 站` : ""].filter(Boolean).join("・");
+        h += `<div class="tc-leg">${sg(L, leg.fromNo)}<span class="st">${nm(leg.from, leg.railRegion)} → ${nm(leg.to, leg.railRegion)}</span>${small ? `<small>${escapeHtml(small)}</small>` : ""}</div>`;
+      });
+      h += `<div class="tc-acts">
+          ${!appState.travelLockMode ? `<button type="button" class="pill-btn" onclick="openItemModal('${item.id}')">編輯</button>` : ""}
+          <button type="button" class="pill-btn" onclick="openShareModal('${item.id}', 0)">分享</button>
+          <button type="button" class="pill-btn" onclick="openExternalGoogleMap('${item.id}')">地圖</button>
+          ${tripStartedNow || isCancel ? `<button type="button" class="pill-btn${isCancel ? " on" : ""}" onclick="toggleItemStatus('${item.id}', 'cancelled')">${isCancel ? "復原" : "未搭乘"}</button>` : ""}
+        </div>`;
+      // 下一個行程也是交通：可以合併成一張（地鐵圖的轉乘感）
+      const nx = nextConnectorOf(item);
+      if (nx && !appState.travelLockMode) {
+        const a = last.to, b = nx.transitLegs[0].from;
+        const joins = railNameVariants(a).map(railNorm).some(k => railNameVariants(b).map(railNorm).includes(k));
+        h += `<button type="button" class="tc-merge" onclick="mergeWithNextConnector('${item.id}')">${joins ? `和下一段接起來（在 ${nm(a, last.railRegion)} 轉乘）` : `和下一段交通合併成一張`}</button>`;
+      }
+      return h;
+    }
+    // 手動輸入、CSV 匯入的交通：站名對得到車站資料，就自動補上站牌、路線色、站號（不改使用者打的起訖站名）
+    // - 一段裡面其實換了好幾條線（例如「大阪地鐵千日前線・中央線」「御堂筋線轉京阪本線」），用選車站的路線規劃自動拆成好幾段
+    // - 中文寫的日本站名也對得到（關西機場→関西空港、難波→なんば、稻荷→稲荷…）
+    const RAIL_ZH_ALIAS = [["機場", "空港"], ["難波", "なんば"], ["稻荷", "稲荷"], ["車站", ""]];
+    function railNameVariants(name) {
+      const out = [String(name || "").trim()];
+      RAIL_ZH_ALIAS.forEach(([a, b]) => { out.slice().forEach(x => { if (x.includes(a)) out.push(x.split(a).join(b)); }); });
+      return [...new Set(out.filter(Boolean))];
+    }
+    // 路線名稱和使用者寫的字有多像：用來在好幾條線之間挑一條。路線欄最重要，標題只算一點（標題常有站名，例如「神戶三宮」會誤配到「神戸線」）
+    function hintNorm(x) { return String(x || "").toLowerCase().replace(/\s+/g, "").replace(/[㐀-鿿]/g, ch => RAIL_KANJI[ch] || ch); }
+    function lineScoreAgainst(L, text) {
+      if (!text || !L) return 0;
+      const h = railNameVariants(text).map(hintNorm).join("|");
+      const full = hintNorm(L.n), g = hintNorm(L.g || "");
+      const bare = full.replace(/^(jr|阪神|阪急|京阪|近鉄|南海|大阪メトロ|osakametro|京都市営地下鉄|東京メトロ|都営|東急|京王|小田急|西武|東武|京成|京急)/, "");
+      const strip = x => x.replace(/線$/, "");
+      const has = list => list.some(t => t.length >= 2 && h.includes(t));
+      let sc = 0;
+      if (has([full, strip(full)])) sc += 2;
+      else if (bare !== full && has([bare, strip(bare)])) sc += (g.length >= 2 && h.includes(g)) ? 1.5 : 0.75;
+      (L.old || []).forEach(o => { if (has([hintNorm(o)])) sc += 2; });
+      if (L.en) { const e = L.en.toLowerCase().replace(/^(jr|tokyo metro|osaka metro)\s+/, "").replace(/\s+line$/, ""); if (e.length >= 3 && h.includes(e.replace(/\s+/g, ""))) sc += 1; }
+      return sc;
+    }
+    function lineHintScore(L, lineText, titleText) { return lineScoreAgainst(L, lineText) + 0.25 * lineScoreAgainst(L, titleText); }
+    function railSplitRoute(d, leg, lineText, titleText) {
+      const starts = [], goals = new Set();
+      d.lines.forEach(L => { const a = connStation(L, leg.from), b = connStation(L, leg.to); if (a) starts.push({ L, s: a }); if (b) goals.add(b.cl); });
+      if (!starts.length || !goals.size) return null;
+      const W = [{ leg: 1000, walk: 30, gate: 10 }, { leg: 4, walk: 8, gate: 3 }, { leg: 200, walk: 5000, gate: 900 }];
+      let best = null;
+      for (const goalCl of goals) for (const w of W) {
+        let legs = null;
+        try { legs = railRoute(d, starts[0], goalCl, w); } catch (e) {}
+        if (!legs || !legs.length || legs.length > 4) continue;
+        // 和使用者寫的路線越像越好；一樣像就選換車少的
+        const score = legs.reduce((a, g) => a + lineHintScore(g.L, lineText, titleText), 0) / legs.length - legs.length * 0.3;
+        if (!best || score > best.score) best = { legs, score };
+      }
+      return best ? best.legs : null;
+    }
+    // 同一天、這一段後面的下一個行程（跳過已取消的）如果也是交通細條，回傳它
+    function nextConnectorOf(item) {
+      const day = getActiveDay();
+      const i = day.items.findIndex(x => x.id === item.id);
+      const nx = day.items.slice(i + 1).find(x => x && x.status !== "cancelled");
+      return nx && isConnectorItem(nx) ? nx : null;
+    }
+    function mergeWithNextConnector(id) {
+      const day = getActiveDay();
+      const a = day.items.find(x => x.id === id);
+      const b = a && nextConnectorOf(a);
+      if (!a || !b) return;
+      const lastA = a.transitLegs[a.transitLegs.length - 1], firstB = b.transitLegs[0];
+      if (!confirm(`把這兩段交通合併成一張？\n${a.transitLegs[0].from} → ${lastA.to}\n${firstB.from} → ${b.transitLegs[b.transitLegs.length - 1].to}`)) return;
+      // 下一段的上車站和這一段的下車站不是同一個地方：中間要出站走路
+      const joins = railNameVariants(lastA.to).map(railNorm).some(k => railNameVariants(firstB.from).map(railNorm).includes(k));
+      a.transitLegs = [...a.transitLegs, ...b.transitLegs.map((l, k) => (k === 0 && !joins ? { ...l, isOutTransfer: true } : { ...l }))];
+      a.endTime = b.endTime; a.endDayOffset = b.endDayOffset || 0; if (b.endTz) a.endTz = b.endTz;
+      const ca = Number(a.cost) || 0, cb = Number(b.cost) || 0;
+      if (cb) {
+        if (!ca || (a.currency || "NT$") === (b.currency || "NT$")) { a.cost = ca + cb; a.currency = a.currency || b.currency; }
+        else a.extraExpenses = [...(a.extraExpenses || []), { name: b.costLabel || "車資", amount: cb }];
+      }
+      a.extraExpenses = [...(a.extraExpenses || []), ...(b.extraExpenses || [])];
+      a.photos = [...(a.photos || []), ...(b.photos || [])];
+      a.note = [a.note, b.note].filter(x => x && x.trim()).join("\n");
+      a.title = `${a.transitLegs[0].from} → ${a.transitLegs[a.transitLegs.length - 1].to}`;
+      day.items.splice(day.items.indexOf(b), 1);
+      expandedConnIds.add(a.id);
+      saveAppState(); debouncedSyncToCloud(); renderAll();
+      showToast("合併好了，現在是一張有轉乘的交通");
+    }
+    const connEnrichTried = new Set();
+    async function enrichTransitLegs(item) {
+      if (!item || item.type !== "transit" || !Array.isArray(item.transitLegs)) return false;
+      if (!item.transitLegs.some(l => l && !l.lineKey && l.from && l.to)) return false;
+      const trip = getActiveTrip();
+      const tz = item.startTz || (trip && trip.homeTz) || "";
+      const regs = [...new Set([
+        ...item.transitLegs.map(l => l.railRegion).filter(Boolean),
+        ...RAIL_REGIONS.filter(r => r.tz.includes(tz)).map(r => r.id),
+        ...(tz === "Asia/Tokyo" ? ["kansai"] : []),
+        ...Object.keys(railData),
+      ])].filter(r => r !== "japan");
+      let changed = false;
+      const out = [];
+      for (const leg of item.transitLegs) {
+        if (!leg || leg.lineKey || !leg.from || !leg.to) { out.push(leg); continue; }
+        const lineName = String(leg.line || "").trim();
+
+        // 一段寫了好幾條線（・、轉、＋），直接用路線規劃拆開
+        const multi = /轉|＋|\+|→|・.*線|、.*線/.test(lineName) && (lineName.match(/線/g) || []).length >= 2;
+        let done = false;
+        for (const reg of regs) {
+          let d;
+          try { d = await loadRail(reg); } catch (e) { continue; }
+          const cands = multi ? [] : d.lines.map(L => ({ L, a: connStation(L, leg.from), b: connStation(L, leg.to) })).filter(c => c.a && c.b && c.a !== c.b);
+          if (cands.length) {
+            cands.forEach(c => { c.sc = lineHintScore(c.L, lineName, item.title); c.h = railHops(c.L, c.L.st.indexOf(c.a), c.L.st.indexOf(c.b)); });
+            cands.sort((x, y) => (y.sc - x.sc) || (x.h - y.h));
+            const { L, a, b } = cands[0];
+            out.push({ ...leg, lineKey: L.k, railRegion: reg, fromNo: a.no || "", toNo: b.no || "", customColor: leg.customColor || L.c, line: lineName || L.n });
+            done = changed = true;
+            break;
+          }
+          const legs = railSplitRoute(d, leg, lineName, item.title);
+          if (legs) {
+            const note = /轉乘|乗換|轉/.test(leg.trainNo || "") ? "" : (leg.trainNo || "");
+            legs.forEach((g, i) => {
+              const x = i > 0 ? railXfer(legs[i - 1].L, legs[i - 1].to, g.L, g.from) : null;
+              out.push({
+                from: i === 0 ? leg.from : g.from.n, to: i === legs.length - 1 ? leg.to : g.to.n,
+                line: g.L.n, trainNo: i === 0 ? note : "", isOutTransfer: !!(x && x.k !== "same" && x.k !== "through"),
+                customColor: g.L.c, fromNo: g.from.no || "", toNo: g.to.no || "", railRegion: reg, lineKey: g.L.k,
+              });
+            });
+            done = changed = true;
+            break;
+          }
+        }
+        if (!done) out.push(leg);
+      }
+      if (changed) item.transitLegs = out;
+      return changed;
+    }
+    function enrichTransitLater(item) {
+      if (!item || connEnrichTried.has(item.id)) return;
+      connEnrichTried.add(item.id);
+      enrichTransitLegs(item).then(ch => { if (ch) { saveAppState(); debouncedSyncToCloud(); renderAll(); } }).catch(() => {});
+    }
+
     function renderTimelineCards() {
       const container = document.getElementById("timelineView");
       container.innerHTML = "";
@@ -5406,10 +5759,25 @@
 
       const recapHtml = dayRecapHTML(trip, appState.activeDayIndex || 0);
       if (recapHtml) container.insertAdjacentHTML("beforeend", recapHtml);
+      const tripStartedNow = tripHasStarted(trip);   // 完成／取消：出發後才出現
+      const nums = spotNumbers(day.items);              // 編號只算景點，交通細條不算
+      if (isTimetableCompactMode) container.insertAdjacentHTML("beforeend", `<button type="button" class="pill-btn tt-share" onclick="openDayListShare()">${ic("upload")} 分享成卡片</button>`);
 
       day.items.forEach((item, idx) => {
         const card = document.createElement("div");
         card.id = `card_${item.id}`;
+        // 交通細條（精簡模式維持一行一個）
+        if (!isTimetableCompactMode && isConnectorItem(item)) {
+          if (item.transitLegs.some(l => l && !l.lineKey)) enrichTransitLater(item);
+          const open = expandedConnIds.has(item.id);
+          const colors = item.transitLegs.map(l => { const L = connLegLine(l); return (L && L.c) || l.customColor || "#B9B3A8"; });
+          card.className = "transit-conn" + (open ? " open" : "") + (item.status === "cancelled" ? " tc-cancel" : "") + (isItemHappeningNow(item) ? " now" : "");
+          card.style.setProperty("--stripe", colors.length === 1 ? colors[0] : `linear-gradient(${colors.map((c, i) => `${c} ${Math.round(i * 100 / colors.length)}% ${Math.round((i + 1) * 100 / colors.length)}%`).join(", ")})`);
+          if (!open) { card.setAttribute("role", "button"); card.tabIndex = 0; card.onclick = () => toggleConnector(item.id); card.onkeydown = e => { if (e.key === "Enter") toggleConnector(item.id); }; }
+          card.innerHTML = connectorHtml(item, tripStartedNow);
+          container.appendChild(card);
+          return;
+        }
         const isDone = item.status === "done";
         const isCancel = item.status === "cancelled";
         const isNow = isItemHappeningNow(item);
@@ -5421,9 +5789,9 @@
         if (isTimetableCompactMode) {
           card.innerHTML = `
             <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-              <span class="step-circle" style="width:22px;height:22px;font-size:11px;">${idx + 1}</span>
+              <span class="step-circle" style="width:22px;height:22px;font-size:11px;">${nums.get(item.id) || "·"}</span>
               <span class="time-text" style="font-size:13px;">${item.startTime || "09:00"}</span>
-              <span style="font-size:14.5px; font-weight:800; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(item.title || "未命名行程")}</span>
+              <span style="font-size:14.5px; font-weight:800; color:${isConnectorItem(item) ? "var(--sub)" : "var(--ink)"}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(isConnectorItem(item) ? `${item.transitLegs[0].from} → ${item.transitLegs[item.transitLegs.length - 1].to}` : (item.title || "未命名行程"))}</span>
             </div>
           `;
           container.appendChild(card);
@@ -5503,7 +5871,7 @@
         card.innerHTML = `
           <div class="card-top-bar">
             <div class="card-time-group">
-              <span class="step-circle">${idx + 1}</span>
+              <span class="step-circle">${nums.get(item.id) || idx + 1}</span>
               ${isNow ? `<span class="now-badge" data-notr>● NOW</span>` : ""}
               <span class="time-text">${item.startTime || "09:00"} → ${item.endTime || "10:00"}${item.endDayOffset > 0 ? " (+" + item.endDayOffset + (window.TG_LANG === "en" ? "d)" : "日)") : (item.endDayOffset < 0 ? " (" + item.endDayOffset + (window.TG_LANG === "en" ? "d)" : "日)") : "")}</span>
               ${item.isPrivate ? `<span title="私人行程（只有自己看得到）" aria-label="私人行程" style="display:inline-flex; align-items:center; color:var(--sub); flex:none;">${ic("lock")}</span>` : ""}
@@ -5511,8 +5879,8 @@
             </div>
 
             <div class="status-btns">
-              <button class="status-btn ${isDone ? "active-done" : ""}" onclick="toggleItemStatus('${item.id}', 'done')">完成</button>
-              <button class="status-btn ${isCancel ? "active-cancel" : ""}" onclick="toggleItemStatus('${item.id}', 'cancelled')">取消</button>
+              ${tripStartedNow || isDone || isCancel ? `<button class="status-btn ${isDone ? "active-done" : ""}" onclick="toggleItemStatus('${item.id}', 'done')">完成</button>
+              <button class="status-btn ${isCancel ? "active-cancel" : ""}" onclick="toggleItemStatus('${item.id}', 'cancelled')">取消</button>` : ""}
               ${isDone ? `<span class="ink-seal-badge ${shouldAnimateStamp ? 'animate-thud' : ''}" data-notr>COMPLETED ✓</span>` : ""}
               ${isCancel ? `<span class="ink-seal-badge cancelled ${shouldAnimateStamp ? 'animate-thud' : ''}" data-notr>CANCELLED</span>` : ""}
             </div>
@@ -5638,47 +6006,93 @@
       renderAll();
     }
 
+    // 行程的地點文字（給地圖搜尋用）
+    function itemPlaceQuery(item) {
+      if (!item) return "";
+      if (item.type === "transit" && item.transitLegs && item.transitLegs.length > 0) return `${item.transitLegs[item.transitLegs.length - 1].to} 車站`;
+      if (item.type === "roadtrip" && item.roadTo) return item.roadTo;
+      if (item.subtitle) return `${item.title} ${item.subtitle}`;
+      return item.title || "";
+    }
+    // 從已儲存的地圖連結拿出地點（名稱或座標）；拿不到回傳 ""
+    function placeFromMapUrl(url) {
+      try {
+        const u = new URL(url);
+        const q = u.searchParams.get("query") || u.searchParams.get("q") || u.searchParams.get("destination") || u.searchParams.get("daddr");
+        if (q) return q;
+        const at = (u.pathname + u.hash).match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+        const place = u.pathname.match(/\/place\/([^/@]+)/);
+        if (place) return decodeURIComponent(place[1].replace(/\+/g, " "));
+        if (at) return `${at[1]},${at[2]}`;
+      } catch (e) {}
+      return "";
+    }
+    // 這個行程在不在韓國（時區、韓文、首爾路線、當天地點座標）
+    function isKoreaItem(item, query) {
+      if (!item) return false;
+      if (/Asia\/Seoul/.test(`${item.startTz || ""} ${item.endTz || ""}`)) return true;
+      if (/[가-힯]/.test(`${query || ""} ${item.title || ""} ${item.subtitle || ""}`)) return true;
+      if ((item.transitLegs || []).some(l => l && l.railRegion === "seoul")) return true;
+      const c = (getActiveDay() || {}).locationCoord;
+      return !!(c && c.lat > 33 && c.lat < 38.7 && c.lng > 124.5 && c.lng < 131);
+    }
+    // 按「地圖」：有上一個行程時，直接打開「從上一個地點到這裡」的路線；交通行程用它自己的上下車站
     function openExternalGoogleMap(itemId) {
       const day = getActiveDay();
-      const item = day.items.find(i => i.id === itemId);
+      const idx = day.items.findIndex(i => i.id === itemId);
+      const item = day.items[idx];
       if (!item) return;
       const pinned = safeExternalUrl(item.mapUrl);
-      if (pinned) { openMapLink(pinned, null); return; }
-      let query = item.title;
-      if (item.type === "transit" && item.transitLegs && item.transitLegs.length > 0) {
-        const lastLeg = item.transitLegs[item.transitLegs.length - 1];
-        query = `${lastLeg.to} 車站`;
-      } else if (item.type === "roadtrip" && item.roadTo) {
-        query = item.roadTo;
-      } else if (item.subtitle) {
-        query = `${item.title} ${item.subtitle}`;
+      const legs = item.type === "transit" && Array.isArray(item.transitLegs) ? item.transitLegs : [];
+      const dest = pinned ? placeFromMapUrl(pinned) : itemPlaceQuery(item);
+      let origin = "";
+      if (legs.length && legs[0].from) origin = `${legs[0].from} 車站`;
+      else {
+        const prev = day.items.slice(0, idx).reverse().find(i => i && i.status !== "cancelled");
+        if (prev) origin = prev.mapUrl ? placeFromMapUrl(safeExternalUrl(prev.mapUrl)) : itemPlaceQuery(prev);
       }
+      if (origin && dest && origin.trim() === dest.trim()) origin = "";
+      if (pinned && (!dest || !origin)) { openMapLink(pinned, null); return; }   // 沒有上一站：照舊打開儲存的地點
+      const korea = appState.naverInKorea !== false && isKoreaItem(item, dest);
       const app = appState.mapApp || "google";
-      if (app === "ask") { openMapAppChooser(query); return; }
-      openMapSearch(query, app);
+      if (app === "ask") { openMapAppChooser(dest, origin, korea); return; }
+      openMapSearch(dest, korea ? "naver" : app, origin);
     }
 
-    function openMapSearch(query, app) {
+    function openMapSearch(query, app, origin) {
+      if (app === "naver") {
+        // NAVER 地圖沒有座標時沒辦法帶起點，先打開目的地（App 裡按「길찾기」就能規劃路線）
+        const q = String(query || "").replace(/\s*車站$/, "");
+        openMapLink(`https://map.naver.com/p/search/${encodeURIComponent(q)}`, null);
+        return;
+      }
       if (app === "apple") {
-        const url = `https://maps.apple.com/?q=${encodeURIComponent(query)}`;
+        const url = origin
+          ? `https://maps.apple.com/?saddr=${encodeURIComponent(origin)}&daddr=${encodeURIComponent(query)}`
+          : `https://maps.apple.com/?q=${encodeURIComponent(query)}`;
         const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
         if (ios && isStandaloneApp()) location.href = url; else window.open(url, "_blank", "noopener");
+        return;
+      }
+      if (origin) {
+        openMapLink(`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(query)}`, null);
         return;
       }
       openMapLink(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, query);
     }
 
-    function openMapAppChooser(query) {
+    function openMapAppChooser(query, origin, korea) {
       const box = document.getElementById("mapAppOptions");
       const opts = [["google", "Google 地圖"], ["apple", "Apple 地圖"]];
+      if (korea) opts.unshift(["naver", "NAVER 地圖"]);
       box.innerHTML = opts.map(([k, n]) => `
         <button type="button" class="form-card" data-k="${k}" style="text-align:left; cursor:pointer; padding:12px 14px; margin:0; border:1px solid var(--border); font:inherit; color:inherit; font-size:14px; font-weight:800;">${n}</button>`).join("")
         + `<label class="sheet-check" style="margin-top:4px; font-size:12.5px;"><input type="checkbox" id="mapAppRemember" /> 記住我的選擇（之後可在個人設定修改）</label>`;
       box.querySelectorAll("button[data-k]").forEach(b => {
         b.onclick = () => {
-          if (document.getElementById("mapAppRemember").checked) { appState.mapApp = b.dataset.k; saveAppState(); }
+          if (document.getElementById("mapAppRemember").checked && b.dataset.k !== "naver") { appState.mapApp = b.dataset.k; saveAppState(); }
           closeModalBackdrop("mapAppModal");
-          openMapSearch(query, b.dataset.k);
+          openMapSearch(query, b.dataset.k, origin);
         };
       });
       openModalBackdrop("mapAppModal");
@@ -5725,13 +6139,38 @@
       document.getElementById("fStartHour").innerHTML = hhHtml;
       document.getElementById("fEndHour").innerHTML = hhHtml;
 
+      // 分鐘：每 5 分鐘一格比較好選；需要精確時間就選最下面的「手動輸入…」
       let mmHtml = "";
-      for (let m = 0; m < 60; m++) {
+      for (let m = 0; m < 60; m += 5) {
         const s = String(m).padStart(2, "0");
         mmHtml += `<option value="${s}">${s} 分</option>`;
       }
-      document.getElementById("fStartMin").innerHTML = mmHtml;
-      document.getElementById("fEndMin").innerHTML = mmHtml;
+      mmHtml += `<option value="custom">手動輸入…</option>`;
+      ["fStartMin", "fEndMin"].forEach(id => {
+        const el = document.getElementById(id);
+        el.innerHTML = mmHtml;
+        el.dataset.prev = "00";
+        el.onchange = () => {
+          if (el.value !== "custom") { el.dataset.prev = el.value; return; }
+          const raw = prompt("輸入分鐘（0～59）", el.dataset.prev || "00");
+          const n = parseInt(String(raw || "").trim(), 10);
+          setMinuteSelect(id, raw != null && n >= 0 && n <= 59 ? n : el.dataset.prev);
+          el.dispatchEvent(new Event("input", { bubbles: true }));
+        };
+      });
+    }
+    // 設定分鐘：不是 5 的倍數（例如航班 08:12、匯入的資料）就臨時加一個選項，不會被改掉
+    function setMinuteSelect(id, mm) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const v = String(parseInt(mm, 10) || 0).padStart(2, "0");
+      if (![...el.options].some(o => o.value === v)) {
+        const opt = new Option(`${v} 分`, v);
+        const after = [...el.options].find(o => o.value !== "custom" && o.value > v);
+        el.add(opt, after || el.querySelector('option[value="custom"]'));
+      }
+      el.value = v;
+      el.dataset.prev = v;
     }
 
     function onTypeChange() {
@@ -5826,9 +6265,9 @@
         const [sh, sm] = (item.startTime || "09:00").split(":");
         const [eh, em] = (item.endTime || "10:00").split(":");
         document.getElementById("fStartHour").value = sh || "09";
-        document.getElementById("fStartMin").value = sm || "00";
+        setMinuteSelect("fStartMin", sm || "00");
         document.getElementById("fEndHour").value = eh || "10";
-        document.getElementById("fEndMin").value = em || "00";
+        setMinuteSelect("fEndMin", em || "00");
         document.getElementById("fEndDayOffset").value = item.endDayOffset !== undefined ? item.endDayOffset : 0;
         document.getElementById("fIsPrivate").checked = !!item.isPrivate;
         applyCompanionPrivateLock(item);
@@ -5892,9 +6331,9 @@
         const [sh, sm] = defaultStart.split(":");
         const nextHour = String((parseInt(sh, 10) + 1) % 24).padStart(2, "0");
         document.getElementById("fStartHour").value = sh || "09";
-        document.getElementById("fStartMin").value = sm || "00";
+        setMinuteSelect("fStartMin", sm || "00");
         document.getElementById("fEndHour").value = nextHour;
-        document.getElementById("fEndMin").value = sm || "00";
+        setMinuteSelect("fEndMin", sm || "00");
         document.getElementById("fEndDayOffset").value = "0";
         document.getElementById("fIsPrivate").checked = false;
         applyCompanionPrivateLock(null);
@@ -6002,21 +6441,43 @@
       e.target.value = "";
     }
 
+    // 選照片：用一個一直掛在頁面上的檔案欄位（iPhone 上臨時建立、沒放進頁面的欄位，選完照片有時候不會有反應）
+    // 選完會顯示「處理照片中」；某張照片讀不了（例如 HEIC）就提示，不會整個卡住
+    function pickImageFiles(onFiles) {
+      let inp = document.getElementById("tgImagePicker");
+      if (!inp) {
+        inp = document.createElement("input");
+        inp.type = "file"; inp.accept = "image/*"; inp.multiple = true; inp.id = "tgImagePicker";
+        inp.setAttribute("aria-hidden", "true"); inp.tabIndex = -1;
+        inp.style.cssText = "position:fixed; left:-9999px; top:0; width:1px; height:1px; opacity:0;";
+        document.body.appendChild(inp);
+      }
+      inp.value = "";
+      inp.onchange = async e => {
+        const files = Array.from(e.target.files || []);
+        inp.value = "";
+        if (!files.length) return;
+        showLogoLoader("處理照片中…");
+        try { await onFiles(files); }
+        catch (err) { console.warn("[TabigrAm] 照片處理失敗", err); showToast("有照片讀不到，換一張試試（部分 HEIC 格式不支援）", 4200); }
+        finally { hideLogoLoader(); }
+      };
+      inp.click();
+    }
+    // 一張一張壓縮；讀不了的跳過，最後告訴使用者
+    async function compressImageFilesSafe(files) {
+      const out = []; let bad = 0;
+      for (const f of files) { try { out.push(await compressImageFile(f)); } catch (e) { bad++; } }
+      if (bad) showToast(`${bad} 張照片讀不到，已略過（部分 HEIC 格式不支援）`, 4200);
+      return out;
+    }
     function triggerQuickPhotoUpload(itemId, fromShareModal = false) {
-      const inp = document.createElement("input");
-      inp.type = "file";
-      inp.accept = "image/*";
-      inp.multiple = true;
-      inp.onchange = async (e) => {
+      pickImageFiles(async files => {
         const day = getActiveDay();
         const item = day.items.find(i => i.id === itemId);
         if (!item) return;
         item.photos = item.photos || [];
-        const files = Array.from(e.target.files || []);
-        for (const f of files) {
-          const c = await compressImageFile(f);
-          item.photos.push(c);
-        }
+        for (const c of await compressImageFilesSafe(files)) item.photos.push(c);
         saveAppState();
         debouncedSyncToCloud();
         renderAll();
@@ -6024,8 +6485,7 @@
           selectedSharePhotoIndex = item.photos.length - 1;
           onShareTemplateChange();
         }
-      };
-      inp.click();
+      });
     }
 
     function applyCompanionPrivateLock(existingItem) {
@@ -6171,6 +6631,8 @@
       refreshRealtimeWeather(false);
       geocodeImportedPlaces([payload]);
       debouncedSyncToCloud();
+      connEnrichTried.delete(payload.id);
+      enrichTransitLater(payload);   // 手動打的站名對得到車站資料：補上站牌、路線色
     }
 
     /*************************************************************************
@@ -6325,6 +6787,7 @@
       const tripToDelete = getActiveTrip();
       appState.deletedTripIds = appState.deletedTripIds || [];
       appState.deletedTripIds.push(tripToDelete.id);
+      dropSyncBase(tripToDelete.id);
 
       if (sbClient && currentCloudUser && tripToDelete.shareCode) {
         try {
@@ -6590,53 +7053,52 @@
       
       resetRoadtripPhotoTransform();
 
-      const destName = item.roadTo || item.roadFrom || item.title.split(/to|➔|→/i).pop().trim();
-      let destCoord = lookupStationCoordSync(destName);
-      if (!destCoord && destName) {
-        destCoord = await geocodeStationOnline(destName, item.endTz || item.startTz);
-      }
-      if (!destCoord) destCoord = detectDayTargetCoord(day, getActiveTrip());
-      const rtInp = document.getElementById("rtCoordTextInput");
-      if (rtInp && destCoord) {
-        rtInp.value = formatCoordString(destCoord.lat, destCoord.lng);
-      }
-
+      // 先把視窗打開（以前會先等網路查地點座標、讀照片，網路慢或照片還沒讀好時，按「分享」就像沒反應）
       storyStickerLayers = [];
-      if (tplSelect.value !== "polaroid" && Array.isArray(item.photos) && item.photos.length > 0) {
-        const firstP = item.photos[selectedSharePhotoIndex] || item.photos[0];
-        const imgEl = await loadImageElement(firstP.dataUrl);
-        const id = "stk_" + Date.now();
-        storyStickerLayers.push({
-          id,
-          type: "polaroid",
-          img: imgEl,
-          dataUrl: firstP.dataUrl,
-          caption: firstP.caption || "",
-          x: 780,
-          y: 1050,
-          scale: 0.92,
-          rot: 0.06
-        });
-        activeStickerId = id;
-      } else {
-        activeStickerId = null;
-      }
-
+      activeStickerId = null;
       document.getElementById("photoZoomRange").value = 1;
       document.getElementById("photoPanXRange").value = 0;
       document.getElementById("photoPanYRange").value = 0;
-
       activeShareDrawer = null;
       ["design", "stickers", "themes"].forEach(k => {
         document.getElementById("drawerTab-" + k)?.classList.remove("active");
         document.getElementById("shareDrawer-" + k)?.classList.remove("open");
       });
-
-      initSwatchDropdowns();
-      renderRecentStoryEmojis();
-      onShareTemplateChange();
+      try { initSwatchDropdowns(); renderRecentStoryEmojis(); } catch (e) { console.warn(e); }
       openModalBackdrop("shareModal");
-      edTab = "tpl"; edRender();
+      edTab = "tpl";
+      try { onShareTemplateChange(); edRender(); } catch (e) { console.warn(e); }
+
+      // 背景：卡片照片變成拍立得貼紙
+      if (tplSelect.value !== "polaroid" && Array.isArray(item.photos) && item.photos.length > 0) {
+        const firstP = item.photos[selectedSharePhotoIndex] || item.photos[0];
+        (async () => {
+          try {
+            const src = firstP && typeof firstP.dataUrl === "string" ? firstP.dataUrl : "";
+            if (!src) return;   // 照片還在下載（雲端）或還沒從手機儲存空間讀出來：這次先不放
+            const imgEl = await loadImageElement(src);
+            if (currentShareItem !== item || storyStickerLayers.some(l => l.dataUrl === src)) return;
+            const id = "stk_" + Date.now();
+            storyStickerLayers.push({ id, type: "polaroid", img: imgEl, dataUrl: src, caption: firstP.caption || "", x: 780, y: 1050, scale: 0.92, rot: 0.06 });
+            activeStickerId = id;
+            onShareTemplateChange(); edRender();
+          } catch (e) { console.warn("[TabigrAm] 分享卡照片讀不到", e); }
+        })();
+      }
+      // 背景：目的地座標（最多等 6 秒）
+      const destName = item.roadTo || item.roadFrom || String(item.title || "").split(/to|➔|→/i).pop().trim();
+      (async () => {
+        let destCoord = lookupStationCoordSync(destName);
+        if (!destCoord && destName) {
+          try { destCoord = await Promise.race([geocodeStationOnline(destName, item.endTz || item.startTz), new Promise(r => setTimeout(() => r(null), 6000))]); } catch (e) {}
+        }
+        if (!destCoord) destCoord = detectDayTargetCoord(day, getActiveTrip());
+        const rtInp = document.getElementById("rtCoordTextInput");
+        if (rtInp && destCoord && currentShareItem === item) {
+          rtInp.value = formatCoordString(destCoord.lat, destCoord.lng);
+          try { onShareTemplateChange(); } catch (e) {}
+        }
+      })();
     }
 
     // ===== 限動編輯（新版版面）：上方大預覽、右上角儲存，下方 4 個分頁 =====
@@ -6707,7 +7169,7 @@
         try { recents = JSON.parse(localStorage.getItem("TABIGRAM_RECENT_EMOJIS") || "[]"); } catch (e) {}
         const emojis = [...new Set([...recents, "☕", "🚃", "🍜", "🌊", "🍂", "📸", "✨", "❤️"])].slice(0, 14);
         const en = window.TG_LANG === "en";
-        const pk = edStickerPack ? STICKER_PACKS.find(p => p.id === edStickerPack) : null;
+        const pk = edStickerPack ? collectedPacks().find(p => p.id === edStickerPack) : null;
         // 第一行固定高度：選到貼紙時放操作按鈕，沒選時放說明，面板高度不會跳動（拖曳時卡片不會突然縮放）
         const top = activeStickerId
           ? `<div class="ed-stkbar"><span>已選取貼圖</span><button type="button" class="ed-chip" onclick="bringSelectedStickerToFront()">移到最前</button><button type="button" class="ed-chip" onclick="sendSelectedStickerToBack()">移到最後</button><button type="button" class="ed-chip danger" onclick="removeSelectedStorySticker();edRender()">刪除</button></div>`
@@ -6718,7 +7180,7 @@
         if (pk) {
           row = `<div class="ed-row ed-stkrow"><button type="button" class="ed-back" onclick="edStickerPack=null;edRender()" aria-label="返回">‹</button>${pk.items.map(([f, zh, enName], i) => `<button type="button" class="ed-art" onclick="edPreviewArtSticker('${pk.id}', ${i})" title="${escapeHtml(en ? enName : zh)}" aria-label="${escapeHtml(en ? enName : zh)}"><img crossorigin="anonymous" src="${artStickerSrc(pk, f)}" alt="" decoding="async"></button>`).join("")}</div>`;
         } else {
-          row = `<div class="ed-row ed-stkrow">${STICKER_PACKS.map(p => `<button type="button" class="ed-pack-cover" onclick="edStickerPack='${p.id}';edRender()"><span><img crossorigin="anonymous" src="${artStickerSrc(p, p.cover || p.items[0][0])}" alt="" decoding="async"></span><small>${escapeHtml(en ? p.nameEn : p.name)}</small></button>`).join("")}
+          row = `<div class="ed-row ed-stkrow">${collectedPacks().map(p => `<button type="button" class="ed-pack-cover" onclick="edStickerPack='${p.id}';edRender()"><span><img crossorigin="anonymous" src="${artStickerSrc(p, p.cover || p.items[0][0])}" alt="" decoding="async"></span><small>${escapeHtml(en ? p.nameEn : p.name)}</small></button>`).join("")}
             <span class="ed-stkdiv" aria-hidden="true"></span>${emojis.map(e => `<button type="button" class="ed-emoji" onclick="addEmojiStickerToStory('${escapeHtml(e)}');edRender()">${escapeHtml(e)}</button>`).join("")}</div>`;
         }
         const tools = `<div class="ed-row ed-stktools"><button type="button" class="ed-chip" onclick="promptCustomStoryEmojiSticker()">自訂表情</button><button type="button" class="ed-chip" onclick="triggerAddStickerPolaroidUpload()">＋ 拍立得照片</button>${(currentShareItem.photos || []).length ? `<button type="button" class="ed-chip" onclick="addExistingPhotoAsPolaroidSticker(${selectedSharePhotoIndex})">＋ 用這個行程的照片</button>` : ""}</div>`;
@@ -6809,7 +7271,8 @@
     async function addExistingPhotoAsPolaroidSticker(photoIdx) {
       if (!currentShareItem || !currentShareItem.photos[photoIdx]) return;
       const p = currentShareItem.photos[photoIdx];
-      const imgEl = await loadImageElement(p.dataUrl);
+      const imgEl = await loadImageSafe(p.dataUrl);
+      if (!imgEl) return showToast("這張照片還在讀取，稍等一下再試");
       const id = "stk_" + Date.now() + "_" + Math.floor(Math.random() * 100);
       storyStickerLayers.push({
         id,
@@ -6828,16 +7291,10 @@
     }
 
     function triggerAddStickerPolaroidUpload() {
-      const inp = document.createElement("input");
-      inp.type = "file";
-      inp.accept = "image/*";
-      inp.multiple = true;
-      inp.onchange = async (e) => {
+      pickImageFiles(async files => {
         if (!currentShareItem) return;
         currentShareItem.photos = currentShareItem.photos || [];
-        const files = Array.from(e.target.files || []);
-        for (const f of files) {
-          const compressed = await compressImageFile(f);
+        for (const compressed of await compressImageFilesSafe(files)) {
           currentShareItem.photos.push(compressed);
           const imgEl = await loadImageElement(compressed.dataUrl);
           const id = "stk_" + Date.now() + "_" + Math.floor(Math.random() * 100);
@@ -6857,8 +7314,8 @@
         saveAppState();
         debouncedSyncToCloud();
         onShareTemplateChange();
-      };
-      inp.click();
+        if (typeof edRender === "function") edRender();
+      });
     }
 
     function onPolaroidCaptionInput(val) {
@@ -6888,6 +7345,33 @@
       },
     ];
     let STICKER_PACKS = BUILTIN_STICKER_PACKS.slice();
+    // 收藏的貼紙包：在果醬派對按「收藏」才會出現在分享卡編輯器的「貼圖」裡（插畫家變多時編輯器不會塞滿）
+    // 蛋白人這包是預設，每個人一開始就有；至少要保留一組
+    const DEFAULT_STICKER_PACKS = ["naobao"];
+    function collectedPackIds() {
+      const ids = Array.isArray(appState.stickerCollection) ? appState.stickerCollection : DEFAULT_STICKER_PACKS;
+      const live = ids.filter(id => STICKER_PACKS.some(p => p.id === id));
+      return live.length ? live : DEFAULT_STICKER_PACKS.filter(id => STICKER_PACKS.some(p => p.id === id));
+    }
+    function collectedPacks() { const ids = collectedPackIds(); return ids.map(id => STICKER_PACKS.find(p => p.id === id)).filter(Boolean); }
+    function toggleCollectPack(id) {
+      const ids = collectedPackIds().slice();
+      const i = ids.indexOf(id);
+      if (i >= 0) {
+        if (ids.length <= 1) return showToast("至少要保留一組貼紙");
+        ids.splice(i, 1);
+        showToast("已從貼圖移除");
+      } else {
+        ids.push(id);
+        showToast("收藏好了！做分享卡時按「貼圖」就找得到");
+      }
+      appState.stickerCollection = ids;
+      if (edStickerPack && !ids.includes(edStickerPack)) edStickerPack = null;
+      saveAppState();
+      renderJamShowcase();
+      const sm = document.getElementById("shareModal");
+      if (sm && sm.classList.contains("open") && typeof edRender === "function") edRender();
+    }
     const artStickerImgCache = new Map();
     let edStickerPack = null;
     // 雲端貼紙包（管理頁上架的）：存在 Supabase 的 sticker_packs 表，圖片在公開的 stickers 空間
@@ -6900,6 +7384,7 @@
         url: /^https:\/\//.test(r.url || "") ? r.url : "",
         cover: r.cover ? stickerPublicUrl(r.cover) : "",
         items: r.items.filter(x => x && x.path).map(x => [stickerPublicUrl(x.path), String(x.name || ""), String(x.name_en || x.name || "")]),
+        featured: !!r.featured,
       }));
       const ids = new Set(cloud.map(p => p.id));
       STICKER_PACKS = [...cloud, ...BUILTIN_STICKER_PACKS.filter(p => !ids.has(p.id))];
@@ -6907,7 +7392,9 @@
     async function loadStickerPacks() {
       try { const c = JSON.parse(localStorage.getItem(STICKER_PACKS_CACHE) || "null"); if (c) applyStickerPackRows(c); } catch (e) {}
       try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/sticker_packs?select=id,name,name_en,artist,artist_en,url,cover,items,sort&published=eq.true&order=sort.asc,created_at.asc`, { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } });
+        const q = cols => fetch(`${SUPABASE_URL}/rest/v1/sticker_packs?select=${cols}&published=eq.true&order=sort.asc,created_at.asc`, { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } });
+        let res = await q("id,name,name_en,artist,artist_en,url,cover,items,sort,featured");
+        if (!res.ok) res = await q("id,name,name_en,artist,artist_en,url,cover,items,sort");   // 還沒執行 SUPABASE_ADMIN_V2.sql（沒有精選欄位）
         if (!res.ok) return; // 資料表還沒建立：只用內建貼紙
         const rows = await res.json();
         applyStickerPackRows(rows);
@@ -7304,7 +7791,7 @@
         legs.forEach((leg, i) => {
           if (transitRailGeo.legs[i]) return;
           const lineName = String(leg.line || "").replace(/^台鐵/, "");
-          const cands = d.lines.filter(L => (leg.lineKey && L.k === leg.lineKey) || L.n === leg.line || L.n === lineName || (L.en && L.en === leg.line) || (lineName && (lineName.endsWith(L.n) || L.n.endsWith(lineName))));
+          const cands = d.lines.filter(L => (leg.lineKey && L.k === leg.lineKey) || L.n === leg.line || L.n === lineName || (L.old || []).includes(leg.line) || (L.en && L.en === leg.line) || (lineName && (lineName.endsWith(L.n) || L.n.endsWith(lineName))));
           for (const L of cands.length ? cands : d.lines) {
             const i0 = L.st.findIndex(s => railNorm(s.n) === railNorm(leg.from) || railNorm(s.alt) === railNorm(leg.from) || (s.en && railNorm(s.en) === railNorm(leg.from)));
             const i1 = L.st.findIndex(s => railNorm(s.n) === railNorm(leg.to) || railNorm(s.alt) === railNorm(leg.to) || (s.en && railNorm(s.en) === railNorm(leg.to)));
@@ -7316,7 +7803,7 @@
             } else path = i0 < i1 ? L.st.slice(i0, i1 + 1) : L.st.slice(i1, i0 + 1).reverse();
             if (path.some(s => s.lat == null)) continue;
             transitRailGeo.legs[i] = path.map(s => ({ lat: s.lat, lng: s.lng, n: s.n, no: s.no }));
-            transitRailGeo.meta[i] = { L: { c: L.c, sg: L.sg, g: L.g, code: L.code, n: L.n }, region: reg };
+            transitRailGeo.meta[i] = { L: { c: L.c, sg: L.sg, g: L.g, code: L.code, n: L.n }, region: L.src || reg };
             break;
           }
         });
@@ -7487,6 +7974,51 @@
       else { ctx.font = `700 ${S * 0.3}px 'Barlow Semi Condensed','JetBrains Mono',monospace`; ctx.fillText(code, x + w / 2, y + S * 0.42); ctx.font = `700 ${S * 0.46}px 'Barlow Semi Condensed','JetBrains Mono',monospace`; ctx.fillText(num, x + w / 2, y + S * 0.86); }
       ctx.restore();
     }
+    // 長字切成幾段：英文在空白、連字號後面斷；中日韓文盡量在「・」斷，一段太長才逐字斷
+    function labelTokens(text) {
+      const t = String(text || "").trim();
+      if (/\s/.test(t)) return t.match(/[^\s–—\/-]+[\s–—\/-]*|[\s–—\/-]+/g) || [t];
+      const segs = t.match(/[^・･\/]+[・･\/]?|[・･\/]/g) || [t];
+      return segs.flatMap(seg => seg.length > 6 ? [...seg] : [seg]);
+    }
+    // 把站名平均分成 n 行（用目前的 ctx.font 量寬度）
+    function splitLabelLines(ctx, text, n) {
+      const t = String(text || "").trim();
+      if (n <= 1 || t.length < 2) return [t];
+      const tokens = labelTokens(t), target = ctx.measureText(t).width / n;
+      const lines = [];
+      let cur = "";
+      tokens.forEach(tok => {
+        if (cur && lines.length < n - 1 && ctx.measureText(cur + tok).width > target * 1.08 && ctx.measureText(cur).width >= target * 0.45) { lines.push(cur); cur = tok; }
+        else cur += tok;
+      });
+      lines.push(cur);
+      return lines.map(x => x.trim()).filter(Boolean);
+    }
+    // 在 maxW 寬度內自動換行畫字（最多 maxLines 行，超過的最後一行加「…」），回傳畫了幾行
+    function fillWrappedText(ctx, text, x, y, maxW, lineH, maxLines) {
+      const tokens = labelTokens(text);
+      const lines = [];
+      let cur = "";
+      tokens.forEach(tok => {
+        if (cur && ctx.measureText(cur + tok).width > maxW) { lines.push(cur.trimEnd()); cur = tok.trimStart(); }
+        else cur += tok;
+        while (ctx.measureText(cur).width > maxW && cur.length > 1) {   // 單一段比整行還寬（例如很長的英文字）：硬切
+          let i = cur.length - 1;
+          while (i > 1 && ctx.measureText(cur.slice(0, i)).width > maxW) i--;
+          lines.push(cur.slice(0, i)); cur = cur.slice(i);
+        }
+      });
+      if (cur.trim()) lines.push(cur.trim());
+      if (lines.length > maxLines) {
+        lines.length = maxLines;
+        let last = lines[maxLines - 1];
+        while (last.length > 1 && ctx.measureText(last + "…").width > maxW) last = last.slice(0, -1);
+        lines[maxLines - 1] = last.replace(/[\s·・（(➔→]+$/, "") + "…";
+      }
+      lines.forEach((ln, i) => ctx.fillText(ln, x, y + i * lineH));
+      return lines.length;
+    }
     // 有車站資料時畫新版路線圖卡，回傳 true；資料不足回傳 false（沿用舊畫法）
     function drawOfficialRouteCard(ctx, item, cardX, cardY, cardW, cardH, innerSwatch) {
       const legs = Array.isArray(item.transitLegs) ? item.transitLegs : [];
@@ -7512,8 +8044,9 @@
         if (showSigns) drawRouteSign(ctx, { ...l.sg, no: "" }, cardX + 46 * k, legendY - 22 * k, 30 * k);
         else { ctx.beginPath(); ctx.roundRect(cardX + 46 * k, legendY - 22 * k, 18 * k, 28 * k, 6 * k); ctx.fillStyle = l.color; ctx.fill(); }
         ctx.fillStyle = innerSwatch.text; ctx.textBaseline = "alphabetic";
-        ctx.fillText(window.TG_LANG === "en" ? `${l.leg.line || "Line"} (${l.leg.from} → ${l.leg.to})` : `${l.leg.line || "路線"}（${l.leg.from} ➔ ${l.leg.to}）`, cardX + (showSigns ? 46 + 30 * 1.32 + 12 : 76) * k, legendY);
-        legendY += 44 * k;
+        const lx = cardX + (showSigns ? 46 + 30 * 1.32 + 12 : 76) * k, lh = 34 * k;
+        const nl = fillWrappedText(ctx, window.TG_LANG === "en" ? `${l.leg.line || "Line"} (${l.leg.from} → ${l.leg.to})` : `${l.leg.line || "路線"}（${l.leg.from} ➔ ${l.leg.to}）`, lx, legendY, cardX + cardW - 46 * k - lx, lh, 3);
+        legendY += 44 * k + (nl - 1) * lh;
       });
       ctx.strokeStyle = "rgba(0,0,0,0.08)"; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(cardX + 46 * k, legendY + 4 * k); ctx.lineTo(cardX + cardW - 46 * k, legendY + 4 * k); ctx.stroke();
@@ -7522,15 +8055,31 @@
       let cur = { x: 0, y: 0 };
       const runs = [], nodes = [];
       L.forEach((l, li) => {
-        const parts = routeLegParts(l.region, l.st);
+        let parts = routeLegParts(l.region, l.st);
+        // 新幹線這種長距離的線：簡化後會變成鋸齒、穿過別的線，直接畫成一條直線比較清楚
+        if (l.sg.sg === "shin" && l.st.length > 1) {
+          const a0 = l.st[0], a1 = l.st[l.st.length - 1], lat0 = a0.lat * Math.PI / 180;
+          parts = [{ d: routeSnapDir((a1.lng - a0.lng) * Math.cos(lat0), -(a1.lat - a0.lat)), len: 2.2 }];
+        }
         if (li > 0) {
           const prev = runs[li - 1].parts, pd = prev[prev.length - 1].d;
           if (SCHEM_OPP[pd] === parts[0].d) {   // 回頭走：第一段轉 45°，避免兩條線疊在一起
             const tot = parts.reduce((a, p) => [a[0] + SCHEM_DIR[p.d][0] * p.len, a[1] + SCHEM_DIR[p.d][1] * p.len], [0, 0]);
             const o = SCHEM_DIR[parts[0].d];
             const cands = Object.keys(SCHEM_DIR).filter(key => Math.abs(SCHEM_DIR[key][0] * o[0] + SCHEM_DIR[key][1] * o[1] - Math.SQRT1_2) < 0.01);
-            parts[0].d = cands.sort((a, b) => (SCHEM_DIR[b][0] * tot[0] + SCHEM_DIR[b][1] * tot[1]) - (SCHEM_DIR[a][0] * tot[0] + SCHEM_DIR[a][1] * tot[1]))[0];
+            // 一樣好的時候，選跟實際地理方向比較接近的（例如品川→新大阪是往西南，不要往西北穿過山手線）
+            const g0 = l.st[0], g1 = l.st[l.st.length - 1];
+            const geo = [(g1.lng - g0.lng) * Math.cos(g0.lat * Math.PI / 180), -(g1.lat - g0.lat)];
+            const gl = Math.hypot(geo[0], geo[1]) || 1;
+            const score = key => SCHEM_DIR[key][0] * tot[0] + SCHEM_DIR[key][1] * tot[1] + 0.01 * (SCHEM_DIR[key][0] * geo[0] + SCHEM_DIR[key][1] * geo[1]) / gl;
+            parts[0].d = cands.sort((a, b) => score(b) - score(a))[0];
           }
+        }
+        // 新幹線要夠長，終點一定要越過前面已經畫的線（不然京都會畫在新宿旁邊，看起來像隔壁站）
+        if (l.sg.sg === "shin" && parts.length === 1 && runs.length) {
+          const dv = SCHEM_DIR[parts[0].d];
+          const ahead = Math.max(0, ...runs.flatMap(r => r.pts).map(p => (p.x - cur.x) * dv[0] + (p.y - cur.y) * dv[1]));
+          parts[0].len = Math.max(parts[0].len, ahead + 1.2);
         }
         const pts = [{ ...cur }];
         parts.forEach(p => { cur = { x: cur.x + SCHEM_DIR[p.d][0] * p.len, y: cur.y + SCHEM_DIR[p.d][1] * p.len }; pts.push({ ...cur }); });
@@ -7579,43 +8128,91 @@
       // 站名＋站牌：試 8 個位置，避開線條和別的字
       if (showNames || showSigns) {
         const boxes = [];
-        const hit = bx => segs.some(([a, b]) => { for (let t = 0; t <= 20; t++) { const x = a.x + (b.x - a.x) * t / 20, y = a.y + (b.y - a.y) * t / 20; if (x > bx.x0 - lw / 2 && x < bx.x1 + lw / 2 && y > bx.y0 - lw / 2 && y < bx.y1 + lw / 2) return true; } return false; });
+        // 字和線之間至少留一點空隙（只算線寬的一半，字會貼著線）；線段取樣密一點，短線段也測得到
+        const gap = lw / 2 + 10 * k;
+        // 回傳壓到線的取樣點數（0＝完全沒碰到）
+        const hitCount = bx => { let c = 0; segs.forEach(([a, b]) => { const n = Math.max(20, Math.ceil(Math.hypot(b.x - a.x, b.y - a.y) / (6 * k))); for (let t = 0; t <= n; t++) { const x = a.x + (b.x - a.x) * t / n, y = a.y + (b.y - a.y) * t / n; if (x > bx.x0 - gap && x < bx.x1 + gap && y > bx.y0 - gap && y < bx.y1 + gap) c++; } }); return c; };
         const SG = fs * 1.2;
+        // 長站名：先試一行；放不下（會壓到線或別的字、超出卡片）就換成兩行，再不行縮小字
+        const LABEL_LAYOUTS = [[1, 1], [1, 2], [0.85, 2], [0.72, 2], [0.72, 3]];
+        const inCard = bx => !(bx.x0 < cardX + 20 || bx.x1 > cardX + cardW - 20 || bx.y0 < legendY + 16 * k || bx.y1 > cardY + cardH - 16);
+        const freeOfLabels = bx => !boxes.some(o => !(bx.x1 < o.x0 || bx.x0 > o.x1 || bx.y1 < o.y0 || bx.y0 > o.y1));
         nodes.forEach(n => {
           const q = T(n.p);
-          const nFont = `900 ${fs}px ${stationFontStack(stationLang(n.name, n.region))}`;
           const ko = showNames ? stationLocalName(n.name, n.region) : "";
-          const koFont = `700 ${Math.round(fs * 0.78)}px ${stationFontStack(HANGUL_RE.test(ko) ? "ko" : RAIL_LANG[n.region] === "ja" ? "ja" : "")}`;
-          ctx.font = koFont; const kw = ko ? ctx.measureText(ko).width + 8 * k : 0;
-          ctx.font = nFont;
           const sw = showSigns ? n.signs.reduce((a, sg) => a + routeSignW(sg, SG) + 6 * k, 0) : 0;
-          const tw = (showNames ? ctx.measureText(n.name).width + 4 * k + kw : 0) + sw, th = Math.max(fs * 1.25, showSigns ? SG + 4 : 0), g = lw + 14 * k;
-          const cands = [[g, -th / 2], [-g - tw, -th / 2], [-tw / 2, -g - th], [-tw / 2, g], [g, -g - th + 8 * k], [-g - tw, -g - th + 8 * k], [g, g - 8 * k], [-g - tw, g - 8 * k]];
-          let pick = null;
-          for (const strict of [true, false]) {
-            for (const [dx, dy] of cands) {
-              const bx = { x0: q.x + dx, y0: q.y + dy, x1: q.x + dx + tw, y1: q.y + dy + th };
-              if (bx.x0 < cardX + 20 || bx.x1 > cardX + cardW - 20 || bx.y0 < legendY + 16 * k || bx.y1 > cardY + cardH - 16) continue;
-              if (boxes.some(o => !(bx.x1 < o.x0 || bx.x0 > o.x1 || bx.y1 < o.y0 || bx.y0 > o.y1))) continue;
-              if (strict && hit(bx)) continue;
-              pick = bx; break;
-            }
-            if (pick) break;
+          const g = lw + 14 * k;
+          const layouts = [];
+          for (const [sc, nl] of (showNames ? LABEL_LAYOUTS : [[1, 1]])) {
+            const f = fs * sc;
+            const nFont = `900 ${f}px ${stationFontStack(stationLang(n.name, n.region))}`;
+            const koFont = `700 ${Math.round(f * 0.78)}px ${stationFontStack(HANGUL_RE.test(ko) ? "ko" : RAIL_LANG[n.region] === "ja" ? "ja" : "")}`;
+            ctx.font = nFont;
+            const lines = showNames ? splitLabelLines(ctx, n.name, nl) : [];
+            if (nl > 1 && lines.length < 2) continue;              // 切不開（字太短）就不用試多行
+            const nameW = lines.length ? Math.max(...lines.map(x => ctx.measureText(x).width)) : 0;
+            ctx.font = koFont; const kw = ko ? ctx.measureText(ko).width : 0;
+            const lh = f * 1.18;
+            const rows = nl === 1 ? 1 : lines.length + (ko ? 1 : 0); // 多行時，當地文字自己一行
+            const textW = !showNames ? 0 : nl === 1 ? nameW + (ko ? kw + 8 * k : 0) : Math.max(nameW, kw);
+            const tw = (showNames ? textW + 4 * k : 0) + sw;
+            const th = Math.max(nl === 1 ? f * 1.25 : rows * lh + f * 0.15, showSigns ? SG + 4 : 0);
+            layouts.push({ f, nFont, koFont, lines, nl, lh, rows, tw, th });
           }
-          if (!pick) return;
-          boxes.push(pick);
-          let x = pick.x0;
-          if (showSigns) n.signs.forEach(sg => { drawRouteSign(ctx, sg, x, pick.y0 + (th - SG) / 2, SG); x += routeSignW(sg, SG) + 6 * k; });
+          // 右、左、正上、正下、四個斜角；靠近卡片邊緣時，上下方改成和站點左邊或右邊對齊
+          // 再不行就離遠一點（第二圈），字旁邊的線太擠時可以跳開
+          const cands = lay => {
+            const { tw, th } = lay, e = lw, G = g * 2.4;
+            return [[g, -th / 2], [-g - tw, -th / 2], [-tw / 2, -g - th], [-tw / 2, g], [g, -g - th + 8 * k], [-g - tw, -g - th + 8 * k], [g, g - 8 * k], [-g - tw, g - 8 * k],
+              [-e, -g - th], [-e, g], [e - tw, -g - th], [e - tw, g],
+              [-e, -G - th], [-e, G], [e - tw, -G - th], [e - tw, G], [-tw / 2, -G - th], [-tw / 2, G], [G, -th / 2], [-G - tw, -th / 2]];
+          };
+          let pick = null, fallback = null;
+          search: for (const lay of layouts) {
+            for (const [dx, dy] of cands(lay)) {
+              const bx = { x0: q.x + dx, y0: q.y + dy, x1: q.x + dx + lay.tw, y1: q.y + dy + lay.th };
+              if (!inCard(bx) || !freeOfLabels(bx)) continue;
+              const c = hitCount(bx);
+              if (!c) { pick = { bx, lay }; break search; }
+              if (!fallback || c < fallback.c) fallback = { bx, lay, c };   // 實在找不到：選壓到線最少的
+            }
+          }
+          pick = pick || fallback;
+          if (!pick) {
+            // 卡片邊緣、旁邊都是字：用最小的版本，推回卡片裡面畫（以前會直接不畫，站名就不見了）
+            const lay = layouts[layouts.length - 1];
+            const [dx, dy] = cands(lay)[0];
+            const x0 = Math.min(Math.max(q.x + dx, cardX + 20), cardX + cardW - 20 - lay.tw);
+            const y0 = Math.min(Math.max(q.y + dy, legendY + 16 * k), cardY + cardH - 16 - lay.th);
+            pick = { bx: { x0, y0, x1: x0 + lay.tw, y1: y0 + lay.th }, lay };
+          }
+          const { bx, lay } = pick;
+          boxes.push(bx);
+          let x = bx.x0;
+          if (showSigns) n.signs.forEach(sg => { drawRouteSign(ctx, sg, x, bx.y0 + (lay.th - SG) / 2, SG); x += routeSignW(sg, SG) + 6 * k; });
           if (showNames) {
             ctx.textBaseline = "alphabetic"; ctx.lineWidth = 7 * k; ctx.strokeStyle = innerSwatch.bg; ctx.fillStyle = innerSwatch.text;
-            const ty = pick.y0 + th / 2 + fs * 0.36;
-            ctx.font = nFont;
-            ctx.strokeText(n.name, x + 2 * k, ty); ctx.fillText(n.name, x + 2 * k, ty);
-            if (ko) {
-              const kx = x + 2 * k + ctx.measureText(n.name).width + 8 * k;
-              ctx.font = koFont; ctx.globalAlpha = 0.75;
-              ctx.strokeText(ko, kx, ty); ctx.fillText(ko, kx, ty);
-              ctx.globalAlpha = 1;
+            const tx = x + 2 * k;
+            if (lay.nl === 1) {
+              const ty = bx.y0 + lay.th / 2 + lay.f * 0.36;
+              ctx.font = lay.nFont;
+              ctx.strokeText(n.name, tx, ty); ctx.fillText(n.name, tx, ty);
+              if (ko) {
+                const kx = tx + ctx.measureText(n.name).width + 8 * k;
+                ctx.font = lay.koFont; ctx.globalAlpha = 0.75;
+                ctx.strokeText(ko, kx, ty); ctx.fillText(ko, kx, ty);
+                ctx.globalAlpha = 1;
+              }
+            } else {
+              const top = bx.y0 + (lay.th - lay.rows * lay.lh) / 2;
+              const base = i => top + lay.lh * i + lay.lh / 2 + lay.f * 0.36;
+              ctx.font = lay.nFont;
+              lay.lines.forEach((ln, i) => { ctx.strokeText(ln, tx, base(i)); ctx.fillText(ln, tx, base(i)); });
+              if (ko) {
+                ctx.font = lay.koFont; ctx.globalAlpha = 0.75;
+                ctx.strokeText(ko, tx, base(lay.lines.length)); ctx.fillText(ko, tx, base(lay.lines.length));
+                ctx.globalAlpha = 1;
+              }
             }
           }
         });
@@ -7651,8 +8248,8 @@
         ctx.fillStyle = innerSwatch.text;
         ctx.font = "700 24px 'Noto Sans TC', sans-serif";
         const trainBadge = leg.trainNo ? ` · ${leg.trainNo}` : "";
-        ctx.fillText(`${leg.line || "路線"}${trainBadge} (${leg.from} ➔ ${leg.to})`, cardX + 76, legendY);
-        legendY += 40;
+        const nl = fillWrappedText(ctx, `${leg.line || "路線"}${trainBadge} (${leg.from} ➔ ${leg.to})`, cardX + 76, legendY, cardW - 76 - 46, 32, 3);
+        legendY += 40 + (nl - 1) * 32;
       });
 
       ctx.strokeStyle = "rgba(0,0,0,0.08)";
@@ -8395,8 +8992,9 @@
       drawRoundedRectPath(ctx, frameX, frameY, frameW, frameH, 32);
       ctx.clip();
 
-      if (item.photos && item.photos[selectedSharePhotoIndex]) {
-        const imgObj = await loadImageElement(item.photos[selectedSharePhotoIndex].dataUrl);
+      // 照片還沒讀好（只有編號、沒有圖）：先跳過照片，其他照畫，不要整張卡片畫不出來
+      const imgObj = await loadImageSafe(item.photos && item.photos[selectedSharePhotoIndex] && item.photos[selectedSharePhotoIndex].dataUrl);
+      if (imgObj) {
         const sc = Math.max(frameW / imgObj.width, frameH / imgObj.height) * roadtripEditorialState.photoScale;
         const dw = imgObj.width * sc, dh = imgObj.height * sc;
         const dx = frameX + (frameW - dw) / 2 + roadtripEditorialState.photoX;
@@ -8619,8 +9217,8 @@
         ctx.fillStyle = "#E5E0D5";
         ctx.fillRect(photoX, photoY, photoW, photoH);
 
-        if (item.photos && item.photos[selectedSharePhotoIndex]) {
-          const imgObj = await loadImageElement(item.photos[selectedSharePhotoIndex].dataUrl);
+        const imgObj = await loadImageSafe(item.photos && item.photos[selectedSharePhotoIndex] && item.photos[selectedSharePhotoIndex].dataUrl);
+        if (imgObj) {
           const zoom = parseFloat(document.getElementById("photoZoomRange").value) || 1;
           const panX = parseFloat(document.getElementById("photoPanXRange").value) || 0;
           const panY = parseFloat(document.getElementById("photoPanYRange").value) || 0;
@@ -8720,7 +9318,36 @@
       ctx.restore();
     }
 
+    // 分享前提醒：卡片上可能有航班、座位、住宿、日期（旅途中公開發文，別人會知道你不在家、住在哪）
+    function shareSensitiveBits(item) {
+      if (!item) return [];
+      const bits = [];
+      const text = `${item.title || ""} ${item.subtitle || ""} ${item.note || ""}`;
+      if (item.type === "flight") bits.push("航班號碼");
+      if (item.gateSeat || item.trainNo || (item.transitLegs || []).some(l => l && l.trainNo)) bits.push("座位、車次");
+      if (/(飯店|酒店|旅館|旅店|民宿|住宿|青年旅舍|hotel|hostel|inn\b|ryokan|旅館|ホテル|check-?in|入住)/i.test(text)) bits.push("住宿名稱");
+      const trip = getActiveTrip();
+      const end = trip ? tripEndDateStr(trip) : "";
+      if (!end || cdLocalDateStr() <= end) bits.push("日期（旅途中發文，別人會知道你不在家）");
+      return bits;
+    }
+    let shareWarnResolve = null;
+    function confirmShareSensitive() {
+      if (appState.shareWarnOff) return Promise.resolve(true);
+      const bits = shareSensitiveBits(currentShareItem);
+      if (!bits.some(b => !b.startsWith("日期"))) return Promise.resolve(true);   // 只有日期的一般卡片不用每次提醒
+      document.getElementById("shareWarnList").innerHTML = bits.map(b => `<li>${escapeHtml(b)}</li>`).join("");
+      document.getElementById("shareWarnOff").checked = false;
+      openModalBackdrop("shareWarnModal");
+      return new Promise(res => { shareWarnResolve = res; });
+    }
+    function closeShareWarn(go) {
+      if (go && document.getElementById("shareWarnOff").checked) { appState.shareWarnOff = true; saveAppState(); }
+      closeModalBackdrop("shareWarnModal");
+      if (shareWarnResolve) { shareWarnResolve(go); shareWarnResolve = null; }
+    }
     async function shareOrSaveStoryImage() {
+      if (!(await confirmShareSensitive())) return;
       const canvas = document.getElementById("storyCanvas");
       const prevSel = activeStickerId;
       const prevTransit = transitMapUnlocked;
@@ -9406,6 +10033,11 @@
       ctx.fill();
     }
 
+    // 讀不到（沒有網址、還沒下載好、壞檔）回傳 null，不丟錯誤
+    async function loadImageSafe(src) {
+      if (!src || typeof src !== "string") return null;
+      try { return await loadImageElement(src); } catch (e) { return null; }
+    }
     function loadImageElement(src) {
       return new Promise((resolve, reject) => {
         const img = new Image();
@@ -9428,6 +10060,50 @@
 
     
     // --- Auto-Sync Engine ---
+    // 同步狀態：記下最後一次成功的時間、失敗的原因，畫面上說清楚「存在哪、有沒有同步成功」
+    function noteCloudSync(ok, err) {
+      const st = appState.cloudSync = appState.cloudSync || {};
+      if (ok) { st.at = Date.now(); st.err = ""; }
+      else st.err = String(err || (navigator.onLine ? "連線失敗" : "目前離線")).slice(0, 120);
+      updateCloudSyncLine();
+    }
+    function showCloudSyncBadge(ok) {
+      const badge = document.getElementById("cloudSyncStatusBadge"), text = document.getElementById("syncText");
+      if (!badge || !text) return;
+      badge.style.display = "inline-flex";
+      badge.onclick = null; badge.style.cursor = ""; badge.style.color = "var(--sub)";
+      if (ok) {
+        text.textContent = "已同步";
+        setTimeout(() => { if (text.textContent === "已同步") badge.style.display = "none"; }, 2000);
+        return;
+      }
+      // 失敗：一直顯示，點一下看原因；連上網路或下次修改時會自動再試
+      text.textContent = navigator.onLine ? "同步失敗" : "離線・連上網路會自動同步";
+      badge.style.color = navigator.onLine ? "#B23A20" : "var(--sub)";
+      badge.style.cursor = "pointer";
+      badge.onclick = () => openCloudModal();
+    }
+    function fmtSyncTime(t) {
+      const d = new Date(t), now = new Date();
+      const hm = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+      if (d.toDateString() === now.toDateString()) return `今天 ${hm}`;
+      return `${d.getMonth() + 1}/${d.getDate()} ${hm}`;
+    }
+    function updateCloudSyncLine() {
+      const el = document.getElementById("cloudSyncStatusLine");
+      if (!el) return;
+      const st = appState.cloudSync || {};
+      if (st.err) {
+        el.className = "sync-line bad";
+        el.textContent = `上次同步沒有成功（${st.err}）。行程還在這台裝置上，連上網路或下次修改時會自動再試。`;
+      } else if (st.at) {
+        el.className = "sync-line ok";
+        el.textContent = `已同步到雲端・${fmtSyncTime(st.at)}。換手機、電腦登入同一個帳號就看得到。`;
+      } else {
+        el.className = "sync-line";
+        el.textContent = "登入後，修改行程會自動存到雲端。";
+      }
+    }
     let syncTimeout = null;
     function debouncedSyncToCloud() {
       if (!currentCloudUser) return;
@@ -9440,15 +10116,17 @@
       if (syncTimeout) clearTimeout(syncTimeout);
       syncTimeout = setTimeout(async () => {
         const trip = getActiveTrip();
-        if (trip && isUserTripAdmin(trip, currentCloudUser) && (trip.shareCode || tripsHaveContent([trip]))) {
-          // 登入後，有內容的旅程都自動存到雲端（不用先按「發佈」），換手機、電腦都看得到
-          await publishActiveTripToCloud(true);
-        } else if (trip && trip.shareCode) {
-          await syncMyJournalToCloud(true);
-        }
+        let ok = true;
+        try {
+          if (trip && isUserTripAdmin(trip, currentCloudUser) && (trip.shareCode || tripsHaveContent([trip]))) {
+            // 登入後，有內容的旅程都自動存到雲端（不用先按「發佈」），換手機、電腦都看得到
+            ok = (await publishActiveTripToCloud(true)) !== false;
+          } else if (trip && trip.shareCode) {
+            ok = (await syncMyJournalToCloud(true)) !== false;
+          }
+        } catch (e) { ok = false; noteCloudSync(false, e && e.message); }
         syncTimeout = null;
-        if (text) text.textContent = "已同步";
-        setTimeout(() => { if (badge && text.textContent === "已同步") badge.style.display = "none"; }, 2000);
+        showCloudSyncBadge(ok);
       }, 1500);
     }
     // ---------- Google 帳號登入（Supabase OAuth）----------
@@ -9463,6 +10141,8 @@
     }
 
     async function cloudSignInWithGoogle() {
+      // Google 擋掉 App 內建瀏覽器（會出現 disallowed_useragent 錯誤），先引導換到瀏覽器
+      if (!isStandaloneApp() && detectPlatform().inApp) { openInAppGuide("google"); return; }
       initSupabaseClient();
       const btn = document.getElementById("googleSignInBtn");
       const label = document.getElementById("googleSignInText");
@@ -9602,11 +10282,17 @@ function initSupabaseClient() {
       if (!currentCloudUser) {
         outBox.style.display = "block";
         inBox.style.display = "none";
+        const age = document.getElementById("cloudLocalBackupAge");
+        if (age) {
+          const t = appState.lastBackupAt, d = t ? Math.floor((Date.now() - t) / 86400000) : -1;
+          age.textContent = !t ? "（還沒匯出過備份檔）" : `（上次匯出備份：${d <= 0 ? "今天" : d + " 天前"}）`;
+        }
         return;
       }
 
       outBox.style.display = "none";
       inBox.style.display = "block";
+      updateCloudSyncLine();
       document.getElementById("cloudUserEmailLabel").textContent = currentCloudUser.email || "已登入旅人";
 
       const trip = getActiveTrip();
@@ -10022,6 +10708,227 @@ function initSupabaseClient() {
       return code;
     }
 
+    // =====================================================================
+    // 共用行程同步：版本號 ＋ 逐項合併（避免「後存的人整包蓋掉先存的人」）
+    // - 每趟旅程在這台裝置記住「上次和雲端一致的樣子」（base）：雲端版本號 rev ＋ 當時的主行程內容
+    // - 上傳時只在「雲端還是第 rev 版」才寫入；旅伴剛存過（版本號對不上）就不覆蓋，
+    //   改成把「base → 我的修改」和「base → 旅伴的修改」逐項合併，再重新上傳
+    // - 改到不同項目：兩邊都保留；一邊刪除、一邊修改：保留修改；
+    //   只有兩邊改到同一個項目的同一個欄位，才問使用者要留哪一邊
+    // - 資料庫還沒執行 SUPABASE_TRIP_VERSION.sql 時（沒有 rev 欄位）：照樣先合併再上傳，只是少了版本號把關
+    // =====================================================================
+    const SYNC_BASE_PREFIX = "TABIGRAM_SYNCBASE_";
+    function loadSyncBase(tripId) {
+      try {
+        const v = JSON.parse(localStorage.getItem(SYNC_BASE_PREFIX + tripId) || "null");
+        return v && v.payload && typeof v.payload === "object" ? v : null;
+      } catch (e) { return null; }
+    }
+    function saveSyncBase(tripId, rev, payload) {
+      try { localStorage.setItem(SYNC_BASE_PREFIX + tripId, JSON.stringify({ rev: rev == null ? null : Number(rev), payload })); } catch (e) {}
+    }
+    function dropSyncBase(tripId) { try { localStorage.removeItem(SYNC_BASE_PREFIX + tripId); } catch (e) {} }
+    // 雲端內容換算成「這台裝置看到的主行程」：和本機用同一套整理規則，比對時才不會把格式差異當成修改
+    function cloudPayloadAsBase(payload) {
+      const t = sanitizeTripData(normalizeTrip(JSON.parse(JSON.stringify(payload || {}))));
+      return t ? buildCleanMasterTripPayload(t) : payload;
+    }
+    // 欄位順序不影響比對；undefined 和 null 視為相同
+    function stableJson(v) {
+      if (v === undefined || v === null) return "null";
+      if (typeof v !== "object") return JSON.stringify(v);
+      if (Array.isArray(v)) return "[" + v.map(stableJson).join(",") + "]";
+      return "{" + Object.keys(v).filter(k => v[k] !== undefined && v[k] !== null).sort()
+        .map(k => JSON.stringify(k) + ":" + stableJson(v[k])).join(",") + "}";
+    }
+    function sameJson(a, b) { return stableJson(a) === stableJson(b); }
+    // 本機有沒有還沒上傳的主行程修改（清單 checklist 是每個人自己的，不算）
+    function masterDiffersFromBase(trip, base) {
+      if (!base) return false;
+      const a = { ...buildCleanMasterTripPayload(trip), checklist: null };
+      const b = { ...base.payload, checklist: null };
+      return !sameJson(a, b);
+    }
+
+    // 三方合併一層欄位：base 是共同起點，mine 是我的，theirs 是雲端（旅伴）的
+    function merge3Fields(base, mine, theirs, ctx, label) {
+      const out = {};
+      const keys = new Set([...Object.keys(base || {}), ...Object.keys(mine || {}), ...Object.keys(theirs || {})]);
+      keys.forEach(k => {
+        const b = base ? base[k] : undefined, m = mine ? mine[k] : undefined, t = theirs ? theirs[k] : undefined;
+        let v;
+        if (sameJson(m, t)) v = m;
+        else if (base && sameJson(m, b)) v = t;        // 只有旅伴改了
+        else if (base && sameJson(t, b)) v = m;        // 只有我改了
+        else {                                         // 兩邊都改了，而且改得不一樣
+          ctx.conflicts.push({ label, key: k });
+          v = ctx.prefer === "mine" ? m : t;
+        }
+        if (v !== undefined) out[k] = v;
+      });
+      return out;
+    }
+
+    // 合併整趟主行程。base 為 null（這台裝置沒有紀錄）時：項目只增不減，欄位衝突以本機為準（和舊版行為相同，不跳提示）
+    function mergeTripPayload3(base, mine, theirs, prefer) {
+      const noBase = !base;
+      const ctx = { prefer: noBase ? "mine" : (prefer || "theirs"), conflicts: [] };
+      const withoutDays = t => { const o = { ...(t || {}) }; delete o.days; return o; };
+      const out = merge3Fields(noBase ? null : withoutDays(base), withoutDays(mine), withoutDays(theirs), ctx, "旅程設定");
+
+      const bDays = noBase ? [] : (base.days || []), mDays = mine.days || [], tDays = theirs.days || [];
+      let nDays;
+      if (mDays.length === tDays.length) nDays = mDays.length;
+      else if (!noBase && mDays.length === bDays.length) nDays = tDays.length;
+      else if (!noBase && tDays.length === bDays.length) nDays = mDays.length;
+      else nDays = Math.max(mDays.length, tDays.length);   // 兩邊都改了天數：取多的，避免行程不見
+      nDays = Math.max(1, nDays);
+      const dayFields = d => { const o = { ...(d || {}) }; delete o.items; return o; };
+      const days = [];
+      for (let i = 0; i < nDays; i++) {
+        const d = merge3Fields(noBase ? null : dayFields(bDays[i]), dayFields(mDays[i]), dayFields(tDays[i]), ctx, `第 ${i + 1} 天`);
+        d.items = [];
+        days.push(d);
+      }
+
+      // 項目用 id 對應（可以跨天移動）
+      const index = list => {
+        const m = new Map();
+        list.forEach((d, di) => ((d && d.items) || []).forEach((it, pos) => { if (it && it.id) m.set(it.id, { it, di, pos }); }));
+        return m;
+      };
+      const B = index(bDays), M = index(mDays), T = index(tDays);
+      const placed = new Map();   // id → { item, di }
+      const unchanged = (x, b) => sameJson(x.it, b.it) && x.di === b.di;
+      new Set([...T.keys(), ...M.keys(), ...B.keys()]).forEach(id => {
+        const b = B.get(id), m = M.get(id), t = T.get(id);
+        if (!m && !t) return;                                     // 兩邊都刪了
+        if (!m || !t) {
+          const only = m || t;
+          if (b && unchanged(only, b)) return;                    // 一邊刪除、另一邊沒動 → 刪除
+          placed.set(id, { item: only.it, di: only.di });         // 新增的，或一邊刪除、一邊有修改 → 保留修改
+          return;
+        }
+        const label = (t.it.title || m.it.title || "").trim() || "某個行程";
+        const item = merge3Fields(b ? b.it : null, m.it, t.it, ctx, label);
+        let di;
+        if (m.di === t.di) di = m.di;
+        else if (b && m.di === b.di) di = t.di;
+        else if (b && t.di === b.di) di = m.di;
+        else { ctx.conflicts.push({ label, key: "day" }); di = ctx.prefer === "mine" ? m.di : t.di; }
+        placed.set(id, { item, di });
+      });
+
+      // 排順序：先照旅伴那邊的順序，再把我這邊新增或移過來的項目插在它原本的前一個項目後面
+      const dayOf = id => Math.min(placed.get(id).di, nDays - 1);
+      for (let i = 0; i < nDays; i++) {
+        const order = ((tDays[i] && tDays[i].items) || []).map(it => it && it.id).filter(id => placed.has(id) && dayOf(id) === i);
+        const seen = new Set(order);
+        let prev = null;
+        ((mDays[i] && mDays[i].items) || []).forEach(it => {
+          const id = it && it.id;
+          if (!id || !placed.has(id) || dayOf(id) !== i) return;
+          if (!seen.has(id)) {
+            const at = prev ? order.indexOf(prev) + 1 : 0;
+            order.splice(at, 0, id);
+            seen.add(id);
+          }
+          prev = id;
+        });
+        placed.forEach((p, id) => { if (dayOf(id) === i && !seen.has(id)) { order.push(id); seen.add(id); } });
+        days[i].items = order.map(id => placed.get(id).item);
+      }
+      out.days = days;
+      return { payload: out, conflicts: ctx.conflicts };
+    }
+
+    function askSyncConflictChoice(conflicts) {
+      const names = [...new Set(conflicts.map(c => c.label).filter(Boolean))];
+      const list = names.slice(0, 5).map(n => "・" + n).join("\n") + (names.length > 5 ? "\n…" : "");
+      const msg = `你和旅伴同時改到同一個地方（${conflicts.length} 處）：\n${list}\n\n`
+        + "按「確定」保留你的版本；按「取消」改用旅伴剛存的版本。\n"
+        + "（沒有重疊的修改，兩邊都會保留）";
+      return confirm(msg) ? "mine" : "theirs";
+    }
+
+    // 把雲端（旅伴）的修改合併進本機這趟旅程（直接改 trip 物件本身，畫面上用到的參照都還有效）
+    function mergeCloudIntoLocalTrip(trip, base, remotePayload) {
+      const mine = buildCleanMasterTripPayload(trip);
+      const basePayload = base ? base.payload : null;
+      let r = mergeTripPayload3(basePayload, mine, remotePayload, "theirs");
+      if (r.conflicts.length && basePayload) {
+        if (askSyncConflictChoice(r.conflicts) === "mine") r = mergeTripPayload3(basePayload, mine, remotePayload, "mine");
+      }
+      const priv = extractPersonalJournalFromTrip(trip);
+      const next = sanitizeTripData(normalizeTrip(mergeMasterWithPersonalJournal(r.payload, priv)));
+      if (!next) return false;
+      next.ownerId = trip.ownerId || next.ownerId;
+      next.shareCode = trip.shareCode || next.shareCode;
+      carryOverLocalPhotos(next, trip);
+      Object.keys(trip).forEach(k => { delete trip[k]; });
+      Object.assign(trip, next);
+      return true;
+    }
+
+    const isMissingRevColumn = err => !!err && (err.code === "42703" || /\brev\b/.test(String(err.message || "")));
+
+    // 上傳主行程（有版本號把關）。成功回傳 null，失敗回傳 error
+    async function saveMasterTripVersioned(trip) {
+      const record = () => ({
+        id: trip.id,
+        owner_id: trip.ownerId || currentCloudUser.id,   // 共同管理員發佈時不能把擁有者換成自己
+        share_code: trip.shareCode,
+        title: trip.title,
+        payload: buildCleanMasterTripPayload(trip),
+        updated_at: new Date().toISOString()
+      });
+      const legacyUpsert = async () => {
+        const rec = record();
+        const { error } = await sbClient.from("trips").upsert(rec);
+        if (!error) saveSyncBase(trip.id, null, rec.payload);
+        return error || null;
+      };
+      let merged = false;
+      for (let attempt = 0; attempt < 4; attempt++) {
+        const base = loadSyncBase(trip.id);
+        if (base && base.rev != null) {
+          const rec = record();
+          const { data, error } = await sbClient.from("trips").update(rec).eq("id", trip.id).eq("rev", base.rev).select("rev");
+          if (error) return isMissingRevColumn(error) ? legacyUpsert() : error;
+          if (data && data.length) { saveSyncBase(trip.id, data[0].rev, rec.payload); return null; }
+          // 版本號對不上：旅伴剛存過 → 往下抓最新版合併
+        }
+        const { data: cur, error: curErr } = await sbClient.from("trips").select("*").eq("id", trip.id).maybeSingle();
+        if (curErr) return curErr;
+        if (!cur) {
+          // 雲端還沒有這趟（第一次發佈，或被擁有者刪掉了）
+          const rec = record();
+          const { data, error } = await sbClient.from("trips").insert(rec).select("*");
+          if (error) {
+            if (error.code === "23505") continue;   // 同一時間別的裝置剛建立 → 重來一次（會走合併）
+            return error;
+          }
+          const row = data && data[0];
+          saveSyncBase(trip.id, row && row.rev != null ? row.rev : null, rec.payload);
+          return null;
+        }
+        const remote = cloudPayloadAsBase(cur.payload);
+        const remoteChanged = !base || !sameJson(remote, base.payload);
+        if (remoteChanged && !sameJson(remote, buildCleanMasterTripPayload(trip))) {
+          if (mergeCloudIntoLocalTrip(trip, base, remote)) merged = true;
+        }
+        if (cur.rev == null) {                      // 資料庫還沒有版本號：合併完直接寫
+          const err = await legacyUpsert();
+          if (!err && merged) { saveAppState(); renderAll(); }
+          return err;
+        }
+        saveSyncBase(trip.id, cur.rev, remote);
+        if (merged) { saveAppState(); renderAll(); }
+        if (sameJson(buildCleanMasterTripPayload(trip), remote)) return null;   // 合併後和雲端一樣，不用再傳
+      }
+      return { message: "旅伴也在同時修改，稍後會再自動同步一次" };
+    }
+
     // Owner publishes/updates Master Trip + syncs their own Journal
     async function publishActiveTripToCloud(silent = false, tripArg = null) {
       if (!currentCloudUser) return silent ? undefined : alert("請先登入雲端帳號");
@@ -10044,34 +10951,29 @@ function initSupabaseClient() {
       }
       if (!trip.ownerId) trip.ownerId = currentCloudUser.id;
 
-      const masterPayload = buildCleanMasterTripPayload(trip);
-      const personalJournal = await buildCloudJournalFromTrip(trip);
-
-      const { error: tripErr } = await sbClient.from("trips").upsert({
-        id: trip.id,
-        owner_id: trip.ownerId || currentCloudUser.id,   // 共同管理員發佈時不能把擁有者換成自己
-        share_code: trip.shareCode,
-        title: trip.title,
-        payload: masterPayload,
-        updated_at: new Date().toISOString()
-      });
+      // 先上傳主行程（必要時會先合併旅伴的修改），合併完的內容才拿來做個人手札
+      const tripErr = await saveMasterTripVersioned(trip);
+      const personalJournal = tripErr ? null : await buildCloudJournalFromTrip(trip);
 
       if (tripErr) {
         btn.innerHTML = ic("upload") + " 發佈 / 更新共用行程";
-        if (silent) { console.warn("[TabigrAm] 上傳旅程失敗", tripErr.message); return; }
+        noteCloudSync(false, tripErr.message);
+        if (silent) { console.warn("[TabigrAm] 上傳旅程失敗", tripErr.message); return false; }
         return alert("發佈失敗：" + tripErr.message);
       }
 
-      await sbClient.from("user_journals").upsert({
+      const { error: jErr } = await sbClient.from("user_journals").upsert({
         user_id: currentCloudUser.id,
         user_email: currentCloudUser.email,
         trip_id: trip.id,
         journal_data: personalJournal,
         updated_at: new Date().toISOString()
       });
+      noteCloudSync(!jErr, jErr && jErr.message);
 
       saveAppState();
       renderCloudModalUI();
+      if (silent) return !jErr;
       if (!silent) alert(`已發佈到雲端！\n旅伴邀請碼：${trip.shareCode}\n同行友人輸入此邀請碼即可同步行程。`);
     }
 
@@ -10092,8 +10994,9 @@ function initSupabaseClient() {
         updated_at: new Date().toISOString()
       });
 
-      if (error) alert("手札同步失敗：" + error.message);
-      else if (!silent) alert("你的私人備註、心情印章、拍立得與額外消費已安全備份至雲端！");
+      noteCloudSync(!error, error && error.message);
+      if (error) { if (!silent) alert("手札同步失敗：" + error.message); return false; }
+      if (!silent) alert("你的私人備註、心情印章、拍立得與額外消費已安全備份至雲端！");
     }
 
     // Companion joins a shared trip using 6-char invite code
@@ -10119,6 +11022,7 @@ function initSupabaseClient() {
       if (!mergedTrip) return alert("此行程資料格式不正確，無法加入。");
       mergedTrip.ownerId = tripRow.owner_id;
       mergedTrip.shareCode = tripRow.share_code;
+      saveSyncBase(tripRow.id, tripRow.rev == null ? null : tripRow.rev, cloudPayloadAsBase(tripRow.payload));
 
       const existIdx = appState.trips.findIndex(t => t.id === mergedTrip.id);
       if (existIdx !== -1) {
@@ -10176,6 +11080,7 @@ function initSupabaseClient() {
         const allCloudMap = new Map();
         [...(ownedTrips || []), ...sharedTrips].forEach(r => allCloudMap.set(r.id, r));
 
+        const tripsToPush = [];
         allCloudMap.forEach((row) => {
           if (deletedIds.includes(row.id)) return;
 
@@ -10183,6 +11088,21 @@ function initSupabaseClient() {
           const localIdx = appState.trips.findIndex(t => t.id === row.id);
           const localPriv = localIdx !== -1 ? extractPersonalJournalFromTrip(appState.trips[localIdx]) : null;
           if (!row.payload || typeof row.payload !== "object") return;
+          const rowRev = row.rev == null ? null : row.rev;
+
+          // 本機有還沒上傳的修改（例如離線時改的）：合併雲端的新內容，而不是整包換掉，之後再上傳
+          const localTrip = localIdx !== -1 ? appState.trips[localIdx] : null;
+          const base = loadSyncBase(row.id);
+          if (localTrip && base && isUserTripAdmin(localTrip, currentCloudUser) && masterDiffersFromBase(localTrip, base)) {
+            const remote = cloudPayloadAsBase(row.payload);
+            if (!sameJson(remote, base.payload)) mergeCloudIntoLocalTrip(localTrip, base, remote);
+            localTrip.ownerId = row.owner_id;
+            localTrip.shareCode = row.share_code;
+            saveSyncBase(row.id, rowRev, remote);
+            tripsToPush.push(localTrip);
+            return;
+          }
+          saveSyncBase(row.id, rowRev, cloudPayloadAsBase(row.payload));
           const merged = sanitizeTripData(normalizeTrip(mergeMasterWithPersonalJournal(row.payload, (jRec && jRec.journal_data) || localPriv)));
           if (!merged) return;
           merged.ownerId = row.owner_id;
@@ -10208,6 +11128,9 @@ function initSupabaseClient() {
         renderAll();
         resolveMissingCloudPhotos();
         if (needResyncActiveTrip) debouncedSyncToCloud();
+        for (const t of tripsToPush) {
+          try { await publishActiveTripToCloud(true, t); } catch (e) { console.warn(e); }
+        }
         await uploadLocalOnlyTrips();
         lastCloudPullAt = Date.now();
       } catch (e) {}
@@ -10321,6 +11244,91 @@ function initSupabaseClient() {
         btn.textContent = isTimetableCompactMode ? "Timetable: ON" : "Timetable";
       }
       renderTimelineCards();
+    }
+
+    // ---------- Timetable 分享卡（I2）：把當天的精簡列表畫成一張限動卡 ----------
+    let dayListCanvas = null;
+    async function drawDayListCard() {
+      const trip = getActiveTrip(), idx = appState.activeDayIndex || 0, day = trip.days[idx];
+      const showTime = document.getElementById("dayListShowTime")?.checked !== false;
+      const W = 1080, H = 1920;
+      const c = dayListCanvas || (dayListCanvas = document.createElement("canvas"));
+      c.width = W; c.height = H;
+      const g = c.getContext("2d");
+      try { await Promise.all(["900 60px 'Noto Sans TC'", "700 40px 'Noto Sans TC'", "800 36px 'JetBrains Mono'"].map(f => document.fonts.load(f))); } catch (e) {}
+      const BG = "#E7E5E0", CARD = "#F6F3EC", INK = "#191919", SUB = "#6E6A63", ACC = "#FF4F00";
+      g.fillStyle = BG; g.fillRect(0, 0, W, H);
+      const X = 70, Y = 110, CW = W - 140, CH = H - 220;
+      drawCardPaperTexture(g, X, Y, CW, CH, 44, CARD, appState.paperTexture);
+      // 標題：第幾天、日期、城市
+      const ds = tripDayDateStr(trip, idx);
+      const wd = ds ? (window.TG_LANG === "en" ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] : ["日", "一", "二", "三", "四", "五", "六"])[new Date(ds + "T00:00").getDay()] : "";
+      const en = window.TG_LANG === "en";
+      g.textAlign = "left"; g.textBaseline = "alphabetic";
+      g.fillStyle = ACC; g.font = "800 34px 'JetBrains Mono', monospace";
+      g.fillText(`${en ? "DAY" : "DAY"} ${idx + 1}${ds ? `  ·  ${ds.replace(/-/g, ".")} ${en ? wd : `(${wd})`}` : ""}`, X + 64, Y + 110);
+      g.fillStyle = INK;
+      fitFillText(g, trip.title || "TabigrAm", X + 64, Y + 190, CW - 128, "900", 64, 40, "'Noto Sans TC', sans-serif");
+      const city = day.locationPlace || day.location || "";
+      if (city) { g.fillStyle = SUB; fitFillText(g, city, X + 64, Y + 250, CW - 128, "700", 34, 26, "'Noto Sans TC', sans-serif"); }
+      // 列表
+      const items = (day.items || []).filter(Boolean);
+      const top = Y + 320, bottom = Y + CH - 170;
+      // 行程少的時候字放大、間距拉開，不要只擠在上面
+      const rowH = Math.min(190, Math.max(64, (bottom - top) / Math.max(1, items.length)));
+      const fs = Math.round(Math.min(56, rowH * 0.42));
+      const nums = spotNumbers(items);
+      const railX = X + (showTime ? 64 + fs * 2.9 + fs * 0.55 + 22 : 110);
+      // 時間軸的直線
+      g.strokeStyle = "rgba(0,0,0,0.12)"; g.lineWidth = 4;
+      g.beginPath(); g.moveTo(railX, top + rowH * 0.5); g.lineTo(railX, top + rowH * (items.length - 0.5)); g.stroke();
+      items.slice(0, Math.floor((bottom - top) / rowH)).forEach((it, i) => {
+        const cy = top + rowH * (i + 0.5);
+        const cancelled = it.status === "cancelled";
+        g.globalAlpha = cancelled ? 0.4 : 1;
+        if (showTime) { g.fillStyle = SUB; g.font = `800 ${Math.round(fs * 0.72)}px 'JetBrains Mono', monospace`; g.textAlign = "right"; g.fillText(it.startTime || "", railX - fs * 0.55 - 22, cy + fs * 0.26); g.textAlign = "left"; }
+        const tx = railX + 44, maxW = X + CW - 64 - tx;
+        if (isConnectorItem(it)) {
+          // 交通：路線色的短線＋「起站 → 終站」
+          const legs = it.transitLegs;
+          const cols = legs.map(l => { const L = connLegLine(l); return (L && L.c) || l.customColor || "#B9B3A8"; });
+          const segH = rowH * 0.7 / cols.length;
+          cols.forEach((col, k) => { g.fillStyle = col; g.fillRect(railX - 5, cy - rowH * 0.35 + segH * k, 10, segH); });
+          g.fillStyle = SUB;
+          fitFillText(g, `${legs[0].from} → ${legs[legs.length - 1].to}`, tx, cy + fs * 0.3, maxW, "700", Math.round(fs * 0.8), 20, "'Noto Sans TC', sans-serif");
+        } else {
+          // 景點：編號圓點＋名稱（完成打勾、心情章）
+          g.fillStyle = cancelled ? "#B9B3A8" : INK;
+          g.beginPath(); g.arc(railX, cy, fs * 0.55, 0, Math.PI * 2); g.fill();
+          g.fillStyle = "#fff"; g.textAlign = "center"; g.font = `900 ${Math.round(fs * 0.55)}px 'Noto Sans TC', sans-serif`;
+          g.fillText(String(nums.get(it.id) || ""), railX, cy + fs * 0.2); g.textAlign = "left";
+          const tail = `${it.mood ? " " + it.mood : ""}${it.status === "done" ? " ✓" : ""}`;
+          g.fillStyle = INK;
+          fitFillText(g, `${it.title || (en ? "Untitled" : "未命名行程")}${tail}`, tx, cy + fs * 0.34, maxW, "900", fs, 22, "'Noto Sans TC', sans-serif");
+          if (cancelled) { const w = g.measureText(g.__lastFit || it.title || "").width; g.fillRect(tx, cy, w, 3); }
+        }
+        g.globalAlpha = 1;
+      });
+      // 底部：LOGO ＋ 字
+      try {
+        const logo = await loadImage(await tintedLogoUrl(INK));
+        if (logo) g.drawImage(logo, X + 64, Y + CH - 130, 76, 76);
+      } catch (e) {}
+      g.fillStyle = INK; g.font = "900 40px 'Noto Sans TC', sans-serif"; g.fillText("TabigrAm", X + 160, Y + CH - 80);
+      return c;
+    }
+    async function refreshDayListShare() {
+      const c = await drawDayListCard();
+      document.getElementById("dayListSharePreview").src = c.toDataURL("image/jpeg", 0.85);
+    }
+    async function openDayListShare() {
+      openModalBackdrop("dayListShareModal");
+      await refreshDayListShare();
+    }
+    async function shareDayListCard() {
+      const c = await drawDayListCard();
+      const trip = getActiveTrip();
+      await shareCanvasViaNativeOrDownload(c, `tabigram-day${(appState.activeDayIndex || 0) + 1}-${Date.now()}.png`);
     }
 
     function getDayFormattedDateString(startDateStr, dayIdx) {
@@ -10443,6 +11451,8 @@ function initSupabaseClient() {
       document.getElementById("profileShowHomeTzCheck").checked = !!appState.showHomeTz;
       const mapSel = document.getElementById("profileMapAppSelect");
       if (mapSel) mapSel.value = appState.mapApp || "google";
+      const nk = document.getElementById("profileNaverKoreaCheck");
+      if (nk) nk.checked = appState.naverInKorea !== false;
       const box = document.getElementById("profileAvatarPreviewBox");
       if (appState.userAvatarDataUrl) {
         box.innerHTML = `<img src="${appState.userAvatarDataUrl}" style="width:100%;height:100%;object-fit:cover;" />`;
@@ -10897,7 +11907,7 @@ function initSupabaseClient() {
     const CSV_COLUMNS = [
       { key: "day",       header: "天數",           group: "基本", hint: "1、2、3…；同一天只要填第一列" },
       { key: "date",      header: "日期",           group: "基本", hint: "可不填；填了會自動算天數，如 2026/12/01" },
-      { key: "type",      header: "類型",           group: "基本", hint: "景點／交通／航班／自駕／轉乘" },
+      { key: "type",      header: "類型",           group: "基本", hint: "景點／交通／航班／自駕／轉乘；換車時每搭一條線寫一列，第一段填「交通」，之後每段填「轉乘」，會合成同一張有轉乘的交通" },
       { key: "title",     header: "標題",           group: "基本", hint: "必填（轉乘列可空白）" },
       { key: "start",     header: "開始時間",       group: "基本", hint: "如 09:30、9:30、下午2點" },
       { key: "end",       header: "結束時間",       group: "基本", hint: "可不填，預設 1 小時" },
@@ -10909,7 +11919,7 @@ function initSupabaseClient() {
       { key: "costLabel", header: "費用名目",       group: "費用", hint: "可不填，如 門票、車資、住宿" },
       { key: "from",      header: "出發地",         group: "交通", hint: "交通：起站｜航班：機場代碼 TPE｜自駕：起點" },
       { key: "to",        header: "目的地",         group: "交通", hint: "交通：迄站｜航班：機場代碼 NRT｜自駕：終點" },
-      { key: "route",     header: "路線/航班/公路", group: "交通", hint: "交通：JR山手線｜航班：BR198｜自駕：國道134號" },
+      { key: "route",     header: "路線/航班/公路", group: "交通", hint: "交通：一列只寫一條線，如 JR山手線｜航班：BR198｜自駕：國道134號" },
       { key: "trainSeat", header: "車次/座位",      group: "交通", hint: "交通：車次｜航班：航廈或座位" },
       { key: "stops",     header: "途經點",         group: "交通", hint: "自駕用，多個地點用「、」分隔" },
       { key: "subtitle",  header: "地點/副標題",    group: "其他", hint: "景點用，如分店、入口" },
@@ -11783,6 +12793,12 @@ function initSupabaseClient() {
       renderAll();
       refreshRealtimeWeather(false);
       geocodeImportedPlaces(result.entries.map(e => e.item));
+      // 匯入的交通：對得到車站資料就補上路線色、站號，一段寫了好幾條線就自動拆開
+      (async () => {
+        let any = false;
+        for (const e of result.entries) { if (e.item && e.item.type === "transit") { connEnrichTried.add(e.item.id); try { if (await enrichTransitLegs(e.item)) any = true; } catch (er) {} } }
+        if (any) { saveAppState(); debouncedSyncToCloud(); renderAll(); }
+      })();
       const nUpd = result.entries.filter(e => e.replaceId).length;
       alert(`已匯入 ${result.entries.length - nUpd} 筆新行程${nUpd ? `、更新 ${nUpd} 筆` : ""}到「${trip.title}」` + (result.warnings.length ? `\n有 ${result.warnings.length} 個地方用了預設值，可以打開卡片再確認。` : ""));
     }
@@ -11964,6 +12980,7 @@ function initSupabaseClient() {
           mode: "during", signature: `during|${current ? current.item.id : ""}|${next ? next.item.id : ""}|${todayIdx}`,
           big: `第 ${todayIdx + 1} 天`, bigUnit: `/ 共 ${daysCount} 天`,
           line1, line2, live: !!current, target,
+          current: current ? { dayIdx: current.dayIdx, itemId: current.item.id, end: current.end } : null,
           pct: Math.min(1, Math.max(0, (now - tripStart) / Math.max(1, tripEnd - tripStart))),
           share: { number: String(todayIdx + 1), unit: `/ ${daysCount} 天`, during: true }
         };
@@ -12005,6 +13022,7 @@ function initSupabaseClient() {
         return;
       }
       const view = computeCountdownView(trip, countdownState.schedule);
+      renderNowPin(trip, view && view.current);
       if (!view) {
         if (box.style.display !== "none") box.style.display = "none";
         countdownState.signature = "";
@@ -12042,6 +13060,34 @@ function initSupabaseClient() {
       countdownState.target = view.target || null;
     }
 
+    // 進行中的行程（依手機時間）：精簡版卡片釘在今日卡片下面
+    function renderNowPin(trip, cur) {
+      const el = document.getElementById("nowPinCard");
+      if (!el) return;
+      const day = cur && trip && trip.days && trip.days[cur.dayIdx];
+      const item = day && (day.items || []).find(i => i.id === cur.itemId);
+      if (!item) { if (el.style.display !== "none") { el.style.display = "none"; el.dataset.sig = ""; } return; }
+      const sub = formatItemSubtitle(item);
+      const sig = `${item.id}|${item.title}|${item.startTime}|${item.endTime}|${sub}|${cur.dayIdx}`;
+      el.style.display = "block";
+      if (el.dataset.sig === sig) return;
+      el.dataset.sig = sig;
+      el.innerHTML = `<div class="np-head"><span class="now-badge" data-notr>● NOW</span><span class="np-time">${escapeHtml(item.startTime || "")} → ${escapeHtml(item.endTime || "")}</span></div>
+        <div class="np-title">${escapeHtml(item.title || "未命名行程")}</div>
+        ${sub ? `<div class="np-sub"${itemLangAttr(item)}>${escapeHtml(sub)}</div>` : ""}
+        <div class="np-btns">
+          <button type="button" class="pill-btn" onclick="nowPinGo(${cur.dayIdx}, '${item.id}', true)">地圖</button>
+          <button type="button" class="pill-btn" onclick="nowPinGo(${cur.dayIdx}, '${item.id}', false)">看卡片</button>
+        </div>`;
+    }
+    function nowPinGo(dayIdx, itemId, map) {
+      if (appState.activeDayIndex !== dayIdx) { appState.activeDayIndex = dayIdx; saveAppState(); renderAll(); }
+      if (map) { openExternalGoogleMap(itemId); return; }
+      requestAnimationFrame(() => {
+        const card = document.getElementById(`card_${itemId}`);
+        if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
     function jumpToCountdownTarget() {
       const t = countdownState.target;
       if (!t) return;
@@ -12395,6 +13441,7 @@ function initSupabaseClient() {
       setTimeout(() => landingAction("start"), 300);
     });
     function landingAction(kind) {
+      if (shouldGuideInApp()) { openInAppGuide(kind); return; }   // 在 LINE、IG 裡：先提醒換到瀏覽器
       hideLanding();
       if (kind === "login") {
         openCloudModal();
@@ -12458,7 +13505,7 @@ function initSupabaseClient() {
     // - 旅程最後一天過完、而且有排行程，就自動收進「旅程回憶」，不再佔上方分頁
     // - 每枚章的位置、角度、大小、墨色深淺都由旅程 ID 決定：每趟都不一樣，但同一趟每次打開都一樣
     // =====================================================================
-    const TG_RING_DATA = "logo-ring.png";
+    const TG_RING_DATA = "logo-ring.svg";
     let viewingMemoryTripId = "";
     let memoryDetailTripId = "";
     let memoryPicksDraft = [];
@@ -12526,7 +13573,7 @@ function initSupabaseClient() {
     let _logoImgPromise = null;
     function loadLogoImg() {
       if (!_logoImgPromise) _logoImgPromise = new Promise((res, rej) => {
-        const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = "logo-ring.png";
+        const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = TG_RING_DATA;
       });
       return _logoImgPromise;
     }
@@ -13410,8 +14457,8 @@ function initSupabaseClient() {
         const depTz = CSV_AIRPORT_TZ[s1.dep] || (AIRPORTS_DB[s1.dep] || {}).tz, arrTz = CSV_AIRPORT_TZ[s2.arr] || (AIRPORTS_DB[s2.arr] || {}).tz;
         autoSetItemTz(depTz || null, arrTz || null);
         const [sh, sm] = s1.depTime.split(":"), [eh, em] = s2.arrTime.split(":");
-        document.getElementById("fStartHour").value = sh; document.getElementById("fStartMin").value = sm;
-        document.getElementById("fEndHour").value = eh; document.getElementById("fEndMin").value = em;
+        document.getElementById("fStartHour").value = sh; setMinuteSelect("fStartMin", sm);
+        document.getElementById("fEndHour").value = eh; setMinuteSelect("fEndMin", em);
         // 跨日：單段用飛行時間換算；轉機用「抵達的當地時間比出發早」判斷
         let off = 0;
         if (legs.length === 1 && s1.duration && depTz && arrTz) {
@@ -13535,19 +14582,27 @@ function initSupabaseClient() {
       const box = document.getElementById("jamShowcase");
       if (!box) return;
       const en = window.TG_LANG === "en";
-      box.innerHTML = STICKER_PACKS.map(pk => `<div class="form-card jam-pack">
+      const owned = collectedPackIds();
+      // 本季精選排前面；有精選時，其他收在「看全部」
+      const featured = STICKER_PACKS.filter(p => p.featured);
+      const rest = featured.length ? STICKER_PACKS.filter(p => !p.featured) : [];
+      const shown = featured.length ? (jamShowAll ? [...featured, ...rest] : featured) : STICKER_PACKS;
+      box.innerHTML = shown.map(pk => `<div class="form-card jam-pack">
           <div class="jam-pack-head">
             <span class="jam-cover"><img crossorigin="anonymous" src="${artStickerSrc(pk, pk.cover || pk.items[0][0])}" alt=""></span>
             <div style="min-width:0;">
-              <div class="jam-kicker">已上架・免費</div>
+              <div class="jam-kicker">${pk.featured ? "本季精選・免費" : "已上架・免費"}</div>
               <div class="jam-name">${escapeHtml(en ? pk.nameEn : pk.name)}</div>
               <div class="jam-by" data-notr>${en ? "Illustrations: " : "插畫："}${escapeHtml(en ? pk.artistEn : pk.artist)}${pk.url ? ` · <a href="${pk.url}" target="_blank" rel="noopener">${en ? "See more work" : "看更多作品"}</a>` : ""}</div>
             </div>
           </div>
           <div class="jam-grid">${pk.items.map(([f, zh, enName]) => `<span title="${escapeHtml(en ? enName : zh)}"><img crossorigin="anonymous" src="${artStickerSrc(pk, f)}" alt="${escapeHtml(en ? enName : zh)}" loading="lazy" decoding="async"></span>`).join("")}</div>
-          <div class="jam-how">做分享卡時，按「貼圖」就找得到這組貼紙。</div>
-        </div>`).join("");
+          ${owned.includes(pk.id)
+            ? `<div class="jam-own"><span class="jam-how" style="margin:0;">已收藏・做分享卡時按「貼圖」就找得到</span>${owned.length > 1 ? `<button type="button" class="pill-btn" onclick="toggleCollectPack('${pk.id}')">移除</button>` : ""}</div>`
+            : `<button type="button" class="pill-btn primary jam-collect" onclick="toggleCollectPack('${pk.id}')">收藏到貼圖</button>`}
+        </div>`).join("") + (rest.length ? `<button type="button" class="jam-more" onclick="jamShowAll=!jamShowAll;renderJamShowcase()">${jamShowAll ? "收起" : `看全部（還有 ${rest.length} 組）`}</button>` : "");
     }
+    let jamShowAll = false;
     function openArchiveModalWithEmail() {
       renderJamShowcase();
       openArchiveModal();
@@ -13612,6 +14667,11 @@ function initSupabaseClient() {
     // 我到了（打卡）：只在按下的那一刻記一個位置，存在私人手札
     // =====================================================================
     let pendingCheckinItemId = "";
+    // 旅程開始了沒（出發日當天起算）。沒有出發日的旅程一律當作開始了，按鈕照常顯示
+    function tripHasStarted(trip) {
+      if (!trip || !/^\d{4}-\d{2}-\d{2}$/.test(trip.startDate || "")) return true;
+      return cdLocalDateStr() >= trip.startDate;
+    }
     function isActiveDayToday() {
       const trip = getActiveTrip();
       if (!trip || !trip.startDate) return false;
@@ -13629,7 +14689,8 @@ function initSupabaseClient() {
       } else if (!isCancel && isActiveDayToday()) {
         checkin = `<button type="button" class="card-chip checkin-chip${isNow ? " now" : ""}" onclick="checkInItem('${item.id}')" title="記下現在的位置，旅程結束後畫成足跡地圖">${PIN_SVG}<span>我到了</span>${isNow ? `<small>記下足跡</small>` : ""}</button>`;
       }
-      const mood = `<button type="button" class="card-chip mood-chip${item.mood ? " stamped" : ""}" onclick="toggleEmojiPopover(event, '${item.id}')" title="幫這個行程蓋一個心情章" aria-label="心情">${item.mood ? `<span class="mood-emoji">${escapeHtml(item.mood)}</span>` : `<span class="mood-plus" aria-hidden="true">＋</span><span>心情</span>`}</button>`;
+      // 心情章：出發後才出現（排行程時不會誤按）；已經蓋過的照樣顯示，可以改
+      const mood = !tripHasStarted(getActiveTrip()) && !item.mood ? "" : `<button type="button" class="card-chip mood-chip${item.mood ? " stamped" : ""}" onclick="toggleEmojiPopover(event, '${item.id}')" title="幫這個行程蓋一個心情章" aria-label="心情">${item.mood ? `<span class="mood-emoji">${escapeHtml(item.mood)}</span>` : `<span class="mood-plus" aria-hidden="true">＋</span><span>心情</span>`}</button>`;
       return `<div class="card-chip-row">${checkin}${flightStampChipsHtml(item)}${mood}${popoverHtml}</div>`;
     }
     // ---------- 當日回顧 ----------
@@ -13914,13 +14975,118 @@ function initSupabaseClient() {
       const ua = navigator.userAgent || "";
       const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
       const android = /Android/.test(ua);
-      const inApp = /Line\/|Instagram|FBAN|FBAV|FB_IAB|Messenger|Threads|MicroMessenger|KAKAOTALK/i.test(ua);
+      const inApp = /Line\/|Instagram|FBAN|FBAV|FB_IAB|Messenger|Threads|Barcelona|MicroMessenger|KAKAOTALK/i.test(ua);
       const iosOther = ios && /CriOS|FxiOS|EdgiOS|OPiOS/.test(ua);
       return { ios, android, inApp, iosOther, desktop: !ios && !android };
+    }
+
+    // =====================================================================
+    // 在 LINE、IG、FB 這類 App 的內建瀏覽器裡打開時，引導換到手機的瀏覽器
+    // - 內建瀏覽器：Google 不准登入、不能加到主畫面，排的行程也和 Safari / Chrome 分開存
+    // - 入口頁照常可以看；按「開始」「登入」「邀請碼」或 Google 登入時才提醒
+    // - LINE 和 Android 會直接試著跳到瀏覽器；iOS 的 IG、FB 沒有可靠的跳法，給按鈕和步驟
+    // - 想留在這裡也可以（Google 登入除外，因為一定會失敗）
+    // =====================================================================
+    let inAppGuideSkipped = false;
+    function inAppBrowserName() {
+      const ua = navigator.userAgent || "";
+      if (/Line\//i.test(ua)) return "LINE";
+      if (/Instagram/i.test(ua)) return "Instagram";
+      if (/Threads|Barcelona/i.test(ua)) return "Threads";
+      if (/Messenger/i.test(ua)) return "Messenger";
+      if (/FBAN|FBAV|FB_IAB/i.test(ua)) return "Facebook";
+      if (/MicroMessenger/i.test(ua)) return "WeChat";
+      if (/KAKAOTALK/i.test(ua)) return "KakaoTalk";
+      return "";
+    }
+    function iosMajorVersion() {
+      const m = (navigator.userAgent || "").match(/OS (\d+)_\d+/);
+      return m ? +m[1] : 0;
+    }
+    function shouldGuideInApp() {
+      return !inAppGuideSkipped && !isStandaloneApp() && detectPlatform().inApp;
+    }
+    // 換到瀏覽器後要打開的網址：按「開始」來的，到了瀏覽器直接接著開始
+    function inAppTargetUrl(action) {
+      return location.origin + location.pathname + (action === "start" ? "?start" : "");
+    }
+    // 能跳就跳；回傳 false 代表這個環境沒有可靠的自動跳法
+    function openInExternalBrowser(action) {
+      const pf = detectPlatform();
+      const url = inAppTargetUrl(action);
+      if (inAppBrowserName() === "LINE") {
+        location.href = url + (url.includes("?") ? "&" : "?") + "openExternalBrowser=1";   // LINE 官方支援的參數
+        return true;
+      }
+      if (pf.android) {
+        location.href = "intent://" + url.replace(/^https?:\/\//, "") + "#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" + encodeURIComponent(url) + ";end";
+        return true;
+      }
+      if (pf.ios && iosMajorVersion() >= 17) {
+        location.href = "x-safari-" + url;
+        return true;
+      }
+      return false;
+    }
+    function copyInAppUrl(action) {
+      const url = inAppTargetUrl(action);
+      const done = () => showToast("網址已複製，貼到瀏覽器打開", 2600);
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, () => prompt("複製這個網址，貼到瀏覽器打開：", url));
+      else prompt("複製這個網址，貼到瀏覽器打開：", url);
+    }
+    function skipInAppGuide(action) {
+      inAppGuideSkipped = true;
+      closeModalBackdrop("inAppModal");
+      if (action === "google") {
+        openCloudModal();
+        setTimeout(() => { const inp = document.getElementById("cloudEmailInput"); if (inp) inp.focus(); }, 300);
+      } else {
+        landingAction(action);
+      }
+    }
+    // action：start / join / login（入口頁的按鈕）或 google（Google 登入）
+    function openInAppGuide(action) {
+      const pf = detectPlatform();
+      const app = inAppBrowserName();
+      const browser = pf.android ? "Chrome" : "Safari";
+      const google = action === "google";
+      const canJump = app === "LINE" || pf.android || (pf.ios && iosMajorVersion() >= 17);
+      document.getElementById("inAppGuideTitle").textContent = google ? "這裡沒辦法用 Google 登入" : "換到瀏覽器打開";
+      const intro = google
+        ? `Google 不允許在 ${app || "App"} 裡面登入。換到 ${browser} 就能用 Google 登入，或在這裡改用 Email 登入。`
+        : `你現在是在 ${app || "App"} 裡面打開 TabigrAm。換到 ${browser} 用會更完整：`;
+      const why = google ? "" : `<ul class="inapp-why">
+          <li>可以用 Google 帳號登入</li>
+          <li>可以加到手機主畫面，像 App 一樣打開</li>
+          <li>排好的行程存在瀏覽器裡，不會跟著 ${app || "App"} 的暫存一起被清掉</li>
+        </ul>`;
+      const jumpBtn = canJump
+        ? `<button type="button" class="pill-btn primary inapp-btn" onclick="openInExternalBrowser('${action === "google" ? "login" : action}')">用 ${browser} 打開</button>`
+        : "";
+      const steps = `<div class="inapp-steps-title">${canJump ? "沒有跳過去的話：" : "這樣換過去："}</div>`
+        + a2hsStep(1, "點右上角或右下角的「⋯」", A2HS_SVG.inApp)
+        + a2hsStep(2, `選「用預設瀏覽器開啟」或「${pf.android ? "在 Chrome 中開啟" : "在 Safari 中開啟"}」`, "");
+      const copyBtn = `<button type="button" class="pill-btn inapp-btn" onclick="copyInAppUrl('${action === "google" ? "login" : action}')">複製網址</button>`;
+      const stay = google
+        ? `<button type="button" class="pill-btn inapp-btn" onclick="skipInAppGuide('google')">改用 Email 登入</button>`
+        : `<button type="button" class="inapp-stay" onclick="skipInAppGuide('${action}')">先在這裡看看</button>
+           <div class="inapp-stay-note">在這裡排的行程，之後換到瀏覽器會看不到；登入帳號後才會同步。</div>`;
+      document.getElementById("inAppGuideBody").innerHTML =
+        `<div class="a2hs-note" style="margin-bottom:12px;">${intro}</div>${why}${jumpBtn}${steps}${copyBtn}${stay}`;
+      openModalBackdrop("inAppModal");
+      // LINE、Android：直接試著跳過去（跳不過去的話，提醒還在畫面上）
+      if (!google && (app === "LINE" || pf.android)) setTimeout(() => openInExternalBrowser(action), 400);
     }
     function a2hsState() {
       appState.a2hs = appState.a2hs && typeof appState.a2hs === "object" ? appState.a2hs : {};
       return appState.a2hs;
+    }
+    // 自動跳出的提示（更新公告、加到主畫面、電腦版、備份提醒）：每次打開 App 最多一個，其他留到下次
+    let autoTipShown = false;
+    function claimAutoTip() {
+      if (autoTipShown || document.querySelector(".a2hs-card.show")) return false;
+      autoTipShown = true;
+      return true;
     }
     function maybeShowA2hsCard() {
       const st = a2hsState();
@@ -13939,6 +15105,7 @@ function initSupabaseClient() {
       const preTrip = tripsHaveContent([trip]) && daysToGo >= 0 && daysToGo <= 3 && !(st.preTrip || []).includes(trip.id);
       const valueMoment = tripsHaveContent(appState.trips) || (st.visits || 0) >= 2;
       if (preTrip || (valueMoment && now > (st.snoozeUntil || 0))) {
+        if (!claimAutoTip()) return;
         if (preTrip) { st.preTrip = [...(st.preTrip || []), trip.id].slice(-20); saveAppState(); }
         card.classList.add("show");
       }
@@ -13958,16 +15125,17 @@ function initSupabaseClient() {
       { id: "taiwan", label: "台灣", tz: ["Asia/Taipei"] },
       { id: "tokyo", label: "東京", tz: ["Asia/Tokyo"] },
       { id: "kansai", label: "大阪・京都", tz: [] },
+      { id: "japan", label: "東京↔關西", tz: [] },   // 跨城市：東京的站一路坐新幹線到大阪、京都
       { id: "seoul", label: "首爾", tz: ["Asia/Seoul"] },
       { id: "sf", label: "舊金山", tz: ["America/Los_Angeles"] },
       { id: "nyc", label: "紐約", tz: ["America/New_York"] },
     ];
-    const RAIL_REGION_TZ = { taiwan: "Asia/Taipei", tokyo: "Asia/Tokyo", kansai: "Asia/Tokyo", seoul: "Asia/Seoul", sf: "America/Los_Angeles", nyc: "America/New_York" };
+    const RAIL_REGION_TZ = { taiwan: "Asia/Taipei", tokyo: "Asia/Tokyo", kansai: "Asia/Tokyo", japan: "Asia/Tokyo", seoul: "Asia/Seoul", sf: "America/Los_Angeles", nyc: "America/New_York" };
     const railData = {};
     let RP = null;
 
     // 繁中字和日文漢字互通（「澀谷」對得到「渋谷」）
-    const RAIL_KANJI = { "澀": "渋", "澤": "沢", "驛": "駅", "廣": "広", "濱": "浜", "櫻": "桜", "黑": "黒", "惠": "恵", "戶": "戸", "邊": "辺", "關": "関", "藏": "蔵", "鐵": "鉄", "龍": "竜", "齋": "斎", "國": "国", "學": "学", "會": "会", "條": "条", "圓": "円", "邊": "辺", "臺": "台", "壽": "寿", "鶯": "鴬", "條": "条", "淺": "浅", "淚": "涙", "繩": "縄", "團": "団", "賣": "売", "讀": "読", "區": "区", "濟": "済", "營": "営", "驗": "験", "缽": "鉢", "圖": "図", "兩": "両", "樂": "楽", "與": "与", "萬": "万", "實": "実", "發": "発", "縣": "県", "寫": "写", "絲": "糸", "雞": "鶏", "氣": "気", "東京車站": "東京" };
+    const RAIL_KANJI = { "澀": "渋", "澤": "沢", "驛": "駅", "廣": "広", "濱": "浜", "櫻": "桜", "黑": "黒", "惠": "恵", "戶": "戸", "邊": "辺", "關": "関", "藏": "蔵", "鐵": "鉄", "龍": "竜", "齋": "斎", "國": "国", "學": "学", "會": "会", "條": "条", "圓": "円", "邊": "辺", "臺": "台", "壽": "寿", "鶯": "鴬", "條": "条", "淺": "浅", "淚": "涙", "繩": "縄", "團": "団", "賣": "売", "讀": "読", "區": "区", "濟": "済", "營": "営", "驗": "験", "缽": "鉢", "圖": "図", "兩": "両", "樂": "楽", "與": "与", "萬": "万", "實": "実", "發": "発", "縣": "県", "寫": "写", "絲": "糸", "雞": "鶏", "氣": "気", "稻": "稲", "舊": "旧", "豐": "豊", "綠": "緑", "鹽": "塩", "號": "号", "鄉": "郷", "晝": "昼", "燒": "焼", "廳": "庁", "戰": "戦", "險": "険", "峽": "峡", "嶽": "岳", "瀨": "瀬", "賴": "頼", "內": "内", "東京車站": "東京" };
     function railNorm(n) {
       let s = String(n || "").replace(/〈.*?〉|[（(].*?[)）]/g, "").replace(/\s+/g, "").toLowerCase();
       s = s.replace(/^(京成|京急|モノレール|地下鉄|東武|西武|京王|小田急|阪急|阪神|京阪|近鉄|南海|jr)/, "");
@@ -13979,14 +15147,57 @@ function initSupabaseClient() {
       const p = Math.PI / 180, x = (b.lng - a.lng) * p * Math.cos((a.lat + b.lat) * p / 2), y = (b.lat - a.lat) * p;
       return 6371000 * Math.hypot(x, y);
     }
+    // 路線資料改過（例如 tools/rail/tidy_names.py 整理站名）就換這個版本號，手機才不會用到舊的
+    const RAIL_DATA_VER = "20261119";
+    async function fetchRailRaw(id) {
+      const res = await fetch(`rail/${id}.json?v=${RAIL_DATA_VER}`, { cache: "default" });
+      if (!res.ok) throw new Error("no data");
+      return res.json();
+    }
+    // 「東京↔關西」：把東京、大阪京都兩份資料併在一起，用東海道新幹線接起來
+    // （東京資料裡的東海道新幹線一路開到京都、新大阪，這兩站接到關西資料裡同名、800m 內的車站）
+    async function fetchRailJapanRaw() {
+      const [t, k] = await Promise.all([fetchRailRaw("tokyo"), fetchRailRaw("kansai")]);
+      const OFF = 100000;   // 兩份資料的「地方 ID」都從 1 開始編，關西的整批往後移，才不會撞號
+      k.lines.forEach(L => L.st.forEach(a => { if (a[4] != null) a[4] += OFF; }));
+      const kByName = new Map();
+      k.lines.forEach(L => L.st.forEach(a => {
+        const nm = railNorm(a[0]);
+        if (!kByName.has(nm)) kByName.set(nm, []);
+        kByName.get(nm).push(a);
+      }));
+      const remap = new Map();
+      t.lines.forEach(L => L.st.forEach(a => {
+        if (a[4] == null || remap.has(a[4])) return;
+        const near = (kByName.get(railNorm(a[0])) || []).find(b => {
+          const m = railMeters({ lat: a[2], lng: a[3] }, { lat: b[2], lng: b[3] });
+          return m != null && m < 800;
+        });
+        if (near) remap.set(a[4], near[4]);
+      }));
+      t.lines.forEach(L => L.st.forEach(a => { if (remap.has(a[4])) a[4] = remap.get(a[4]); }));
+      // 記住每條線原本屬於哪個地區：畫路線圖時要用那個地區的官方線形
+      // （東京丸ノ內線和大阪御堂筋線的站號都是 M 開頭，混在一起會畫錯方向）
+      t.lines.forEach(L => { L.src = "tokyo"; });
+      k.lines.forEach(L => { L.src = "kansai"; });
+      return { region: "japan", built: t.built, source: t.source, lines: [...t.lines, ...k.lines] };
+    }
     async function loadRail(id) {
       if (railData[id]) return railData[id];
-      const res = await fetch(`rail/${id}.json`, { cache: "default" });
-      if (!res.ok) throw new Error("no data");
-      const d = await res.json();
+      const d = id === "japan" ? await fetchRailJapanRaw() : await fetchRailRaw(id);
       d.lines.forEach(L => {
         const ste = L.ste || [];
         L.st = L.st.map((a, i) => ({ n: a[0], no: a[1], lat: a[2], lng: a[3], cl: a[4], alt: a[5] || "", en: ste[i] || "" }));
+        // 少數車站資料沒有座標（例如台鐵三坑、百福）：用前後車站的位置補上，路線圖才畫得出來
+        L.st.forEach((st, i) => {
+          if (st.lat != null) return;
+          let a = i - 1; while (a >= 0 && L.st[a].lat == null) a--;
+          let b = i + 1; while (b < L.st.length && L.st[b].lat == null) b++;
+          const A = a >= 0 ? L.st[a] : null, B = b < L.st.length ? L.st[b] : null;
+          if (A && B) { const t = (i - a) / (b - a); st.lat = A.lat + (B.lat - A.lat) * t; st.lng = A.lng + (B.lng - A.lng) * t; }
+          else if (A || B) { st.lat = (A || B).lat; st.lng = (A || B).lng; }
+          if (st.lat != null) st.approx = true;
+        });
         try { railFixBranches(L); } catch (e) {}
       });
       d.byCl = new Map();
@@ -14090,6 +15301,8 @@ function initSupabaseClient() {
     }
     function railXfer(La, sa, Lb, sb) {
       if (railPairHit(RAIL_THROUGH, La, sa, Lb, sb)) return { k: "through", t: "直通運轉（同一班車可能不用下車）" };
+      // 台鐵的「線」只是路段名稱（縱貫線、宜蘭線、北迴線…），同一班車會一路開過去
+      if (La.g === "台鐵" && Lb.g === "台鐵" && railNorm(sa.n) === railNorm(sb.n)) return { k: "through", t: "同一班車，不用換車" };
       if (railPairHit(RAIL_SHARED, La, sa, Lb, sb)) return { k: "same", t: "同站轉乘（共用車站）" };
       const d = railMeters(sa, sb), same = railNorm(sa.n) === railNorm(sb.n);
       // 同一家公司、同一個站名：就算月台很遠（例如東京站的京葉線），也是在站內換車，不用出閘門
@@ -14205,7 +15418,8 @@ function initSupabaseClient() {
       legs.forEach((g, i) => {
         if (i === 0 && start && railNorm(g.from.n) !== railNorm(start.s.n)) h += `<div class="rp-xfer">先走到 ${escapeHtml(railStName(g.from))} ${railXt(railXfer(start.L, start.s, g.L, g.from))}</div>`;
         if (i > 0) { const p = legs[i - 1], x = railXfer(p.L, p.to, g.L, g.from); h += `<div class="rp-xfer">${x.k === "through" ? `經過 ${escapeHtml(railStName(p.to))}` : `在 ${escapeHtml(railStName(p.to))} 換車`} ${railXt(x)}</div>`; }
-        h += `<div class="rp-leg">${railSign(g.L, g.from.no)} ${escapeHtml(railStName(g.from))} → ${escapeHtml(railStName(g.to))}<small>${escapeHtml(railLineName(g.L))}・${g.hops} 站</small></div>`;
+        // 站名一定有自己的空間；路線名稱太長時整段換到下一行（靠右），不會把站名擠成一字一行
+        h += `<div class="rp-leg">${railSign(g.L, g.from.no)}<span class="rp-leg-st">${escapeHtml(railStName(g.from))} → ${escapeHtml(railStName(g.to))}</span><small>${escapeHtml(railLineName(g.L))}・${g.hops}\u00a0站</small></div>`;
       });
       return h;
     }
@@ -14317,6 +15531,7 @@ function initSupabaseClient() {
     function railGuessRegion() {
       const trip = getActiveTrip(), day = getActiveDay();
       const loc = `${day.location || ""} ${trip.title || ""}`;
+      if (/東京|tokyo/i.test(loc) && /大阪|京都|神戶|神戸|奈良|關西|関西|osaka|kyoto/i.test(loc)) return "japan";   // 東京、關西都有：跨城市
       if (/大阪|京都|神戶|神戸|奈良|關西|関西|osaka|kyoto/i.test(loc)) return "kansai";
       if (/東京|橫濱|横浜|tokyo/i.test(loc)) return "tokyo";
       if (/首爾|서울|seoul/i.test(loc)) return "seoul";
@@ -14336,7 +15551,7 @@ function initSupabaseClient() {
     }
     // 日本的站名用日文字型（思源黑體 JP＝Noto Sans JP），韓國用韓文字型（Noto Sans KR）：
     // 漢字的寫法跟現場站牌一樣，韓文也讀得到。字型用到才下載，而且只下載用到的字
-    const RAIL_LANG = { tokyo: "ja", kansai: "ja", seoul: "ko" };
+    const RAIL_LANG = { tokyo: "ja", kansai: "ja", japan: "ja", seoul: "ko" };
     const HANGUL_RE = /[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF]/;
     function ensureLocaleFont(lang) {
       const fam = lang === "ja" ? "Noto+Sans+JP" : lang === "ko" ? "Noto+Sans+KR" : "";
@@ -14447,7 +15662,7 @@ function initSupabaseClient() {
         const rowEnd = selIdx < 0 ? -1 : Math.min(ls.length - 1, Math.floor(selIdx / 4) * 4 + 3);
         ls.forEach((L, idx) => {
           const li = d.lines.indexOf(L);
-          h += `<button type="button" class="rp-line${li === sel ? " on" : ""}" onclick="railBrowseLine('${role}', ${li})">${railSign(L, "", 38)}<small>${escapeHtml(railLineName(L))}</small></button>`;
+          h += `<button type="button" class="rp-line${li === sel ? " on" : ""}" onclick="railBrowseLine('${role}', ${li})">${railSign(L, "", 38)}<small>${escapeHtml(railLineName(L)).replace(/\//g, "/<wbr>")}</small></button>`;
           // 路線圖直接出現在這一排的正下方
           if (idx === rowEnd) h += `<div class="rp-inline">${railStrip(d, d.lines[sel], role)}</div>`;
         });
@@ -14496,13 +15711,29 @@ function initSupabaseClient() {
         if (seen.has(sig)) { seen.get(sig).tags.push(v.tag); return; }
         seen.set(sig, { legs, tags: [v.tag] });
       });
-      return [...seen.values()].map(r => {
+      const opts = [...seen.values()].map(r => {
         const hops = r.legs.reduce((a, g) => a + g.hops, 0);
         const xs = r.legs.slice(1).map((g, i) => railXfer(r.legs[i].L, r.legs[i].to, g.L, g.from));
         const walk = xs.filter(x => x.k === "walk").length;
         const through = xs.filter(x => x.k === "through").length;
         return { ...r, hops, transfers: r.legs.length - 1 - through, walk };
       });
+      // 「站數最少」只給真的站數最少的那一個。算「站數最少」時會避開新幹線、特急（要另外買票），
+      // 所以可能比搭新幹線的走法多好幾站（新幹線一段只算 1、2 站）；這種走法改叫「不搭新幹線・特急」
+      if (opts.length) {
+        const minHops = Math.min(...opts.map(o => o.hops));
+        const usesPremium = o => o.legs.some(g => railPremium(g.L) > 0);
+        opts.forEach(o => {
+          const i = o.tags.indexOf("站數最少");
+          if (i < 0 || o.hops <= minHops) return;
+          o.tags.splice(i, 1);
+          if (!usesPremium(o) && opts.some(usesPremium)) o.tags.push("不搭新幹線・特急");
+        });
+        const fewest = opts.filter(o => o.hops === minHops);
+        if (!fewest.some(o => o.tags.includes("站數最少"))) fewest[0].tags.push("站數最少");
+        opts.forEach(o => { if (!o.tags.length) o.tags.push("其他走法"); });
+      }
+      return opts;
     }
     // 用站名找車站（不用先知道在哪條線）：中文、日文、英文、韓文都比對
     function railSearchHtml(d, q, role) {
@@ -14567,7 +15798,9 @@ function initSupabaseClient() {
         h += `<div class="rp-step"><div class="rp-step-h"><span>③ 選一種走法</span></div>`;
         if (!opts.length) h += `<div class="rp-msg">找不到換 3 次以內的走法。可以換一個下車站，或分成兩段交通行程。</div>`;
         opts.forEach((o, i) => {
-          h += `<button type="button" class="rp-route${i ? " alt" : ""}" onclick="railChooseRoute(${i})"><div class="rt"><b>${o.tags.length >= 3 ? "推薦走法" : o.tags.join("・")}</b><span>${o.transfers ? `轉乘 ${o.transfers} 次` : "直達"}・${o.hops} 站${o.walk ? "・要出站走路" : ""}</span></div>${railLegsHtml(o.legs, RP.from)}</button>`;
+          const tts = railTimetableSys(o);
+          h += `<button type="button" class="rp-route${i ? " alt" : ""}" onclick="railChooseRoute(${i})"><div class="rt"><b>${o.tags.length >= 3 ? "推薦走法" : o.tags.map(t => tr(t)).join(window.TG_LANG === "en" ? " · " : "・")}</b><span>${o.transfers ? `轉乘 ${o.transfers} 次` : "直達"}・${o.hops} 站${o.walk ? "・要出站走路" : ""}</span></div>${railLegsHtml(o.legs, RP.from)}${tts ? `<span class="rp-ttbtn" role="button" tabindex="0" onclick="event.stopPropagation(); railShowTimetable(${i})">${RP.tt && RP.tt.i === i ? "▾ " : ""}查${tts.sys === "THSR" ? "高鐵" : "台鐵"}班次，選一班車</span>` : ""}</button>`;
+          if (RP.tt && RP.tt.i === i) h += railTimetableHtml();
         });
         h += `</div>`;
       }
@@ -14589,9 +15822,114 @@ function initSupabaseClient() {
       const d = railData[RP.region], L = d.lines[li], s = L.st[si];
       if (role === "from") return railSetFromStation({ L, s });
       if (RP.from && s.cl === RP.from.s.cl) return showToast("上車和下車是同一個地方");
-      RP.to = { L, s }; RP.browse = false; RP.browseLine = null; railRender();
+      RP.to = { L, s }; RP.browse = false; RP.browseLine = null; RP.tt = null; railRender();
     }
     function railChooseRoute(i) { RP.legs = RP._opts[i].legs.slice(); railFinish(); }
+    // ---------- 台鐵／高鐵班次（TDX 時刻表，經 Supabase 函式 rail-timetable）----------
+    // 全程都是台鐵（可以跨好幾條線，例如台北→花蓮），或只有一段高鐵，才查得到班次
+    // 走法裡的火車段（台鐵可以連續好幾段；高鐵一段）。前後可以有捷運、輕軌（例如捷運中山→台北→台鐵→瑞芳）
+    function railTimetableSys(o) {
+      if (!o || !o.legs || !o.legs.length || RP.region !== "taiwan") return null;
+      const idx = o.legs.map((g, i) => (g.L.g === "台鐵" || g.L.g === "台灣高鐵" ? i : -1)).filter(i => i >= 0);
+      if (!idx.length) return null;
+      const a = idx[0], b = idx[idx.length - 1];
+      if (b - a + 1 !== idx.length) return null;                       // 火車段中間夾了捷運：先不支援
+      const sys = o.legs[a].L.g === "台灣高鐵" ? "THSR" : "TRA";
+      if (o.legs.slice(a, b + 1).some(g => (g.L.g === "台灣高鐵") !== (sys === "THSR"))) return null;   // 台鐵、高鐵混搭
+      if (sys === "THSR" && a !== b) return null;
+      // 火車段前後的捷運大約要多久（每站約 2.5 分，換車約 6 分）
+      const legMin = g => Math.max(3, Math.round((g.hops || 1) * 2.5));
+      const before = o.legs.slice(0, a).reduce((m, g) => m + legMin(g) + 6, 0);
+      const after = o.legs.slice(b + 1).reduce((m, g) => m + legMin(g) + 6, 0);
+      return { sys, from: o.legs[a].from.n, to: o.legs[b].to.n, a, b, before, after };
+    }
+    function railTimetableDate() {
+      const trip = getActiveTrip();
+      return tripDayDateStr(trip, appState.activeDayIndex || 0) || cdLocalDateStr();
+    }
+    async function railShowTimetable(i) {
+      if (RP.tt && RP.tt.i === i) { RP.tt = null; railRender(); return; }
+      const sysInfo = railTimetableSys(RP._opts[i]);
+      if (!sysInfo) return;
+      const date = railTimetableDate();
+      RP.tt = { i, status: "loading", sys: sysInfo.sys, date, showAll: false };
+      railRender();
+      const key = `${sysInfo.sys}|${sysInfo.from}|${sysInfo.to}|${date}`;
+      railShowTimetable.cache = railShowTimetable.cache || new Map();
+      let data = railShowTimetable.cache.get(key);
+      if (!data) {
+        try {
+          const res = await fetch(`${SUPABASE_URL}/functions/v1/rail-timetable`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+            body: JSON.stringify({ sys: sysInfo.sys, from: sysInfo.from, to: sysInfo.to, date })
+          });
+          data = await res.json();
+        } catch (e) { data = { ok: false, error: navigator.onLine ? "network" : "offline" }; }
+        if (data && data.ok) railShowTimetable.cache.set(key, data);
+      }
+      if (!RP.tt || RP.tt.i !== i) return;   // 使用者已經關掉或換了一個走法
+      RP.tt = { ...RP.tt, status: data && data.ok ? "ok" : "err", data };
+      railRender();
+    }
+    const RAIL_TYPE_COLOR = [[/普悠瑪|太魯閣|新自強/, "#C8102E"], [/自強/, "#E8711A"], [/莒光/, "#C99A06"], [/區間快/, "#2F6FDB"], [/區間|普快/, "#3B82C4"], [/高鐵|THSR/i, "#F37021"]];
+    function railTimetableHtml() {
+      const tt = RP.tt;
+      const dl = tt.date.replace(/-/g, "/").slice(5);
+      let h = `<div class="rp-tt"><div class="rp-tt-h">④ 選一班車・${escapeHtml(dl)}</div>`;
+      if (tt.status === "loading") return h + `<div class="rp-msg">正在查時刻表…</div></div>`;
+      const d = tt.data || {};
+      if (tt.status === "err") {
+        const msg = /tdx_not_configured|not found|404|Function not found/i.test(d.error || "") ? "時刻表服務還沒開啟（管理員：在 Supabase 部署 rail-timetable）。可以先選走法，時間自己填。"
+          : d.error === "unknown_station" ? "時刻表裡找不到這個車站。可以先選走法，時間自己填。"
+          : d.error === "offline" ? "現在沒有網路，查不到時刻表。" : "暫時查不到時刻表，請稍後再試。";
+        return h + `<div class="rp-msg">${msg}</div></div>`;
+      }
+      const trains = d.trains || [];
+      if (!trains.length) return h + `<div class="rp-msg">這一天查不到直達的班次（可能要在中途換車），可以先選走法，時間自己填。</div></div>`;
+      if (d.sameWeekday) h += `<div class="rp-tt-note">這天的時刻表還沒公布，下面是 ${escapeHtml(d.usedDate.replace(/-/g, "/").slice(5))}（同一個星期幾）的班次，出發前記得再確認。</div>`;
+      // 從表單上的開始時間前一小時開始列
+      const sh = parseInt(document.getElementById("fStartHour").value, 10) || 0, sm = parseInt(document.getElementById("fStartMin").value, 10) || 0;
+      const info = railTimetableSys(RP._opts[tt.i]) || { before: 0 };
+      const anchor = sh * 60 + sm + info.before - 60;   // 先搭捷運的話，火車大概在出發後 before 分鐘
+      const toMin = t => { const [a, b] = t.split(":").map(Number); return a * 60 + b; };
+      let list = tt.showAll ? trains : trains.filter(t => toMin(t.dep) >= anchor).slice(0, 10);
+      if (!list.length) list = trains.slice(-10);
+      const en = window.TG_LANG === "en";
+      h += list.map(t => {
+        const k = trains.indexOf(t);
+        const col = (RAIL_TYPE_COLOR.find(([re]) => re.test(t.type)) || [, "#8A8A8A"])[1];
+        const typ = en && t.typeEn ? t.typeEn : (tt.sys === "THSR" ? "高鐵" : t.type);
+        return `<button type="button" class="rp-train" onclick="railPickTrain(${k})"><span class="tt-time">${t.dep} → ${t.arr}${t.nextDay ? "<sup>+1</sup>" : ""}</span><span class="tt-dur">${escapeHtml(en ? `${Math.floor(t.mins / 60) ? Math.floor(t.mins / 60) + "h " : ""}${t.mins % 60}m` : `${Math.floor(t.mins / 60) ? Math.floor(t.mins / 60) + "時" : ""}${t.mins % 60}分`)}</span><span class="tt-type" style="--c:${col}">${escapeHtml(typ)}</span><span class="tt-no">${escapeHtml(t.no)}</span></button>`;
+      }).join("");
+      if (!tt.showAll && trains.length > list.length) h += `<button type="button" class="rp-more" onclick="RP.tt.showAll=true;railRender()">看全部 ${trains.length} 班</button>`;
+      return h + `<div class="rp-tt-src">時刻表：交通部 TDX</div></div>`;
+    }
+    function railPickTrain(k) {
+      const tt = RP.tt, t = tt && tt.data && tt.data.trains[k];
+      if (!t) return;
+      const o = RP._opts[tt.i];
+      RP.legs = o.legs.slice();
+      const keys = new Set(o.legs.filter(g => g.L.g === "台鐵" || g.L.g === "台灣高鐵").map(g => g.L.k));
+      const label = tt.sys === "THSR" ? `高鐵 ${t.no} 次` : `${t.type} ${t.no} 次`;
+      railFinish();
+      // 填上車次、出發和抵達時間
+      document.querySelectorAll("#transitLegsContainer .leg-item").forEach(row => {
+        if (keys.has(row.dataset.lineKey)) { const inp = row.querySelector(".leg-train"); if (inp && !inp.value.trim()) inp.value = label; }
+      });
+      // 整段的出發、抵達：火車時刻表＋前後捷運的估算
+      const info = railTimetableSys(o) || { before: 0, after: 0 };
+      const toMin = x => { const [h, m] = x.split(":").map(Number); return h * 60 + m; };
+      let st = toMin(t.dep) - info.before, en = toMin(t.arr) + (t.nextDay ? 1440 : 0) + info.after;
+      if (st < 0) { st += 1440; en += 1440; }
+      const hhmm = m => [String(Math.floor((m % 1440) / 60)).padStart(2, "0"), String(m % 60).padStart(2, "0")];
+      const [dh, dm] = hhmm(st), [ah, am] = hhmm(en);
+      document.getElementById("fStartHour").value = dh; setMinuteSelect("fStartMin", dm);
+      document.getElementById("fEndHour").value = ah; setMinuteSelect("fEndMin", am);
+      document.getElementById("fEndDayOffset").value = String(Math.floor(en / 1440) - Math.floor(st / 1440));
+      showToast(info.before || info.after ? `已填好 ${label}（火車 ${t.dep} → ${t.arr}，捷運的時間是估算）` : `已填好 ${label}：${t.dep} → ${t.arr}`, 4200);
+    }
+
 
     // 回報車站資料錯誤：自動附上地區、車站、路線、App 判斷的換車方式
     function railReport() {
@@ -14956,6 +16294,7 @@ function initSupabaseClient() {
         go.textContent = "現在備份";
         go.onclick = () => exportBackupJSON();
       } else return;
+      if (!claimAutoTip()) return;
       document.getElementById("backupTipCard").classList.add("show");
     }
     window.addEventListener("load", () => setTimeout(maybeShowBackupTip, 9000));
@@ -14964,6 +16303,7 @@ function initSupabaseClient() {
       setTimeout(() => {
         if (appState.desktopTipDone || !detectPlatform().desktop || isStandaloneApp()) return;
         if (document.documentElement.classList.contains("landing-open") || document.querySelector(".modal-backdrop.open")) return;
+        if (!claimAutoTip()) return;
         document.getElementById("desktopTipCard").classList.add("show");
       }, 5000);
     });
@@ -14979,15 +16319,12 @@ function initSupabaseClient() {
 
     // 精選照片：在回憶頁直接上傳（存在這台裝置，照片存進 IndexedDB）
     function uploadMemoryPhotos() {
-      const inp = document.createElement("input");
-      inp.type = "file"; inp.accept = "image/*"; inp.multiple = true;
-      inp.onchange = async e => {
+      pickImageFiles(async files => {
         const trip = findTripById(memoryDetailTripId);
         if (!trip) return;
         appState.memoryPhotos = appState.memoryPhotos || {};
         const list = appState.memoryPhotos[trip.id] = appState.memoryPhotos[trip.id] || [];
-        for (const f of Array.from(e.target.files || []).slice(0, 12)) {
-          const c = await compressImageFile(f);
+        for (const c of await compressImageFilesSafe(files.slice(0, 12))) {
           c.pid = newPhotoId();
           list.unshift(c);
           // 新上傳的直接選進精選；滿 3 張就替換最早選的
@@ -14996,9 +16333,8 @@ function initSupabaseClient() {
         }
         saveAppState();
         renderMemoryPickGrid();
-        showToast("照片存在這台裝置。換手機前，記得用選單的「備份到這台裝置」備份一份。", 4200);
-      };
-      inp.click();
+        showToast("照片存在這台裝置。換手機前，記得用選單「匯入、備份、還原」裡的「備份到這台裝置」備份一份。", 4200);
+      });
     }
     function removeMemoryPhoto(pid) {
       const trip = findTripById(memoryDetailTripId);
@@ -15038,7 +16374,7 @@ function initSupabaseClient() {
       const isNewcomer = document.documentElement.classList.contains("landing-open") || !tripsHaveContent(appState.trips);
       if (isNewcomer) { if (appState.whatsNewSeen !== WHATS_NEW.version) { appState.whatsNewSeen = WHATS_NEW.version; saveAppState(); } return; }
       if (appState.whatsNewSeen === WHATS_NEW.version) return;
-      setTimeout(() => { if (!document.querySelector(".modal-backdrop.open")) openWhatsNew(); }, 1200);
+      setTimeout(() => { if (!document.querySelector(".modal-backdrop.open") && claimAutoTip()) openWhatsNew(); }, 1200);
     });
 
     // 襯線字型（路線誌卡片的「襯線」風格才用到）：第一次需要時才下載

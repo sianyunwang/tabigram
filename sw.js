@@ -3,8 +3,8 @@
 // - 字型與程式元件（Google Fonts、jsDelivr）：先用存好的，背景再更新
 // - 雲端資料、天氣、地圖座標：不存，直接連線（離線時 App 會先把變更存在裝置上）
 // 改了這個檔案或想強制更新時，把 CACHE 的版本號加 1
-const CACHE = "tabigram-v47";
-const CORE = ["./", "index.html", "privacy.html", "terms.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "logo-ring.png", "favicon.png", "sample-route-card.jpg", "sample-flight-card.jpg", "sample-stamp-card.jpg", "sample-memory-card.jpg", "sample-recap-card.jpg", "sample-route-card-en.jpg", "sample-flight-card-en.jpg", "sample-stamp-card-en.jpg", "sample-memory-card-en.jpg", "sample-recap-card-en.jpg", "fonts/tg-fill.woff2", "i18n/en.js", "privacy-en.html", "terms-en.html", "airports.json"];
+const CACHE = "tabigram-v58";
+const CORE = ["./", "index.html", "privacy.html", "terms.html", "manifest.webmanifest", "icon-192.png", "icon-512.png", "logo-ring.svg", "logo-ring.png", "favicon.svg", "favicon.png", "sample-route-card.jpg", "sample-flight-card.jpg", "sample-stamp-card.jpg", "sample-memory-card.jpg", "sample-recap-card.jpg", "sample-route-card-en.jpg", "sample-flight-card-en.jpg", "sample-stamp-card-en.jpg", "sample-memory-card-en.jpg", "sample-recap-card-en.jpg", "fonts/tg-fill.woff2", "i18n/en.js", "privacy-en.html", "terms-en.html", "airports.json"];
 const ASSET_HOSTS = ["fonts.googleapis.com", "fonts.gstatic.com", "cdn.jsdelivr.net", "cdnjs.cloudflare.com", "unpkg.com"];
 
 self.addEventListener("install", event => {

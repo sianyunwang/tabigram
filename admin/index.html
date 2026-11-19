@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>果醬派對管理｜TabigrAm</title>
+<link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="icon" href="../favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,7 +30,7 @@ a { color: inherit; }
 button { font-family: var(--sans); }
 .wrap { max-width: 980px; margin: 0 auto; }
 .top { display: flex; align-items: center; gap: 12px; padding: 8px 0 22px; }
-.ring { width: 40px; height: 40px; flex: none; background: var(--accent); -webkit-mask: url(../logo-ring.png) center / contain no-repeat; mask: url(../logo-ring.png) center / contain no-repeat; animation: spin 18s linear infinite; }
+.ring { width: 40px; height: 40px; flex: none; background: var(--accent); -webkit-mask: url(../logo-ring.svg) center / contain no-repeat; mask: url(../logo-ring.svg) center / contain no-repeat; animation: spin 18s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .ring { animation: none; } }
 .brand { font-family: var(--display); font-size: 22px; line-height: 1.1; }
@@ -72,6 +73,32 @@ h2 { font-size: 18px; font-weight: 900; margin: 0; }
 .icon-btn { width: 34px; height: 34px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); cursor: pointer; font-size: 15px; font-weight: 900; color: var(--ink); }
 .icon-btn[disabled] { opacity: .3; cursor: default; }
 .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 26px 0 12px; flex-wrap: wrap; }
+.pill.star { background: var(--accent-soft); color: var(--accent); }
+
+/* 分頁 */
+.tabs { display: flex; gap: 6px; margin: -8px 0 18px; }
+.tabs button { border: 1.5px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 8px 16px; font: 900 14px var(--sans); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.tabs button.on { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.tab-n { font: 800 11px var(--mono); background: var(--accent); color: #fff; border-radius: 999px; padding: 1px 7px; }
+.tab-n:empty { display: none; }
+
+/* 意見回饋 */
+.fb-tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 4px 0 14px; }
+.chip { border: 1.5px solid var(--line); background: var(--card); border-radius: 999px; padding: 5px 12px; font: 800 13px var(--sans); cursor: pointer; color: var(--ink); }
+.chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.fb-search { flex: 1; min-width: 160px; font: 500 14px var(--sans); border: 1.5px solid var(--line); border-radius: 999px; padding: 7px 14px; background: #fff; color: var(--ink); }
+.fb { display: grid; gap: 6px; }
+.fb.done { opacity: .55; }
+.fb-head { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 12.5px; color: var(--sub); }
+.fb-cat { font-size: 11.5px; font-weight: 900; border-radius: 999px; padding: 2px 9px; }
+.fb-cat.bug { background: #FBE3DD; color: #B23A20; }
+.fb-cat.idea { background: #E4ECF8; color: #2C4F8A; }
+.fb-cat.love { background: var(--ok-soft); color: var(--ok); }
+.fb-cat.other { background: var(--card2); color: var(--sub); }
+.fb-msg { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14.5px; line-height: 1.65; }
+.fb-info { font: 500 11.5px var(--mono); color: var(--sub); overflow-wrap: anywhere; }
+.fb-foot { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.fb-foot .sp { flex: 1; }
 
 /* 編輯 */
 .editor { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; align-items: start; }
@@ -156,6 +183,10 @@ h2 { font-size: 18px; font-weight: 900; margin: 0; }
     <span class="sp"></span>
     <div class="who" id="who" hidden><b id="whoName"></b><button class="btn ghost sm" type="button" id="signOutBtn">登出</button></div>
   </header>
+  <nav class="tabs" id="tabs" hidden>
+    <button type="button" data-tab="packs">貼紙包</button>
+    <button type="button" data-tab="feedback">意見回饋 <span class="tab-n" id="fbCount"></span></button>
+  </nav>
   <main id="app"><div class="skeleton"></div></main>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -196,8 +227,17 @@ async function boot() {
   const { data: ok, error } = await sb.rpc("is_app_admin");
   if (error) return renderMessage("還沒完成設定", "找不到管理員設定。請先在 Supabase 的 SQL Editor 執行 SUPABASE_STICKER_ADMIN.sql。");
   if (!ok) return renderMessage("這個帳號不是管理員", "只有 TabigrAm 的管理員可以使用這一頁。如果你是管理員，請換成管理員的 Google 帳號登入。");
-  await loadPacks();
-  renderList();
+  $("tabs").hidden = false;
+  document.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+  loadFeedback().then(() => updateFbCount());
+  await showTab(location.hash === "#feedback" ? "feedback" : "packs");
+}
+async function showTab(tab) {
+  if (draft && hasUnsaved() && !confirm("編輯中的貼紙包還沒存，確定要離開？")) return;
+  document.querySelectorAll("[data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
+  history.replaceState(null, "", tab === "feedback" ? "#feedback" : location.pathname);
+  if (tab === "feedback") { draft = null; await loadFeedback(); renderFeedback(); }
+  else { await loadPacks(); renderList(); }
 }
 $("signOutBtn").addEventListener("click", async () => { await sb.auth.signOut(); location.reload(); });
 sb.auth.onAuthStateChange((ev) => { if (ev === "SIGNED_IN" && !user) boot(); });
@@ -228,19 +268,20 @@ function renderList() {
   const rows = packs.map((p, i) => `<article class="card pack">
       <span class="cover">${p.cover ? `<img src="${esc(publicUrl(p.cover))}" alt="">` : ""}</span>
       <div style="min-width:0;">
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;"><span class="pack-name">${esc(p.name)}</span><span class="pill ${p.published ? "on" : "off"}">${p.published ? "● 已上架" : "草稿"}</span></div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;"><span class="pack-name">${esc(p.name)}</span>${p.featured && p.published ? `<span class="pill star">★ 本季精選</span>` : ""}<span class="pill ${p.published ? "on" : "off"}">${p.published ? "● 已上架" : "草稿"}</span></div>
         <div class="pack-meta">${esc(p.name_en)} · 插畫：${esc(p.artist || "—")} · ${(p.items || []).length} 張</div>
         <div class="pack-strip">${(p.items || []).slice(0, 8).map(x => `<img src="${esc(publicUrl(x.path))}" alt="" loading="lazy">`).join("")}</div>
       </div>
       <div class="pack-actions">
         <div class="order"><button class="icon-btn" type="button" aria-label="往前" data-move="${i}:-1" ${i === 0 ? "disabled" : ""}>↑</button><button class="icon-btn" type="button" aria-label="往後" data-move="${i}:1" ${i === packs.length - 1 ? "disabled" : ""}>↓</button></div>
         <button class="btn soft sm" type="button" data-edit="${esc(p.id)}">編輯</button>
+        ${p.published ? `<button class="btn ${p.featured ? "soft" : "ghost"} sm" type="button" data-feature="${esc(p.id)}">${p.featured ? "取消精選" : "★ 設為精選"}</button>` : ""}
         <button class="btn ${p.published ? "ghost" : "go"} sm" type="button" data-toggle="${esc(p.id)}">${p.published ? "下架" : "上架"}</button>
       </div>
     </article>`).join("");
   $("app").innerHTML = `
     <h1>貼紙包</h1>
-    <p class="lead">上架的貼紙包會出現在 App 的「貼圖」分頁和果醬派對。順序就是 App 裡顯示的順序。</p>
+    <p class="lead">上架的貼紙包會出現在果醬派對，使用者按「收藏」後才會出現在分享卡的「貼圖」裡。<b>本季精選</b>（建議最多 3 組）會排在果醬派對最前面，其他收在「看全部」。順序就是 App 裡顯示的順序。</p>
     <div class="bar"><span class="kicker">${packs.length} 包 · ${packs.filter(p => p.published).length} 包上架中</span><button class="btn go" type="button" id="newBtn">＋ 新增貼紙包</button></div>
     <div class="list">${rows || `<section class="card center"><div class="kicker">EMPTY</div><h2 style="margin-top:6px;">還沒有雲端貼紙包</h2><p>按「新增貼紙包」上傳第一包，或把網站裡內建的蛋白人搬進來。</p></section>`}</div>
     ${hasNaobao ? "" : `<section class="card" style="margin-top:12px; display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
@@ -252,8 +293,79 @@ function renderList() {
   const ib = $("importBtn"); if (ib) ib.addEventListener("click", importNaobao);
   document.querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => openEditor(b.dataset.edit)));
   document.querySelectorAll("[data-toggle]").forEach(b => b.addEventListener("click", () => togglePublish(b.dataset.toggle, b)));
+  document.querySelectorAll("[data-feature]").forEach(b => b.addEventListener("click", () => toggleFeatured(b.dataset.feature, b)));
   document.querySelectorAll("[data-move]").forEach(b => b.addEventListener("click", () => { const [i, d] = b.dataset.move.split(":").map(Number); movePack(i, d); }));
 }
+async function toggleFeatured(id, btn) {
+  const p = packs.find(x => x.id === id); if (!p) return;
+  const n = packs.filter(x => x.featured && x.published).length;
+  if (!p.featured && n >= 3 && !confirm(`已經有 ${n} 組精選了，建議最多 3 組。還是要加入嗎？`)) return;
+  btn.disabled = true;
+  const { error } = await sb.from("sticker_packs").update({ featured: !p.featured, updated_at: new Date().toISOString() }).eq("id", id);
+  btn.disabled = false;
+  if (error) return toast(/featured/.test(error.message) ? "請先在 Supabase 執行 SUPABASE_ADMIN_V2.sql" : "更新失敗：" + error.message, 5000);
+  p.featured = !p.featured;
+  toast(p.featured ? "已設為本季精選" : "已取消精選");
+  renderList();
+}
+
+// ===== 意見回饋看板 =====
+const FB_CAT = { bug: "問題回報", idea: "建議", love: "喜歡", other: "其他" };
+let feedback = [], fbFilter = { cat: "all", open: true, q: "" }, fbError = "";
+async function loadFeedback() {
+  const { data, error } = await sb.from("feedback").select("*").order("created_at", { ascending: false }).limit(500);
+  fbError = error ? error.message : "";
+  feedback = data || [];
+}
+function updateFbCount() {
+  const n = feedback.filter(f => !f.handled).length;
+  $("fbCount").textContent = n ? String(n) : "";
+}
+function renderFeedback() {
+  updateFbCount();
+  if (fbError) {
+    $("app").innerHTML = `<section class="card center"><h1>還讀不到回饋</h1><p>請先在 Supabase 的 SQL Editor 執行 SUPABASE_ADMIN_V2.sql（讓管理員可以讀取回饋）。</p><p style="font-size:12px;">${esc(fbError)}</p></section>`;
+    return;
+  }
+  const q = fbFilter.q.trim().toLowerCase();
+  const list = feedback.filter(f => (fbFilter.cat === "all" || f.category === fbFilter.cat) && (!fbFilter.open || !f.handled)
+    && (!q || `${f.message} ${f.email || ""} ${f.page_info || ""}`.toLowerCase().includes(q)));
+  const count = c => feedback.filter(f => (c === "all" || f.category === c) && (!fbFilter.open || !f.handled)).length;
+  const chip = (k, label) => `<button type="button" class="chip ${fbFilter.cat === k ? "on" : ""}" data-cat="${k}">${label} ${count(k)}</button>`;
+  const fmt = t => { const d = new Date(t); return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; };
+  $("app").innerHTML = `
+    <h1>意見回饋</h1>
+    <p class="lead">使用者在 App「意見回饋」和「選車站 → 告訴我們」送出的內容。處理完按「已處理」，就會從待處理清單收起來。</p>
+    <div class="fb-tools">
+      ${chip("all", "全部")}${chip("bug", "問題回報")}${chip("idea", "建議")}${chip("love", "喜歡")}${chip("other", "其他")}
+      <button type="button" class="chip ${fbFilter.open ? "on" : ""}" id="fbOpen">只看待處理</button>
+      <input class="fb-search" id="fbSearch" type="search" placeholder="搜尋內容、Email（例如「車站資料」）" value="${esc(fbFilter.q)}">
+    </div>
+    <div class="list">${list.map(f => `<article class="card fb ${f.handled ? "done" : ""}">
+        <div class="fb-head"><span class="fb-cat ${esc(f.category)}">${esc(FB_CAT[f.category] || f.category)}</span><span>${esc(fmt(f.created_at))}</span>${f.email ? `<a href="mailto:${esc(f.email)}">${esc(f.email)}</a>` : `<span>沒有留 Email</span>`}</div>
+        <div class="fb-msg">${esc(f.message)}</div>
+        ${f.page_info ? `<div class="fb-info">${esc(f.page_info)}</div>` : ""}
+        <div class="fb-foot"><span class="sp"></span>
+          ${f.email ? `<a class="btn soft sm" href="mailto:${esc(f.email)}?subject=${encodeURIComponent("TabigrAm 回覆你的意見")}">回信</a>` : ""}
+          <button class="btn ${f.handled ? "ghost" : "dark"} sm" type="button" data-handled="${f.id}">${f.handled ? "改回待處理" : "已處理"}</button>
+        </div>
+      </article>`).join("") || `<section class="card center"><div class="kicker">ALL CLEAR</div><h2 style="margin-top:6px;">沒有符合的回饋</h2></section>`}</div>`;
+  document.querySelectorAll("[data-cat]").forEach(b => b.addEventListener("click", () => { fbFilter.cat = b.dataset.cat; renderFeedback(); }));
+  $("fbOpen").addEventListener("click", () => { fbFilter.open = !fbFilter.open; renderFeedback(); });
+  const si = $("fbSearch");
+  si.addEventListener("input", () => { fbFilter.q = si.value; clearTimeout(si._t); si._t = setTimeout(() => { renderFeedback(); const n = $("fbSearch"); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 250); });
+  document.querySelectorAll("[data-handled]").forEach(b => b.addEventListener("click", () => toggleHandled(Number(b.dataset.handled), b)));
+}
+async function toggleHandled(id, btn) {
+  const f = feedback.find(x => x.id === id); if (!f) return;
+  btn.disabled = true;
+  const { error } = await sb.from("feedback").update({ handled: !f.handled }).eq("id", id);
+  btn.disabled = false;
+  if (error) return toast("更新失敗：" + error.message, 5000);
+  f.handled = !f.handled;
+  renderFeedback();
+}
+
 async function togglePublish(id, btn) {
   const p = packs.find(x => x.id === id); if (!p) return;
   if (!p.published && !(p.items || []).length) return toast("這包還沒有貼紙，先編輯加入貼紙");

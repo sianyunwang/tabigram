@@ -27,7 +27,7 @@
       var lang = q || saved || (/^zh/i.test(nav) ? "zh" : "en");
       window.TG_LANG = lang;
       document.documentElement.lang = lang === "en" ? "en" : "zh-TW";
-      if (lang === "en") document.write('<script src="i18n/en.js?v=dfeb4876"><\/script>');
+      if (lang === "en") document.write('<script src="i18n/en.js?v=9d6ae5bc"><\/script>');
     })();
   </script>
   <script>
@@ -11650,8 +11650,8 @@ function initSupabaseClient() {
         const isCo = coAdmins.includes(row.user_id);
         const jData = row.journal_data || {};
         const customName = jData.userDisplayName ? jData.userDisplayName.trim() : "";
-        const emailPart = row.user_email ? `(${row.user_email})` : "";
-        const label = customName ? `${customName} ${emailPart}` : (row.user_email || `旅人 #${idx + 1}`);
+        // D1：成員之間不顯示 Email，只顯示名稱；沒設定名稱就是「旅伴 n」
+        const label = customName || (window.TG_LANG === "en" ? `Travel buddy ${idx + 1}` : `旅伴 ${idx + 1}`);
         const roleBadge = isOwner ? " <b style='color:var(--ink);'>[管理員]</b>" : (isCo ? " <b style='color:#0284C7;'>[管理員]</b>" : "");
         return `• ${escapeHtml(label)}${roleBadge}`;
       }).join("<br/>");
@@ -12363,7 +12363,9 @@ function initSupabaseClient() {
       renderCloudModalUI();
       resolveMissingCloudPhotos();
       alert(`成功加入「${mergedTrip.title}」！`);
-      maybeShowProfileSetup();
+      // 成員之間只看得到名稱：還沒設定名稱的人，加入後請他填一個，旅伴才認得出來
+      if (!appState.userDisplayName) { appState.profileSetupSeen = true; saveAppState(); setTimeout(() => { openProfileModal(true); showToast("取個名字吧：旅伴只看得到你的名稱，不會看到 Email", 5000); }, 450); }
+      else maybeShowProfileSetup();
     }
 
     // Auto-pull updates on login/reload while preserving personal memories
@@ -12872,7 +12874,7 @@ function initSupabaseClient() {
         const safeUid = String(row.user_id || "").replace(/[^A-Za-z0-9_-]/g, "");
         const isOwner = (row.user_id === trip.ownerId);
         const isCoAdmin = trip.coAdmins.includes(row.user_id);
-        const emailText = escapeHtml((row.journal_data && row.journal_data.userDisplayName) || row.user_email || `旅人 #${i + 1}`);
+        const emailText = escapeHtml((row.journal_data && row.journal_data.userDisplayName) || (window.TG_LANG === "en" ? `Travel buddy ${i + 1}` : `旅伴 ${i + 1}`));
         const badge = isOwner ? `<span style="color:var(--ink);font-weight:800;">[管理員]</span>` : (isCoAdmin ? `<span style="color:#0284C7;font-weight:800;">[共同管理員]</span>` : "");
         const actions = (isMeOwner && !isOwner) ? `
           <div style="display:flex; gap:4px;">
@@ -12902,7 +12904,7 @@ function initSupabaseClient() {
     let tripAdminMemberRows = [];
     async function removeTripMember(targetUserId) {
       const memberRow = tripAdminMemberRows.find(r => r.user_id === targetUserId);
-      const label = (memberRow && ((memberRow.journal_data && memberRow.journal_data.userDisplayName) || memberRow.user_email)) || "這位成員";
+      const label = (memberRow && memberRow.journal_data && memberRow.journal_data.userDisplayName) || "這位成員";
       if (!confirm(`確定要將「${label}」從此旅程移除嗎？\n對方的筆記、照片與消費紀錄會保留在他自己那邊，但不能再看到這趟旅程。\n移除後分享碼會自動更換，舊分享碼立即失效。`)) return;
       const trip = getActiveTrip();
       const { data, error } = await sbClient.rpc("remove_trip_member", { p_trip_id: trip.id, p_user_id: targetUserId });

@@ -27,7 +27,7 @@
       var lang = q || saved || (/^zh/i.test(nav) ? "zh" : "en");
       window.TG_LANG = lang;
       document.documentElement.lang = lang === "en" ? "en" : "zh-TW";
-      if (lang === "en") document.write('<script src="i18n/en.js?v=1282a41d"><\/script>');
+      if (lang === "en") document.write('<script src="i18n/en.js?v=2b1f95c9"><\/script>');
     })();
   </script>
   <script>
@@ -197,7 +197,7 @@
       transition: background 0.25s ease, color 0.25s ease;
     }
     /* Paper 主題：淡淡的再生紙纖維質感 */
-    html:not([data-mode="dark"]) body:not(.theme-metallic):not(.theme-lilac) {
+    html:not([data-mode="dark"]) body:not(.theme-metallic):not(.theme-lilac):not(.theme-creator) {
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .3 0 0 0 0 .27 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       background-attachment: fixed;
     }
@@ -471,6 +471,15 @@
     }
     .day-pills::-webkit-scrollbar { display: none; }
 
+    .day-pill .day-caret { font-style: normal; font-size: 10px; margin-left: 4px; opacity: .8; }
+    .day-pill.day-add { color: var(--sub); border-style: dashed; min-width: 40px; }
+    .day-menu { position: fixed; z-index: 2300; min-width: 210px; padding: 6px; border-radius: 16px; background: var(--card); border: 1px solid var(--border); box-shadow: 0 14px 34px rgba(0,0,0,.18); animation: hdIn .15s ease-out; }
+    .day-menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border: 0; border-radius: 11px; background: none; color: var(--ink); font: inherit; font-size: 14px; font-weight: 800; text-align: left; cursor: pointer; }
+    .day-menu button:hover, .day-menu button:active { background: var(--bg); }
+    .day-menu button span { display: flex; flex-direction: column; } .day-menu small { font-size: 11.5px; font-weight: 600; color: var(--sub); }
+    .day-menu .ic { width: 18px; height: 18px; flex: none; }
+    .day-menu .dm-plus { width: 18px; text-align: center; font-size: 17px; flex: none; }
+    .day-menu .danger, .day-menu .danger .ic { color: #C2412D; }
     .day-pill {
       font-family: var(--mono);
       font-size: 12px;
@@ -523,7 +532,29 @@
       font-size: 12.5px;
       font-weight: 700;
       transition: background 0.2s ease;
+      font-family: inherit; color: inherit; cursor: pointer; position: relative;
     }
+    .weather-badge .wb-refresh { display: inline-flex; opacity: .45; margin-left: 1px; transition: opacity .2s, transform .4s; }
+    .weather-badge .wb-refresh .ic { width: 13px; height: 13px; }
+    .weather-badge:hover .wb-refresh { opacity: .8; }
+    /* 天氣太久沒更新：外圈像呼吸一樣輕輕發光，圖示轉成強調色 */
+    .weather-badge.stale { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); animation: wbGlow 2.6s ease-in-out infinite; }
+    .weather-badge.stale .wb-refresh { opacity: 1; color: var(--accent); }
+    @keyframes wbGlow {
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent); }
+      50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent), 0 0 14px 2px color-mix(in srgb, var(--accent) 28%, transparent); }
+    }
+    .weather-badge.loading { cursor: progress; }
+    .weather-badge .wb-spin { width: 11px; height: 11px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: wbSpin .7s linear infinite; }
+    @keyframes wbSpin { to { transform: rotate(360deg); } }
+    .weather-badge.just-updated { animation: wbDone 1s ease-out; }
+    @keyframes wbDone { 0% { box-shadow: 0 0 0 0 rgba(22,163,74,.45); } 100% { box-shadow: 0 0 0 10px rgba(22,163,74,0); } }
+    .weather-badge.update-failed { animation: wbShake .4s; }
+    @keyframes wbShake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+    @media (prefers-reduced-motion: reduce) { .weather-badge.stale { animation: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); } }
+    .city-edit-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 999px; border: 1px solid transparent; background: none; color: var(--sub); cursor: pointer; padding: 0; }
+    .city-edit-btn.on { border-color: var(--border); color: var(--ink); }
+    .day-city-wrap:not(.open) { display: none !important; }
 
     .solar-meta {
       display: flex;
@@ -1167,6 +1198,36 @@
     .modal-backdrop.open {
       display: flex;
     }
+    .move-day-sheet { max-width: 420px; }
+    .mood-sheet { max-width: 440px; }
+    .mood-for { font-size: 14px; font-weight: 800; color: var(--sub); margin: 0 2px 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mood-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; }
+    .mood-grid .emoji-opt { height: 44px; font-size: 22px; }
+    .mood-custom { display: flex; gap: 6px; margin: 10px 0 4px; } .mood-custom .form-input { padding: 7px 10px; font-size: 13px; }
+    .mood-text { resize: none; font-size: 15px; line-height: 1.6; }
+    .mood-foot { display: flex; align-items: center; gap: 8px; margin-top: 10px; } .mood-foot span { flex: 1; font-size: 12px; color: var(--sub); }
+    .refl-box { display: flex; align-items: flex-start; gap: 8px; width: 100%; margin-top: 8px; padding: 9px 12px; border: 0; border-left: 3px solid var(--accent); border-radius: 4px 12px 12px 4px; background: color-mix(in srgb, var(--accent) 7%, var(--card)); color: var(--ink); font: inherit; font-size: 13.5px; line-height: 1.6; text-align: left; cursor: pointer; }
+    .note-box.personal-note { display: flex; gap: 8px; align-items: flex-start; border-style: dashed; }
+    .note-box.personal-note .ic { width: 14px; height: 14px; flex: none; margin-top: 3px; color: var(--sub); }
+    .note-box.personal-note b { display: block; font-size: 11.5px; color: var(--sub); }
+    .refl-box .refl-mood { font-size: 17px; line-height: 1.3; }
+    .refl-box .refl-txt { flex: 1; white-space: pre-wrap; word-break: break-word; }
+    .refl-box .refl-lock { display: inline-flex; color: var(--sub); opacity: .6; } .refl-box .refl-lock .ic { width: 13px; height: 13px; }
+    .move-day-for { font-size: 14px; font-weight: 800; margin: 2px 2px 10px; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .move-day-list { display: grid; gap: 8px; }
+    .move-day-opt { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border); background: var(--card); color: var(--ink); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+    .move-day-opt span { color: var(--sub); font-weight: 700; }
+    .move-day-opt small { color: var(--sub); font-size: 12px; }
+    .move-day-opt.cur { opacity: .5; cursor: default; }
+    .move-day-opt:not(.cur):active { transform: scale(.98); }
+    .move-day-hint { margin: 12px 2px 2px; font-size: 12px; color: var(--sub); }
+    .tc-acts .tc-del { color: #C2412D; }
+    #timelineView > .can-drag { -webkit-touch-callout: none; }
+    #timelineView > .dragging { box-shadow: 0 18px 40px rgba(0,0,0,.22); transform: scale(1.02); transition: transform .15s, box-shadow .15s; pointer-events: none; opacity: .96; }
+    .drag-ph { border: 2px dashed var(--border); border-radius: 18px; margin: 0 0 12px; background: color-mix(in srgb, var(--card) 50%, transparent); }
+    html.tl-dragging, html.tl-dragging body { user-select: none; -webkit-user-select: none; cursor: grabbing; }
+    .undo-toast { display: flex; align-items: center; gap: 14px; }
+    .undo-toast button { border: 0; background: none; color: inherit; font: inherit; font-weight: 900; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 4px 2px; }
     .modal-sheet {
       background: var(--bg);
       width: 100%;
@@ -1496,6 +1557,28 @@
     .ed-tab i b { font: 900 14px var(--sans); }
     .ed-tab.on { color: var(--ink); }
     .ed-tab.on i { background: var(--ink); color: var(--bg); }
+    /* ===== 分享卡編輯：仿限動的滿版畫面（2026-11）=====
+       畫布盡量撐滿螢幕；關閉／儲存浮在上方，四個分頁縮成底部一排小圖示，點了才從下方滑出面板 */
+    #shareModal.ed-mode .modal-sheet { max-width: none !important; position: relative; }
+    #shareModal.ed-mode .ed-top { position: absolute; top: 0; left: 0; right: 0; z-index: 3; pointer-events: none; padding: max(env(safe-area-inset-top, 0px), 10px) 12px 10px; }
+    #shareModal.ed-mode .ed-top > * { pointer-events: auto; }
+    #shareModal.ed-mode .ed-x { background: rgba(20,20,20,.42); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+    #shareModal.ed-mode .ed-save { box-shadow: 0 4px 16px rgba(0,0,0,.28); }
+    #shareModal.ed-mode .share-preview-stage { padding: 0; transition: padding-bottom .22s ease; }
+    #shareModal.ed-mode .story-canvas { height: auto; width: auto; max-width: none; max-height: none; border-radius: 12px; transition: width .22s ease, height .22s ease; }
+    #shareModal.ed-mode .ed-dock { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; background: none; border-radius: 0; padding: 0 10px max(env(safe-area-inset-bottom, 0px), 10px); pointer-events: none; display: flex; flex-direction: column; align-items: center; }
+    #shareModal.ed-mode .ed-dock > * { pointer-events: auto; }
+    #shareModal.ed-mode .ed-panel { width: 100%; max-width: 520px; min-height: 0; max-height: 42dvh; overflow-y: auto; margin: 0 0 8px; padding: 10px 10px 12px; border-radius: 20px; background: var(--card); box-shadow: 0 10px 30px rgba(0,0,0,.35); display: none; }
+    #shareModal.ed-mode .ed-dock.open .ed-panel { display: flex; animation: edUp .2s ease-out; }
+    @keyframes edUp { from { transform: translateY(14px); opacity: 0; } to { transform: none; opacity: 1; } }
+    #shareModal.ed-mode .ed-grab { display: block; width: 100%; height: 14px; margin: -4px 0 2px; border: 0; background: none; cursor: pointer; position: relative; flex: none; }
+    #shareModal.ed-mode .ed-grab::before { content: ""; position: absolute; left: 50%; top: 4px; width: 38px; height: 4px; margin-left: -19px; border-radius: 4px; background: var(--border); }
+    #shareModal.ed-mode .ed-tabs { display: flex; gap: 6px; border: 0; padding: 6px; border-radius: 999px; background: rgba(20,20,20,.46); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+    #shareModal.ed-mode .ed-tab { flex-direction: row; gap: 6px; padding: 6px 12px 6px 6px; border-radius: 999px; color: rgba(255,255,255,.86); font-size: 12.5px; }
+    #shareModal.ed-mode .ed-tab i { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,.16); color: #fff; }
+    #shareModal.ed-mode .ed-tab.on { background: #fff; color: #191919; }
+    #shareModal.ed-mode .ed-tab.on i { background: #191919; color: #fff; }
+    @media (max-width: 340px) { #shareModal.ed-mode .ed-tab { padding: 6px; font-size: 0; gap: 0; } #shareModal.ed-mode .ed-tab i b { font-size: 13px; } }
     .ed-tpl { flex: none; border: 0; background: none; padding: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: var(--sans); }
     .ed-tpl small, .ed-sw small { font-size: 11px; font-weight: 800; color: var(--sub); white-space: nowrap; }
     .ed-tpl-card { width: 54px; height: 72px; border-radius: 10px; padding: 5px; display: flex; flex-direction: column; gap: 4px; border: 2.5px solid transparent; }
@@ -2103,7 +2186,15 @@
     @keyframes apThud { 0% { opacity: 0; scale: 1.9; } 60% { opacity: 1; } 100% { scale: 1; } }
     .sv-meta { text-align: center; font-size: 13px; color: var(--sub); margin-top: 10px; }
     .mem-head { display: flex; align-items: center; gap: 8px; }
-    .mem-pp-btn { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; }
+    .brand-btn { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; padding: 2px 2px 2px 0; margin: 0 2px 0 0; color: var(--ink); cursor: pointer; min-width: 0; }
+    .brand-btn .brand-word { font-family: 'Dela Gothic One', 'TabigrAm Fill', sans-serif; font-size: 19px; letter-spacing: 1px; white-space: nowrap; }
+    .brand-btn:active .brand-word { opacity: .6; }
+    .mem-shelf { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 2px 0 14px; }
+    .mem-shelf-btn { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 9px; align-items: center; text-align: left; padding: 11px 13px; border-radius: 16px; border: 1px solid var(--border); background: var(--card); color: var(--ink); font: inherit; cursor: pointer; }
+    .mem-shelf-btn .ic { grid-row: span 2; width: 22px; height: 22px; color: var(--accent); }
+    .mem-shelf-btn b { font-size: 14px; font-weight: 900; }
+    .mem-shelf-btn small { font-size: 11.5px; color: var(--sub); }
+    .mem-shelf-btn:active { transform: scale(.98); }
     .pp-sum { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; text-align: center; }
     .pp-sum b { display: block; font-family: var(--display); font-weight: 400; font-size: 24px; }
     .pp-sum span { font-size: 12px; color: var(--sub); }
@@ -2476,6 +2567,26 @@
     .vault-edit { width: 100%; padding: 4px 0 6px; }
     .vault-edit .mini-btn { text-decoration: none; }
     .vault-empty { font-size: 13px; color: var(--sub); padding: 10px 2px; line-height: 1.6; }
+    .vault-setpin { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; align-items: center; padding: 12px 14px; margin-bottom: 12px; border-radius: 16px; background: color-mix(in srgb, var(--accent) 9%, var(--card)); border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border)); }
+    .vault-setpin > .ic { width: 22px; height: 22px; color: var(--accent); }
+    .vault-setpin span { display: flex; flex-direction: column; gap: 2px; } .vault-setpin b { font-size: 14px; } .vault-setpin small { font-size: 12px; color: var(--sub); line-height: 1.5; }
+    .vault-setpin .pill-btn { grid-column: 1 / -1; justify-content: center; margin-top: 6px; }
+    .vault-lockbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); font-size: 12px; color: var(--sub); }
+    .vault-lockbar > .ic { width: 15px; height: 15px; color: var(--green); } .vault-lockbar > span { flex: 1 1 120px; }
+    .vpin { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 8px 4px 4px; }
+    .vpin-ic .ic { width: 28px; height: 28px; color: var(--accent); }
+    .vpin-t { font-size: 17px; font-weight: 900; margin-top: 6px; }
+    .vpin-s { font-size: 12.5px; color: var(--sub); line-height: 1.6; margin: 6px 8px 0; min-height: 20px; }
+    .vpin.warn .vpin-s { color: #C2412D; font-weight: 700; }
+    .vpin-dots { display: flex; gap: 14px; margin: 18px 0 20px; }
+    .vpin-dots i { width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--ink); }
+    .vpin-dots i.on { background: var(--ink); }
+    .vpin-dots.shake { animation: wbShake .35s 2; }
+    .vpin-pad { display: grid; grid-template-columns: repeat(3, 72px); gap: 12px 22px; }
+    .vpin-k { width: 72px; height: 72px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); color: var(--ink); font: 700 26px var(--sans); cursor: pointer; }
+    .vpin-k:active { background: var(--border); }
+    .vpin-k.sm { border: 0; background: none; font-size: 13px; font-weight: 800; color: var(--sub); }
+    .vpin-busy { margin-top: 12px; font-size: 12px; color: var(--sub); }
     .vault-note { display: flex; gap: 8px; align-items: flex-start; margin-top: 14px; font-size: 12px; color: var(--sub); line-height: 1.6; }
     .vault-ended { margin-bottom: 10px; padding: 12px; border-radius: 12px; background: var(--card2, #EBE9E4); font-size: 13px; }
     .vault-viewer { position: fixed; inset: 0; z-index: 5000; background: #fff; color: #191919; display: flex; flex-direction: column; padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px); }
@@ -2515,6 +2626,18 @@
     .font-chip { padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--border); background: var(--card); color: var(--ink); cursor: pointer; font-size: 15px; }
     .font-chip.on { border-color: var(--ink); background: var(--ink); color: var(--card); }
     .tape-rule { margin-top: 12px; font-size: 12px; color: var(--sub); line-height: 1.6; padding: 10px 12px; border: 1px dashed var(--border); border-radius: 10px; }
+    .tape-flow { list-style: none; margin: 8px 0 0; padding: 0; position: relative; }
+    .tape-flow::before { content: ""; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: var(--border); }
+    .tape-flow li { position: relative; display: grid; grid-template-columns: 5.2em 1fr; gap: 6px; padding: 5px 0 5px 22px; font-size: 12.5px; line-height: 1.55; color: var(--sub); }
+    .tape-flow li::before { content: ""; position: absolute; left: 1px; top: 10px; width: 12px; height: 12px; border-radius: 50%; background: var(--card); border: 2px solid var(--accent); box-sizing: border-box; }
+    .tape-flow li b { color: var(--ink); font-size: 12.5px; }
+    .tape-warn { display: flex; gap: 8px; align-items: flex-start; margin-top: 10px; padding: 9px 11px; border-radius: 10px; background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--ink); font-size: 12px; line-height: 1.55; }
+    .tape-warn .ic { flex: none; width: 16px; height: 16px; color: var(--accent); margin-top: 1px; }
+    .tape-invite.soft { opacity: 0; transform: translateY(10px); animation: tiIn .5s ease-out 1.1s forwards; }
+    @keyframes tiIn { to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .tape-invite.soft { animation: none; opacity: 1; transform: none; } }
+    .ti-acts { display: flex; align-items: center; gap: 12px; }
+    .ti-skip { border: 0; background: none; color: var(--sub); font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; padding: 6px 2px; }
     .tape-play-sheet { background: #1F1D1B !important; color: #F3EDDF; }
     .tape-play-sheet .modal-title { color: #F3EDDF; }
     .tape-stage { display: flex; justify-content: center; position: relative; }
@@ -2596,26 +2719,26 @@
             <img class="ld-card" src="sample-recap-card.jpg" width="450" height="800" alt="當日回顧範例：當天里程與路線地圖" decoding="async" />
           </div>
           <h1 class="ld-word">TabigrAm<span class="beta-tag ld-beta" aria-label="封測版">.beta</span></h1>
-          <p class="ld-tag">從想去，到下次還要去。</p>
-          <p class="ld-sub">排行程、在機場蓋章、錄一卷旅行卡帶。</p>
+          <p data-cms="landing.tag" data-cms-label="入口頁・標語" class="ld-tag">從想去，到下次還要去。</p>
+          <p data-cms="landing.sub" data-cms-label="入口頁・副標" class="ld-sub">排行程、在機場蓋章、錄一卷旅行卡帶。</p>
           <p class="ld-cap" id="ldCap" aria-live="polite">&nbsp;</p>
         </div>
         <div class="ld-btns">
-          <button type="button" class="ld-btn dark" onclick="landingAction('start')">開始規劃旅程</button>
-          <button type="button" class="ld-btn ghost" onclick="landingAction('join')">我有邀請碼</button>
+          <button type="button" class="ld-btn dark" data-cms="landing.cta_start" data-cms-label="入口頁・主要按鈕" onclick="landingAction('start')">開始規劃旅程</button>
+          <button type="button" class="ld-btn ghost" data-cms="landing.cta_join" data-cms-label="入口頁・次要按鈕" onclick="landingAction('join')">我有邀請碼</button>
         </div>
         <button type="button" class="ld-more" onclick="document.getElementById('landingFeatures').scrollIntoView({behavior:'smooth'})">看看能做什麼 <i>↓</i></button>
       </section>
 
       <section class="ld-sec" id="landingFeatures">
         <h2>一趟旅行，<br>從頭到尾都在這裡。</h2>
-        <p>先把想去的地方丟進來，排進天數；出發那天在機場蓋章、錄一卷卡帶；回家後，沒去成的地方收進「下次還要去」。</p>
+        <p data-cms="landing.intro" data-cms-label="功能介紹・開頭說明">先把想去的地方丟進來，排進天數；出發那天在機場蓋章、錄一卷卡帶；回家後，沒去成的地方收進「下次還要去」。</p>
         <div class="ld-cd" aria-hidden="true">
           <div class="row"><div class="big">D-12</div><div><div class="l1">東京五日遊</div><div class="l2">12/01 出發 · 桃園機場</div></div></div>
           <div class="bar"><i></i></div>
         </div>
         <ol class="ld-list">
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">01</span><div><b>想去清單，自動排進天數</b>看到喜歡的店、景點，先丟進來就好，貼 Google 地圖連結也可以。按一下，依距離幫你分好每一天。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">01</span><div><b data-cms="landing.f01.t" data-cms-label="功能 01・標題">想去清單，自動排進天數</b><span data-cms="landing.f01.d" data-cms-label="功能 01・說明">看到喜歡的店、景點，先丟進來就好，貼 Google 地圖連結也可以。按一下，依距離幫你分好每一天。</span></div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-card"><i class="dot" style="--c:var(--accent)"></i><div><b>南禪寺水路閣</b><em>有位置</em></div></div>
@@ -2625,7 +2748,7 @@
                 <div class="ldd-x">第 1 天：嵐山竹林 → 金閣寺　第 2 天：南禪寺 → 一保堂</div>
               </div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">02</span><div><b>一天一天排清楚</b>時間、地點、交通、花費一目了然。用電腦也能編輯，還能用試算表一次匯入整趟行程。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">02</span><div><b data-cms="landing.f02.t" data-cms-label="功能 02・標題">一天一天排清楚</b><span data-cms="landing.f02.d" data-cms-label="功能 02・說明">時間、地點、交通、花費一目了然。用電腦也能編輯，還能用試算表一次匯入整趟行程。</span></div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-pills"><span class="on">第 1 天</span><span>第 2 天</span><span>第 3 天</span><span class="add">＋</span></div>
@@ -2634,7 +2757,7 @@
                 <div class="ldd-card"><i class="dot" style="--c:var(--accent)"></i><div><small>16:00 → 17:00</small><b><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg> 飯店 Check-in</b><em>秋葉原</em></div></div>
               </div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">03</span><div><b>點車站，不用打字</b>從前後行程猜你在哪一站上車、要去哪，轉乘自動排好，連要不要出站轉乘都標清楚。台灣捷運、高鐵、台鐵，東京、大阪京都、首爾、舊金山、紐約都能用。機場也是點一下就好。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">03</span><div><b data-cms="landing.f03.t" data-cms-label="功能 03・標題">點車站，不用打字</b><span data-cms="landing.f03.d" data-cms-label="功能 03・說明">從前後行程猜你在哪一站上車、要去哪，轉乘自動排好，連要不要出站轉乘都標清楚。台灣捷運、高鐵、台鐵，東京、大阪京都、首爾、舊金山、紐約都能用。機場也是點一下就好。</span></div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-step"><span>上車</span><b>松山機場</b></div>
@@ -2646,7 +2769,7 @@
                 </div>
               </div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">04</span><div><b>和旅伴一起編</b>輸入 6 碼邀請碼就能加入。大家看同一份行程，私人筆記和照片各自保存。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">04</span><div><b data-cms="landing.f04.t" data-cms-label="功能 04・標題">和旅伴一起編</b><span data-cms="landing.f04.d" data-cms-label="功能 04・說明">輸入 6 碼邀請碼就能加入。大家看同一份行程，私人筆記和照片各自保存。</span></div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-code"><small>旅伴邀請碼</small><b>K7Q2MX</b><em>傳給朋友，輸入就能加入</em></div>
@@ -2654,7 +2777,7 @@
                 <div class="ldd-card"><i class="dot" style="--c:var(--accent)"></i><div><small>19:00 → 20:30</small><b>一蘭拉麵</b><em><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg> 我的私人筆記：記得點加麵</em></div></div>
               </div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">05</span><div><b>旅行憑證，在機場一點就開</b>登機證、入境 QR Code、簽證、訂房確認，原檔存在你的手機，不上傳。到了現場全螢幕白底出示，畫面不會熄滅。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">05</span><div><b data-cms="landing.f05.t" data-cms-label="功能 05・標題">旅行憑證，在機場一點就開</b><span data-cms="landing.f05.d" data-cms-label="功能 05・說明">登機證、入境 QR Code、簽證、訂房確認，原檔存在你的手機，不上傳。到了現場全螢幕白底出示，畫面不會熄滅。</span></div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-card"><i class="dot" style="--c:#2E3F73"></i><div><small>簽證／入境</small><b>Visit Japan Web QR</b><em>原檔 · 只存在這台手機</em></div></div>
@@ -2662,7 +2785,7 @@
                 <div class="ldd-off">沒有網路也打得開</div>
               </div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">06</span><div><b>旅途中不用再翻</b>現在在哪個行程、下一站幾點，打開就知道。沒有網路也看得到行程。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">06</span><div><b data-cms="landing.f06.t" data-cms-label="功能 06・標題">旅途中不用再翻</b><span data-cms="landing.f06.d" data-cms-label="功能 06・說明">現在在哪個行程、下一站幾點，打開就知道。沒有網路也看得到行程。</span></div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-now"><small>第 3 天 / 共 5 天</small><b>進行中：淺草寺</b><em>還剩 35 分鐘</em><div class="bar"><i style="width:62%"></i></div><em>下一個：晴空塔 · 1 小時 10 分後（14:30）</em></div>
@@ -2670,7 +2793,7 @@
                 <div class="ldd-off">沒有網路也看得到行程</div>
               </div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">07</span><div><b>機場戳章，和一卷旅行卡帶</b>人在機場才蓋得到的出入境章。出發那天錄一段 30 秒的聲音當 A 面，最後一段航班落地時播放；回程錄 B 面，等下一趟回到同一座機場才聽得到。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">07</span><div><b data-cms="landing.f07.t" data-cms-label="功能 07・標題">機場戳章，和一卷旅行卡帶</b><span data-cms="landing.f07.d" data-cms-label="功能 07・說明">人在機場才蓋得到的出入境章。出發那天錄一段 30 秒的聲音當 A 面，最後一段航班落地時播放；回程錄 B 面，等下一趟回到同一座機場才聽得到。</span></div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-tape" aria-hidden="true"><span>A</span><b>秋天的京都</b><i></i><i></i></div>
@@ -2679,15 +2802,15 @@
                 <div class="ldd-ai">播放時可以存成影片分享</div>
               </div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">08</span><div><b>路線圖分享卡</b>把搭過的地鐵、電車路線，用真實的路線顏色做成可以發限動的路線圖卡片。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">08</span><div><b data-cms="landing.f08.t" data-cms-label="功能 08・標題">路線圖分享卡</b><span data-cms="landing.f08.d" data-cms-label="功能 08・說明">把搭過的地鐵、電車路線，用真實的路線顏色做成可以發限動的路線圖卡片。</span></div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-cards"><img src="sample-route-card.jpg" alt="路線圖分享卡範例" loading="lazy"></div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">09</span><div><b>足跡、當日回顧與完成章</b>按「我到了」記下走過的地方，每天結束有一張回顧。旅程結束蓋一枚章，收進旅程回憶。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">09</span><div><b data-cms="landing.f09.t" data-cms-label="功能 09・標題">足跡、當日回顧與完成章</b><span data-cms="landing.f09.d" data-cms-label="功能 09・說明">按「我到了」記下走過的地方，每天結束有一張回顧。旅程結束蓋一枚章，收進旅程回憶。</span></div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-cards two"><img src="sample-recap-card.jpg" alt="當日回顧範例" loading="lazy"><img src="sample-stamp-card.jpg" alt="完成章範例" loading="lazy"></div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">10</span><div><b>下次還要去</b>這趟取消、沒去成的地方，自動收進一份清單。下次再去同一座城市，提醒你上次錯過了什麼。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">10</span><div><b data-cms="landing.f10.t" data-cms-label="功能 10・標題">下次還要去</b><span data-cms="landing.f10.d" data-cms-label="功能 10・說明">這趟取消、沒去成的地方，自動收進一份清單。下次再去同一座城市，提醒你上次錯過了什麼。</span></div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-x">上次在 京都 有 2 個地方沒去成</div>
@@ -2696,7 +2819,7 @@
                 <div class="ldd-ai">全部放進想去清單</div>
               </div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">11</span><div><b>請 AI 幫你檢查</b>一鍵匯出行程，交給 ChatGPT、Claude 或 Gemini 檢查轉乘時間和動線。</div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">11</span><div><b data-cms="landing.f11.t" data-cms-label="功能 11・標題">請 AI 幫你檢查</b><span data-cms="landing.f11.d" data-cms-label="功能 11・說明">一鍵匯出行程，交給 ChatGPT、Claude 或 Gemini 檢查轉乘時間和動線。</span></div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-bubble me">（貼上 TabigrAm 匯出的行程）幫我檢查轉乘時間夠不夠？</div>
@@ -2750,7 +2873,7 @@
       <!-- 左側：Logo + 品牌字 + 新增按鈕 -->
       <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
         
-        <span style="font-family: 'Dela Gothic One', 'TabigrAm Fill', sans-serif; font-size: 19px; letter-spacing: 1px; margin-right: 2px;">TabigrAm</span><button type="button" class="beta-tag" onclick="openFeedback()" title="封測版：歡迎回報問題">.beta</button>
+        <button type="button" class="brand-btn" onclick="showLanding()" aria-label="關於 TabigrAm" title="關於 TabigrAm"><span class="brand-word">TabigrAm</span></button><button type="button" class="beta-tag" onclick="openFeedback()" title="封測版：歡迎回報問題">.beta</button>
         
       </div>
 
@@ -2771,11 +2894,8 @@
             <button class="dropdown-item hd-account" id="dropdownCloudBtn" onclick="openCloudModal(); toggleHeaderDropdown();">登入與設定</button>
 
             <div class="hd-sec">旅程</div>
-            <button class="dropdown-item" onclick="openTripManager(); toggleHeaderDropdown();">我的旅程</button>
             <button class="dropdown-item" id="dropdownTripAdminBtn" onclick="openTripAdminModal(); toggleHeaderDropdown();" style="display: none;">管理旅行</button>
-            <button class="dropdown-item" onclick="openMemories(); toggleHeaderDropdown();">旅程回憶</button>
-            <button class="dropdown-item" onclick="openVault(); toggleHeaderDropdown();">旅行憑證</button>
-            <button class="dropdown-item" onclick="openTapeShelf(); toggleHeaderDropdown();">旅行卡帶 <span class="hd-soon">新</span></button>
+            <button class="dropdown-item" onclick="openMemories(); toggleHeaderDropdown();">旅程回憶 <span class="hd-soon">戳章・卡帶</span></button>
             <button class="dropdown-item" onclick="openArchiveModalWithEmail(); toggleHeaderDropdown();">果醬派對 <span class="hd-soon">新貼紙</span></button>
 
             <div class="hd-sec">工具</div>
@@ -2796,8 +2916,8 @@
             <button class="dropdown-item" onclick="openWhatsNew(); toggleHeaderDropdown();">更新內容</button>
             <button class="dropdown-item" onclick="openFeedback(); toggleHeaderDropdown();">意見回饋</button>
             <button class="dropdown-item" id="menuDonate" onclick="openDonate(); toggleHeaderDropdown();" style="display:none;">贊助 TabigrAm</button>
-            <button class="dropdown-item" onclick="showLanding(); toggleHeaderDropdown();">關於 TabigrAm</button>
             <a class="dropdown-item" id="menuZineLink" href="zine/" style="text-decoration:none; display:none;">TabigrAm.zine</a>
+            <a class="dropdown-item" id="menuMiseLink" href="mise/" style="text-decoration:none; display:none;">TabigrAm.mise <span class="hd-soon">選物</span></a>
 
             <div class="hd-prefs">
               <div class="hd-pref">
@@ -2871,7 +2991,11 @@
       <div class="mem-head">
         <button type="button" class="mem-back" onclick="closeMemories()">← 回到行程</button>
         <h2>旅程回憶</h2>
-        <button type="button" class="pill-btn mem-pp-btn" onclick="openPassport()"><svg class="ic" aria-hidden="true"><use href="#i-award"/></svg> 機場戳章</button>
+      </div>
+      <!-- 旅途中收集的小東西：機場戳章、旅行卡帶 -->
+      <div class="mem-shelf">
+        <button type="button" class="mem-shelf-btn" onclick="openPassport()"><svg class="ic" aria-hidden="true"><use href="#i-award"/></svg><b>機場戳章</b><small>護照頁</small></button>
+        <button type="button" class="mem-shelf-btn" onclick="openTapeShelf()"><svg class="ic" aria-hidden="true"><use href="#i-tape"/></svg><b>旅行卡帶</b><small>A 面・B 面</small></button>
       </div>
       <div id="memoriesBody"></div>
     </div>
@@ -3156,17 +3280,15 @@
       <div class="weather-strip">
         <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
           <span id="activeDayDateBadge" style="font-family:var(--mono); font-size:12.5px; font-weight:800; color:var(--ink); background:rgba(0,0,0,0.05); padding:4px 9px; border-radius:8px;">11/30 (一)</span>
-          <div class="weather-badge" id="weatherBadge">載入氣象中…</div>
-          <div class="day-meta-input-wrap day-city-wrap" title="設定當日所在城市或地區，自動更新天氣與日出日落">
+          <button type="button" class="weather-badge" id="weatherBadge" onclick="refreshRealtimeWeather(true)" aria-label="天氣，點一下更新">載入氣象中…</button>
+          <button type="button" class="city-edit-btn" id="cityEditBtn" onclick="toggleCityEdit()" aria-label="改天氣城市" title="天氣抓錯城市？點這裡改"><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg></button>
+          <div class="day-meta-input-wrap day-city-wrap" title="天氣依當天行程的地點自動判斷；抓錯時在這裡填城市">
             <span style="display:inline-flex; color:var(--sub);"><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg></span>
             <input type="text" class="day-meta-input" id="dayLocationInput" placeholder="所在城市" onchange="updateCurrentDayMeta('location', this.value)" />
           </div>
         </div>
         <div id="dayCityPlaceHint" style="display:none; font-size:11px; color:var(--sub); margin:2px 0 0 2px;"></div>
         <div style="display:flex; gap:6px;">
-          <button class="mini-btn" id="refreshWeatherBtn" onclick="refreshRealtimeWeather(true)"><svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg> 更新</button>
-          <button class="mini-btn" id="insertDayBtn" style="display:none;" onclick="openAddDaySheet()">＋ 加一天</button>
-          <button class="mini-btn delete-btn" id="deleteDayBtn" style="display:none;" onclick="deleteCurrentDay()">刪除此日</button>
         </div>
       </div>
 
@@ -3199,6 +3321,33 @@
   </div>
 
   <!-- Modal 1: Add / Edit Itinerary Item -->
+  <div class="modal-backdrop" id="moodModal" onclick="if (event.target === this) closeMoodSheet(true)">
+    <div class="modal-sheet mood-sheet">
+      <div class="modal-header">
+        <div class="modal-title">這一站的心情</div>
+        <button class="pill-btn" onclick="closeMoodSheet(true)" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="mood-for" id="moodFor"></div>
+      <div class="mood-grid" id="moodGrid" role="group" aria-label="心情章"></div>
+      <div class="mood-custom"><input type="text" class="form-input" id="moodCustomInp" placeholder="自訂 Emoji…" maxlength="8" /><button type="button" class="mini-btn" onclick="moodAddCustom()">加入</button></div>
+      <label class="form-label" for="moodText">寫一句心得 <small>只有你看得到，會出現在分享卡底部</small></label>
+      <textarea class="form-input mood-text" id="moodText" rows="3" maxlength="140" placeholder="例如：排隊 40 分鐘，但湯頭值得。" oninput="moodCount()"></textarea>
+      <div class="mood-foot"><span id="moodCnt">0 / 140</span><button type="button" class="mini-btn" onclick="moodClear()">清除</button><button type="button" class="pill-btn primary" onclick="saveMoodSheet()">完成</button></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="moveDayModal" onclick="if (event.target === this) closeMoveDaySheet()">
+    <div class="modal-sheet move-day-sheet">
+      <div class="modal-header">
+        <div class="modal-title">移到哪一天？</div>
+        <button class="pill-btn" onclick="closeMoveDaySheet()" aria-label="關閉"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="move-day-for" id="moveDayTitle"></div>
+      <div class="move-day-list" id="moveDayList"></div>
+      <p class="move-day-hint">時間不變，照片、心情、機場章都會跟著搬。</p>
+    </div>
+  </div>
+
   <div class="modal-backdrop" id="itemModal">
     <div class="modal-sheet">
       <div class="modal-header">
@@ -3217,6 +3366,9 @@
 
         <label class="form-label">行程標題</label>
         <input type="text" class="form-input" id="fTitle" placeholder="" />
+
+        <label class="form-label" for="fDayIdx">日期 <small style="font-weight:600; color:var(--sub);">換一天就會搬過去，時間不變</small></label>
+        <select class="form-select" id="fDayIdx"></select>
 
         <!-- Transit / Ferry Multi-Leg Builder -->
         <div id="transitFieldsBox" style="display:none; margin-top:10px;">
@@ -3737,7 +3889,7 @@
       <button class="pill-btn primary ed-old" style="width:100%; justify-content:center; padding:12px; font-size:14.5px;" onclick="shareOrSaveStoryImage()">
         分享 / 儲存至相簿
       </button>
-      <div class="ed-dock">
+      <div class="ed-dock" id="edDock">
         <div class="ed-panel" id="edPanel"></div>
         <div class="ed-tabs">
           <button type="button" class="ed-tab" data-t="tpl" onclick="edSetTab('tpl')"><i><svg viewBox="0 0 20 20"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg></i>版型</button>
@@ -4582,6 +4734,7 @@
       appState.outerSwatchId = localStorage.getItem("TABIGRAM_OUTER_SWATCH") || appState.outerSwatchId || "navy";
       appState.innerSwatchId = localStorage.getItem("TABIGRAM_INNER_SWATCH") || appState.innerSwatchId || "cream";
       appState.paperTexture = localStorage.getItem("TABIGRAM_PAPER_TEX") || appState.paperTexture || "dots";
+      appState.storyThemeId = localStorage.getItem("TABIGRAM_STORY_THEME") || "";
       appState.customEmojis = Array.isArray(appState.customEmojis) ? appState.customEmojis : [];
       appState.trips = (appState.trips || []).map(normalizeTrip).filter(Boolean);
       // 沒改過名字的預設旅程，名稱跟著語言換（我的旅程 ⇄ My trip）
@@ -4593,6 +4746,8 @@
         (t.days || []).forEach(d => {
           if (Array.isArray(d.items)) {
             d.items = d.items.filter(it => it.id !== "item_demo_1");
+            // 舊版把個人筆記接進共用備註（「[我的筆記] …」）：讀進來時就拿掉，個人筆記另外放
+            d.items.forEach(it => { if (it.note && /(^|\n)\[我的筆記\]\s/.test(it.note)) it.note = stripPersonalNoteFromNote(it.note, it.personalNote); });
           }
         });
       });
@@ -4988,17 +5143,105 @@
     document.addEventListener("DOMContentLoaded", () => { try { initLanguageUi(); } catch (e) { console.warn(e); } });
 
     function setUiMaterialTheme(themeId) {
-      if (themeId !== "metallic" && themeId !== "lilac") themeId = "clean";
+      const creator = typeof themeId === "string" && themeId.startsWith("c:") ? findCreatorUiTheme(themeId.slice(2)) : null;
+      if (!creator && themeId !== "metallic" && themeId !== "lilac") themeId = "clean";
       if (localStorage.getItem("TABIGRAM_UI_THEME") !== themeId) {
         localStorage.setItem("TABIGRAM_UI_THEME", themeId);
+        if (creator) track("theme_use", creator.id);
       }
       appState.uiTheme = themeId;
-      document.body.classList.remove("theme-metallic", "theme-lilac");
+      document.body.classList.remove("theme-metallic", "theme-lilac", "theme-creator");
       if (appState.uiTheme === "metallic") document.body.classList.add("theme-metallic");
       if (appState.uiTheme === "lilac") document.body.classList.add("theme-lilac");
+      applyCreatorUiTheme(creator);
 
       const sel = document.getElementById("uiThemeSelect");
-      if (sel) sel.value = appState.uiTheme;
+      if (sel) { fillCreatorThemeOptions(sel); sel.value = appState.uiTheme; }
+    }
+
+    /*************************************************************************
+     * 創作者的主題（後台「分享卡主題」「App 外觀主題」上架的）
+     * - 從 themes 資料表讀取已上架的；沒網路時用上次存在手機的清單
+     * - App 外觀主題：使用者選了才會下載它的圖片（圖片網址只寫在選中的那一組樣式裡）
+     * - 顏色只接受 #RRGGBB、圖片只接受我們 content 空間的路徑（資料庫也會擋），避免塞進奇怪的樣式
+     *************************************************************************/
+    var creatorThemes = { card: [], app: [] };
+    const CREATOR_THEMES_CACHE = "TABIGRAM_CREATOR_THEMES_V1";
+    const HEX6 = /^#[0-9A-Fa-f]{6}$/;
+    function safeHex(c, d) { return HEX6.test(String(c || "")) ? c : d; }
+    // 單引號版本：可以放進 HTML 的 style="..." 裡；網址裡的特殊字元都轉成 %XX
+    function cssUrlSafe(u) { return `url('${String(u || "").replace(/[^A-Za-z0-9._~:/?#=&%@!$+,;-]/g, ch => "%" + ch.charCodeAt(0).toString(16).toUpperCase().padStart(2, "0"))}')`; }
+    function contentPublicUrl(base, path) {
+      const p = String(path || "");
+      if (!p || /^[a-z]+:/i.test(p) || p.includes("..")) return "";
+      return `${base}/storage/v1/object/public/content/${p.split("/").map(encodeURIComponent).join("/")}`;
+    }
+    function normalizeCreatorThemes(rows, base) {
+      const out = { card: [], app: [] };
+      (Array.isArray(rows) ? rows : []).forEach(r => {
+        if (!r || !r.id) return;
+        const common = { id: String(r.id).slice(0, 60), name: String(r.name || ""), nameEn: String(r.name_en || r.name || ""), artist: String(r.artist || ""), artistEn: String(r.artist_en || r.artist || "") };
+        if (r.kind === "app") {
+          const c = r.app_colors || {};
+          const bg = contentPublicUrl(base, r.app_bg);
+          if (!bg || !["bg", "card", "ink", "sub", "accent", "border"].every(k => HEX6.test(String(c[k] || "")))) return;
+          out.app.push(Object.assign(common, { bgUrl: bg, paperUrl: contentPublicUrl(base, r.app_paper), colors: { bg: c.bg, card: c.card, ink: c.ink, sub: c.sub, accent: c.accent, border: c.border } }));
+        } else {
+          const bg = contentPublicUrl(base, r.background), paper = contentPublicUrl(base, r.paper);
+          if (!bg || !paper) return;
+          const c = r.colors || {};
+          out.card.push(Object.assign(common, { bgUrl: bg, paperUrl: paper, overlayUrl: contentPublicUrl(base, r.overlay),
+            colors: { text: safeHex(c.text, "#191919"), sub: safeHex(c.sub, "#6E6A63"), accent: safeHex(c.accent, "#C84B31") } }));
+        }
+      });
+      return out;
+    }
+    function findCreatorUiTheme(id) { return creatorThemes.app.find(t => t.id === id) || null; }
+    try { const c = JSON.parse(localStorage.getItem(CREATOR_THEMES_CACHE) || "null"); if (c && Array.isArray(c.app) && Array.isArray(c.card)) creatorThemes = c; } catch (e) {}
+    async function loadCreatorThemes() {
+      try {
+        const H = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
+        const q = cols => fetch(`${SUPABASE_URL}/rest/v1/themes?select=${cols}&status=eq.published&order=sort.asc,published_at.desc`, { headers: H });
+        let res = await q("id,name,name_en,artist,artist_en,background,paper,overlay,colors,kind,app_bg,app_paper,app_colors");
+        if (!res.ok) res = await q("id,name,name_en,artist,artist_en,background,paper,overlay,colors");   // 還沒執行 V13：只有分享卡主題
+        if (!res.ok) return;
+        creatorThemes = normalizeCreatorThemes(await res.json(), SUPABASE_URL);
+        try { localStorage.setItem(CREATOR_THEMES_CACHE, JSON.stringify(creatorThemes)); } catch (e) {}
+        // 選的主題被下架了：回到 Paper
+        if (String(appState.uiTheme || "").startsWith("c:") && !findCreatorUiTheme(appState.uiTheme.slice(2))) setUiMaterialTheme("clean");
+        else setUiMaterialTheme(appState.uiTheme);
+        if (appState.storyThemeId && !creatorThemes.card.some(t => t.id === appState.storyThemeId)) appState.storyThemeId = "";
+        const sm = document.getElementById("shareModal");
+        if (sm && sm.classList.contains("open") && typeof edRender === "function") edRender();
+      } catch (e) {}
+    }
+    window.addEventListener("load", () => setTimeout(loadCreatorThemes, 1500));
+    function fillCreatorThemeOptions(sel) {
+      const key = creatorThemes.app.map(t => t.id).join("|");
+      if (sel.dataset.ctKey === key) return;
+      sel.dataset.ctKey = key;
+      sel.querySelector("optgroup[data-creator]")?.remove();
+      if (!creatorThemes.app.length) return;
+      const en = window.TG_LANG === "en";
+      const g = document.createElement("optgroup");
+      g.label = en ? "By creators" : "創作者主題"; g.dataset.creator = "1";
+      creatorThemes.app.forEach(t => { const o = document.createElement("option"); o.value = "c:" + t.id; o.textContent = `${en ? t.nameEn : t.name}${t.artist ? `・${en ? t.artistEn : t.artist}` : ""}`; o.setAttribute("data-notr", ""); g.appendChild(o); });
+      sel.appendChild(g);
+    }
+    // 套用 App 外觀主題：只在淺色模式生效（深色模式用內建的深色）
+    function applyCreatorUiTheme(t) {
+      let st = document.getElementById("creatorThemeStyle");
+      if (!t) { if (st) st.textContent = ""; return; }
+      document.body.classList.add("theme-creator");
+      if (!st) { st = document.createElement("style"); st.id = "creatorThemeStyle"; document.head.appendChild(st); }
+      const c = t.colors;
+      st.textContent = `html:not([data-mode="dark"]) body.theme-creator {
+        --bg: ${c.bg}; --card: ${c.card}; --ink: ${c.ink}; --sub: ${c.sub}; --accent: ${c.accent}; --border: ${c.border};
+        --accent-soft: color-mix(in srgb, ${c.accent} 14%, ${c.card});
+        background: ${cssUrlSafe(t.bgUrl)} 0 0 / 256px 256px repeat, ${c.bg};
+        background-attachment: fixed; color: ${c.ink};
+      }
+      ${t.paperUrl ? `html:not([data-mode="dark"]) body.theme-creator :is(.timeline-card, .day-weather-card, .modal-sheet, .hd-menu) { background-image: ${cssUrlSafe(t.paperUrl)}; background-size: 256px 256px; }` : ""}`;
     }
 
 
@@ -5192,14 +5435,15 @@
       if (!day) return;
 
       const badgeEl = document.getElementById("weatherBadge");
-      const btnEl = document.getElementById("refreshWeatherBtn");
       if (manualClick) {
+        if (badgeEl && badgeEl.classList.contains("loading")) return;
         if (badgeEl) {
-          badgeEl.innerHTML = ic("clock") + " 同步當地氣象中…";
-          badgeEl.style.background = "#FEF3C7";
+          badgeEl.classList.add("loading");
+          badgeEl.classList.remove("stale");
+          badgeEl.innerHTML = `<span class="wb-spin" aria-hidden="true"></span> 同步當地氣象中…`;
         }
-        if (btnEl) btnEl.textContent = "...";
       }
+      const fetchKey = weatherKey(trip, appState.activeDayIndex || 0);
 
       let coord = null;
       if (day.location && day.location.trim() && day.locationCoord) {
@@ -5243,22 +5487,43 @@
           day.weatherText = `${wInfo.icon} ${wInfo.text} ${maxT}°C / ${minT}°C`;
           if (srRaw && srRaw.includes("T")) day.sunrise = srRaw.split("T")[1].slice(0, 5);
           if (ssRaw && ssRaw.includes("T")) day.sunset = ssRaw.split("T")[1].slice(0, 5);
+          weatherFetchedAt[fetchKey] = Date.now();
           saveAppState();
         }
       } catch (e) {}
+      if (badgeEl) badgeEl.classList.remove("loading");
 
       renderDayWeatherBar();
 
-      if (manualClick) {
-        if (badgeEl) {
-          badgeEl.style.background = "#DCFCE7";
-          setTimeout(() => { badgeEl.style.background = "#F2F1ED"; }, 900);
-        }
-        if (btnEl) {
-          btnEl.innerHTML = ic("check");
-          setTimeout(() => { btnEl.innerHTML = ic("refresh") + " 更新"; }, 1200);
-        }
+      if (manualClick && badgeEl) {
+        const ok = weatherFetchedAt[fetchKey] && Date.now() - weatherFetchedAt[fetchKey] < 5000;
+        badgeEl.classList.add(ok ? "just-updated" : "update-failed");
+        setTimeout(() => badgeEl.classList.remove("just-updated", "update-failed"), 1100);
+        if (!ok) showToast(navigator.onLine === false ? "目前離線，連上網路後再點天氣更新" : "天氣暫時抓不到，等一下再點一次");
       }
+    }
+
+    // 天氣多久沒更新：超過 1 小時（或這次打開 App 還沒抓過），天氣膠囊外圈會輕輕發光，提醒點一下更新
+    var weatherFetchedAt = {};
+    var WEATHER_STALE_MS = 60 * 60 * 1000;
+    function weatherKey(trip, dayIdx) { return `${(trip && trip.id) || ""}:${dayIdx}`; }
+    function updateWeatherStale() {
+      const wb = document.getElementById("weatherBadge");
+      if (!wb || wb.classList.contains("loading")) return;
+      const t = weatherFetchedAt[weatherKey(getActiveTrip(), appState.activeDayIndex || 0)];
+      const stale = !t || Date.now() - t > WEATHER_STALE_MS;
+      wb.classList.toggle("stale", stale);
+      wb.setAttribute("aria-label", stale ? "天氣可能不是最新的，點一下更新" : "天氣，點一下更新");
+    }
+    setInterval(updateWeatherStale, 5 * 60 * 1000);
+    // 改天氣城市：平常收起來，點膠囊旁的定位小圖示才打開
+    function toggleCityEdit(force) {
+      const wrap = document.querySelector(".day-city-wrap");
+      if (!wrap) return;
+      const open = typeof force === "boolean" ? force : !wrap.classList.contains("open");
+      wrap.classList.toggle("open", open);
+      document.getElementById("cityEditBtn")?.classList.toggle("on", open);
+      if (open) setTimeout(() => document.getElementById("dayLocationInput")?.focus(), 30);
     }
 
     function hhmmToMinutes(hhmm) {
@@ -5451,9 +5716,13 @@
         currentDayDate.setDate(currentDayDate.getDate() + idx);
         const isToday = todayStr === currentDayDate.toDateString();
         
-        p.className = "day-pill" + (idx === appState.activeDayIndex ? " active" : "") + (isToday ? " is-today" : "");
-        p.innerHTML = `第 ${idx + 1} 天${isToday ? ' <span class="today-tag" data-notr>TODAY</span>' : ''}`;
-        p.onclick = () => {
+        const isActive = idx === appState.activeDayIndex, canEdit = !appState.travelLockMode;
+        p.className = "day-pill" + (isActive ? " active" : "") + (isToday ? " is-today" : "");
+        p.innerHTML = `第 ${idx + 1} 天${isToday ? ' <span class="today-tag" data-notr>TODAY</span>' : ''}${isActive && canEdit ? '<i class="day-caret" aria-hidden="true">▾</i>' : ''}`;
+        if (isActive && canEdit) { p.setAttribute("aria-haspopup", "menu"); p.title = "再點一下：加一天、刪除這一天"; }
+        p.onclick = (ev) => {
+          // 已經選中的這一天再點一次：打開小選單（加一天／刪除這一天）
+          if (isActive && canEdit) { ev.stopPropagation(); openDayMenu(p); return; }
           appState.activeDayIndex = idx;
           saveAppState();
           renderAll();
@@ -5464,16 +5733,14 @@
 
       if (!appState.travelLockMode) {
         const addDayBtn = document.createElement("button");
-        addDayBtn.className = "day-pill";
-        addDayBtn.style.color = "#2B5B84";
+        addDayBtn.className = "day-pill day-add";
         addDayBtn.textContent = "＋";
+        addDayBtn.setAttribute("aria-label", "加一天");
+        addDayBtn.title = "加一天";
         addDayBtn.onclick = () => openAddDaySheet();
         pillsBar.appendChild(addDayBtn);
       }
 
-      const insBtn = document.getElementById("insertDayBtn");
-      if (insBtn) insBtn.style.display = !appState.travelLockMode ? "inline-flex" : "none";
-      document.getElementById("deleteDayBtn").style.display = (!appState.travelLockMode && trip.days.length > 1) ? "inline-flex" : "none";
 
       const dateBadgeEl = document.getElementById("activeDayDateBadge");
       if (dateBadgeEl) {
@@ -5511,8 +5778,12 @@
       updateDayCityHint();
 
       const wb = document.getElementById("weatherBadge");
-      wb.innerHTML = weatherBadgeHTML(weatherBadgeText(day));
-      wb.title = ((day.location && day.location.trim()) || day.weatherPlace) ? `${(day.location && day.location.trim()) || day.weatherPlace} 的天氣${!day.location ? "（依行程地點判斷，可在「所在城市」改）" : ""}` : "";
+      if (!wb.classList.contains("loading")) wb.innerHTML = weatherBadgeHTML(weatherBadgeText(day)) + `<span class="wb-refresh" aria-hidden="true">${ic("refresh")}</span>`;
+      wb.title = (((day.location && day.location.trim()) || day.weatherPlace) ? `${(day.location && day.location.trim()) || day.weatherPlace} 的天氣${!day.location ? "（依行程地點自動判斷）" : ""}。` : "") + "點一下更新";
+      // 手動填過城市就顯示輸入框（看得到、改得到）；沒填就收起來
+      const cityWrap = document.querySelector(".day-city-wrap");
+      if (cityWrap && !cityWrap.contains(document.activeElement)) toggleCityEdit(!!(day.location && day.location.trim()));
+      updateWeatherStale();
       document.getElementById("sunriseLabel").textContent = `日出 ${day.sunrise || "06:15"}`;
       document.getElementById("sunsetLabel").textContent = `日落 ${day.sunset || "17:30"}`;
 
@@ -5574,6 +5845,24 @@
       refreshRealtimeWeather(false);
       if (typeof showToast === "function") showToast(`已加入第 ${at + 1} 天`);
     }
+
+    // 日期列的小選單：點已選中的那一天打開
+    function openDayMenu(anchor) {
+      closeDayMenu();
+      const trip = getActiveTrip();
+      const m = document.createElement("div");
+      m.className = "day-menu"; m.id = "dayMenu"; m.setAttribute("role", "menu");
+      m.innerHTML = `<button type="button" role="menuitem" onclick="closeDayMenu(); openAddDaySheet()"><b class="dm-plus" aria-hidden="true">＋</b><span>加一天<small>加在這天前面或後面</small></span></button>
+        ${trip.days.length > 1 ? `<button type="button" role="menuitem" class="danger" onclick="closeDayMenu(); deleteCurrentDay()">${ic("trash")}<span>刪除這一天<small>這天的行程會一起刪掉</small></span></button>` : ""}`;
+      document.body.appendChild(m);
+      const r = anchor.getBoundingClientRect();
+      const w = m.offsetWidth;
+      m.style.top = (r.bottom + 6) + "px";
+      m.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + "px";
+      setTimeout(() => document.addEventListener("click", closeDayMenu, { once: true }), 0);
+    }
+    function closeDayMenu() { document.getElementById("dayMenu")?.remove(); }
+    window.addEventListener("scroll", closeDayMenu, { passive: true });
 
     function deleteCurrentDay() {
       const trip = getActiveTrip();
@@ -5810,6 +6099,8 @@
           <button type="button" class="pill-btn" onclick="openShareModal('${item.id}', 0)">分享</button>
           <button type="button" class="pill-btn" onclick="openExternalGoogleMap('${item.id}')">地圖</button>
           ${tripStartedNow || isCancel ? `<button type="button" class="pill-btn${isCancel ? " on" : ""}" onclick="toggleItemStatus('${item.id}', 'cancelled')">${isCancel ? "復原" : "未搭乘"}</button>` : ""}
+          ${!appState.travelLockMode && canMoveItem(item) ? `<button type="button" class="pill-btn" onclick="openMoveDaySheet('${item.id}')">換天</button>` : ""}
+          ${!appState.travelLockMode ? `<button type="button" class="pill-btn tc-del" onclick="deleteItineraryItem('${item.id}')">刪除</button>` : ""}
         </div>`;
       // 下一個行程也是交通：可以合併成一張（地鐵圖的轉乘感）
       const nx = nextConnectorOf(item);
@@ -5993,6 +6284,7 @@
     function startGuideOff() { appState.startGuideOff = true; saveAppState(); track("guide_off"); renderTimelineCards(); showToast("收起來了。之後想看，選單裡有「使用教學」"); }
 
     function renderTimelineCards() {
+      if (tlDrag && tlDrag.active) { tlDrag.pendingRender = true; return; }   // 拖曳中不重畫，放下後再畫
       const container = document.getElementById("timelineView");
       container.innerHTML = "";
       const trip = getActiveTrip();
@@ -6087,9 +6379,13 @@
             </div>`;
         }
 
-        const noteHtml = item.note && item.note.trim()
-          ? `<div class="note-box">${escapeHtml(item.note.trim())}</div>`
-          : "";
+        const refl = getReflection(trip.id, item.id);
+        const sharedNote = stripPersonalNoteFromNote(item.note, item.personalNote).trim();   // 舊資料裡混進來的個人筆記不重複顯示
+        const noteHtml = (sharedNote
+          ? `<div class="note-box">${escapeHtml(sharedNote)}</div>`
+          : "") + (item.personalNote && String(item.personalNote).trim()
+          ? `<div class="note-box personal-note" title="只有你看得到">${ic("lock")}<span><b>我的筆記</b>${escapeHtml(String(item.personalNote).trim())}</span></div>`
+          : "") + (refl ? `<button type="button" class="refl-box" onclick="openMoodSheet('${item.id}')" title="只有你看得到・點一下修改">${item.mood ? `<span class="refl-mood">${escapeHtml(item.mood)}</span>` : ""}<span class="refl-txt">${escapeHtml(refl)}</span><span class="refl-lock" aria-label="只有你看得到">${ic("lock")}</span></button>` : "");
 
         let urlHtml = "";
         const safeHref = safeExternalUrl(item.url);
@@ -6173,6 +6469,7 @@
               <button class="footer-text-btn" onclick="toggleQuickExpenseDrawer('${item.id}')">消費</button>
               <button class="footer-text-btn ${item.mapUrl ? "map-set" : ""}" onclick="openExternalGoogleMap('${item.id}')" title="${item.mapUrl ? "打開已儲存的地點" : "用行程名稱搜尋地點"}" aria-label="${item.mapUrl ? "地圖（已設定地點）" : "地圖"}">地圖</button>
               <button class="footer-text-btn share-text" onclick="openShareModal('${item.id}', 0)">分享</button>
+              ${!appState.travelLockMode && canMoveItem(item) ? `<button class="footer-text-btn" onclick="openMoveDaySheet('${item.id}')">換天</button>` : ""}
               ${!appState.travelLockMode ? `<button class="footer-text-btn delete-text" onclick="deleteItineraryItem('${item.id}')">刪除</button>` : ""}
             </div>
           </div>
@@ -6181,14 +6478,21 @@
         container.appendChild(card);
       });
 
+      // 可以拖曳的卡片：長按拿起（航班時間固定、旅伴的共用行程、旅途鎖定時不能拖）
+      if (!appState.travelLockMode) {
+        day.items.forEach(item => {
+          const el = document.getElementById(`card_${item.id}`);
+          if (el && isDraggableItem(item)) { el.dataset.dragId = item.id; el.classList.add("can-drag"); }
+        });
+        maybeShowDragHint(day);
+      }
       lastStampedCardId = null;
       requestAnimationFrame(updateMobileScrollFocusCard);
     }
 
     function toggleEmojiPopover(e, itemId) {
       e.stopPropagation();
-      activeEmojiPopoverItemId = (activeEmojiPopoverItemId === itemId) ? null : itemId;
-      renderTimelineCards();
+      openMoodSheet(itemId);   // 改成從下方滑出的「心情＋心得」面板（2026-11）
     }
 
     window.addEventListener("click", () => {
@@ -6218,6 +6522,137 @@
         appState.customEmojis.push(val);
       }
       setCardMoodStamp(itemId, val);
+    }
+
+    /*************************************************************************
+     * 心情＋即時心得（2026-11）
+     * - 點心情章：選表情，也能寫一句心得（140 字內），旅途鎖定時也能寫
+     * - 心得是個人資料：只有自己看得到，不放進行程（共用的母行程會上傳給旅伴）、也不放進 journal_data
+     * - 本機：localStorage TABIGRAM_REFLECTIONS_V1，依登入身分分開
+     * - 雲端：資料表 trip_reflections（只有本人能讀寫）；表還沒建立或離線時先留在本機，之後再上傳
+     *************************************************************************/
+    const REFL_KEY = "TABIGRAM_REFLECTIONS_V1", REFL_MAX = 140;
+    let moodItemId = null, moodPick = "", reflSyncT = null, reflSyncing = false;
+    function reflAll() { try { return JSON.parse(localStorage.getItem(REFL_KEY) || "{}") || {}; } catch (e) { return {}; } }
+    function reflSaveAll(o) { try { localStorage.setItem(REFL_KEY, JSON.stringify(o)); } catch (e) {} }
+    function reflProfile() { return appState.profileId || "guest"; }
+    function getReflection(tripId, itemId) {
+      const r = (((reflAll()[reflProfile()] || {})[tripId] || {})[itemId]);
+      return r && r.t ? r.t : "";
+    }
+    function setReflection(tripId, itemId, text) {
+      const all = reflAll(), p = reflProfile();
+      all[p] = all[p] || {}; all[p][tripId] = all[p][tripId] || {};
+      all[p][tripId][itemId] = { t: String(text || "").slice(0, REFL_MAX), u: Date.now(), d: 1 };
+      reflSaveAll(all);
+      queueReflectionSync();
+    }
+    // 從訪客帶進帳號的旅程：心得也跟著搬
+    function moveReflectionsBetweenProfiles(from, to, tripIds) {
+      const all = reflAll(); if (!all[from]) return;
+      all[to] = all[to] || {};
+      tripIds.forEach(id => { if (all[from][id]) { all[to][id] = Object.assign({}, all[from][id]); Object.values(all[to][id]).forEach(r => { r.d = 1; }); delete all[from][id]; } });
+      reflSaveAll(all);
+    }
+    function queueReflectionSync() { clearTimeout(reflSyncT); reflSyncT = setTimeout(syncReflections, 1200); }
+    // 上傳還沒上傳的心得（空白＝刪除雲端那一則）
+    async function syncReflections() {
+      if (reflSyncing || !sbClient || !currentCloudUser || navigator.onLine === false) return;
+      const p = "u_" + currentCloudUser.id;
+      if (reflProfile() !== p) return;
+      const all = reflAll(), mine = all[p] || {};
+      const ups = [], dels = [];
+      Object.entries(mine).forEach(([tripId, items]) => Object.entries(items).forEach(([itemId, r]) => {
+        if (!r.d) return;
+        if (r.t) ups.push({ user_id: currentCloudUser.id, trip_id: tripId, item_id: itemId, body: r.t });
+        else dels.push([tripId, itemId]);
+      }));
+      if (!ups.length && !dels.length) return;
+      reflSyncing = true;
+      try {
+        let ok = true;
+        if (ups.length) {
+          const { error } = await sbClient.from("trip_reflections").upsert(ups, { onConflict: "user_id,trip_id,item_id" });
+          if (error) ok = false;
+        }
+        for (const [tripId, itemId] of dels) {
+          const { error } = await sbClient.from("trip_reflections").delete().eq("user_id", currentCloudUser.id).eq("trip_id", tripId).eq("item_id", itemId);
+          if (error) ok = false;
+        }
+        if (ok) {
+          const now = reflAll(), m = now[p] || {};
+          Object.values(m).forEach(items => Object.keys(items).forEach(k => { if (items[k].d) { if (items[k].t) delete items[k].d; else delete items[k]; } }));
+          reflSaveAll(now);
+        }
+      } catch (e) {} finally { reflSyncing = false; }
+    }
+    // 從雲端拿回心得（換手機時）；本機還沒上傳的不會被蓋掉
+    async function pullReflections() {
+      if (!sbClient || !currentCloudUser) return;
+      try {
+        const { data, error } = await sbClient.from("trip_reflections").select("trip_id, item_id, body, updated_at").eq("user_id", currentCloudUser.id).limit(5000);
+        if (error || !Array.isArray(data)) return;
+        const p = "u_" + currentCloudUser.id, all = reflAll();
+        all[p] = all[p] || {};
+        data.forEach(row => {
+          const t = all[p][row.trip_id] = all[p][row.trip_id] || {};
+          const cur = t[row.item_id];
+          if (cur && cur.d) return;
+          t[row.item_id] = { t: row.body || "", u: Date.parse(row.updated_at) || Date.now() };
+        });
+        reflSaveAll(all);
+        renderTimelineCards();
+      } catch (e) {}
+      syncReflections();
+    }
+    window.addEventListener("online", () => queueReflectionSync());
+
+    function openMoodSheet(itemId) {
+      const item = getActiveDay().items.find(i => i.id === itemId);
+      if (!item) return;
+      moodItemId = itemId; moodPick = item.mood || "";
+      document.getElementById("moodFor").textContent = item.title || "";
+      document.getElementById("moodText").value = getReflection(getActiveTrip().id, itemId);
+      document.getElementById("moodCustomInp").value = "";
+      renderMoodGrid(); moodCount();
+      openModalBackdrop("moodModal");
+    }
+    function renderMoodGrid() {
+      const all = [...DEFAULT_MOOD_EMOJIS, ...(appState.customEmojis || [])];
+      document.getElementById("moodGrid").innerHTML = all.map(em =>
+        `<button type="button" class="emoji-opt${moodPick === em ? " selected" : ""}" aria-pressed="${moodPick === em}" onclick="moodPick = moodPick === '${em}' ? '' : '${em}'; renderMoodGrid()">${em}</button>`).join("");
+    }
+    function moodAddCustom() {
+      const inp = document.getElementById("moodCustomInp"), val = inp.value.trim();
+      if (!val) return;
+      appState.customEmojis = appState.customEmojis || [];
+      if (!DEFAULT_MOOD_EMOJIS.includes(val) && !appState.customEmojis.includes(val)) appState.customEmojis.push(val);
+      moodPick = val; inp.value = ""; renderMoodGrid();
+    }
+    function moodCount() {
+      const n = document.getElementById("moodText").value.length;
+      document.getElementById("moodCnt").textContent = `${n} / ${REFL_MAX}`;
+    }
+    function moodClear() { moodPick = ""; document.getElementById("moodText").value = ""; renderMoodGrid(); moodCount(); }
+    // 點外面或關閉：有改過就照樣存（不要讓寫好的字不見）
+    function closeMoodSheet(save) {
+      if (save && moodItemId) {
+        const item = getActiveDay().items.find(i => i.id === moodItemId);
+        const txt = document.getElementById("moodText").value.trim();
+        if (item && ((item.mood || "") !== moodPick || txt !== getReflection(getActiveTrip().id, moodItemId))) return saveMoodSheet();
+      }
+      moodItemId = null; closeModalBackdrop("moodModal");
+    }
+    function saveMoodSheet() {
+      const trip = getActiveTrip(), item = getActiveDay().items.find(i => i.id === moodItemId);
+      if (item) {
+        const txt = document.getElementById("moodText").value.trim().slice(0, REFL_MAX);
+        const moodChanged = (item.mood || "") !== moodPick;
+        if (txt !== getReflection(trip.id, item.id)) { setReflection(trip.id, item.id, txt); if (txt) track("reflection_save"); }
+        if (moodChanged) { item.mood = moodPick; lastStampedCardId = item.id; saveAppState(); debouncedSyncToCloud(); }
+      }
+      moodItemId = null; closeModalBackdrop("moodModal");
+      renderTimelineCards();
     }
 
     function toggleQuickExpenseDrawer(itemId) {
@@ -6263,6 +6698,198 @@
       day.items = day.items.filter(i => i.id !== itemId);
       saveAppState(); debouncedSyncToCloud();
       renderAll();
+    }
+
+    // 換天：選一天，整張卡片（含照片、心情、機場章）原封不動搬過去，時間不變
+    let moveDayItemId = null;
+    function openMoveDaySheet(itemId) {
+      const trip = getActiveTrip(), day = getActiveDay();
+      const item = day.items.find(i => i.id === itemId);
+      if (!item || !canMoveItem(item)) return;
+      moveDayItemId = itemId;
+      const cur = appState.activeDayIndex || 0;
+      document.getElementById("moveDayTitle").textContent = item.title || (isConnectorItem(item) ? `${item.transitLegs[0].from} → ${item.transitLegs[item.transitLegs.length - 1].to}` : "");
+      document.getElementById("moveDayList").innerHTML = (trip.days || []).map((d, i) => {
+        const n = (d.items || []).length;
+        return `<button type="button" class="move-day-opt${i === cur ? " cur" : ""}" ${i === cur ? "disabled" : ""} onclick="moveItemToDay(${i})">
+          <b>${escapeHtml(dayLabelText(i))}</b><span>${escapeHtml(getDayFormattedDateString(trip.startDate, i))}</span>
+          <small>${i === cur ? (window.TG_LANG === "en" ? "Now" : "目前") : (window.TG_LANG === "en" ? `${n} plan${n === 1 ? "" : "s"}` : `${n} 個行程`)}</small></button>`;
+      }).join("");
+      openModalBackdrop("moveDayModal");
+    }
+    function closeMoveDaySheet() { moveDayItemId = null; closeModalBackdrop("moveDayModal"); }
+    /*************************************************************************
+     * 拖曳排序：長按卡片約 0.35 秒拿起，上下拖放
+     * - 時段留在原位：當天可移動卡片的開始時間當成「時間格」，卡片照新順序依序接手時間格，停留長度跟著卡片走
+     * - 航班（時間固定）、旅伴不能改的共用行程不動，當成固定點
+     * - 放下後跳出「已更新時間・復原」
+     *************************************************************************/
+    var tlDrag = null;   // var：renderTimelineCards 可能比這行更早被呼叫
+    const TL_HOLD_MS = 350, TL_SLOP = 8;
+    function isDraggableItem(item) { return !!item && item.type !== "flight" && canMoveItem(item); }
+    function maybeShowDragHint(day) {
+      try {
+        if (localStorage.getItem("TG_DRAG_HINT")) return;
+        if ((day.items || []).filter(isDraggableItem).length < 2) return;
+        localStorage.setItem("TG_DRAG_HINT", "1");
+        setTimeout(() => showToast(window.TG_LANG === "en" ? "Tip: press and hold a card, then drag to reorder." : "小提示：長按卡片就能拖曳、換順序", 4200), 900);
+      } catch (e) {}
+    }
+    function itemDurationMin(item) {
+      const a = hhmmToMinutes(item.startTime || "09:00");
+      let b = hhmmToMinutes(item.endTime || item.startTime || "09:00") + 1440 * (Number(item.endDayOffset) || 0);
+      if (b < a) b += 1440;
+      return b - a;
+    }
+    function minToHHMM(m) {
+      const x = ((m % 1440) + 1440) % 1440;
+      return `${String(Math.floor(x / 60)).padStart(2, "0")}:${String(x % 60).padStart(2, "0")}`;
+    }
+    // 依新順序（id 陣列）重新分配時間格；回傳有沒有變動
+    function applyDayOrder(day, orderIds) {
+      const byId = new Map(day.items.map(i => [i.id, i]));
+      const movable = day.items.filter(isDraggableItem);
+      const slots = movable.map(i => hhmmToMinutes(i.startTime || "09:00")).sort((a, b) => a - b);
+      const newOrder = orderIds.map(id => byId.get(id)).filter(i => i && isDraggableItem(i));
+      if (newOrder.length !== movable.length) return false;
+      let changed = false;
+      newOrder.forEach((item, k) => {
+        const start = slots[k];
+        if (hhmmToMinutes(item.startTime || "09:00") === start && item.startTime) return;
+        const dur = itemDurationMin(item), end = start + dur;
+        item.startTime = minToHHMM(start);
+        item.endTime = minToHHMM(end);
+        item.endDayOffset = Math.floor(end / 1440);
+        changed = true;
+      });
+      // 時間一樣的卡片照拖曳後的順序排
+      const rank = new Map(orderIds.map((id, k) => [id, k]));
+      day.items.sort((a, b) => (hhmmToMinutes(a.startTime) - hhmmToMinutes(b.startTime)) || ((rank.get(a.id) ?? 0) - (rank.get(b.id) ?? 0)));
+      return changed || day.items.some((it, k) => it.id !== orderIds[k]);
+    }
+    function showUndoToast(text, onUndo, ms = 6000) {
+      document.querySelectorAll(".app-toast").forEach(el => el.remove());
+      const t = document.createElement("div");
+      t.className = "app-toast undo-toast"; t.setAttribute("role", "status");
+      t.innerHTML = `<span>${escapeHtml(text)}</span><button type="button">${window.TG_LANG === "en" ? "Undo" : "復原"}</button>`;
+      t.querySelector("button").onclick = e => { e.stopPropagation(); t.remove(); onUndo(); };
+      t.onclick = () => t.remove();
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), ms);
+    }
+    function tlDragStart() {
+      const d = tlDrag; if (!d) return;
+      const card = d.card, r = card.getBoundingClientRect();
+      d.active = true;
+      d.offsetY = d.y - r.top;
+      d.ph = document.createElement("div");
+      d.ph.className = "drag-ph";
+      d.ph.style.height = r.height + "px";
+      card.parentNode.insertBefore(d.ph, card);
+      card.classList.add("dragging");
+      Object.assign(card.style, { position: "fixed", left: r.left + "px", top: r.top + "px", width: r.width + "px", zIndex: "3000", margin: "0" });
+      document.documentElement.classList.add("tl-dragging");
+      try { navigator.vibrate && navigator.vibrate(12); } catch (e) {}
+      tlDragLoop();
+    }
+    function tlDragMove(y) {
+      const d = tlDrag; if (!d || !d.active) return;
+      d.y = y;
+      d.card.style.top = (y - d.offsetY) + "px";
+      const cont = document.getElementById("timelineView");
+      const sibs = [...cont.querySelectorAll("#timelineView > [id^='card_']")].filter(el => el !== d.card);
+      let before = null;
+      for (const el of sibs) { const r = el.getBoundingClientRect(); if (y < r.top + r.height / 2) { before = el; break; } }
+      if (before) { if (d.ph.nextSibling !== before) cont.insertBefore(d.ph, before); }
+      else if (sibs.length) { const last = sibs[sibs.length - 1]; if (last.nextSibling !== d.ph) last.after(d.ph); }
+    }
+    // 拿著卡片靠近螢幕上下緣時自動捲動
+    function tlDragLoop() {
+      const d = tlDrag; if (!d || !d.active) return;
+      const h = window.innerHeight, edge = 90;
+      const v = d.y < edge ? -Math.ceil((edge - d.y) / 6) : (d.y > h - edge ? Math.ceil((d.y - (h - edge)) / 6) : 0);
+      if (v) { window.scrollBy(0, v); tlDragMove(d.y); }
+      d.raf = requestAnimationFrame(tlDragLoop);
+    }
+    function tlDragEnd(cancelled) {
+      const d = tlDrag; tlDrag = null;
+      if (!d) return;
+      clearTimeout(d.timer);
+      if (!d.active) return;
+      cancelAnimationFrame(d.raf);
+      document.documentElement.classList.remove("tl-dragging");
+      const cont = document.getElementById("timelineView");
+      if (!cancelled && d.ph.parentNode) cont.insertBefore(d.card, d.ph);
+      d.ph.remove();
+      d.card.classList.remove("dragging");
+      ["position", "left", "top", "width", "zIndex", "margin"].forEach(k => d.card.style[k] = "");
+      // 放下後擋掉這次的 click（不要順便打開交通細條或按到按鈕）
+      const swallow = e => { e.stopPropagation(); e.preventDefault(); };
+      window.addEventListener("click", swallow, { capture: true, once: true });
+      setTimeout(() => window.removeEventListener("click", swallow, { capture: true }), 400);
+      const day = getActiveDay();
+      const order = [...cont.querySelectorAll("#timelineView > [id^='card_']")].map(el => el.id.slice(5));
+      const before = JSON.stringify(day.items);
+      const changed = !cancelled && applyDayOrder(day, order);
+      if (changed) {
+        saveAppState(); debouncedSyncToCloud();
+        renderAll();
+        showUndoToast(window.TG_LANG === "en" ? "Times updated" : "已更新時間", () => {
+          getActiveDay().items = JSON.parse(before);
+          saveAppState(); debouncedSyncToCloud(); renderAll();
+        });
+      } else {
+        renderTimelineCards();
+      }
+    }
+    function initTimelineDrag() {
+      const cont = document.getElementById("timelineView");
+      if (!cont || cont.dataset.dragBound) return;
+      cont.dataset.dragBound = "1";
+      const begin = (e, x, y) => {
+        if (appState.travelLockMode) return;
+        if (e.target.closest("button, a, input, textarea, select, label, .emoji-popover, .quick-expense-drawer")) return;
+        const card = e.target.closest("[data-drag-id]");
+        if (!card || card.parentNode !== cont) return;
+        tlDrag = { card, x, y, sx: x, sy: y, active: false };
+        tlDrag.timer = setTimeout(tlDragStart, TL_HOLD_MS);
+      };
+      const move = (x, y) => {
+        const d = tlDrag; if (!d) return;
+        if (!d.active) { if (Math.abs(x - d.sx) > TL_SLOP || Math.abs(y - d.sy) > TL_SLOP) { clearTimeout(d.timer); tlDrag = null; } return; }
+        tlDragMove(y);
+      };
+      // 手機：touch 事件（拿起後擋掉頁面捲動）
+      cont.addEventListener("touchstart", e => { if (e.touches.length === 1) begin(e, e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+      document.addEventListener("touchmove", e => {
+        if (!tlDrag) return;
+        if (tlDrag.active) e.preventDefault();
+        move(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: false });
+      document.addEventListener("touchend", () => tlDragEnd(false));
+      document.addEventListener("touchcancel", () => tlDragEnd(true));
+      cont.addEventListener("contextmenu", e => { if (tlDrag) e.preventDefault(); });
+      // 電腦：滑鼠
+      cont.addEventListener("mousedown", e => { if (e.button === 0) begin(e, e.clientX, e.clientY); });
+      document.addEventListener("mousemove", e => { if (tlDrag) { if (tlDrag.active) e.preventDefault(); move(e.clientX, e.clientY); } });
+      document.addEventListener("mouseup", () => tlDragEnd(false));
+      document.addEventListener("keydown", e => { if (e.key === "Escape" && tlDrag) tlDragEnd(true); });
+    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initTimelineDrag); else setTimeout(initTimelineDrag, 0);
+
+    function moveItemToDay(targetIdx) {
+      const trip = getActiveTrip(), day = getActiveDay();
+      const idx = day.items.findIndex(i => i.id === moveDayItemId);
+      const target = trip.days[targetIdx];
+      if (idx === -1 || !target || target === day) { closeMoveDaySheet(); return; }
+      const [item] = day.items.splice(idx, 1);
+      target.items = target.items || [];
+      target.items.push(item);
+      sortDayItems(target);
+      closeMoveDaySheet();
+      saveAppState(); debouncedSyncToCloud();
+      renderAll();
+      showToast(window.TG_LANG === "en" ? `Moved to Day ${targetIdx + 1}` : `已移到第 ${targetIdx + 1} 天`);
     }
 
     // 行程的地點文字（給地圖搜尋用）
@@ -6500,6 +7127,7 @@
       const item = itemId ? day.items.find(i => i.id === itemId) : null;
 
       document.getElementById("itemModalTitle").textContent = item ? "編輯行程卡片" : "新增行程卡片";
+      fillItemDaySelect(trip, item);
       document.getElementById("transitLegsContainer").innerHTML = "";
       document.getElementById("modalExtraExpensesList").innerHTML = "";
 
@@ -6536,7 +7164,7 @@
         document.getElementById("fCurrency").value = item.currency || "NT$";
         document.getElementById("fCost").value = item.cost || "";
         document.getElementById("fCostLabel").value = item.costLabel || "";
-        document.getElementById("fNote").value = item.note || "";
+        document.getElementById("fNote").value = stripPersonalNoteFromNote(item.note, item.personalNote);
         document.getElementById("fUrl").value = item.url || "";
         document.getElementById("fUrlLabel").value = item.urlLabel || "";
         document.getElementById("fMapUrl").value = item.mapUrl || "";
@@ -6749,6 +7377,28 @@
       });
     }
 
+    // 編輯視窗的「日期」：列出這趟旅程的每一天；旅伴不能搬共用的行程（會被母行程蓋回去）
+    function fillItemDaySelect(trip, item) {
+      const sel = document.getElementById("fDayIdx");
+      if (!sel) return;
+      const cur = appState.activeDayIndex || 0;
+      sel.innerHTML = (trip.days || []).map((d, i) =>
+        `<option value="${i}"${i === cur ? " selected" : ""}>${escapeHtml(dayLabelText(i) + "・" + getDayFormattedDateString(trip.startDate, i))}</option>`).join("");
+      sel.disabled = !!(item && !canMoveItem(item));
+    }
+    function dayLabelText(i) { return window.TG_LANG === "en" ? `Day ${i + 1}` : `第 ${i + 1} 天`; }
+    // 這張卡片能不能換天／拖曳：旅伴只能動自己的私人行程；航班的時間是固定的，不能拖但可以換天
+    function canMoveItem(item) {
+      if (!item) return false;
+      if (isTripCompanionView(getActiveTrip()) && !item.isPrivate) return false;
+      return true;
+    }
+    // 依開始時間排序（時間一樣的維持原本順序）
+    function sortDayItems(day) {
+      if (!day || !Array.isArray(day.items)) return;
+      day.items.sort((a, b) => hhmmToMinutes(a.startTime) - hhmmToMinutes(b.startTime));
+    }
+
     function applyCompanionPrivateLock(existingItem) {
       const cb = document.getElementById("fIsPrivate");
       const hint = document.getElementById("fPrivateHint");
@@ -6842,7 +7492,8 @@
         }
       });
 
-      const payload = {
+      // 在舊的卡片上更新：表單上沒有的欄位（機場章 stamps、打卡 checkin、個人筆記等）要留著，不能被清掉
+      const payload = Object.assign({}, existingItem || {}, {
         id: editingItemId || ("item_" + Date.now()),
         type,
         title,
@@ -6876,18 +7527,31 @@
         endDayOffset,
         isPrivate,
         createdBy
-      };
+      });
 
+      // 換天：表單上的「日期」選了別天，就把卡片搬過去
+      const trip = getActiveTrip();
+      const daySel = document.getElementById("fDayIdx");
+      const targetIdx = daySel && daySel.value !== "" ? Number(daySel.value) : appState.activeDayIndex;
+      const targetDay = (Number.isInteger(targetIdx) && trip.days[targetIdx]) || day;
       if (editingItemId) {
         const idx = day.items.findIndex(i => i.id === editingItemId);
-        if (idx !== -1) day.items[idx] = payload;
+        if (idx !== -1) {
+          if (targetDay === day) day.items[idx] = payload;
+          else { day.items.splice(idx, 1); targetDay.items = targetDay.items || []; targetDay.items.push(payload); }
+        }
       } else {
-        day.items.push(payload);
+        targetDay.items = targetDay.items || [];
+        targetDay.items.push(payload);
         track("item_add", payload.type || "spot");
         try { if (!localStorage.getItem("TG_METRIC_FIRST_ITEM")) { localStorage.setItem("TG_METRIC_FIRST_ITEM", "1"); track("first_item"); } } catch (e) {}
       }
 
-      day.items.sort((a, b) => hhmmToMinutes(a.startTime) - hhmmToMinutes(b.startTime));
+      sortDayItems(day);
+      if (targetDay !== day) {
+        sortDayItems(targetDay);
+        showToast(`已移到 ${getDayFormattedDateString(trip.startDate, trip.days.indexOf(targetDay))}`);
+      }
       saveAppState();
       closeItemModal();
       renderAll();
@@ -7183,6 +7847,11 @@
       try { storyBgPattern.setTransform(ctx.getTransform().inverse()); return storyBgPattern; } catch (e) { return sw.bg; }
     }
     function drawCardPaperTexture(ctx, x, y, w, h, radius, bgFill, textureMode) {
+      // 分享卡主題：紙卡鋪主題的紙材質，不加點點、方格
+      if (storyThemePaint && bgFill === storyThemePaint.bg && storyThemePaint.pattern && ctx.canvas && ctx.canvas.id === "storyCanvas") {
+        drawRoundedRect(ctx, x, y, w, h, radius, storyThemePaint.pattern);
+        return;
+      }
       drawRoundedRect(ctx, x, y, w, h, radius, SWATCH_BY_BG[bgFill] ? swatchPaint(ctx, SWATCH_BY_BG[bgFill], x, y, w, h) : bgFill);
       if (!textureMode || textureMode === "plain") return;
 
@@ -7334,8 +8003,9 @@
       try { initSwatchDropdowns(); renderRecentStoryEmojis(); } catch (e) { console.warn(e); }
       openModalBackdrop("shareModal");
       track("share_open", tplSelect.value);
-      edTab = "tpl";
+      edTab = null;   // 一打開先看到滿版的卡片，工具收在下方
       try { onShareTemplateChange(); edRender(); } catch (e) { console.warn(e); }
+      requestAnimationFrame(edFitCanvas);
 
       // 背景：卡片照片變成拍立得貼紙
       if (tplSelect.value !== "polaroid" && Array.isArray(item.photos) && item.photos.length > 0) {
@@ -7383,11 +8053,46 @@
       return { dots: "radial-gradient(#9A958C 1px, transparent 1.2px) 0 0/6px 6px", grid: "linear-gradient(#C9C3B6 1px, transparent 1px) 0 0/7px 7px, linear-gradient(90deg, #C9C3B6 1px, transparent 1px) 0 0/7px 7px",
         cross: "radial-gradient(circle, #9A958C 1.1px, transparent 1.3px) 0 0/8px 8px", plain: "none" }[t];
     }
-    function edSetTab(t) { edTab = t; edRender(); }
+    // 同一個分頁再點一次＝收起面板
+    function edSetTab(t) { edTab = (t && edTab === t) ? null : t; edRender(); }
+    // 畫布照 9:16 塞進可用空間（面板打開時讓出下方的位置），觸控座標才對得準
+    function edFitCanvas() {
+      const modal = document.getElementById("shareModal");
+      const stage = modal && modal.querySelector(".share-preview-stage");
+      const cv = document.getElementById("storyCanvas");
+      if (!stage || !cv || !modal.classList.contains("open")) return;
+      const dock = document.getElementById("edDock");
+      const panelOpen = dock && dock.classList.contains("open");
+      const topH = (modal.querySelector(".ed-top")?.offsetHeight || 56);
+      const dockH = dock ? dock.offsetHeight : 0;
+      const W = stage.clientWidth;
+      const H = modal.querySelector(".modal-sheet").clientHeight;
+      // 面板收起時：畫布可以延伸到上下工具列後面（像限動）；面板打開時：畫布縮到面板上方
+      const availH = panelOpen ? Math.max(200, H - dockH - topH - 8) : Math.max(200, H - 16);
+      const w = Math.min(W - (W > 600 ? 0 : 0), availH * 9 / 16);
+      cv.style.width = Math.floor(w) + "px";
+      cv.style.height = Math.floor(w * 16 / 9) + "px";
+      stage.style.alignItems = panelOpen ? "flex-start" : "center";
+      stage.style.paddingTop = panelOpen ? topH + "px" : "0";
+    }
+    window.addEventListener("resize", () => requestAnimationFrame(edFitCanvas));
+    // 點畫布外面的空白處：收起面板
+    document.addEventListener("click", e => {
+      const modal = document.getElementById("shareModal");
+      if (!modal || !modal.classList.contains("open") || !edTab) return;
+      if (e.target.classList && e.target.classList.contains("share-preview-stage")) edSetTab(null);
+    });
     function edRender() {
       const panel = document.getElementById("edPanel");
       if (!panel || !currentShareItem) return;
       document.querySelectorAll(".ed-tab").forEach(b => b.classList.toggle("on", b.dataset.t === edTab));
+      const dock = document.getElementById("edDock");
+      if (!edTab) {
+        panel.innerHTML = "";
+        if (dock && dock.classList.contains("open")) { dock.classList.remove("open"); requestAnimationFrame(edFitCanvas); }
+        edLastSticker = activeStickerId;
+        return;
+      }
       const tpl = document.getElementById("shareTemplateSelect").value;
       const outer = OUTER_SWATCHES.find(s => s.id === appState.outerSwatchId) || OUTER_SWATCHES[0];
       const inner = INNER_SWATCHES.find(s => s.id === appState.innerSwatchId) || INNER_SWATCHES[0];
@@ -7399,9 +8104,13 @@
         const cs = appState.storyCardSize || "std";
         h += `<div class="ed-size"><span>卡片大小</span>${[["std", "標準"], ["lg", "大"], ["full", "滿版"]].map(([k, n]) => `<button type="button" class="${cs === k ? "on" : ""}" onclick="edSetCardSize('${k}')">${n}</button>`).join("")}</div>`;
       } else if (edTab === "color") {
-        const seg = [["outer", "背景"], ["inner", "紙卡"], ["tex", "紙紋"]].map(([k, n]) => `<button type="button" class="${edColorPart === k ? "on" : ""}" onclick="edColorPart='${k}';edRender()">${n}</button>`).join("");
+        const seg = [["outer", "背景"], ["inner", "紙卡"], ["tex", "紙紋"], ...(creatorThemes.card.length ? [["theme", "主題"]] : [])].map(([k, n]) => `<button type="button" class="${edColorPart === k ? "on" : ""}" onclick="edColorPart='${k}';edRender()">${n}</button>`).join("");
         h = `<div class="ed-colorbar"><div class="ed-seg">${seg}</div><button type="button" class="ed-random" onclick="randomStoryStyle();edRender()">隨機</button></div><div class="ed-row">`;
-        if (edColorPart === "tex") {
+        if (edColorPart === "theme") {
+          const en = window.TG_LANG === "en";
+          h += `<button type="button" class="ed-sw${!appState.storyThemeId ? " on" : ""}" onclick="selectStoryTheme('')"><span style="background:${swatchCss(outer)}"></span><small>${en ? "None" : "不用主題"}</small></button>`;
+          h += creatorThemes.card.map(t => `<button type="button" class="ed-sw ed-theme${appState.storyThemeId === t.id ? " on" : ""}" onclick="selectStoryTheme('${escapeHtml(t.id)}')" title="${escapeHtml(en ? t.artistEn : t.artist)}"><span style="background:${cssUrlSafe(t.bgUrl)} center/cover"></span><small>${escapeHtml(en ? t.nameEn : t.name)}</small></button>`).join("");
+        } else if (edColorPart === "tex") {
           h += ED_TEXTURES.map(([t, n]) => `<button type="button" class="ed-sw${appState.paperTexture === t ? " on" : ""}" onclick="selectPaperTexture('${t}');edRender()"><span style="background:${edTexCss(t)}, ${inner.bg}"></span><small>${n}</small></button>`).join("");
         } else {
           const list = edColorPart === "outer" ? OUTER_SWATCHES : INNER_SWATCHES, cur = edColorPart === "outer" ? outer.id : inner.id;
@@ -7454,8 +8163,10 @@
         const tools = `<div class="ed-row ed-stktools"><button type="button" class="ed-chip" onclick="promptCustomStoryEmojiSticker()">自訂表情</button><button type="button" class="ed-chip" onclick="triggerAddStickerPolaroidUpload()">＋ 拍立得照片</button>${(currentShareItem.photos || []).length ? `<button type="button" class="ed-chip" onclick="addExistingPhotoAsPolaroidSticker(${selectedSharePhotoIndex})">＋ 用這個行程的照片</button>` : ""}</div>`;
         h = `<div class="ed-stk">${top}${row}${tools}</div>`;
       }
-      panel.innerHTML = h;
+      panel.innerHTML = `<button type="button" class="ed-grab" onclick="edSetTab(null)" aria-label="收起"></button>` + h;
       edLastSticker = activeStickerId;
+      if (dock && !dock.classList.contains("open")) { dock.classList.add("open"); }
+      requestAnimationFrame(edFitCanvas);
     }
     // 分享卡中間上下兩張卡的大小
     const STORY_CARD_SIZES = {
@@ -9429,6 +10140,37 @@
       return { s, tx: W * (1 - s) / 2, ty: STORY_SAFE_TOP - STORY_CONTENT_TOP * s };
     }
 
+    // ---- 分享卡主題（創作者）：背景、紙卡材質、裝飾層、文字顏色 ----
+    const storyThemeImgCache = {};
+    function loadThemeImg(url) {
+      if (!url) return Promise.resolve(null);
+      if (!storyThemeImgCache[url]) storyThemeImgCache[url] = new Promise(res => {
+        const im = new Image(); im.crossOrigin = "anonymous"; im.decoding = "async";
+        im.onload = () => res(im); im.onerror = () => { delete storyThemeImgCache[url]; res(null); };
+        im.src = url;
+      });
+      return storyThemeImgCache[url];
+    }
+    function selectStoryTheme(id) {
+      appState.storyThemeId = id || "";
+      try { localStorage.setItem("TABIGRAM_STORY_THEME", appState.storyThemeId); } catch (e) {}
+      if (id) track("theme_card", id);
+      renderStoryCanvas(); edRender();
+    }
+    // 目前選的分享卡主題（圖片都載入好才算；載不到就當作沒選）
+    async function activeStoryTheme() {
+      const t = appState.storyThemeId && creatorThemes.card.find(x => x.id === appState.storyThemeId);
+      if (!t) return null;
+      const [bg, paper, overlay] = await Promise.all([loadThemeImg(t.bgUrl), loadThemeImg(t.paperUrl), loadThemeImg(t.overlayUrl)]);
+      if (!bg || !paper) return null;
+      return { t, bg, paper, overlay };
+    }
+    var storyThemePaint = null;   // drawCardPaperTexture 用：紙卡改鋪主題的紙材質
+    function drawImageCover(ctx, img, x, y, w, h) {
+      const r = Math.max(w / img.width, h / img.height), iw = img.width * r, ih = img.height * r;
+      ctx.drawImage(img, x + (w - iw) / 2, y + (h - ih) / 2, iw, ih);
+    }
+
     async function renderStoryCanvas() {
       if (!currentShareItem) return;
       const canvas = document.getElementById("storyCanvas");
@@ -9441,8 +10183,16 @@
       const tpl = document.getElementById("shareTemplateSelect").value;
       const showMood = document.getElementById("shareShowMoodCheck").checked;
 
-      const outerSwatch = OUTER_SWATCHES.find(s => s.id === appState.outerSwatchId) || OUTER_SWATCHES[0];
-      const innerSwatch = INNER_SWATCHES.find(s => s.id === appState.innerSwatchId) || INNER_SWATCHES[0];
+      let outerSwatch = OUTER_SWATCHES.find(s => s.id === appState.outerSwatchId) || OUTER_SWATCHES[0];
+      let innerSwatch = INNER_SWATCHES.find(s => s.id === appState.innerSwatchId) || INNER_SWATCHES[0];
+      // 創作者的分享卡主題：顏色換成主題的，紙卡改鋪主題的紙材質
+      const theme = await activeStoryTheme();
+      if (theme) {
+        outerSwatch = { id: "theme", bg: "#2A2A2A", text: theme.t.colors.text };
+        innerSwatch = { id: "theme", bg: "#F6F3EC", text: theme.t.colors.text };
+        storyThemePaint = { bg: innerSwatch.bg, pattern: ctx.createPattern(theme.paper, "repeat") };
+      } else storyThemePaint = null;
+      const subColor = theme ? theme.t.colors.sub : "#57534E", accentColor = theme ? theme.t.colors.accent : "#C84B31";
 
       const capText = document.getElementById("sharePolaroidCaption").value.trim();
 
@@ -9453,7 +10203,8 @@
 
       // 1. Outer Background Paper
       fillSwatchBackground(ctx, outerSwatch, W, H);
-      storyBgPattern = (() => { try { const c = document.createElement("canvas"); c.width = W; c.height = H; fillSwatchBackground(c.getContext("2d"), outerSwatch, W, H); return ctx.createPattern(c, "no-repeat"); } catch (e) { return null; } })();
+      if (theme) drawImageCover(ctx, theme.bg, 0, 0, W, H);
+      storyBgPattern = (() => { try { const c = document.createElement("canvas"); c.width = W; c.height = H; const g = c.getContext("2d"); fillSwatchBackground(g, outerSwatch, W, H); if (theme) drawImageCover(g, theme.bg, 0, 0, W, H); return ctx.createPattern(c, "no-repeat"); } catch (e) { return null; } })();
 
       // 以下內容（標題列／主視覺／票根）整體移入 IG 安全區
       const storyLay = getStoryLayout(W);
@@ -9568,9 +10319,11 @@
       const moodStr = (showMood && item.mood) ? `  ${item.mood}` : "";
       fitFillText(ctx, `${item.title}${moodStr}`, mainX + 54, ticketY + 86, mainW - 108, "900", 44, 30, "'Noto Sans TC', sans-serif");
 
-      ctx.fillStyle = "#57534E";
+      ctx.fillStyle = subColor;
       ctx.font = "600 26px 'Noto Sans TC', sans-serif";
-      const subLine = tpl === 'transit' ? (item.note || "") : (formatItemSubtitle(item) || item.note || "");
+      // 底部卡片：有寫心得就放心得，沒有才用原本的副標／備註
+      const reflLine = getReflection(getActiveTrip().id, item.id);
+      const subLine = reflLine || (tpl === 'transit' ? (item.note || "") : (formatItemSubtitle(item) || item.note || ""));
       let timeYOffset = 186;
       if (subLine) {
          // 太長先縮字（最小 21px），還是放不下就用「…」收尾，不從字中間硬切
@@ -9587,7 +10340,7 @@
       }
 
       ctx.font = "800 27px 'JetBrains Mono', monospace";
-      ctx.fillStyle = "#C84B31";
+      ctx.fillStyle = accentColor;
       const crossDayInfo = item.endDayOffset ? ` (+${item.endDayOffset}日)` : "";
       ctx.fillText(`${item.startTime} → ${item.endTime}${crossDayInfo}`, mainX + 54, ticketY + timeYOffset);
 
@@ -9611,6 +10364,9 @@
       ctx.restore();
 
       ctx.restore(); // 結束安全區縮放（貼圖維持畫布座標）
+
+      // 主題的裝飾層：在卡片之上、使用者貼的貼圖之下
+      if (theme && theme.overlay) drawImageCover(ctx, theme.overlay, 0, 0, W, H);
 
       // 5. Render All Free Multi-Polaroid & Emoji Stickers on Top
       drawAllStoryStickers(ctx);
@@ -10498,8 +11254,31 @@
       if (jam) jam.style.display = window.TG_FLAGS.jam_party === false ? "none" : "";
       const zl = document.getElementById("menuZineLink");
       if (zl) zl.style.display = window.TG_FLAGS.zine_link ? "" : "none";
+      const ml = document.getElementById("menuMiseLink");
+      if (ml) ml.style.display = window.TG_FLAGS.mise_link ? "" : "none";
+      try { applyPageCopy(cfg); } catch (e) {}
       renderAppNotice();
     }
+    // 後台「頁面文案」：入口頁上標了 data-cms 的文字，可以從後台改（中文、英文各一份；沒填就用原本的字）
+    // 網址加 ?cms=draft 會改用草稿，給管理員預覽
+    function applyPageCopy(cfg) {
+      const draft = /[?&]cms=draft\b/.test(location.search);
+      const pages = (cfg && ((draft && cfg.pages_draft) || cfg.pages)) || {};
+      const en = window.TG_LANG === "en";
+      document.querySelectorAll("[data-cms]").forEach(el => {
+        if (el.dataset.cmsOrig === undefined) el.dataset.cmsOrig = el.textContent;   // 原本的字（後台清空時要能改回來）
+        const v = pages[el.dataset.cms];
+        const t = v && typeof v === "object" ? (en ? v.en : v.zh) : "";
+        if (typeof t !== "string" || !t.trim()) {
+          if (el.dataset.cmsApplied) { el.textContent = el.dataset.cmsOrig; delete el.dataset.cmsApplied; el.removeAttribute("data-notr"); }
+          return;
+        }
+        el.textContent = t.trim().slice(0, 600);
+        el.dataset.cmsApplied = "1";
+        if (en) el.setAttribute("data-notr", "");
+      });
+    }
+    try { applyPageCopy(JSON.parse(localStorage.getItem("TG_CFG_CACHE") || "null")); } catch (e) {}
     async function loadAppConfig() {
       try { const c = JSON.parse(localStorage.getItem("TG_CFG_CACHE") || "null"); if (c) applyAppConfig(c); } catch (e) {}
       try {
@@ -11119,11 +11898,23 @@ function initSupabaseClient() {
       };
     }
 
+    // 共用備註裡不能有個人筆記：
+    // 舊版會把手札的 personalNote 接在備註後面（「[我的筆記] …」，備註原本是空的就直接放進去），
+    // 擁有者／共管一上傳，旅伴就看得到。這裡把那幾段拿掉（「[我的筆記]」是 App 自己加的標記，不是使用者打的字）。
+    function stripPersonalNoteFromNote(note, personalNote) {
+      let n = String(note || "");
+      n = n.split("\n").filter(line => !/^\[我的筆記\]\s/.test(line)).join("\n");
+      const pn = String(personalNote || "").trim();
+      if (pn && n.trim() === pn) n = "";
+      return n.replace(/\n+$/, "");
+    }
     function buildCleanMasterTripPayload(trip) {
       const clone = JSON.parse(JSON.stringify(trip));
       (clone.days || []).forEach(day => {
         day.items = (day.items || []).filter(item => !item.isPrivate);
         day.items.forEach(item => {
+          item.note = stripPersonalNoteFromNote(item.note, item.personalNote);
+          delete item.personalNote;
           item.mood = "";
           item.status = "normal";
           item.photos = [];
@@ -11144,6 +11935,8 @@ function initSupabaseClient() {
       }
       const jItems = journalData.items || {};
       const privItems = journalData.privateItems || {};
+      // 母行程的備註如果已經被別人的「[我的筆記]」污染了，顯示時先拿掉
+      (merged.days || []).forEach(day => (day.items || []).forEach(item => { if (item.note) item.note = stripPersonalNoteFromNote(item.note, ""); }));
       (merged.days || []).forEach((day, dIdx) => {
         (day.items || []).forEach(item => {
           const priv = jItems[item.id];
@@ -11154,12 +11947,8 @@ function initSupabaseClient() {
             if (Array.isArray(priv.extraExpenses) && priv.extraExpenses.length > 0) item.extraExpenses = priv.extraExpenses;
             if (priv.checkin && typeof priv.checkin === "object") item.checkin = priv.checkin;
             if (priv.stamps && typeof priv.stamps === "object") item.stamps = priv.stamps;
-            if (priv.personalNote) {
-              item.personalNote = priv.personalNote;
-              if (!item.note.includes(priv.personalNote)) {
-                item.note = item.note ? `${item.note}\n[我的筆記] ${priv.personalNote}` : priv.personalNote;
-              }
-            }
+            // 個人筆記：另外放、單獨顯示，不再接到共用備註後面（以前那樣做會被上傳給旅伴）
+            if (priv.personalNote) item.personalNote = priv.personalNote;
           }
         });
         if (privItems[dIdx] && Array.isArray(privItems[dIdx])) {
@@ -11527,6 +12316,7 @@ function initSupabaseClient() {
     async function pullAllCloudTripsAndMerge() {
       if (!sbClient || !currentCloudUser) return;
       switchLocalProfile("u_" + currentCloudUser.id);
+      pullReflections();   // 即時心得（另一張表，失敗不影響行程同步）
       try {
         const { data: myJournals } = await sbClient
           .from("user_journals")
@@ -13972,6 +14762,7 @@ function initSupabaseClient() {
       appState.activeTripId = carry.length ? carry[0].id : (next ? next.activeTripId : "");
       appState.activeDayIndex = carry.length ? 0 : (next ? next.activeDayIndex : 0);
       appState.profileId = nextKey;
+      if (carry.length) moveReflectionsBetweenProfiles(cur, nextKey, [...carriedIds]);
       saveAppState();
       renderAll();
     }
@@ -14715,15 +15506,19 @@ function initSupabaseClient() {
       clearTimeout(btn._armT); btn._armT = setTimeout(() => { btn.dataset.armed = ""; btn.classList.remove("armed"); btn.innerHTML = btn.dataset.orig; }, 4000);
       return false;
     }
-    const VAULT_DB = "TABIGRAM_VAULT", VAULT_STORE = "docs";
+    const VAULT_DB = "TABIGRAM_VAULT", VAULT_STORE = "docs", VAULT_META = "meta";
     const VAULT_KINDS = { qr: "QR Code／條碼", pass: "登機證", visa: "簽證／入境", hotel: "訂房", ticket: "票券", insurance: "保險", other: "其他" };
     let vaultDbP = null, vaultDocs = [], vaultUrls = {}, vaultEditId = null, vaultViewList = [], vaultViewIdx = 0, vaultWake = null;
     function openVaultDb() {
       if (!vaultDbP) {
         vaultDbP = new Promise((res, rej) => {
           if (!window.indexedDB) return rej(new Error("IndexedDB unavailable"));
-          const r = indexedDB.open(VAULT_DB, 1);
-          r.onupgradeneeded = () => { const s = r.result.createObjectStore(VAULT_STORE, { keyPath: "id" }); s.createIndex("trip", "tripId"); };
+          const r = indexedDB.open(VAULT_DB, 2);
+          r.onupgradeneeded = () => {
+            const db = r.result;
+            if (!db.objectStoreNames.contains(VAULT_STORE)) { const s = db.createObjectStore(VAULT_STORE, { keyPath: "id" }); s.createIndex("trip", "tripId"); }
+            if (!db.objectStoreNames.contains(VAULT_META)) db.createObjectStore(VAULT_META);   // 密碼鎖設定（鹽、驗證碼、錯誤次數）
+          };
           r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); r.onblocked = () => rej(new Error("blocked"));
         }).catch(e => { vaultDbP = null; throw e; });
       }
@@ -14738,13 +15533,25 @@ function initSupabaseClient() {
       });
     }
     async function loadVaultDocs() {
-      try { vaultDocs = (await vaultTx("readonly", st => st.getAll())) || []; } catch (e) { vaultDocs = []; }
+      let rows = [];
+      try { rows = (await vaultTx("readonly", st => st.getAll())) || []; } catch (e) { rows = []; }
+      // 已解鎖：把加密的檔案解開放在記憶體（只在這次打開 App 的期間）
+      if (vaultKey) {
+        const known = new Map(vaultDocs.filter(d => d.blob).map(d => [d.id, d]));
+        for (const r of rows) {
+          if (!r.enc) continue;
+          const k = known.get(r.id);
+          if (k && k.iv === r.iv) { r.blob = k.blob; r.name = k.name; r.fileName = k.fileName; continue; }
+          try { await vaultDecryptRec(r); } catch (e) { r.name = "（解不開）"; r.broken = true; }
+        }
+      }
+      vaultDocs = rows;
       vaultDocs.sort((a, b) => a.addedAt - b.addedAt);
       return vaultDocs;
     }
     const vaultForTrip = tripId => vaultDocs.filter(d => d.tripId === tripId);
     const vaultLongTerm = () => vaultDocs.filter(d => !d.tripId);
-    function vaultUrl(d) { if (!vaultUrls[d.id]) vaultUrls[d.id] = URL.createObjectURL(d.blob); return vaultUrls[d.id]; }
+    function vaultUrl(d) { if (!d.blob) return ""; if (!vaultUrls[d.id]) vaultUrls[d.id] = URL.createObjectURL(d.blob); return vaultUrls[d.id]; }
     function guessVaultKind(name) {
       const n = String(name || "").toLowerCase();
       if (/esta|visa|簽證|入境|vjw|visit ?japan|k-?eta|arrival|e-?arrival|入國/.test(n)) return "visa";
@@ -14764,9 +15571,16 @@ function initSupabaseClient() {
       el.textContent = n ? String(n) : ""; el.style.display = n ? "" : "none";
     }
     async function openVault() {
-      await loadVaultDocs();
-      renderVault();
+      await vaultLoadMeta();
+      if (vaultMeta && !vaultKey) {
+        await loadVaultDocs();
+        vaultPinMode = "unlock"; vaultPinBuf = ""; renderVaultPin();
+      } else {
+        await loadVaultDocs();
+        renderVault();
+      }
       openModalBackdrop("vaultModal");
+      vaultTouch();
       track("vault_open");
     }
     function vaultRowHtml(d) {
@@ -14795,7 +15609,7 @@ function initSupabaseClient() {
       const endStr = trip.startDate ? shiftDateStr(trip.startDate, trip.days.length - 1) : "";
       const ended = endStr && endStr < cdLocalDateStr() && mine.length;
       box.innerHTML = `
-        <label class="vault-add">${ic("upload")}<span><b>加入憑證</b><small>照片、截圖、PDF 都可以，原檔保存不壓縮</small></span>
+        <label class="vault-add" onclick="vaultPickingUntil = Date.now() + 3 * 60 * 1000">${ic("upload")}<span><b>加入憑證</b><small>照片、截圖、PDF 都可以，原檔保存不壓縮</small></span>
           <input type="file" accept="image/*,application/pdf" multiple hidden onchange="vaultAddFiles(this.files); this.value='';"></label>
         ${matchMedia("(pointer: coarse)").matches ? `<div class="vault-tip">建議用出門要帶的那支手機新增：憑證只存在加入它的那台裝置上。</div>`
           : `<div class="vault-tip warn">你現在用的是電腦。存在這裡的憑證只會在這台電腦上，<b>出門用的手機看不到</b>。要在機場出示的，請用手機打開 TabigrAm 再加入。</div>`}
@@ -14804,10 +15618,14 @@ function initSupabaseClient() {
         ${mine.map(vaultRowHtml).join("") || `<div class="vault-empty">還沒有。登機證、入境 QR Code、訂房確認放這裡，到了現場一點就打開。</div>`}
         <div class="vault-sec">每趟都會用到</div>
         ${lt.map(vaultRowHtml).join("") || `<div class="vault-empty">護照影本、ESTA、長期有效的簽證，放這裡每趟都看得到。</div>`}
-        <div class="vault-note">${ic("lock")}<span>只存在這台手機，不會上傳，也不會出現在分享卡、旅伴共享或匯出裡。換手機或清除瀏覽器資料就會消失，原檔請另外留一份。</span></div>`;
+        <div class="vault-note">${ic("lock")}<span>只存在這台手機，不會上傳，也不會出現在分享卡、旅伴共享或匯出裡。換手機或清除瀏覽器資料就會消失，原檔請另外留一份。</span></div>
+        ${vaultMeta ? `<div class="vault-lockbar">${ic("lock")}<span>已用 6 碼密碼加密保存</span><button type="button" class="mini-btn" onclick="vaultLockNow()">立即上鎖</button><button type="button" class="mini-btn" onclick="vaultStartChangePin()">改密碼</button><button type="button" class="mini-btn" onclick="vaultStartRemovePin(this)">關閉密碼鎖</button></div>` : ""}`;
+      if (!vaultMeta) box.insertAdjacentHTML("afterbegin", `<div class="vault-setpin">${ic("lock")}<span><b>幫憑證加上密碼</b><small>手機被撿走，也打不開護照、簽證。檔案會用密碼加密後才存。</small></span><button type="button" class="pill-btn primary" onclick="vaultStartSetPin()">設定 6 碼密碼</button></div>`);
       updateVaultBadge();
     }
     async function vaultAddFiles(files) {
+      vaultPickingUntil = 0;
+      if (vaultMeta && !vaultKey) return showToast("憑證已上鎖，請重新輸入密碼再加入");
       const list = [...(files || [])].filter(f => /^image\//.test(f.type) || f.type === "application/pdf");
       if (!list.length) return showToast("只能加入圖片或 PDF");
       try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
@@ -14817,7 +15635,7 @@ function initSupabaseClient() {
         if (f.size > 25 * 1048576) { showToast(`「${f.name}」超過 25MB，太大了`); continue; }
         const base = f.name.replace(/\.[^.]+$/, "").slice(0, 60) || "憑證";
         const rec = { id: "vd_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8), tripId, name: base, fileName: f.name, kind: guessVaultKind(f.name), mime: f.type, size: f.size, blob: f, addedAt: Date.now() };
-        try { await vaultTx("readwrite", st => st.put(rec)); added++; } catch (e) { showToast("存不進這台裝置，可能是空間不夠或瀏覽器不允許"); break; }
+        try { await vaultPut(rec, true); added++; } catch (e) { showToast("存不進這台裝置，可能是空間不夠或瀏覽器不允許"); break; }
       }
       await loadVaultDocs(); renderVault();
       if (added) { showToast(`已加入 ${added} 份，原檔保存`); track("vault_add", String(added)); }
@@ -14825,7 +15643,7 @@ function initSupabaseClient() {
     async function vaultUpdate(id, patch) {
       const d = vaultDocs.find(x => x.id === id); if (!d) return;
       Object.assign(d, patch);
-      try { await vaultTx("readwrite", st => st.put(d)); } catch (e) { showToast("儲存失敗"); }
+      try { await vaultPut(d, false); } catch (e) { showToast("儲存失敗"); }
       renderVault();
     }
     async function vaultDelete(id, btn) {
@@ -14841,6 +15659,263 @@ function initSupabaseClient() {
       await vaultTx("readwrite", st => { ids.forEach(id => st.delete(id)); return null; });
       await loadVaultDocs(); renderVault();
     }
+    /*************************************************************************
+     * 憑證密碼鎖（2026-11）
+     * - 6 碼密碼 → PBKDF2（SHA-256，60 萬次）產生金鑰 → AES-GCM 加密每份檔案與名稱
+     * - 密碼本身不存；只存「鹽」和一段用金鑰加密的驗證字串，用來確認密碼對不對
+     * - 解鎖後檔案只解開在記憶體裡；App 切到背景、5 分鐘沒動、按「立即上鎖」就清掉
+     * - 連錯 5 次要等 30 秒，之後每錯一次等待時間加倍
+     * - 忘記密碼：只能清空所有憑證重新開始（沒有任何人能幫忙解開）
+     *************************************************************************/
+    var vaultMeta = null, vaultKey = null, vaultPinMode = "", vaultPinBuf = "", vaultPinFirst = "", vaultIdleT = null, vaultPinBusy = false;
+    const VAULT_ITER = 600000, VAULT_CHECK = "tabigram-vault-ok";
+    const VAULT_IDLE_MS = 5 * 60 * 1000;
+    const vaultEnc = new TextEncoder(), vaultDec = new TextDecoder();
+    async function vaultMetaTx(mode, fn) {
+      const db = await openVaultDb();
+      return new Promise((res, rej) => {
+        const tx = db.transaction(VAULT_META, mode), st = tx.objectStore(VAULT_META);
+        let out; const q = fn(st); if (q) q.onsuccess = () => { out = q.result; };
+        tx.oncomplete = () => res(out); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error);
+      });
+    }
+    async function vaultLoadMeta() {
+      try { vaultMeta = (await vaultMetaTx("readonly", st => st.get("lock"))) || null; } catch (e) { vaultMeta = null; }
+      return vaultMeta;
+    }
+    async function vaultDeriveKey(pin, salt, iter) {
+      const base = await crypto.subtle.importKey("raw", vaultEnc.encode(pin), "PBKDF2", false, ["deriveKey"]);
+      return crypto.subtle.deriveKey({ name: "PBKDF2", salt, iterations: iter, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+    }
+    async function vaultEncryptBytes(key, bytes) {
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const data = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, bytes);
+      return { iv, data };
+    }
+    async function vaultDecryptBytes(key, iv, data) { return crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, data); }
+    // 記憶體裡的一份憑證 → 要存進 IndexedDB 的樣子（上了鎖就只存加密後的內容）
+    async function vaultStoredForm(d, key, reencryptFile) {
+      const base = { id: d.id, tripId: d.tripId, kind: d.kind, mime: d.mime, size: d.size, addedAt: d.addedAt };
+      if (!key) return Object.assign(base, { name: d.name, fileName: d.fileName, blob: d.blob });
+      let iv = d.iv, data = d.data;
+      if (reencryptFile || !data) {
+        const r = await vaultEncryptBytes(key, await d.blob.arrayBuffer());
+        iv = r.iv; data = r.data;
+      }
+      const m = await vaultEncryptBytes(key, vaultEnc.encode(JSON.stringify({ name: d.name, fileName: d.fileName })));
+      return Object.assign(base, { enc: 1, iv, data, miv: m.iv, mdata: m.data });
+    }
+    async function vaultDecryptRec(r) {
+      const meta = JSON.parse(vaultDec.decode(await vaultDecryptBytes(vaultKey, r.miv, r.mdata)));
+      const plain = await vaultDecryptBytes(vaultKey, r.iv, r.data);
+      r.name = meta.name; r.fileName = meta.fileName;
+      r.blob = new Blob([plain], { type: r.mime || "application/octet-stream" });
+      return r;
+    }
+    async function vaultPut(d, isNew) {
+      if (vaultMeta && !vaultKey) throw new Error("locked");
+      const stored = await vaultStoredForm(d, vaultMeta ? vaultKey : null, isNew);
+      if (stored.enc) { d.iv = stored.iv; d.data = stored.data; }
+      await vaultTx("readwrite", st => st.put(stored));
+    }
+    // 一次重寫全部（設定、更改、關閉密碼時）：先把要寫的內容都準備好，再用同一筆交易寫入，中途失敗就全部不算
+    async function vaultRewriteAll(newKey, newMeta) {
+      const prepared = [];
+      for (const d of vaultDocs) {
+        if (!d.blob) throw new Error("not decrypted");
+        prepared.push(await vaultStoredForm(d, newKey, true));
+      }
+      const db = await openVaultDb();
+      await new Promise((res, rej) => {
+        const tx = db.transaction([VAULT_STORE, VAULT_META], "readwrite");
+        const st = tx.objectStore(VAULT_STORE), mt = tx.objectStore(VAULT_META);
+        prepared.forEach(p => st.put(p));
+        if (newMeta) mt.put(newMeta, "lock"); else mt.delete("lock");
+        tx.oncomplete = res; tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error);
+      });
+    }
+    async function vaultSetPin(pin) {
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const key = await vaultDeriveKey(pin, salt, VAULT_ITER);
+      const chk = await vaultEncryptBytes(key, vaultEnc.encode(VAULT_CHECK));
+      const meta = { v: 1, salt, iter: VAULT_ITER, civ: chk.iv, cdata: chk.data, fails: 0, until: 0, setAt: Date.now() };
+      await loadVaultDocs();          // 目前沒上鎖或已解鎖：記憶體裡是原檔
+      await vaultRewriteAll(key, meta);
+      vaultMeta = meta; vaultKey = key;
+      vaultDocs.forEach(d => { d.data = null; });
+      await loadVaultDocs();
+    }
+    async function vaultTryUnlock(pin) {
+      const m = vaultMeta; if (!m) return true;
+      if (m.until && Date.now() < m.until) return false;
+      let key = null, ok = false;
+      try {
+        key = await vaultDeriveKey(pin, m.salt, m.iter);
+        ok = vaultDec.decode(await vaultDecryptBytes(key, m.civ, m.cdata)) === VAULT_CHECK;
+      } catch (e) { ok = false; }
+      if (ok) {
+        m.fails = 0; m.until = 0;
+        vaultKey = key;
+      } else {
+        m.fails = (m.fails || 0) + 1;
+        if (m.fails >= 5) m.until = Date.now() + 30000 * Math.pow(2, m.fails - 5);
+      }
+      try { await vaultMetaTx("readwrite", st => st.put(m, "lock")); } catch (e) {}
+      return ok;
+    }
+    function vaultLockNow(silent) {
+      if (!vaultMeta) return;
+      vaultKey = null;
+      Object.values(vaultUrls).forEach(u => { try { URL.revokeObjectURL(u); } catch (e) {} });
+      vaultUrls = {};
+      vaultDocs.forEach(d => { delete d.blob; delete d.name; delete d.fileName; });
+      clearTimeout(vaultIdleT);
+      const viewer = document.getElementById("vaultViewer");
+      if (viewer && !viewer.hidden) closeVaultViewer();
+      const modal = document.getElementById("vaultModal");
+      if (modal && modal.classList.contains("open")) {
+        if (silent) closeModalBackdrop("vaultModal");
+        else { vaultPinMode = "unlock"; vaultPinBuf = ""; renderVaultPin(); }
+      }
+    }
+    // 有在操作就延長；5 分鐘沒動就上鎖（正在出示憑證時不算閒置）
+    function vaultTouch() {
+      clearTimeout(vaultIdleT);
+      if (!vaultMeta || !vaultKey) return;
+      vaultIdleT = setTimeout(() => {
+        const viewer = document.getElementById("vaultViewer");
+        if (viewer && !viewer.hidden) return vaultTouch();
+        vaultLockNow(true);
+      }, VAULT_IDLE_MS);
+    }
+    // App 切到背景超過 20 秒就上鎖（選檔案、用手機檢視器開 PDF 這種短暫離開不算）
+    var vaultHiddenAt = 0, vaultHideT = null, vaultPickingUntil = 0;
+    const VAULT_HIDDEN_GRACE = 20000;
+    document.addEventListener("visibilitychange", () => {
+      if (!vaultKey) return;
+      if (document.hidden) {
+        if (Date.now() < vaultPickingUntil) return;
+        vaultHiddenAt = Date.now();
+        clearTimeout(vaultHideT);
+        vaultHideT = setTimeout(() => { if (document.hidden) vaultLockNow(true); }, VAULT_HIDDEN_GRACE);
+      } else {
+        clearTimeout(vaultHideT);
+        if (vaultHiddenAt && Date.now() - vaultHiddenAt > VAULT_HIDDEN_GRACE) vaultLockNow(true);
+        vaultHiddenAt = 0;
+      }
+    });
+    ["pointerdown", "keydown"].forEach(ev => document.addEventListener(ev, e => {
+      if (vaultKey && e.target.closest && e.target.closest("#vaultModal, #vaultViewer")) vaultTouch();
+    }, true));
+
+    // ---- 密碼輸入畫面（自己畫的數字鍵盤，不會叫出手機鍵盤） ----
+    function vaultStartSetPin() { vaultPinMode = "set1"; vaultPinBuf = ""; vaultPinFirst = ""; renderVaultPin(); }
+    function vaultStartChangePin() { vaultPinMode = "set1"; vaultPinBuf = ""; vaultPinFirst = ""; vaultPinChanging = true; renderVaultPin(); }
+    var vaultPinChanging = false;
+    async function vaultStartRemovePin(btn) {
+      if (!armTap(btn, "確定關閉？")) return;
+      try {
+        await loadVaultDocs();
+        await vaultRewriteAll(null, null);
+        vaultMeta = null; vaultKey = null;
+        await loadVaultDocs(); renderVault();
+        showToast("已關閉密碼鎖，憑證改回不加密保存");
+      } catch (e) { showToast("關閉失敗，憑證沒有變動"); }
+    }
+    function vaultPinMsg() {
+      const m = vaultMeta;
+      if (vaultPinMode === "unlock") {
+        if (m && m.until && Date.now() < m.until) return { t: "輸入錯太多次", s: `請等 ${Math.ceil((m.until - Date.now()) / 1000)} 秒再試`, warn: true };
+        const en = window.TG_LANG === "en", f = m ? (m.fails || 0) : 0;
+        const wrong = !f ? "" : en ? `Wrong passcode (${f} wrong${f >= 4 ? "; one more and you'll have to wait" : ""})`
+          : `密碼不對（已錯 ${f} 次${f >= 4 ? "，再錯就要等一下" : ""}）`;
+        return { t: "輸入憑證密碼", s: wrong || "6 碼數字", warn: !!f };
+      }
+      if (vaultPinMode === "set1") return { t: vaultPinChanging ? "設定新密碼" : "設定 6 碼密碼", s: "記好它：忘記的話，沒有人能幫你打開，只能清空重來" };
+      if (vaultPinMode === "set2") return { t: "再輸入一次", s: "確認兩次一樣" };
+      if (vaultPinMode === "forgot") return { t: "忘記密碼？", s: "" };
+      return { t: "", s: "" };
+    }
+    function renderVaultPin() {
+      const box = document.getElementById("vaultBody"); if (!box) return;
+      if (vaultPinMode === "forgot") {
+        box.innerHTML = `<div class="vpin">
+          <div class="vpin-ic">${ic("alert")}</div><b class="vpin-t">忘記密碼</b>
+          <p class="vpin-s">密碼只有你知道，我們也沒有備份，<b>沒有任何方法可以救回</b>。<br>唯一的做法是清空這台裝置上的所有憑證，重新加入。</p>
+          <button type="button" class="pill-btn delete-btn wide" onclick="vaultWipeAll(this)">清空所有憑證並重設</button>
+          <button type="button" class="mini-btn" style="margin-top:10px; border:0; background:none;" onclick="vaultPinMode='unlock'; vaultPinBuf=''; renderVaultPin()">我想起來了</button></div>`;
+        return;
+      }
+      const msg = vaultPinMsg();
+      // 鎖定倒數中：每秒更新剩幾秒
+      clearTimeout(renderVaultPin._t);
+      if (vaultPinMode === "unlock" && vaultMeta && vaultMeta.until > Date.now()) renderVaultPin._t = setTimeout(() => { if (vaultPinMode === "unlock") renderVaultPin(); }, 1000);
+      const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", vaultPinMode === "unlock" ? "forgot" : (vaultMeta && vaultPinMode !== "unlock" ? "cancel" : "cancel"), "0", "del"];
+      box.innerHTML = `<div class="vpin${msg.warn ? " warn" : ""}">
+        <div class="vpin-ic">${ic("lock")}</div><b class="vpin-t">${msg.t}</b><p class="vpin-s">${msg.s}</p>
+        <div class="vpin-dots" aria-label="已輸入 ${vaultPinBuf.length} 碼">${[0, 1, 2, 3, 4, 5].map(i => `<i class="${i < vaultPinBuf.length ? "on" : ""}"></i>`).join("")}</div>
+        <div class="vpin-pad">${keys.map(k => k === "forgot" ? `<button type="button" class="vpin-k sm" onclick="vaultPinMode='forgot'; renderVaultPin()">忘記密碼</button>`
+          : k === "cancel" ? `<button type="button" class="vpin-k sm" onclick="vaultPinCancel()">取消</button>`
+          : k === "del" ? `<button type="button" class="vpin-k sm" onclick="vaultPinKey('del')" aria-label="刪除一碼">⌫</button>`
+          : `<button type="button" class="vpin-k" onclick="vaultPinKey('${k}')">${k}</button>`).join("")}</div>
+        ${vaultPinBusy ? `<div class="vpin-busy">處理中…</div>` : ""}</div>`;
+    }
+    function vaultPinCancel() {
+      vaultPinChanging = false; vaultPinMode = ""; vaultPinBuf = "";
+      if (vaultMeta && !vaultKey) closeModalBackdrop("vaultModal"); else renderVault();
+    }
+    async function vaultPinKey(k) {
+      if (vaultPinBusy) return;
+      if (k === "del") { vaultPinBuf = vaultPinBuf.slice(0, -1); return renderVaultPin(); }
+      if (vaultPinBuf.length >= 6) return;
+      vaultPinBuf += k; renderVaultPin();
+      if (vaultPinBuf.length < 6) return;
+      const pin = vaultPinBuf;
+      if (vaultPinMode === "set1") { vaultPinFirst = pin; vaultPinBuf = ""; vaultPinMode = "set2"; return setTimeout(renderVaultPin, 120); }
+      vaultPinBusy = true; renderVaultPin();
+      try {
+        if (vaultPinMode === "set2") {
+          if (pin !== vaultPinFirst) { vaultPinBuf = ""; vaultPinMode = "set1"; vaultPinBusy = false; renderVaultPin(); return showToast("兩次不一樣，請重新設定"); }
+          await vaultSetPin(pin);
+          const changed = vaultPinChanging; vaultPinChanging = false;
+          vaultPinBuf = ""; vaultPinMode = ""; vaultPinBusy = false;
+          renderVault(); vaultTouch();
+          showToast(changed ? "密碼已更改" : "已加上密碼，憑證都加密保存了");
+          track("vault_pin", changed ? "change" : "set");
+        } else if (vaultPinMode === "unlock") {
+          const ok = await vaultTryUnlock(pin);
+          vaultPinBuf = ""; vaultPinBusy = false;
+          if (ok) { vaultPinMode = ""; await loadVaultDocs(); renderVault(); vaultTouch(); }
+          else { renderVaultPin(); const b = document.querySelector(".vpin-dots"); if (b) { b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake"); } }
+        }
+      } catch (e) {
+        console.warn(e);
+        vaultPinBuf = ""; vaultPinBusy = false; vaultPinMode = vaultMeta && !vaultKey ? "unlock" : "";
+        showToast("處理失敗，憑證沒有變動"); vaultPinMode ? renderVaultPin() : renderVault();
+      }
+    }
+    document.addEventListener("keydown", e => {
+      const m = document.getElementById("vaultModal");
+      if (!m || !m.classList.contains("open") || !vaultPinMode || vaultPinMode === "forgot") return;
+      if (/^[0-9]$/.test(e.key)) { e.preventDefault(); vaultPinKey(e.key); }
+      else if (e.key === "Backspace") { e.preventDefault(); vaultPinKey("del"); }
+    });
+    async function vaultWipeAll(btn) {
+      if (!armTap(btn, "真的要清空？無法復原")) return;
+      try {
+        const db = await openVaultDb();
+        await new Promise((res, rej) => {
+          const tx = db.transaction([VAULT_STORE, VAULT_META], "readwrite");
+          tx.objectStore(VAULT_STORE).clear(); tx.objectStore(VAULT_META).clear();
+          tx.oncomplete = res; tx.onerror = () => rej(tx.error);
+        });
+      } catch (e) { return showToast("清空失敗"); }
+      vaultMeta = null; vaultKey = null; vaultDocs = []; vaultUrls = {}; vaultPinMode = "";
+      await loadVaultDocs(); renderVault(); updateVaultBadge();
+      showToast("已清空所有憑證，可以重新加入並設定新密碼");
+      track("vault_pin", "wipe");
+    }
+
     // 出示：全螢幕白底、原檔；左右切換；畫面保持不熄滅
     function openVaultViewer(id) {
       const trip = getActiveTrip(), d = vaultDocs.find(x => x.id === id); if (!d) return;
@@ -15366,19 +16441,38 @@ function initSupabaseClient() {
         const r = roles[side];
         if (kind !== "dep" || !r || r.itemId !== item.id || has(side)) return;
         setTapeInvite(`${trip.id}|${side}`, { airport: code, until: Date.now() + 24 * 3600e3, tripTitle: trip.title });
-        parts.push(`<div class="tape-invite">${tapeChipHtml(side, trip.title.replace(/^\d{2}\s/, ""))}<div><b>錄下這卷${TAPE_NAME}的 ${TAPE_SIDE[side]}</b>
+        parts.push(`<div class="tape-invite soft">${tapeChipHtml(side, trip.title.replace(/^\d{2}\s/, ""))}<div><b>錄下這卷${TAPE_NAME}的 ${TAPE_SIDE[side]}</b>
           <p>${side === "A" ? "用 30 秒的聲音留下出發的這一刻，這趟最後一段航班落地時播放。" : "錄 30 秒給下一次的自己。下一趟旅行、30 天以後回到這座機場時播放。"}</p>
-          ${currentCloudUser ? `<button type="button" class="pill-btn primary" onclick="closeModalBackdrop('stampViewerModal'); openTapeWriter('${side}')">開始錄</button><small>也可以 24 小時內從選單「${TAPE_NAME}」再錄</small>`
+          ${currentCloudUser ? `<div class="ti-acts"><button type="button" class="pill-btn primary" onclick="closeModalBackdrop('stampViewerModal'); openTapeWriter('${side}')">開始錄</button><button type="button" class="ti-skip" onclick="this.closest('.tape-invite').remove()">之後再說</button></div><small>24 小時內都可以從「旅程回憶 → ${TAPE_NAME}」再錄</small>`
             : `<button type="button" class="pill-btn primary" onclick="closeModalBackdrop('stampViewerModal'); openCloudModal()">登入後才能錄</button><small>登入才不會因為清掉瀏覽器資料而不見</small>`}</div></div>`);
       });
       if (rows && kind === "arr" && roles.lastItemId === item.id) {
         const a = has("A");
-        if (a && !a.opened_at) parts.push(`<div class="tape-invite">${tapeChipHtml("A", a.label || trip.title)}<div><b>A 面可以播放了</b><p>你在 ${escapeHtml(a.airport)} 錄給這趟旅程的聲音。</p><button type="button" class="pill-btn primary" onclick="closeModalBackdrop('stampViewerModal'); playTape('${a.id}', '${code}')">播放</button></div></div>`);
+        if (a && !a.opened_at) parts.push(`<div class="tape-invite soft">${tapeChipHtml("A", a.label || trip.title)}<div><b>A 面可以播放了</b><p>你在 ${escapeHtml(a.airport)} 錄給這趟旅程的聲音。</p><button type="button" class="pill-btn primary" onclick="closeModalBackdrop('stampViewerModal'); playTape('${a.id}', '${code}')">播放</button></div></div>`);
       }
       if (rows) rows.filter(r => r.side === "B" && !r.opened_at && r.airport === code && r.trip_id !== trip.id && Date.now() - new Date(r.created_at).getTime() >= 30 * 86400e3).forEach(b => {
-        parts.push(`<div class="tape-invite">${tapeChipHtml("B", b.label || b.trip_title)}<div><b>你回到 ${escapeHtml(code)} 了</b><p>「${escapeHtml(b.trip_title)}」的 B 面，可以播放了。</p><button type="button" class="pill-btn primary" onclick="closeModalBackdrop('stampViewerModal'); playTape('${b.id}', '${code}')">播放</button></div></div>`);
+        parts.push(`<div class="tape-invite soft">${tapeChipHtml("B", b.label || b.trip_title)}<div><b>你回到 ${escapeHtml(code)} 了</b><p>「${escapeHtml(b.trip_title)}」的 B 面，可以播放了。</p><button type="button" class="pill-btn primary" onclick="closeModalBackdrop('stampViewerModal'); playTape('${b.id}', '${code}')">播放</button></div></div>`);
       });
       if (parts.length) box.insertAdjacentHTML("beforeend", parts.join(""));
+    }
+
+    // 卡帶的玩法：照時間順序由上往下排，最後是「不能提早打開」的提醒
+    function tapeHowHtml(side, airport) {
+      const ap = airport ? escapeHtml(airport) : "機場";
+      const A = [
+        ["出發", airport && side === "A" ? `在 ${ap} 蓋「出境章」` : "在機場蓋「出境章」"],
+        ["錄 A 面", "蓋完章會邀請你錄 30 秒的聲音"],
+        ["封存", "選一張封面照片、取個標題，封起來"],
+        ["落地", "這趟最後一段航班落地、蓋入境章時，A 面才會播放"],
+      ];
+      const B = [
+        ["回程", airport && side === "B" ? `在 ${ap} 蓋章，可以錄 B 面` : "在機場蓋章，可以錄 B 面"],
+        ["封存", "錄給下一次的自己"],
+        ["30 天後", `下一趟旅行、30 天以後回到${side === "B" && airport ? " " + ap : "同一座機場"}，B 面才會播放`],
+      ];
+      const steps = side === "A" ? A : side === "B" ? B : [...A, ...B];
+      return `<ol class="tape-flow">${steps.map(([t, d]) => `<li><b>${t}</b><span>${d}</span></li>`).join("")}</ol>
+        <div class="tape-warn">${ic("alert")}<span><b>封存後不能提早打開，也不能修改。</b>時間沒到、不在那座機場，就聽不到。轉機的機場不算。</span></div>`;
     }
 
     // ---------- 錄音＋封面 ----------
@@ -15393,9 +16487,7 @@ function initSupabaseClient() {
       tapeDraft = { side, tripId: trip.id, tripTitle: trip.title, airport, audio: null, audioType: "", audioMs: 0, cover: null, coverUrl: "", font: "sans", title: trip.title.replace(/^\d{2}\s/, "").slice(0, 40) };
       document.getElementById("tapeWriteTitle").textContent = `${TAPE_NAME}・${TAPE_SIDE[side]}`;
       document.getElementById("tapeLabelInput").value = tapeDraft.title;
-      document.getElementById("tapeRule").textContent = side === "A"
-        ? `在 ${airport} 錄。這趟最後一段航班落地、蓋入境章時播放。封存後就不能修改。`
-        : `在 ${airport} 錄。下一趟旅行、30 天以後再到 ${airport} 蓋章時播放。封存後就不能修改。`;
+      document.getElementById("tapeRule").innerHTML = tapeHowHtml(side, airport);
       renderTapeRecorder(); renderTapeFonts(); drawTapeCoverPreview();
       openModalBackdrop("tapeWriteModal");
     }
@@ -15541,7 +16633,7 @@ function initSupabaseClient() {
       openModalBackdrop("tapeShelfModal");
       const box = document.getElementById("tapeShelfBody");
       const how = `<button type="button" class="pill-btn" style="width:100%; justify-content:center; margin-top:12px;" onclick="playDemoTape()">${ic("tape")} 看看示範</button>
-        <div class="tape-how"><b>怎麼錄</b><p>出發那天在機場蓋出境章，會邀請你錄 <b>A 面</b>（30 秒的聲音），這趟最後落地時播放；回程在機場蓋章，可以錄 <b>B 面</b>，等下一趟、30 天以後回到同一座機場才播放。轉機的機場不算。封存後不能修改；播放時可以存成影片分享。</p></div>`;
+        <div class="tape-how"><b>怎麼玩</b>${tapeHowHtml()}</div>`;
       if (!currentCloudUser) { box.innerHTML = how + `<button type="button" class="pill-btn primary" style="width:100%; justify-content:center; padding:12px; margin-top:10px;" onclick="closeModalBackdrop('tapeShelfModal'); openCloudModal()">登入後就能錄</button>`; return; }
       box.innerHTML = `<div class="vault-empty">讀取中…</div>`;
       const rows = await loadTapes(true);

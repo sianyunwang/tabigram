@@ -265,6 +265,11 @@ h2 { font-size: 18px; font-weight: 900; margin: 0; }
 .meter-s { font-size: 11.5px; color: var(--sub); margin-top: 6px; }
 .hbar { display: grid; grid-template-columns: minmax(80px, 34%) 1fr auto; gap: 8px; align-items: center; font-size: 13px; }
 .hbar .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+small.code { font: 500 10.5px var(--mono); color: var(--sub); opacity: .85; margin-left: 4px; letter-spacing: 0; }
+.hbar .n:has(small.code) { white-space: normal; line-height: 1.3; }
+.hbar .n small.code { display: block; margin-left: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hbar:has(small.code) { grid-template-columns: minmax(110px, 46%) 1fr auto; }
+table.nowrap-head th { white-space: nowrap; }
 .hbar .t { height: 10px; background: var(--card2); border-radius: 5px; overflow: hidden; }
 .hbar .t i { display: block; height: 100%; background: var(--accent); border-radius: 5px; }
 .hbar .v { font: 700 12.5px var(--mono); color: var(--ink); text-align: right; min-width: 3.2em; }
@@ -347,7 +352,8 @@ const TAB_DEF = [
   { k: "dash", label: "數據", admin: true },
   { k: "review", label: "待審核", admin: true, badge: "reviewCount" },
   { k: "stickers", label: "貼紙包", perm: "can_stickers" },
-  { k: "themes", label: "主題", perm: "can_themes" },
+  { k: "themes", label: "分享卡主題", perm: "can_themes" },
+  { k: "appthemes", label: "App 外觀主題", perm: "can_themes" },
   { k: "polaroid", label: "拍立得", perm: "can_polaroid" },
   { k: "zine", label: "Zine", perm: "can_zine" },
   { k: "mise", label: "選物", perm: "can_mise" },
@@ -355,6 +361,7 @@ const TAB_DEF = [
   { k: "mystats", label: "作品數據", any: true },
   { k: "announce", label: "公告與通知", admin: true },
   { k: "settings", label: "App 設定", admin: true },
+  { k: "pages", label: "頁面文案", admin: true },
   { k: "creators", label: "創作者", admin: true },
   { k: "agreement", label: "合約", admin: true },
   { k: "feedback", label: "意見回饋", admin: true, badge: "fbCount" },
@@ -420,6 +427,7 @@ async function showTab(k) {
     else if (CT[k]) await renderContentList(k);
     else if (k === "announce") await renderAnnounce();
     else if (k === "settings") await renderSettings();
+    else if (k === "pages") await renderPages();
     else if (k === "creators") await renderCreators();
     else if (k === "agreement") await renderAgreementAdmin();
     else if (k === "mystats") await renderMyStats();
@@ -435,7 +443,7 @@ window.addEventListener("beforeunload", e => { if (isDirty()) { e.preventDefault
 
 function renderSignIn() {
   $("app").innerHTML = `<section class="card center">
-    <div class="kicker">ADMIN · CREATORS</div>
+    <div class="kicker">管理員・創作者 · ADMIN · CREATORS</div>
     <h1>TabigrAm 後台</h1>
     <p>管理員和受邀的創作者、作家，用 TabigrAm 的帳號登入。創作者只看得到、編輯得到自己的內容，存成草稿、送出審核，由管理員發布。</p>
     <button class="btn dark" type="button" id="googleBtn">使用 Google 帳號登入</button>
@@ -512,7 +520,7 @@ function renderList() {
     <p class="lead">${me.admin ? "上架的貼紙包會出現在果醬派對，使用者按「收藏」後才會出現在分享卡的「貼圖」裡。<b>本季精選</b>（建議最多 3 組）排在最前面，其他收在「看全部」。" : "你的貼紙包：存成草稿、送出審核，管理員上架後就會出現在 TabigrAm 的果醬派對。"}</p>
     ${specCard("stickers")}
     <div class="bar"><span class="kicker">${packs.length} 包 · ${packs.filter(p => p.status === "published").length} 包上架中</span><button class="btn go" type="button" id="newBtn">＋ 新增貼紙包</button></div>
-    <div class="list">${rows || `<section class="card center"><div class="kicker">EMPTY</div><h2 style="margin-top:6px;">還沒有貼紙包</h2><p>按「新增貼紙包」上傳第一包。</p></section>`}</div>
+    <div class="list">${rows || `<section class="card center"><div class="kicker">還沒有 · EMPTY</div><h2 style="margin-top:6px;">還沒有貼紙包</h2><p>按「新增貼紙包」上傳第一包。</p></section>`}</div>
     `;
   $("newBtn").addEventListener("click", () => openEditor(null));
   const ib = $("importBtn"); if (ib) ib.addEventListener("click", importNaobao);
@@ -845,6 +853,7 @@ const SPEC = {
   plans: `<b>封面</b>：1200×1500（4:5）JPG，600KB 以內；會用在提案頁和分享小卡上，主角放中間偏上。<br><b>行程</b>：用「新的一天」分天，每天放 3～8 個「行程點」（時間、地點、一兩句說明、地圖連結）。<br><b>分享碼</b>：第一次儲存後自動產生 6 碼，不能改；可以在右邊下載含 QR Code 的限動小卡（1080×1920）。<br><b>第三方的行程</b>：請先取得作者同意，並填「出處」。營業時間、票價這類容易變動的資訊，請寫「出發前再確認」。`,
   zinePaper: `<b>Zine 紙張材質</b>：1024×1024 JPG，<b>必須無縫拼接</b>，600KB 以內。<br>色調偏淺（像米白、淺灰的再生紙），紋理要細，不要有明顯的污點或圖案（重複時會一直出現）。<br>做法建議：掃描真的紙張（300dpi）→ 裁一塊 → 用 Photoshop「濾鏡 → 其他 → 畫面錯位 Offset」修掉接縫。<br>上傳後網站會用「顯示大小」那個數字把它鋪滿整個頁面。`,
 };
+SPEC.appthemes = `一組 App 外觀主題 = 兩張可以<b>無縫拼接</b>的小圖＋六個顏色，會鋪滿整個 App（不是只有分享卡）。<br><b>① 背景紋理</b>：512×512 JPG，250KB 以內，要能無縫拼接；紋理要細、對比要低（上面會放很多字和卡片）。<br><b>② 卡片紙質</b>（選填）：512×512 JPG，200KB 以內，無縫；比背景更淺、更素，行程文字直接寫在上面。<br><b>顏色</b>：底色、卡片色、主要文字、次要文字、強調色、框線。<b>主要文字對卡片和底色要 4.5:1 以上，次要文字和強調色對卡片要 3:1 以上</b>，右邊會即時算給你看，不夠就不能上架。<br>深色模式時 App 會改用內建的深色，不會套用這個主題。`;
 const CT = {
   themes: {
     table: "themes", name: "主題", folder: "themes", perm: "can_themes",
@@ -853,7 +862,17 @@ const CT = {
       { key: "paper", label: "② 紙卡材質", w: 512, h: 512, fit: "cover", fmt: "jpeg", maxKB: 300, sq: true },
       { key: "overlay", label: "③ 裝飾層", w: 1080, h: 1920, fit: "contain", fmt: "png", maxKB: 1500 },
     ],
-    thumb: r => r.background, lead: "插畫家主題包：背景、紙卡材質、裝飾層三層，加一組文字顏色。上架後會出現在分享卡的「配色」裡（App 端串接中）。",
+    thumb: r => r.background, lead: "插畫家主題包：背景、紙卡材質、裝飾層三層，加一組文字顏色。上架後會出現在分享卡編輯的「配色 → 主題」裡。",
+    filter: r => (r.kind || "card") !== "app",
+  },
+  appthemes: {
+    table: "themes", name: "App 外觀主題", folder: "appthemes", perm: "can_themes",
+    slots: [
+      { key: "app_bg", label: "① 背景紋理", w: 512, h: 512, fit: "cover", fmt: "jpeg", maxKB: 250, sq: true },
+      { key: "app_paper", label: "② 卡片紙質（選填）", w: 512, h: 512, fit: "cover", fmt: "jpeg", maxKB: 200, sq: true, optional: true },
+    ],
+    thumb: r => r.app_bg, filter: r => r.kind === "app",
+    lead: "和 Paper／Silver／Lilac 並列的整個 App 外觀：背景紋理、卡片紙質，加一組顏色。上架後會出現在 App 選單的「風格」裡；使用者選了才會下載圖片。文字對比不夠的主題不能上架（資料庫也會擋）。",
   },
   polaroid: {
     table: "polaroid_frames", name: "拍立得相框", folder: "polaroid", perm: "can_polaroid",
@@ -873,7 +892,7 @@ const CT = {
       { key: "photo3", label: "圖片 3", w: 1200, h: 1200, fit: "cover", fmt: "jpeg", maxKB: 500, sq: true, optional: true },
       { key: "photo4", label: "圖片 4", w: 1200, h: 1200, fit: "cover", fmt: "jpeg", maxKB: 500, sq: true, optional: true },
     ],
-    thumb: r => r.cover, lead: "TabigrAm.mise：旅行生活選物與舊書攤。創作者上傳商品圖、說明和販售連結；TabigrAm 只介紹、連結出去，不經手交易。", site: "../mise/",
+    thumb: r => r.cover, lead: "TabigrAm.mise：旅行生活選物（書與誌也在這裡）。創作者上傳商品圖、說明和販售連結；TabigrAm 只介紹、連結出去，不經手交易。", site: "../mise/",
   },
   plans: {
     table: "trip_plans", name: "旅行提案", folder: "plans", perm: "can_plans",
@@ -895,6 +914,23 @@ function loadFont(k) {
   const l = document.createElement("link"); l.id = "font-" + k; l.rel = "stylesheet"; l.href = `https://fonts.googleapis.com/css2?family=${f.q}&display=swap`; document.head.appendChild(l);
 }
 const fontCss = (k, d) => `'${(ZINE_FONTS[k] || ZINE_FONTS[d]).family}', serif`;
+// ===== App 外觀主題：顏色與對比檢查（和資料庫 SUPABASE_APP_THEMES_V13.sql 的規則一樣）=====
+const APP_THEME_KEYS = [["bg", "底色"], ["card", "卡片色"], ["ink", "主要文字"], ["sub", "次要文字"], ["accent", "強調色"], ["border", "框線"]];
+const APP_THEME_DEFAULT = { bg: "#E7E5E0", card: "#FBFAF7", ink: "#191919", sub: "#67645E", accent: "#C2410C", border: "#D8D5CE" };
+function relLum(hex) {
+  const v = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(c => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+  return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+}
+function contrast(a, b) { const x = relLum(a), y = relLum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+function appThemeCheck(cs) {
+  const c = k => safeColor(cs && cs[k], APP_THEME_DEFAULT[k]);
+  const items = [["主要文字 ↔ 卡片", contrast(c("ink"), c("card")), 4.5], ["主要文字 ↔ 底色", contrast(c("ink"), c("bg")), 4.5], ["次要文字 ↔ 卡片", contrast(c("sub"), c("card")), 3], ["強調色 ↔ 卡片", contrast(c("accent"), c("card")), 3]];
+  return { ok: items.every(([, r, min]) => r >= min), items };
+}
+function appThemeCheckHtml(cs) {
+  const { ok, items } = appThemeCheck(cs);
+  return `<div class="hint" style="display:grid; gap:4px;">${items.map(([l, r, min]) => `<div>${r >= min ? "✅" : "❌"} ${l}：<b>${r.toFixed(1)}:1</b>（要 ${min}:1 以上）</div>`).join("")}<div style="margin-top:4px; font-weight:800; color:${ok ? "var(--ok)" : "var(--danger)"};">${ok ? "可以送審／上架" : "對比不夠，還不能送審"}</div></div>`;
+}
 let crows = [];
 async function renderContentList(kind) {
   const ct = CT[kind];
@@ -902,7 +938,7 @@ async function renderContentList(kind) {
   if (kind === "zine") await loadIssues();
   const { data, error } = await T(sb.from(ct.table).select("*").order("sort", { ascending: true }).order("created_at", { ascending: false }));
   if (error) { $("app").innerHTML = needV3(error) ? v3Message(ct.name) : `<section class="card center"><h1>讀不到${esc(ct.name)}</h1><p>${esc(error.message)}</p></section>`; return; }
-  crows = (data || []).filter(r => me.admin || r.owner_email === me.email);
+  crows = (data || []).filter(r => (me.admin || r.owner_email === me.email) && (!ct.filter || ct.filter(r)));
   const rows = crows.map((r, i) => {
     const th = ct.thumb(r);
     return `<article class="card row-card">
@@ -926,7 +962,7 @@ async function renderContentList(kind) {
     ${specCard(kind)}
     ${kind === "zine" && me.admin ? issuesSectionHtml() : ""}
     <div class="bar"><span class="kicker">${crows.length} 個 · ${crows.filter(r => r.status === "published").length} 個上架中${me.admin ? ` · ${crows.filter(r => r.status === "review").length} 個待審核` : ""}</span><button class="btn go" type="button" id="gNewBtn">＋ 新增${esc(ct.name)}</button></div>
-    <div class="list">${rows || `<section class="card center"><div class="kicker">EMPTY</div><h2 style="margin-top:6px;">還沒有${esc(ct.name)}</h2></section>`}</div>`;
+    <div class="list">${rows || `<section class="card center"><div class="kicker">還沒有 · EMPTY</div><h2 style="margin-top:6px;">還沒有${esc(ct.name)}</h2></section>`}</div>`;
   if (kind === "zine") bindIssues();
   $("gNewBtn").addEventListener("click", () => openGEditor(kind, null));
   document.querySelectorAll("[data-gedit]").forEach(b => b.addEventListener("click", () => openGEditor(kind, b.dataset.gedit)));
@@ -939,6 +975,8 @@ async function openGEditor(kind, id, preset) {
   if (id && !r) { const { data } = await T(sb.from(ct.table).select("*").eq("id", id).maybeSingle()); r = data; }
   // 選物的 kind 欄位（類別）跟編輯器的 kind（內容種類）同名：改叫 mise_kind
   if (r && kind === "mise") { r = { ...r, mise_kind: r.kind }; delete r.kind; }
+  // 主題的 kind 欄位（card／app）也跟編輯器的 kind 同名：改叫 theme_kind
+  if (r && (kind === "themes" || kind === "appthemes")) { r = { ...r, theme_kind: r.kind }; delete r.kind; }
   gdraft = r ? { kind, isNew: false, ...JSON.parse(JSON.stringify(r)), files: {}, dirty: false, removed: [] }
     : { kind, isNew: true, id: "", name: "", name_en: "", artist: me.creator ? me.creator.display_name : "", artist_en: "", url: "", status: "draft",
         title: "", subtitle: "", issue: "", author_name: me.creator ? me.creator.display_name : "", author_url: "", tags: [], blocks: [],
@@ -947,6 +985,7 @@ async function openGEditor(kind, id, preset) {
         source_name: "", source_url: "", cities: [], style: {} };
   if (!gdraft.style) gdraft.style = {};
   if (!gdraft.colors) gdraft.colors = { text: "#191919", sub: "#6E6A63", accent: "#FF4F00" };
+  if (!gdraft.app_colors || !gdraft.app_colors.bg) gdraft.app_colors = Object.assign({}, APP_THEME_DEFAULT, gdraft.app_colors || {});
   if (!gdraft.photo_window) gdraft.photo_window = { x: 0.08, y: 0.07, w: 0.84, h: 0.7 };
   if (!Array.isArray(gdraft.blocks)) gdraft.blocks = [];
   if (kind === "zine") await loadIssues();
@@ -1035,6 +1074,9 @@ function renderGEditor() {
             <div class="field"><label>次要文字</label><input type="color" id="cSub" value="${safeColor(d.colors.sub, "#6E6A63")}"></div>
             <div class="field"><label>強調色</label><input type="color" id="cAccent" value="${safeColor(d.colors.accent, "#FF4F00")}"></div>
           </div></section>` : ""}
+        ${d.kind === "appthemes" ? `<section class="card section"><div class="section-head"><h2>顏色</h2><p>右邊的對比數字要全部打勾才能上架</p></div>
+          <div class="fields">${APP_THEME_KEYS.map(([k, l]) => `<div class="field"><label>${l}</label><input type="color" data-ac="${k}" value="${safeColor(d.app_colors[k], APP_THEME_DEFAULT[k])}"></div>`).join("")}</div>
+          <div id="acCheck" style="margin-top:10px;"></div></section>` : ""}
         ${d.kind === "polaroid" ? `<section class="card section"><div class="section-head"><h2>照片框位置</h2><p>比例 0～1：左、上、寬、高</p></div>
           <div class="num-row">${["x", "y", "w", "h"].map(k => `<div class="field"><label>${{ x: "左", y: "上", w: "寬", h: "高" }[k]}</label><input type="number" step="0.01" min="0" max="1" data-win="${k}" value="${esc(d.photo_window[k])}"></div>`).join("")}</div>
           <div class="field" style="margin-top:10px;"><label>寫字區文字顏色</label><input type="color" id="cCap" value="${safeColor(d.caption_color, "#191919")}"></div></section>` : ""}
@@ -1064,6 +1106,18 @@ function renderGPreview() {
         ${ov ? `<div class="overlay" style="background-image:${cssUrl(ov)}"></div>` : ""}
         <div class="safe-guide"><i style="left:8.3%; right:8.3%; top:21.9%; bottom:21.9%;"></i><i style="left:0; right:0; top:0; height:13%; border-radius:0; border-color:rgba(0,0,0,.25);"></i><i style="left:0; right:0; bottom:0; height:13%; border-radius:0; border-color:rgba(0,0,0,.25);"></i></div>
       </div></div>`;
+  } else if (d.kind === "appthemes") {
+    const c = k => safeColor(d.app_colors[k], APP_THEME_DEFAULT[k]);
+    const bg = slotPreview(d, CT.appthemes.slots[0]), pp = slotPreview(d, CT.appthemes.slots[1]);
+    el.innerHTML = `<div class="phone"><div class="phone-cap">App 裡的樣子</div>
+      <div style="border-radius:22px; overflow:hidden; padding:14px 12px; min-height:420px; background:${bg ? `${cssUrl(bg)} 0 0/256px 256px, ` : ""}${c("bg")}; color:${c("ink")}; font-family:var(--sans);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;"><b style="font-family:var(--display); font-size:18px;">TabigrAm</b><span style="flex:1"></span><span style="width:28px; height:28px; border-radius:50%; border:1px solid ${c("border")}; background:${c("card")};"></span></div>
+        <div style="display:flex; gap:6px; margin-bottom:10px;"><span style="padding:5px 10px; border-radius:999px; background:${c("accent")}; color:#fff; font-weight:800; font-size:12px;">第 1 天</span><span style="padding:5px 10px; border-radius:999px; border:1px solid ${c("border")}; background:${c("card")}; font-weight:800; font-size:12px;">第 2 天</span></div>
+        ${[["09:30 → 11:00", "南禪寺", "步行 10 分"], ["12:00 → 13:00", "午餐・湯豆腐", "預算 ¥3,000"]].map(([t, h, s]) => `<div style="border-radius:16px; padding:12px; margin-bottom:10px; border:1px solid ${c("border")}; background:${pp ? `${cssUrl(pp)} 0 0/256px 256px, ` : ""}${c("card")};">
+          <div style="color:${c("accent")}; font-weight:900; font-family:var(--mono); font-size:12px;">${t}</div><div style="font-weight:900; font-size:16px; margin-top:4px;">${h}</div><div style="color:${c("sub")}; font-size:12.5px; margin-top:2px;">${s}</div></div>`).join("")}
+        <p style="color:${c("ink")}; font-size:12.5px; margin:10px 2px 0;">底色上的文字：天氣、日期、說明</p>
+      </div></div>`;
+    const box = $("acCheck"); if (box) box.innerHTML = appThemeCheckHtml(d.app_colors);
   } else if (d.kind === "polaroid") {
     const fr = slotPreview(d, CT.polaroid.slots[0]), pw = d.photo_window || {};
     const w = { x: safeNum(pw.x, .08), y: safeNum(pw.y, .07), w: safeNum(pw.w, .84), h: safeNum(pw.h, .7) };
@@ -1126,6 +1180,7 @@ function readGFields() {
   if ($("cText")) d.colors = { text: $("cText").value, sub: $("cSub").value, accent: $("cAccent").value };
   document.querySelectorAll("[data-win]").forEach(inp => { d.photo_window[inp.dataset.win] = Math.max(0, Math.min(1, parseFloat(inp.value) || 0)); });
   if ($("cCap")) d.caption_color = $("cCap").value;
+  document.querySelectorAll("[data-ac]").forEach(inp => { d.app_colors[inp.dataset.ac] = inp.value; });
   document.querySelectorAll("[data-bk]").forEach(inp => { const b = d.blocks[+inp.dataset.bi]; if (b) b[inp.dataset.bk] = inp.value; });
 }
 function bindGEditor() {
@@ -1152,6 +1207,7 @@ async function saveG(status, note) {
   if (next !== "draft") {
     if (d.kind === "mise" && !d.shop_url) return toast("送審前請填販售連結");
     if (d.kind === "plans" && !d.blocks.some(b => b.type === "stop")) return toast("送審前請至少加一個行程點");
+    if (d.kind === "appthemes" && !appThemeCheck(d.app_colors).ok) return toast("文字對比不夠，請調整顏色（看「顏色」下面的檢查）", 5000);
     const miss = ct.slots.filter(s => !(d.files[s.key] || d[s.key]) && !s.optional && !(d.kind === "themes" && s.key === "overlay"));
     if (miss.length) return toast(`還缺：${miss.map(s => s.label).join("、")}`);
   }
@@ -1180,7 +1236,8 @@ async function saveG(status, note) {
     if (me.admin && next === "rejected") base.review_note = note || "";
     if (me.admin && next === "published") base.review_note = "";
     let row;
-    if (d.kind === "themes") row = { ...base, name: d.name, name_en: d.name_en || d.name, artist: d.artist, artist_en: d.artist_en || d.artist, url: d.url, background: d.background || "", paper: d.paper || "", overlay: d.overlay || "", colors: d.colors };
+    if (d.kind === "appthemes") row = { ...base, kind: "app", name: d.name, name_en: d.name_en || d.name, artist: d.artist, artist_en: d.artist_en || d.artist, url: d.url, app_bg: d.app_bg || "", app_paper: d.app_paper || "", app_colors: d.app_colors };
+    else if (d.kind === "themes") row = { ...base, name: d.name, name_en: d.name_en || d.name, artist: d.artist, artist_en: d.artist_en || d.artist, url: d.url, background: d.background || "", paper: d.paper || "", overlay: d.overlay || "", colors: d.colors };
     else if (d.kind === "polaroid") row = { ...base, name: d.name, name_en: d.name_en || d.name, artist: d.artist, artist_en: d.artist_en || d.artist, url: d.url, frame: d.frame || "", photo_window: d.photo_window, caption_color: d.caption_color };
     else if (d.kind === "mise") row = { ...base, title: d.title, maker: d.maker, kind: d.mise_kind || "goods", price_text: d.price_text, description: d.description, spec: d.spec,
       book_author: d.book_author, publisher: d.publisher, pub_year: d.pub_year, condition: d.condition, shop_name: d.shop_name, shop_url: d.shop_url, is_affiliate: !!d.is_affiliate, tags: d.tags,
@@ -1556,15 +1613,15 @@ async function renderReview() {
   const all = [];
   for (const [k, t, label] of kinds) {
     const { data } = await T(sb.from(t).select("*").eq("status", "review").order("submitted_at", { ascending: true }));
-    (data || []).forEach(r => all.push({ k, label, r }));
+    (data || []).forEach(r => all.push(t === "themes" && r.kind === "app" ? { k: "appthemes", label: "App 外觀主題", r } : { k, label, r }));
   }
   $("app").innerHTML = `<h1>待審核</h1><p class="lead">創作者、作家送審的內容，最早送的排最前面。點進去檢查，沒問題就「上架」，要修改就「退回」並寫原因。</p>
     <div class="list">${all.map((x, i) => `<article class="card row-card">
-        <span class="thumb">${x.r.cover || x.r.background || x.r.frame ? `<img src="${esc(x.k === "stickers" ? publicUrl(x.r.cover) : urlOf("content", x.r.cover || x.r.background || x.r.frame))}" alt="">` : ""}</span>
+        <span class="thumb">${x.r.cover || x.r.background || x.r.frame || x.r.app_bg ? `<img src="${esc(x.k === "stickers" ? publicUrl(x.r.cover) : urlOf("content", x.r.cover || x.r.background || x.r.frame || x.r.app_bg))}" alt="">` : ""}</span>
         <div style="min-width:0;"><div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;"><span class="pill draft">${esc(x.label)}</span><span class="pack-name">${esc(x.r.title || x.r.name || x.r.id)}</span></div>
           <div class="row-meta">${esc(x.r.owner_email || "")} · 送審 ${esc(fmtTime(x.r.submitted_at))}</div></div>
         <div class="pack-actions"><button class="btn go sm" type="button" data-rv="${i}">檢查</button></div>
-      </article>`).join("") || `<section class="card center"><div class="kicker">ALL CLEAR</div><h2 style="margin-top:6px;">沒有待審核的內容</h2></section>`}</div>`;
+      </article>`).join("") || `<section class="card center"><div class="kicker">都處理完了 · ALL CLEAR</div><h2 style="margin-top:6px;">沒有待審核的內容</h2></section>`}</div>`;
   document.querySelectorAll("[data-rv]").forEach(b => b.addEventListener("click", async () => {
     const x = all[+b.dataset.rv];
     const hl = k => document.querySelectorAll("[data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === k));
@@ -1644,20 +1701,23 @@ const FLAGS = [
   ["timetable", "台鐵／高鐵查班次", "關掉後，選車站不會出現「查班次」"],
   ["jam_party", "果醬派對", "選單裡的果醬派對入口"],
   ["zine_link", "選單顯示 TabigrAm.zine", "Zine 準備好公開時再打開"],
+  ["mise_link", "選單顯示 TabigrAm.mise（選物）", "選物準備好公開時再打開"],
   ["naver_korea", "韓國改用 NAVER 地圖（預設值）", "使用者自己在個人設定改過的不受影響"],
   ["analytics", "匿名使用統計", "關掉後所有使用者都不再送統計"],
 ];
+// 這幾個開關在 App 端是「沒設定＝關閉」，後台勾選框也要照這個顯示，才不會看起來開著其實是關的
+const OFF_BY_DEFAULT = ["zine_link", "mise_link"];
 async function renderSettings() {
   if (!me.v3) { $("app").innerHTML = v3Message("App 設定"); return; }
   const { data, error } = await T(sb.from("app_config").select("*"));
   if (error) { $("app").innerHTML = needV3(error) ? v3Message("App 設定") : `<section class="card center"><p>${esc(error.message)}</p></section>`; return; }
   const cfg = Object.fromEntries((data || []).map(r => [r.key, r.value || {}]));
-  const flags = cfg.flags || {}, links = cfg.links || {}, zine = cfg.zine || {}, donate = cfg.donate || {};
+  const flags = cfg.flags || {}, links = cfg.links || {}, zine = cfg.zine || {}, donate = cfg.donate || {}, mise = cfg.mise || {};
   let seasonal = JSON.parse(JSON.stringify((cfg.seasonal && cfg.seasonal.list) || []));
   let paperFile = null;
   $("app").innerHTML = `<h1>App 設定</h1><p class="lead">改完按各自的「儲存」，使用者重新打開 App 就會套用。</p>
     <section class="card"><div class="section-head"><h2>功能開關</h2><p>出問題時可以先關掉，不用改程式</p></div>
-      ${FLAGS.map(([k, t, s]) => `<label class="check"><input type="checkbox" data-flag="${k}" ${flags[k] !== false ? "checked" : ""}><span><b>${t}</b>${s}</span></label>`).join("")}
+      ${FLAGS.map(([k, t, s]) => `<label class="check"><input type="checkbox" data-flag="${k}" ${(OFF_BY_DEFAULT.includes(k) ? flags[k] === true : flags[k] !== false) ? "checked" : ""}><span><b>${t}</b>${s}</span></label>`).join("")}
       <div style="margin-top:12px;"><button class="btn dark sm" type="button" id="sFlags">儲存功能開關</button></div></section>
     <section class="card section"><div class="section-head"><h2>連結</h2><p>App 裡「關於」、意見回饋會用到</p></div>
       <div class="fields">
@@ -1693,7 +1753,11 @@ async function renderSettings() {
         <div class="field"><label>紙張顯示大小（px，數字越小紋理越細）</label><input id="zScale" type="number" min="128" max="2048" value="${esc(zine.paper_scale || 512)}"></div>
         <div class="field"><label>強調色</label><input id="zAccent" type="color" value="${esc(zine.accent || "#FF4F00")}"></div>
       </div>
-      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;"><button class="btn dark sm" type="button" id="sZine">儲存 Zine 設定</button><a class="btn ghost sm" href="../zine/" target="_blank" rel="noopener">打開 Zine 頁面 ↗</a></div></section>`;
+      <label class="check" style="border:0; padding:0; margin-top:10px;"><input type="checkbox" id="zSamples" ${zine.show_samples !== false ? "checked" : ""}><span><b>還沒有文章時，顯示範例內容</b>關掉後，沒有上架的文章時會顯示「第一期，正在印刷中」。有上架的文章時範例本來就不會出現。</span></label>
+      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;"><button class="btn dark sm" type="button" id="sZine">儲存 Zine 設定</button><a class="btn ghost sm" href="../zine/" target="_blank" rel="noopener">打開 Zine 頁面 ↗</a></div></section>
+    <section class="card section"><div class="section-head"><h2>TabigrAm.mise 選物</h2><p>App 選單的「選物」入口在上面的「功能開關」打開</p></div>
+      <label class="check" style="border:0; padding:0;"><input type="checkbox" id="mSamples" ${mise.show_samples !== false ? "checked" : ""}><span><b>還沒有商品時，顯示範例商品</b>關掉後，沒有上架的商品時會顯示「貨架還在整理中」。每件商品的販售連結在「選物」分頁裡填。</span></label>
+      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;"><button class="btn dark sm" type="button" id="sMise">儲存選物設定</button><a class="btn ghost sm" href="../mise/" target="_blank" rel="noopener">打開選物頁面 ↗</a></div></section>`;
   renderSeasonalRows(seasonal);
   $("ssAdd").addEventListener("click", () => {
     const y = new Date().getFullYear();
@@ -1725,7 +1789,7 @@ async function renderSettings() {
     catch (e) { toast(e.message, 5000); }
   });
   $("sZine").addEventListener("click", async () => {
-    const v = { ...zine, name: $("zName").value.trim() || "TabigrAm.zine", paper_scale: Math.max(128, Math.min(2048, +$("zScale").value || 512)), accent: $("zAccent").value };
+    const v = { ...zine, name: $("zName").value.trim() || "TabigrAm.zine", paper_scale: Math.max(128, Math.min(2048, +$("zScale").value || 512)), accent: $("zAccent").value, show_samples: $("zSamples").checked };
     if (paperFile) {
       const path = `zine/paper/${Date.now().toString(36)}.jpg`;
       const { error } = await T(sb.storage.from("content").upload(path, paperFile.blob, { contentType: "image/jpeg", cacheControl: "31536000" }), 60000);
@@ -1734,6 +1798,57 @@ async function renderSettings() {
     }
     save("zine", v, "Zine 設定已更新");
   });
+  $("sMise").addEventListener("click", () => save("mise", { ...mise, show_samples: $("mSamples").checked }, "選物設定已更新"));
+}
+
+// =====================================================================
+// 頁面文案：入口頁、亮點頁上標了 data-cms 的文字，可以在這裡改
+// - 原本的字直接從頁面讀出來（不用在這裡另外抄一份）
+// - 「存成草稿」→ 用預覽連結看（網址加 ?cms=draft）→ 沒問題再「發布」
+// - 沒填的欄位就用頁面原本的字；英文沒填，英文版就用原本的英文翻譯
+// =====================================================================
+const CMS_PAGES = [
+  { url: "../", name: "入口頁（landing）", preview: "../?home&cms=draft", live: "../?home", en: true },
+  { url: "../highlights/", name: "亮點頁（highlights）", preview: "../highlights/?cms=draft", live: "../highlights/", en: false },
+];
+async function readCmsFields(pg) {
+  const html = await (await fetch(pg.url, { cache: "no-store" })).text();
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  return [...doc.querySelectorAll("[data-cms]")].map(el => ({ key: el.getAttribute("data-cms"), label: el.getAttribute("data-cms-label") || el.getAttribute("data-cms"), def: el.textContent.trim() }));
+}
+async function renderPages() {
+  if (!me.admin) return;
+  $("app").innerHTML = `<section class="card center"><p class="hint">讀取頁面中…</p></section>`;
+  const [{ data }, ...fields] = await Promise.all([T(sb.from("app_config").select("key,value").in("key", ["pages", "pages_draft"])), ...CMS_PAGES.map(pg => readCmsFields(pg).catch(() => []))]);
+  const cfg = Object.fromEntries((data || []).map(r => [r.key, r.value || {}]));
+  const live = cfg.pages || {}, draft = cfg.pages_draft || null;
+  const cur = draft || live;
+  const changed = draft && JSON.stringify(draft) !== JSON.stringify(live);
+  $("app").innerHTML = `<h1>頁面文案</h1>
+    <p class="lead">改入口頁、亮點頁上的文字，不用動程式。<b>沒填的欄位會用頁面原本的字</b>。先「存成草稿」用預覽連結看看，沒問題再「發布」，使用者重新打開就會看到。${changed ? `<br><span class="pill draft">有還沒發布的草稿</span>` : ""}</p>
+    ${CMS_PAGES.map((pg, i) => `<section class="card section"><div class="section-head"><h2>${esc(pg.name)}</h2><p><a href="${pg.preview}" target="_blank" rel="noopener">預覽草稿 ↗</a>　·　<a href="${pg.live}" target="_blank" rel="noopener">目前的頁面 ↗</a></p></div>
+      ${fields[i].length ? fields[i].map(f => { const v = cur[f.key] || {}; return `<div class="field full cms-f"><label>${esc(f.label)} <small class="code">${esc(f.key)}</small></label>
+        <div class="hint" style="margin:-2px 0 6px;">原本：${esc(f.def)}</div>
+        <textarea data-cms-zh="${esc(f.key)}" rows="${f.def.length > 60 ? 3 : 1}" placeholder="（沒填就用原本的字）" maxlength="600">${esc(v.zh || "")}</textarea>
+        ${pg.en ? `<input data-cms-en="${esc(f.key)}" value="${esc(v.en || "")}" placeholder="English（選填）" maxlength="600" style="margin-top:6px;">` : ""}</div>`; }).join("") : `<p class="hint">讀不到這一頁的欄位。</p>`}
+    </section>`).join("")}
+    <div class="save-bar"><span class="msg">草稿只有用預覽連結才看得到；發布後所有人都會看到。</span>
+      <button class="btn soft" type="button" id="cmsReset">清空全部（回到原本的字）</button>
+      <button class="btn dark" type="button" id="cmsDraft">存成草稿</button>
+      <button class="btn go" type="button" id="cmsPublish">發布</button></div>`;
+  const collect = () => {
+    const out = {};
+    document.querySelectorAll("[data-cms-zh]").forEach(t => { const k = t.dataset.cmsZh, zh = t.value.trim(); if (zh) (out[k] = out[k] || {}).zh = zh.slice(0, 600); });
+    document.querySelectorAll("[data-cms-en]").forEach(t => { const k = t.dataset.cmsEn, en = t.value.trim(); if (en) (out[k] = out[k] || {}).en = en.slice(0, 600); });
+    return out;
+  };
+  const put = async (key, value) => { const { error } = await T(sb.from("app_config").upsert({ key, value, updated_at: new Date().toISOString() })); if (error) throw error; };
+  $("cmsDraft").addEventListener("click", async () => { try { await put("pages_draft", collect()); toast("草稿已儲存，用「預覽草稿」看看"); renderPages(); } catch (e) { toast("儲存失敗：" + e.message, 5000); } });
+  $("cmsPublish").addEventListener("click", async () => {
+    if (!confirm("確定發布？所有人重新打開頁面就會看到新的文字。")) return;
+    try { const v = collect(); await put("pages_draft", v); await put("pages", v); toast("已發布"); renderPages(); } catch (e) { toast("發布失敗：" + e.message, 5000); }
+  });
+  $("cmsReset").addEventListener("click", () => { if (!confirm("清空所有欄位？（還要按「存成草稿」或「發布」才會生效）")) return; document.querySelectorAll("[data-cms-zh], [data-cms-en]").forEach(t => { t.value = ""; }); });
 }
 
 // ---------- 季節限定色：每一列一個顏色 ----------
@@ -1892,6 +2007,32 @@ async function renderCreators() {
 // 數據（匿名統計：只有每天各事件的次數）
 // =====================================================================
 let dashDays = 30;
+// ===== 數據代號 → 中文（中英並列顯示：中文在前、原始代號小字在後）=====
+const EVENT_ZH = {
+  open: "打開 App", dev_day: "每天使用的裝置", ret: "回訪", lang: "語言", landing_view: "看到入口頁", landing_cta: "按入口頁按鈕",
+  inapp_guide: "LINE／IG 內建瀏覽器提醒", signup: "註冊", login: "登入", first_item: "第一次加行程", trip_new: "建立旅程",
+  item_add: "新增行程卡片", csv_import: "試算表匯入", rail_pick: "選車站", timetable: "查台鐵／高鐵班次", train_pick: "選一班車",
+  map_open: "打開地圖", share_open: "打開分享卡", share_save: "儲存／分享卡片", share_warn: "分享前的個資提醒", daylist_card: "Timetable 分享卡",
+  sticker_use: "貼上貼紙", sticker_collect: "收藏貼紙包", jam_open: "打開果醬派對", memories_open: "打開旅程回憶", checkin: "按「我到了」",
+  a2hs: "加到主畫面", whatsnew: "看更新公告", notice: "後台通知", sync_fail: "同步失敗", js_error: "程式出錯", offline_open: "離線打開",
+  zine_view: "看 Zine 文章", zine_open: "打開 Zine", zine_save: "儲存 Zine 文章", mise_open: "打開選物", mise_view: "看選物商品",
+  mise_out: "點「前往購買」", mise_go: "真的前往商店", plan_view: "看旅行提案", plan_card: "產生提案小卡",
+  vault_open: "打開旅行憑證", vault_add: "加入憑證", vault_show: "出示憑證", vault_pin: "憑證密碼鎖", reflection_save: "寫即時心得",
+  memories_share: "分享完成卡", tape_seal: "封存卡帶", tape_play: "播放卡帶", wish_add: "加入想去清單",
+};
+const DEV_PLAT = { ios: "iPhone／iPad", android: "Android", desktop: "電腦", mac: "Mac", other: "其他" };
+const DEV_MODE = { pwa: "主畫面 App", web: "瀏覽器", inapp: "LINE／IG 內建瀏覽器" };
+const DIM_ZH = {
+  dev_day: c => { const [p, m] = String(c).split("-"); return DEV_PLAT[p] ? `${DEV_PLAT[p]}・${DEV_MODE[m] || m || ""}` : ""; },
+  share_save: { polaroid: "拍立得", transit: "路線圖", flight: "登機證", ferry: "船票", roadtrip: "公路", daylist: "當天行程", memory: "完成卡", countdown: "倒數", stamp: "機場章", route: "路線圖卡" },
+  rail_pick: { taiwan: "台灣", tokyo: "東京", osaka: "大阪", kansai: "關西", japan: "日本", seoul: "首爾", korea: "韓國", busan: "釜山", hongkong: "香港", hk: "香港", singapore: "新加坡", bangkok: "曼谷", kyoto: "京都", fukuoka: "福岡", nagoya: "名古屋", sapporo: "札幌" },
+  item_add: { spot: "景點／餐飲", transit: "鐵道／地鐵", flight: "航班", roadtrip: "公路旅行", ferry: "船班" },
+  map_open: c => { const [app, kind] = String(c).split("_"); const A = { google: "Google 地圖", apple: "Apple 地圖", naver: "NAVER 地圖", kakao: "Kakao 地圖" }; const K = { route: "路線", search: "搜尋", place: "地點" }; return A[app] ? `${A[app]}・${K[kind] || kind || ""}` : ""; },
+  lang: { zh: "中文", en: "英文" },
+  "—": "（沒有細項）",
+};
+// 代號 → 中文；對不到就回傳空字串（畫面上只顯示原代號）
+function zhOf(map, code) { if (code === "—") return DIM_ZH["—"]; if (!map) return ""; const v = typeof map === "function" ? map(code) : map[code]; return v || ""; }
 const EV_LABEL = {
   share_save: "分享卡版型", sticker_use: "貼紙包用量", rail_pick: "選車站的地區", dev_day: "平台與開啟方式", map_open: "地圖", item_add: "新增的行程類型", lang: "語言",
 };
@@ -1906,6 +2047,9 @@ async function renderDash() {
     rows.push(...(data || []));
     if (!data || data.length < 1000) break;
   }
+  // 貼紙包代號 → 包名
+  const packNames = {};
+  try { const { data: packs } = await T(sb.from("sticker_packs").select("id,name")); (packs || []).forEach(p => { packNames[p.id] = p.name; }); } catch (e) {}
   const sum = (ev, dim) => rows.filter(r => r.event === ev && (dim == null || r.dim === dim)).reduce((a, r) => a + Number(r.count), 0);
   const byDim = ev => { const m = {}; rows.filter(r => r.event === ev).forEach(r => { m[r.dim || "—"] = (m[r.dim || "—"] || 0) + Number(r.count); }); return Object.entries(m).sort((a, b) => b[1] - a[1]); };
   const days = []; for (let i = dashDays - 1; i >= 0; i--) days.push(new Date(Date.now() + 8 * 3600e3 - i * 86400e3).toISOString().slice(0, 10));
@@ -1914,7 +2058,12 @@ async function renderDash() {
   const newDev = sum("ret", "new"), signup = sum("signup"), firstItem = sum("first_item"), shares = sum("share_save");
   const conv = newDev ? (signup / newDev * 100) : 0;
   const maxDau = Math.max(1, ...dau);
-  const hbars = (list, total, map) => list.length ? `<div class="hbars">${list.slice(0, 10).map(([n, v]) => `<div class="hbar" data-tip="${esc((map && map[n]) || n)}：${v.toLocaleString()}${total ? `（${(v / total * 100).toFixed(1)}%）` : ""}"><span class="n">${esc((map && map[n]) || n)}</span><span class="t"><i style="width:${(v / list[0][1] * 100).toFixed(1)}%"></i></span><span class="v">${v.toLocaleString()}</span></div>`).join("")}</div>` : `<div class="empty-note">這段期間還沒有資料</div>`;
+  // map 有中文就「中文＋小字代號」，沒有就只顯示原本的字
+  const hbars = (list, total, map, codes) => list.length ? `<div class="hbars">${list.slice(0, 10).map(([n, v]) => {
+    const zh = zhOf(map, n), showCode = codes !== false && zh && zh !== n;
+    const name = zh || n;
+    return `<div class="hbar" data-tip="${esc(name)}${showCode ? `（${esc(n)}）` : ""}：${v.toLocaleString()}${total ? `（${(v / total * 100).toFixed(1)}%）` : ""}"><span class="n">${esc(name)}${showCode ? ` <small class="code">${esc(n)}</small>` : ""}</span><span class="t"><i style="width:${(v / list[0][1] * 100).toFixed(1)}%"></i></span><span class="v">${v.toLocaleString()}</span></div>`;
+  }).join("")}</div>` : `<div class="empty-note">這段期間還沒有資料</div>`;
   const funnel = [["新裝置", newDev], ["開始排行程", firstItem], ["分享過卡片", shares], ["註冊", signup]];
   const retList = byDim("ret");
   const RET = { new: "新的", d1: "隔天回來", d2_7: "2～7 天內回來", d8_30: "8～30 天內回來", d31: "超過 30 天回來" };
@@ -1935,13 +2084,14 @@ async function renderDash() {
         <div class="cols-x"><span>${days[0].slice(5).replace("-", "/")}</span><span>${days[days.length - 1].slice(5).replace("-", "/")}</span></div></section>
       <section class="card chart-card"><h2>漏斗（最近 ${dashDays} 天）</h2>${hbars(funnel.filter(x => true), newDev)}</section>
       <section class="card chart-card"><h2>回訪</h2>${hbars(retList, retTotal, RET)}</section>
-      ${["dev_day", "share_save", "sticker_use", "rail_pick", "item_add", "map_open", "lang"].map(ev => `<section class="card chart-card"><h2>${EV_LABEL[ev]}</h2>${hbars(byDim(ev), byDim(ev).reduce((a, [, v]) => a + v, 0))}</section>`).join("")}
+      ${["dev_day", "share_save", "sticker_use", "rail_pick", "item_add", "map_open", "lang"].map(ev => `<section class="card chart-card"><h2>${EV_LABEL[ev]} <small class="code">${ev}</small></h2>${hbars(byDim(ev), byDim(ev).reduce((a, [, v]) => a + v, 0), ev === "sticker_use" ? packNames : DIM_ZH[ev])}</section>`).join("")}
       <section class="card chart-card"><h2>穩定度</h2>${hbars([["同步失敗", sum("sync_fail")], ["程式出錯", sum("js_error")], ["離線打開", sum("offline_open")], ["查班次失敗", sum("timetable", "err")]].filter(x => x[1] > 0))}</section>
-      <section class="card chart-card"><h2>所有事件</h2>${hbars(Object.entries(rows.reduce((m, r) => (m[r.event] = (m[r.event] || 0) + Number(r.count), m), {})).sort((a, b) => b[1] - a[1]))}</section>
+      <section class="card chart-card"><h2>所有事件</h2>${hbars(Object.entries(rows.reduce((m, r) => (m[r.event] = (m[r.event] || 0) + Number(r.count), m), {})).sort((a, b) => b[1] - a[1]), 0, EVENT_ZH)}</section>
     </div>`;
   document.querySelectorAll("[data-days]").forEach(b => b.addEventListener("click", () => { dashDays = +b.dataset.days; renderDash(); }));
   $("dCsv").addEventListener("click", () => {
-    const csv = "day,event,dim,count\n" + rows.map(r => [r.day, r.event, r.dim, r.count].join(",")).join("\n");
+    const q = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
+    const csv = "day,event,事件,dim,細項,count\n" + rows.map(r => [r.day, r.event, q(EVENT_ZH[r.event] || ""), q(r.dim), q(r.event === "sticker_use" ? (packNames[r.dim] || "") : zhOf(DIM_ZH[r.event], r.dim)), r.count].join(",")).join("\n");
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv" })); a.download = `tabigram-metrics-${days[0]}-${days[days.length - 1]}.csv`; a.click();
   });
   bindTips();
@@ -1952,29 +2102,49 @@ let statDays = 90;
 const STAT_KIND = {
   stickers: { name: "貼紙包", cols: [["sticker_collect", "被收藏"], ["sticker_use", "貼到分享卡"]] },
   zine: { name: "Zine 文章", cols: [["zine_view", "閱讀"], ["zine_save", "儲存"]] },
-  mise: { name: "選物", cols: [["mise_view", "瀏覽"], ["mise_out", "點「前往購買」"]] },
+  mise: { name: "選物", cols: [["mise_view", "瀏覽"], ["mise_out", "點「前往購買」"], ["mise_go", "真的前往商店"]], rate: ["mise_go", "mise_view", "導購率"] },
   plans: { name: "旅行提案", cols: [["plan_view", "瀏覽"], ["plan_card", "產生分享小卡"]] },
 };
 async function renderMyStats() {
   $("app").innerHTML = `<section class="card center"><p class="hint">讀取中…</p></section>`;
   const { data, error } = await T(sb.rpc("creator_stats", { p_days: statDays }));
-  if (error) { $("app").innerHTML = `<section class="card center"><h1>作品數據</h1><p class="hint">${/creator_stats|Could not find|does not exist/i.test(error.message) ? "管理員還沒開啟這個功能（Supabase 執行 <b>SUPABASE_CREATOR_STATS_V10.sql</b>）。" : esc(error.message)}</p></section>`; return; }
+  if (error) { $("app").innerHTML = `<section class="card center"><h1>作品數據</h1><p class="hint">${/creator_stats|Could not find|does not exist/i.test(error.message) ? "管理員還沒開啟這個功能（Supabase 執行 <b>SUPABASE_CREATOR_STATS_V10.sql</b>，再執行 <b>V12</b>）。" : esc(error.message)}</p></section>`; return; }
   const works = data.works || [];
   const kinds = Object.keys(STAT_KIND).filter(k => works.some(w => w.kind === k));
   const n = (w, ev) => Number((w.stats || {})[ev] || 0);
   $("app").innerHTML = `<h1>作品數據</h1>
     <p class="lead">${me.admin ? "所有作品" : "你的作品"}被看了幾次、收藏幾次。數字來自匿名統計：只有次數，看不到是誰。使用者關掉「協助改善 TabigrAm」或開啟「不要追蹤」時不會被算進來，所以實際人數可能更多。</p>
     <div class="fb-tools">${[[30, "最近 30 天"], [90, "最近 90 天"], [0, "全部"]].map(([d, l]) => `<button type="button" class="chip ${statDays === d ? "on" : ""}" data-sd="${d}">${l}</button>`).join("")}</div>
+    ${me.admin && works.length ? creatorsTable(works, n) : ""}
     ${kinds.length ? `<div class="kpis">${kinds.map(k => STAT_KIND[k].cols.map(([ev, l]) => `<div class="kpi"><div class="v">${works.filter(w => w.kind === k).reduce((a, w) => a + n(w, ev), 0).toLocaleString()}</div><div class="l">${esc(STAT_KIND[k].name)}・${esc(l)}</div></div>`).join("")).join("")}</div>
       ${kinds.map(k => {
         const list = works.filter(w => w.kind === k), cols = STAT_KIND[k].cols, max = Math.max(1, ...list.map(w => n(w, cols[0][0])));
-        return `<section class="card" style="overflow-x:auto; margin-top:12px;"><h2 style="margin:0 0 8px;">${esc(STAT_KIND[k].name)}</h2><table class="mini"><thead><tr><th>作品</th><th>狀態</th>${cols.map(([, l]) => `<th style="text-align:right;">${esc(l)}</th>`).join("")}</tr></thead><tbody>
-          ${list.map(w => `<tr><td>${esc(w.title || w.id)}</td><td>${statusPill(w.status)}</td>${cols.map(([ev], i) => `<td style="text-align:right; min-width:110px;">${i === 0 ? `<span class="stat-bar"><i style="width:${(n(w, ev) / max * 100).toFixed(1)}%"></i></span>` : ""}<b>${n(w, ev).toLocaleString()}</b></td>`).join("")}</tr>`).join("")}
-        </tbody></table></section>`;
+        const rate = STAT_KIND[k].rate;
+        const rateTxt = w => { const a = n(w, rate[0]), b = n(w, rate[1]); return b ? (a / b * 100).toFixed(1) + "%" : "—"; };
+        return `<section class="card" style="overflow-x:auto; margin-top:12px;"><h2 style="margin:0 0 8px;">${esc(STAT_KIND[k].name)}</h2><table class="mini"><thead><tr><th>作品</th>${me.admin ? "<th>創作者</th>" : ""}<th>狀態</th>${cols.map(([ev, l]) => `<th style="text-align:right;">${esc(l)}</th>`).join("")}${rate ? `<th style="text-align:right;" title="${esc(STAT_KIND[k].cols.find(c => c[0] === rate[0])[1])} ÷ ${esc(STAT_KIND[k].cols.find(c => c[0] === rate[1])[1])}">${esc(rate[2])}</th>` : ""}</tr></thead><tbody>
+          ${list.map(w => `<tr><td>${esc(w.title || w.id)}</td>${me.admin ? `<td>${esc(ownerLabel(w))}</td>` : ""}<td>${statusPill(w.status)}</td>${cols.map(([ev], i) => `<td style="text-align:right; min-width:110px;">${i === 0 ? `<span class="stat-bar"><i style="width:${(n(w, ev) / max * 100).toFixed(1)}%"></i></span>` : ""}<b>${n(w, ev).toLocaleString()}</b></td>`).join("")}${rate ? `<td style="text-align:right;"><b>${rateTxt(w)}</b></td>` : ""}</tr>`).join("")}
+        </tbody></table>${rate ? `<p class="hint" style="margin:8px 0 0;">「點『前往購買』」包含看到離站提醒後按「先不要」的人；「真的前往商店」才是按了「前往」、離開 TabigrAm 的次數（2026-11-21 之後才開始記）。${esc(rate[2])}＝真的前往 ÷ 瀏覽。</p>` : ""}</section>`;
       }).join("")}`
-    : `<section class="card center"><div class="kicker">EMPTY</div><h2 style="margin-top:6px;">還沒有作品</h2><p class="hint">作品上架後，這裡會顯示被看、被收藏的次數。</p></section>`}
+    : `<section class="card center"><div class="kicker">還沒有 · EMPTY</div><h2 style="margin-top:6px;">還沒有作品</h2><p class="hint">作品上架後，這裡會顯示被看、被收藏的次數。</p></section>`}
     <p class="hint" style="margin-top:12px;">主題、拍立得相框還沒放進 App，之後會一起統計。</p>`;
   document.querySelectorAll("[data-sd]").forEach(b => b.addEventListener("click", () => { statDays = +b.dataset.sd; renderMyStats(); }));
+}
+// 管理員：依創作者整理（每位創作者幾件作品、各項加總）
+function ownerLabel(w) {
+  if (!("owner_email" in w)) return "（要先執行 V12）";
+  return w.owner_name ? `${w.owner_name}（${w.owner_email || ""}）` : (w.owner_email || "TabigrAm 官方");
+}
+function creatorsTable(works, n) {
+  if (!works.some(w => "owner_email" in w)) return `<section class="card" style="margin-top:12px;"><h2 style="margin:0 0 6px;">依創作者</h2><p class="hint">要先在 Supabase 執行 <b>SUPABASE_CREATOR_STATS_V12.sql</b>，這裡才會依創作者分組。</p></section>`;
+  const groups = {};
+  works.forEach(w => { const key = w.owner_email || ""; (groups[key] = groups[key] || { label: ownerLabel(w), list: [] }).list.push(w); });
+  const metrics = [["sticker_collect", "貼紙被收藏"], ["sticker_use", "貼紙被使用"], ["zine_view", "Zine 閱讀"], ["mise_view", "選物瀏覽"], ["mise_go", "前往商店"], ["plan_view", "提案瀏覽"]];
+  const rows = Object.values(groups).map(g => ({ g, tot: Object.fromEntries(metrics.map(([ev]) => [ev, g.list.reduce((a, w) => a + n(w, ev), 0)])) }))
+    .sort((a, b) => metrics.reduce((s, [ev]) => s + b.tot[ev], 0) - metrics.reduce((s, [ev]) => s + a.tot[ev], 0));
+  return `<section class="card" style="overflow-x:auto; margin-top:12px;"><h2 style="margin:0 0 8px;">依創作者 <small class="code">by creator</small></h2>
+    <table class="mini nowrap-head"><thead><tr><th>創作者</th><th style="text-align:right;">作品</th>${metrics.map(([, l]) => `<th style="text-align:right;">${esc(l)}</th>`).join("")}</tr></thead><tbody>
+    ${rows.map(({ g, tot }) => `<tr><td>${esc(g.label)}</td><td style="text-align:right;">${g.list.length}</td>${metrics.map(([ev]) => `<td style="text-align:right;"><b>${tot[ev].toLocaleString()}</b></td>`).join("")}</tr>`).join("")}
+    </tbody></table><p class="hint" style="margin:8px 0 0;">只有管理員看得到這張表；創作者登入後只會看到自己的作品。</p></section>`;
 }
 // ===== 伺服器用量（Supabase 免費方案的上限；升級後改這裡的數字）=====
 const PLAN = { name: "免費方案", db: 500 * 1024 ** 2, storage: 1024 ** 3, mau: 50000 };
@@ -1984,10 +2154,10 @@ const BUCKET_LABEL = { "journal-photos": "使用者的旅程照片", stickers: "
 const fmtBytes = b => b >= 1024 ** 3 ? (b / 1024 ** 3).toFixed(2) + " GB" : b >= 1024 ** 2 ? (b / 1024 ** 2).toFixed(1) + " MB" : Math.max(0, Math.round(b / 1024)) + " KB";
 async function loadUsage() {
   const box = $("usageBox"); if (!box) return;
-  box.innerHTML = `<section class="card" style="margin-bottom:14px;"><div class="kicker">SERVER</div><p class="hint" style="margin-top:6px;">讀取伺服器用量中…</p></section>`;
+  box.innerHTML = `<section class="card" style="margin-bottom:14px;"><div class="kicker">伺服器 · SERVER</div><p class="hint" style="margin-top:6px;">讀取伺服器用量中…</p></section>`;
   const { data: u, error } = await T(sb.rpc("admin_usage"));
   if (error || !u) {
-    box.innerHTML = `<section class="card" style="margin-bottom:14px;"><div class="kicker">SERVER</div><h2 style="margin-top:4px;">伺服器用量</h2><p class="hint">${/admin_usage|Could not find|does not exist/i.test(error ? error.message : "") ? "請先在 Supabase 的 SQL Editor 執行 <b>SUPABASE_ADMIN_V8.sql</b>，這裡就會顯示資料庫大小、檔案空間和帳號數。" : esc(error ? error.message : "讀不到")}</p></section>`;
+    box.innerHTML = `<section class="card" style="margin-bottom:14px;"><div class="kicker">伺服器 · SERVER</div><h2 style="margin-top:4px;">伺服器用量</h2><p class="hint">${/admin_usage|Could not find|does not exist/i.test(error ? error.message : "") ? "請先在 Supabase 的 SQL Editor 執行 <b>SUPABASE_ADMIN_V8.sql</b>，這裡就會顯示資料庫大小、檔案空間和帳號數。" : esc(error ? error.message : "讀不到")}</p></section>`;
     return;
   }
   // 用量狀態：一定附文字，不只靠顏色
@@ -2003,7 +2173,7 @@ async function loadUsage() {
   const maxSt = Math.max(1, ...hist.map(h => h.st));
   const bks = u.buckets || [];
   box.innerHTML = `<section class="card" style="margin-bottom:14px;">
-    <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;"><div><div class="kicker">SERVER · SUPABASE ${esc(PLAN.name)}</div><h2 style="margin-top:4px;">伺服器用量</h2></div><span class="sp" style="flex:1;"></span><span class="hint">更新於 ${esc(fmtTime(u.checked_at))}</span></div>
+    <div style="display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;"><div><div class="kicker">伺服器 · SERVER · SUPABASE ${esc(PLAN.name)}</div><h2 style="margin-top:4px;">伺服器用量</h2></div><span class="sp" style="flex:1;"></span><span class="hint">更新於 ${esc(fmtTime(u.checked_at))}</span></div>
     <div class="meters">
       ${meter("檔案空間", u.storage_bytes, PLAN.storage, fmtBytes(u.storage_bytes), fmtBytes(PLAN.storage), `${Number(u.files).toLocaleString()} 個檔案`)}
       ${meter("資料庫", u.db_bytes, PLAN.db, fmtBytes(u.db_bytes), fmtBytes(PLAN.db), `${Number(u.trips).toLocaleString()} 趟旅程`)}
@@ -2011,7 +2181,7 @@ async function loadUsage() {
         const api = u.api || [], cur = api.find(x => x.service === "airlabs" && x.month === u.api_month);
         const used = cur ? Number(cur.calls) : 0;
         const prev = api.filter(x => x.service === "airlabs" && x.month !== u.api_month).slice(0, 3).map(x => `${String(x.month).slice(5)} 月 ${Number(x.calls).toLocaleString()} 次`).join("、");
-        return meter("AirLabs 本月", used, AIRLABS_CAP, used.toLocaleString() + " 次", AIRLABS_CAP.toLocaleString() + " 次", `航班即時資訊；用完會暫停，每月 1 日歸零${prev ? `・${prev}` : ""}`);
+        return meter("航班查詢 AirLabs 本月", used, AIRLABS_CAP, used.toLocaleString() + " 次", AIRLABS_CAP.toLocaleString() + " 次", `航班即時資訊；用完會暫停，每月 1 日歸零${prev ? `・${prev}` : ""}`);
       })()}
       ${meter("30 天內登入", u.active_30d, PLAN.mau, Number(u.active_30d).toLocaleString(), PLAN.mau.toLocaleString(), `全部 ${Number(u.users).toLocaleString()} 個帳號・新增 ${Number(u.new_30d).toLocaleString()}`)}
     </div>
@@ -2019,7 +2189,7 @@ async function loadUsage() {
       <div><h3 style="font-size:14px; margin:0 0 8px;">檔案空間用在哪裡</h3>${bks.length ? hbarsBytes(bks) : `<p class="hint">還沒有任何檔案</p>`}</div>
       <div><h3 style="font-size:14px; margin:0 0 8px;">檔案空間的累積</h3>${hist.length >= 2 ? `<div class="cols" style="height:90px;">${hist.map(h => `<span class="c" style="height:${(h.st / maxSt * 100).toFixed(1)}%" data-tip="${esc(String(h.day).slice(5).replace("-", "/"))}：${fmtBytes(h.st)}"></span>`).join("")}</div><div class="cols-x"><span>${esc(String(hist[0].day).slice(5).replace("-", "/"))}</span><span>${esc(String(hist[hist.length - 1].day).slice(5).replace("-", "/"))}</span></div>` : `<p class="hint">每次打開這一頁會記下當天的用量（一天一筆），過幾天就看得到累積的變化。</p>`}</div>
     </div>
-    <p class="hint" style="margin-top:12px;"><b>每月流量</b>（圖片下載用掉的頻寬）資料庫自己看不到，請到 <a href="https://supabase.com/dashboard/project/pjgjxvahhauqluassiuo" target="_blank" rel="noopener">Supabase 後台</a> 左側的 Usage 查看。30 天內登入的帳號是估算值，Supabase 計算的「每月活躍使用者」可能略多一些。</p>
+    <p class="hint" style="margin-top:12px;"><b>每月流量</b>（圖片下載用掉的頻寬）資料庫自己看不到，請到 <a href="https://supabase.com/dashboard/project/pjgjxvahhauqluassiuo" target="_blank" rel="noopener">Supabase 後台</a> 左側的 Usage（用量）查看。30 天內登入的帳號是估算值，Supabase 計算的「每月活躍使用者」可能略多一些。</p>
   </section>`;
   bindTips();
 }
@@ -2093,7 +2263,7 @@ function fbListHtml(list, fmt) {
           ${f.email ? `<a class="btn soft sm" href="mailto:${esc(f.email)}?subject=${encodeURIComponent("TabigrAm 回覆你的意見")}">回信</a>` : ""}
           <button class="btn ${f.handled ? "ghost" : "dark"} sm" type="button" data-handled="${f.id}">${f.handled ? "改回待處理" : "已處理"}</button>
         </div>
-      </article>`).join("") || `<section class="card center"><div class="kicker">ALL CLEAR</div><h2 style="margin-top:6px;">沒有符合的回饋</h2></section>`}`;
+      </article>`).join("") || `<section class="card center"><div class="kicker">都處理完了 · ALL CLEAR</div><h2 style="margin-top:6px;">沒有符合的回饋</h2></section>`}`;
 }
 async function toggleHandled(id, btn) {
   const f = feedback.find(x => x.id === id); if (!f) return;

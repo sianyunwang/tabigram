@@ -4,14 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>TabigrAm.mise</title>
-<meta name="description" content="TabigrAm.mise：旅行生活選物與舊書攤。">
+<meta name="description" content="TabigrAm.mise：旅行生活選物。">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#F2ECE0">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500;700;800&display=swap">
 <style>
+@font-face { font-family: 'TabigrAm Fill'; src: url("../fonts/tg-fill.woff2") format("woff2"); font-display: swap; }
 :root {
   --paper: #F2ECE0; --paper2: #EAE2D2; --card: #FBF8F1; --ink: #22201C; --sub: #6D665A; --line: #D8CFBD;
   --kraft: #D8C3A0; --kraft-ink: #4A3C26; --green: #2F4A3A; --accent: #B5462B;
@@ -31,8 +32,27 @@ button { font: inherit; color: inherit; }
 /* 招牌 */
 .sign { text-align: center; padding: 46px 0 18px; position: relative; }
 .sign .top { font: 700 12px/1 var(--mono); letter-spacing: .32em; color: var(--sub); }
-.sign h1 { font: 900 clamp(44px, 10vw, 96px)/1 var(--serif); margin: 14px 0 0; letter-spacing: -.01em; }
-.sign h1 i { font-style: normal; color: var(--green); }
+/* 招牌字：和 TabigrAm.zine 同一套網版印刷做法（三個色版各偏一點、邊緣粗糙），色版換成選物的綠、紅土、牛皮黃 */
+.sign { isolation: isolate; }
+.sign h1 { position: relative; display: inline-block; font-family: 'Dela Gothic One', 'TabigrAm Fill', var(--sans); font-weight: 400; font-size: clamp(38px, 10vw, 96px); line-height: 1.08; margin: 14px 0 0; letter-spacing: 0; }
+.sign h1 span { display: block; }
+.sign h1 .l1 { color: var(--green); mix-blend-mode: multiply; filter: url(#inkA); }
+.sign h1 .l2 { position: absolute; inset: 0; color: var(--accent); mix-blend-mode: multiply; filter: url(#inkB); transform: translate(var(--p2x, 3px), var(--p2y, -2px)) rotate(var(--p2r, -.5deg)); opacity: .85; }
+.sign h1 .l3 { position: absolute; inset: 0; color: #E8B64A; mix-blend-mode: multiply; filter: url(#inkC); transform: translate(var(--p3x, -3px), var(--p3y, 3px)) rotate(var(--p3r, .4deg)); z-index: -1; }
+/* 招牌後面：TabigrAm 圓形 LOGO 印成綠色網點 */
+.sign::before { content: ""; position: absolute; z-index: -1; width: clamp(130px, 26vw, 250px); aspect-ratio: 1; left: 50%; top: 18px; margin-left: clamp(-10px, 6vw, 80px);
+  background: radial-gradient(circle, rgba(47,74,58,.55) 0 38%, transparent 40%) 0 0 / 6px 6px; -webkit-mask: url(../logo-ring.svg) center / contain no-repeat; mask: url(../logo-ring.svg) center / contain no-repeat; transform: rotate(-10deg); opacity: .5; }
+@media (prefers-reduced-motion: reduce) { .sign h1 .l2, .sign h1 .l3 { transform: none; } }
+/* 回到 App 的細導覽列 */
+.appbar { position: fixed; top: 0; left: 0; right: 0; z-index: 45; display: flex; align-items: center; gap: 8px; padding: calc(env(safe-area-inset-top, 0px) + 8px) 14px 8px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); transition: transform .28s ease; text-decoration: none; color: var(--ink); }
+.appbar.hide { transform: translateY(-110%); }
+.appbar .ring { width: 22px; height: 22px; flex: none; background: var(--ink); -webkit-mask: url(../logo-ring.svg) center / contain no-repeat; mask: url(../logo-ring.svg) center / contain no-repeat; }
+.appbar b { font-family: 'Dela Gothic One', 'TabigrAm Fill', var(--sans); font-weight: 400; font-size: 15px; }
+.appbar .go { margin-left: auto; font: 700 12.5px var(--sans); border: 1.5px solid var(--ink); border-radius: 999px; padding: 4px 12px; background: var(--card); }
+body { padding-top: calc(env(safe-area-inset-top, 0px) + 44px); }
+.soon { max-width: 520px; margin: 28px auto 40px; text-align: center; padding: 30px 22px; background: var(--card); border: 1.5px dashed var(--line); border-radius: 6px; }
+.soon b { font: 900 22px var(--serif); display: block; margin-bottom: 6px; } .soon p { color: var(--sub); margin: 0; }
 .sign .ul { display: block; width: min(420px, 70%); height: 10px; margin: 8px auto 0; }
 .sign p { font: 500 15px/1.6 var(--serif); color: var(--sub); margin: 14px 0 0; }
 .open { position: absolute; right: 4px; top: 30px; transform: rotate(8deg); border: 2px solid var(--accent); color: var(--accent); border-radius: 6px; padding: 4px 10px 2px; font: 800 11px/1.3 var(--mono); letter-spacing: .14em; text-align: center; opacity: .85; }
@@ -122,6 +142,8 @@ button { font: inherit; color: inherit; }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="inkA" x="-4%" y="-12%" width="108%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="1" seed="11" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -4.2 0 0 0 3.25" result="m"/><feComposite in="d" in2="m" operator="in"/></filter><filter id="inkB" x="-4%" y="-12%" width="108%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.6" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="1" seed="23" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -4.2 0 0 0 3.25" result="m"/><feComposite in="d" in2="m" operator="in"/></filter><filter id="inkC" x="-4%" y="-12%" width="108%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="13" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="1" seed="5" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -4.2 0 0 0 3.25" result="m"/><feComposite in="d" in2="m" operator="in"/></filter></svg>
+<a class="appbar" id="appbar" href="../" aria-label="回到 TabigrAm 我的旅程"><span class="ring" aria-hidden="true"></span><b>TabigrAm</b><span class="go">回到我的旅程 →</span></a>
 <div class="wrap" id="app"><div class="empty">整理貨架中…</div></div>
 <div class="leave" id="leave" hidden role="dialog" aria-modal="true" aria-labelledby="leaveH">
   <div class="box">
@@ -160,7 +182,7 @@ const SAMPLE = [
     description: "Zine 的紙本小冊子示意。\n\n這是範例商品。", spec: "A5 · 騎馬釘 · 24 頁",
     cover: svg("<rect x='180' y='120' width='240' height='340' fill='#F4C430'/><text x='300' y='230' font-family='serif' font-weight='900' font-size='40' fill='#22201C' text-anchor='middle'>ZINE</text><text x='300' y='280' font-family='monospace' font-size='18' fill='#22201C' text-anchor='middle'>No.00</text>") },
 ];
-let ITEMS = [], usingSample = false;
+let ITEMS = [], usingSample = false, CONFIG = {};
 
 function track(e, d) {
   try {
@@ -173,7 +195,9 @@ async function load() {
     const r = await Promise.race([fetch(`${SUPABASE_URL}/rest/v1/mise_items?select=id,title,maker,kind,price_text,description,spec,book_author,publisher,pub_year,condition,shop_name,shop_url,is_affiliate,tags,cover,photo2,photo3,photo4,featured&status=eq.published&order=featured.desc,sort.asc,published_at.desc`, { headers: H }), new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 8000))]);
     ITEMS = r.ok ? await r.json() : [];
   } catch (e) { ITEMS = []; }
-  if (!ITEMS.length) { ITEMS = SAMPLE; usingSample = true; }
+  // 後台「App 設定 → 選物」的「顯示範例商品」：關掉之後，沒有上架商品時顯示「即將開張」
+  try { const c = await fetch(`${SUPABASE_URL}/rest/v1/app_config?select=value&key=eq.mise`, { headers: H }); if (c.ok) { const rows = await c.json(); CONFIG = (rows[0] && rows[0].value) || {}; } } catch (e) {}
+  if (!ITEMS.length && CONFIG.show_samples !== false) { ITEMS = SAMPLE; usingSample = true; }
 }
 async function loadPreview(id) {
   await new Promise((res, rej) => { const s = document.createElement("script"); s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
@@ -183,11 +207,11 @@ async function loadPreview(id) {
 }
 
 const signHtml = () => `<header class="sign">
-    <div class="top">旅行生活選物 · 舊書攤</div>
-    <h1>TabigrAm<i>.mise</i></h1>
+    <div class="top">旅行生活選物</div>
+    <h1 aria-label="TabigrAm.mise"><span class="l1">TabigrAm.mise</span><span class="l2" aria-hidden="true">TabigrAm.mise</span><span class="l3" aria-hidden="true">TabigrAm.mise</span></h1>
     <svg class="ul" viewBox="0 0 400 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2 6 Q100 1 200 5 T398 4" stroke="#22201C" stroke-width="2" fill="none"/></svg>
     <p>帶著走的小東西、路上讀的書。看到喜歡的，就去作者的店裡帶走它。</p>
-    <div class="open" aria-hidden="true"><b>OPEN</b>營業中</div>
+    <div class="open" aria-hidden="true">${ITEMS.length ? "<b>OPEN</b>營業中" : "<b>SOON</b>準備中"}</div>
     ${usingSample ? `<div class="sample">範例商品 · SAMPLE</div>` : ""}
   </header>`;
 const rulesHtml = () => `<section class="rules">
@@ -200,7 +224,7 @@ const rulesHtml = () => `<section class="rules">
       <li>對商品有疑問請直接聯絡賣家；商品資訊有誤，或你認為商品侵害權利，請寫信到 <a href="mailto:support@tabigram.info">support@tabigram.info</a>，我們會盡快確認、必要時下架。</li>
     </ul>
   </section>
-  <div class="foot">由 <a href="../">TabigrAm</a> 經營 · 測試版</div>`;
+  <div class="foot">由 <a href="../">TabigrAm</a> 經營 · <a href="../">回到我的旅程</a></div>`;
 function shelfHtml(on, tag) {
   const n = k => ITEMS.filter(x => !k || (k === "books" ? isBook(x.kind) : x.kind === k)).length;
   const tags = {}; ITEMS.forEach(x => (x.tags || []).forEach(t => tags[t] = (tags[t] || 0) + 1));
@@ -220,6 +244,7 @@ function renderList() {
   const p = params(), sh = p.get("shelf") || "", tag = p.get("tag") || "";
   const list = ITEMS.filter(x => (!sh || (sh === "books" ? isBook(x.kind) : x.kind === sh)) && (!tag || (x.tags || []).includes(tag)));
   document.title = "TabigrAm.mise";
+  if (!ITEMS.length) { $app.innerHTML = signHtml() + `<section class="soon"><b>貨架還在整理中</b><p>第一批旅行生活選物很快就會上架。先回到 TabigrAm 排你的下一趟旅行吧。</p><p style="margin-top:12px;"><a href="../">回到我的旅程 →</a></p></section>` + rulesHtml(); wire(); return; }
   $app.innerHTML = signHtml() + shelfHtml(sh, tag) + `<section class="board">${list.map(itemHtml).join("") || `<div class="empty">這一格還空著</div>`}</section>` + rulesHtml();
   wire();
 }
@@ -257,8 +282,9 @@ function renderItem(x, preview) {
   if (bb) bb.addEventListener("click", e => {
     // 每次瀏覽只提醒一次「要離開 TabigrAm 了」
     let seen = false; try { seen = sessionStorage.getItem("TG_MISE_LEAVE") === "1"; } catch (er) {}
-    track("mise_out", x.id);
-    if (seen) return;
+    track("mise_out", x.id);           // 點了「前往購買」
+    if (seen) { track("mise_go", x.id); return; }   // 真的離開去商店（已經看過提醒，直接走）
+    leaveItemId = x.id;
     e.preventDefault();
     $("leaveShop").textContent = `你會前往「${x.shop_name || new URL(shop).hostname}」。`;
     $("leaveGo").href = shop; $("leave").hidden = false; $("leaveGo").focus();
@@ -270,7 +296,8 @@ function renderItem(x, preview) {
 function closeLeave() { $("leave").hidden = true; }
 const $ = id => document.getElementById(id);
 $("leaveNo").addEventListener("click", closeLeave);
-$("leaveGo").addEventListener("click", () => { try { sessionStorage.setItem("TG_MISE_LEAVE", "1"); } catch (e) {} setTimeout(closeLeave, 50); });
+let leaveItemId = "";
+$("leaveGo").addEventListener("click", () => { if (leaveItemId) track("mise_go", leaveItemId); try { sessionStorage.setItem("TG_MISE_LEAVE", "1"); } catch (e) {} setTimeout(closeLeave, 50); });
 $("leave").addEventListener("click", e => { if (e.target.id === "leave") closeLeave(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeLeave(); });
 
@@ -290,6 +317,16 @@ const $app = $("app");
   await load();
   track("mise_open");
   route();
+})();
+// 網版印刷的套色偏移：每次打開都不一樣
+(function randomRegister() {
+  const r = (a, b) => a + Math.random() * (b - a), sgn = () => (Math.random() < .5 ? -1 : 1), st = document.documentElement.style;
+  st.setProperty("--p2x", (sgn() * r(2.5, 6)).toFixed(1) + "px"); st.setProperty("--p2y", (sgn() * r(1.5, 4.5)).toFixed(1) + "px"); st.setProperty("--p2r", (sgn() * r(.25, .9)).toFixed(2) + "deg");
+  st.setProperty("--p3x", (sgn() * r(2, 5)).toFixed(1) + "px"); st.setProperty("--p3y", (sgn() * r(2, 5)).toFixed(1) + "px"); st.setProperty("--p3r", (sgn() * r(.2, .7)).toFixed(2) + "deg");
+})();
+(function appbarAutoHide() {
+  let last = 0; const bar = document.getElementById("appbar"); if (!bar) return;
+  addEventListener("scroll", () => { const y = scrollY; bar.classList.toggle("hide", y > 80 && y > last); last = y; }, { passive: true });
 })();
 </script>
 </body>

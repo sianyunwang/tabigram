@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap">
 <style>
 @font-face { font-family: 'TabigrAm Fill'; src: url("../fonts/tg-fill.woff2") format("woff2"); font-display: swap; }
-/* TabigrAm.zine：紙張質感的旅行小誌（測試版，還沒和 App 串在一起） */
+/* TabigrAm.zine：紙張質感的旅行小誌 */
 :root {
   --paper: #EFEBE2; --ink: #1F1D1A; --sub: #6B655B; --line: rgba(31,29,26,.16);
   --accent: #FF4F00; --accent2: #2F6FDB;
@@ -35,12 +35,30 @@ body {
 a { color: inherit; }
 .wrap { max-width: 1080px; margin: 0 auto; padding: max(28px, env(safe-area-inset-top, 0px)) 18px 80px; }
 
+/* ===== 回到 App 的細導覽列：往下捲收起、往上捲出現 ===== */
+.appbar { position: fixed; top: 0; left: 0; right: 0; z-index: 40; display: flex; align-items: center; gap: 8px; padding: calc(env(safe-area-inset-top, 0px) + 8px) 14px 8px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
+  transition: transform .28s ease; text-decoration: none; color: var(--ink); }
+.appbar.hide { transform: translateY(-110%); }
+.appbar .ring { width: 22px; height: 22px; flex: none; background: var(--ink); -webkit-mask: url(../logo-ring.svg) center / contain no-repeat; mask: url(../logo-ring.svg) center / contain no-repeat; }
+.appbar b { font-family: 'Dela Gothic One', 'TabigrAm Fill', var(--sans); font-weight: 400; font-size: 15px; letter-spacing: .5px; }
+.appbar .go { margin-left: auto; font: 700 12.5px var(--sans); border: 1.5px solid var(--ink); border-radius: 999px; padding: 4px 12px; background: #FBF9F4; }
+body { padding-top: calc(env(safe-area-inset-top, 0px) + 44px); }
+.soon { max-width: 520px; margin: 40px auto 0; text-align: center; padding: 34px 22px; background: #FBF9F4; transform: rotate(-.6deg); box-shadow: 0 10px 24px -12px rgba(40,30,10,.35); }
+.soon .ring-big { width: 92px; height: 92px; margin: 0 auto 14px; background: radial-gradient(circle, var(--riso-blue) 0 42%, transparent 44%) 0 0 / 5px 5px; -webkit-mask: url(../logo-ring.svg) center / contain no-repeat; mask: url(../logo-ring.svg) center / contain no-repeat; animation: ringSpin 28s linear infinite; }
+.soon h2 { font-family: var(--serif); font-size: 22px; margin: 0 0 8px; } .soon p { color: var(--sub); margin: 0; }
+.foot .stamp { display: block; width: 46px; height: 46px; margin: 0 auto 10px; background: radial-gradient(circle, var(--accent) 0 40%, transparent 42%) 0 0 / 4px 4px; -webkit-mask: url(../logo-ring.svg) center / contain no-repeat; mask: url(../logo-ring.svg) center / contain no-repeat; opacity: .8; transform: rotate(-12deg); }
+@keyframes ringSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .soon .ring-big { animation: none; } }
+
 /* ===== 刊頭：網版／孔版印刷，三個色版各自偏一點、邊緣粗糙、墨色不均 ===== */
 .mast { text-align: center; padding: 18px 0 8px; position: relative; isolation: isolate; }
 .mast .kicker { font: 800 11px var(--mono); letter-spacing: .3em; color: var(--sub); }
 /* 刊頭後面一顆網點太陽 */
-.mast::before { content: ""; position: absolute; z-index: -1; width: clamp(150px, 30vw, 300px); aspect-ratio: 1; border-radius: 50%; left: 58%; top: 2px;
-  background: radial-gradient(circle, var(--riso-yellow) 0 38%, transparent 39%) 0 0 / 7px 7px; mix-blend-mode: multiply; opacity: .85; filter: url(#inkC); transform: rotate(8deg); }
+/* 刊頭後面的網點圓：用 TabigrAm 的圓形 LOGO 當版型，像孔版印上去的黃色網點 */
+.mast::before { content: ""; position: absolute; z-index: -1; width: clamp(150px, 30vw, 300px); aspect-ratio: 1; left: 58%; top: 2px;
+  background: radial-gradient(circle, var(--riso-yellow) 0 38%, transparent 39%) 0 0 / 7px 7px; mix-blend-mode: multiply; opacity: .9; filter: url(#inkC); transform: rotate(8deg);
+  -webkit-mask: url(../logo-ring.svg) center / contain no-repeat; mask: url(../logo-ring.svg) center / contain no-repeat; }
 .riso { position: relative; display: inline-block; font-family: 'Dela Gothic One', 'TabigrAm Fill', var(--sans); font-weight: 400; font-size: clamp(38px, 10.5vw, 104px); line-height: 1.08; letter-spacing: 0; margin: 14px 0 6px; }
 .riso span { display: block; }
 .riso .l1 { color: var(--riso-blue); mix-blend-mode: multiply; filter: url(#inkA); }
@@ -168,6 +186,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="inkA" x="-4%" y="-12%" width="108%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="1" seed="11" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -4.2 0 0 0 3.25" result="m"/><feComposite in="d" in2="m" operator="in"/></filter><filter id="inkB" x="-4%" y="-12%" width="108%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.6" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="1" seed="23" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -4.2 0 0 0 3.25" result="m"/><feComposite in="d" in2="m" operator="in"/></filter><filter id="inkC" x="-4%" y="-12%" width="108%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="13" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="1" seed="5" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -4.2 0 0 0 3.25" result="m"/><feComposite in="d" in2="m" operator="in"/></filter></svg>
+<a class="appbar" id="appbar" href="../" aria-label="回到 TabigrAm 我的旅程"><span class="ring" aria-hidden="true"></span><b>TabigrAm</b><span class="go">回到我的旅程 →</span></a>
 <div class="wrap" id="app"></div>
 <script>
 // ===== 設定：和 TabigrAm 同一個 Supabase（公開金鑰，權限由資料庫規則控管）=====
@@ -231,10 +250,40 @@ function isSaved(id) { return savedIds().includes(id); }
 function toggleSave(id) {
   const ids = savedIds(), i = ids.indexOf(id);
   if (i >= 0) { ids.splice(i, 1); toast("已取消儲存"); }
-  else { ids.unshift(id); toast("已儲存，在「已儲存」找得到"); track("zine_save", id); }
+  else { ids.unshift(id); toast(saveUser ? "已儲存到你的帳號" : "已儲存，在「已儲存」找得到"); track("zine_save", id); }
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(ids.slice(0, 200))); } catch (e) {}
+  syncSaveOne(id, i < 0);
   document.querySelectorAll(`[data-save="${CSS.escape(id)}"]`).forEach(b => { b.classList.toggle("on", i < 0); b.setAttribute("aria-pressed", String(i < 0)); if (b.classList.contains("save-btn")) b.lastChild.textContent = i < 0 ? " 已儲存" : " 儲存"; });
   const n = document.getElementById("navSavedN"); if (n) n.textContent = savedIds().length || "";
+}
+// ===== 已儲存和 TabigrAm 帳號同步（同一個網站，登入狀態共用）=====
+// 有登入：手機上的先補上傳，再把帳號裡的拿回來合併；沒登入就照舊只存在手機
+let saveSb = null, saveUser = null;
+function hasSupabaseSession() { try { return Object.keys(localStorage).some(k => /^sb-.+-auth-token$/.test(k)); } catch (e) { return false; } }
+async function initSaveSync() {
+  if (!hasSupabaseSession()) return;
+  try {
+    if (!window.supabase) await new Promise((res, rej) => { const s = document.createElement("script"); s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0"; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+    saveSb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const { data } = await saveSb.auth.getSession();
+    saveUser = data && data.session ? data.session.user : null;
+    if (!saveUser) return;
+    const local = savedIds();
+    if (local.length) await saveSb.from("zine_saves").upsert(local.map(a => ({ user_id: saveUser.id, article_id: a })), { onConflict: "user_id,article_id", ignoreDuplicates: true });
+    const { data: rows, error } = await saveSb.from("zine_saves").select("article_id, saved_at").eq("user_id", saveUser.id).order("saved_at", { ascending: false }).limit(500);
+    if (error || !Array.isArray(rows)) return;
+    const merged = [...new Set([...local, ...rows.map(r => r.article_id)])].slice(0, 200);
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(merged)); } catch (e) {}
+    const n = document.getElementById("navSavedN"); if (n) n.textContent = merged.length || "";
+    if (params().get("saved")) renderSaved();
+  } catch (e) { saveUser = null; }
+}
+async function syncSaveOne(id, saved) {
+  if (!saveSb || !saveUser) return;
+  try {
+    if (saved) await saveSb.from("zine_saves").upsert({ user_id: saveUser.id, article_id: id }, { onConflict: "user_id,article_id", ignoreDuplicates: true });
+    else await saveSb.from("zine_saves").delete().eq("user_id", saveUser.id).eq("article_id", id);
+  } catch (e) {}
 }
 const BOOKMARK = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4.2-6 4.2z"/></svg>`;
 function toast(t) { let el = document.getElementById("toast"); if (!el) { el = document.createElement("div"); el.id = "toast"; el.className = "toast"; el.setAttribute("role", "status"); document.body.appendChild(el); } el.textContent = t; el.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 2200); }
@@ -254,7 +303,8 @@ async function loadAll() {
   if (cfg.status === "fulfilled" && cfg.value[0] && cfg.value[0].value) CONFIG = { ...CONFIG, ...cfg.value[0].value };
   ARTICLES = arts.status === "fulfilled" ? arts.value : [];
   ISSUES = iss.status === "fulfilled" ? iss.value : [];
-  if (!ARTICLES.length) { ARTICLES = SAMPLE; ISSUES = SAMPLE_ISSUES; usingSample = true; }
+  // 還沒有上架的文章：後台「顯示範例內容」打開才放範例，關掉就顯示「即將出刊」
+  if (!ARTICLES.length && CONFIG.show_samples !== false) { ARTICLES = SAMPLE; ISSUES = SAMPLE_ISSUES; usingSample = true; }
 }
 // 作者、管理員預覽草稿：用登入狀態讀（和 TabigrAm 同一個網站，登入會共用）
 async function loadPreview(id) {
@@ -384,6 +434,8 @@ function renderHome() {
       ${gridHtml(mine.length ? mine : loose)}
       ${lastYearArts.length ? `<div class="sec-h">去年${esc(SEASON[cur.season] || "")}天</div>${gridHtml(lastYearArts)}` : ""}
       ${past.length ? `<div class="sec-h" id="shelf">往期書架</div><div class="shelf">${past.map(bookHtml).join("")}</div>` : ""}`;
+  } else if (!ARTICLES.length) {
+    body = `<section class="soon"><div class="ring-big" aria-hidden="true"></div><h2>第一期，正在印刷中</h2><p>一分鐘讀完的旅行小誌，很快就會出刊。先回到 TabigrAm 排你的下一趟旅行吧。</p><p style="margin-top:14px;"><a href="../">回到我的旅程 →</a></p></section>`;
   } else body = gridHtml(ARTICLES);
   $app.innerHTML = mastHtml() + navHtml("home") + tagBarHtml("") + body + footHtml();
   wire();
@@ -411,10 +463,10 @@ function renderSaved() {
   applyLook(currentIssue());
   document.title = `已儲存｜${CONFIG.name || "TabigrAm.zine"}`;
   const ids = savedIds(), list = ids.map(id => ARTICLES.find(a => a.id === id)).filter(Boolean);
-  $app.innerHTML = mastHtml() + navHtml("saved") + `<div class="page-h"><div class="kicker">SAVED</div><h2>已儲存</h2><p>${list.length ? `${list.length} 篇・存在這台裝置上` : "還沒有儲存的文章。看到喜歡的，按右上角的書籤。"}</p></div>` + (list.length ? gridHtml(list) : "") + footHtml();
+  $app.innerHTML = mastHtml() + navHtml("saved") + `<div class="page-h"><div class="kicker">SAVED</div><h2>已儲存</h2><p>${list.length ? `${list.length} 篇・${saveUser ? "已和你的 TabigrAm 帳號同步" : "存在這台裝置上（登入 TabigrAm 就能跨裝置同步）"}` : "還沒有儲存的文章。看到喜歡的，按右上角的書籤。"}</p></div>` + (list.length ? gridHtml(list) : "") + footHtml();
   wire();
 }
-const footHtml = () => `<div class="foot">由 <a href="../">TabigrAm</a> 出版 · 測試版</div>`;
+const footHtml = () => `<div class="foot"><span class="stamp" aria-hidden="true"></span>由 <a href="../">TabigrAm</a> 出版 · <a href="../">回到我的旅程</a></div>`;
 
 // ===== 文章 =====
 function articleHtml(a, preview) {
@@ -481,6 +533,12 @@ const $app = document.getElementById("app");
   await loadAll();
   track("zine_open");
   route();
+  initSaveSync();
+})();
+// 往下捲收起「回到 App」導覽列，往上捲再出現
+(function appbarAutoHide() {
+  let last = 0; const bar = document.getElementById("appbar"); if (!bar) return;
+  addEventListener("scroll", () => { const y = scrollY; bar.classList.toggle("hide", y > 80 && y > last); last = y; }, { passive: true });
 })();
 </script>
 </body>

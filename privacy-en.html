@@ -173,6 +173,11 @@
             <td>Backup, and syncing with the travel companions you invite</td>
           </tr>
           <tr>
+            <td>Trip join attempts</td>
+            <td>When you enter a share code to join a trip, we record your account, the time, and whether it worked (not the code you typed)</td>
+            <td>Limiting share-code guessing (for example, at most 5 wrong tries per 10 minutes and 20 per day) to protect everyone's shared trips. Used only by the system; travel companions and trip owners cannot see it</td>
+          </tr>
+          <tr>
             <td>Private journal</td>
             <td>Private plans, notes, mood stamps, on-the-spot notes (a line you write during the trip), extra expenses, photo captions</td>
             <td>Backup and syncing across your devices; <b>visible only to you</b></td>
@@ -264,7 +269,8 @@
 
     <h2>3. Who can see your data</h2>
     <ul>
-      <li><b>Travel companions you invite</b>: people who join the same trip with the 6-character invite code can see that trip's shared itinerary, as well as members' emails and display names.</li>
+      <li><b>Travel companions you invite</b>: people who join the same trip with its share code can see that trip's shared itinerary, as well as members' emails and display names.</li>
+      <li><b>Share codes</b>: only the trip owner gets the share code (it is not sent to members' devices), and the owner decides whom to send it to. When the owner removes a member, the share code is replaced automatically and the old one stops working.</li>
       <li><b>Your private content</b> (private plans, notes, photos, extra expenses, check-in locations): visible only to you. Neither your travel companions nor administrators can see it.</li>
       <li><b>The operator of the Service</b>: has technical access to the database for maintenance purposes, but will not look at your content except to handle your requests or fix problems.</li>
       <li>We <b>do not sell, rent or trade</b> your personal data to anyone.</li>
@@ -307,7 +313,15 @@
     <h2>5. Where data is stored and for how long</h2>
     <ul>
       <li><b>Your device</b>: data is stored in your browser's local storage until you delete the trip or clear the browser's site data. So that you can open the app without an internet connection, your browser also caches the web pages and fonts themselves (this contains no personal data other than your trip content).</li>
-      <li><b>The cloud</b>: data is stored on Supabase's servers until you delete the trip or your account. When the trip creator deletes a trip, the whole trip in the cloud and all members' journals are deleted with it; when a travel companion deletes a trip, they leave it, and only their own journal and photos are deleted.</li>
+      <li><b>The cloud</b>: data is stored on Supabase's servers until you delete the trip or your account. Shared trips have several different actions with different results:
+        <ul>
+          <li><b>Remove from this device</b>: only removes the trip from this device's list; your notes and photos in the cloud are kept and you are still a member.</li>
+          <li><b>Leave the trip</b> (members): you stop receiving updates to the shared itinerary; your own notes, photos and expenses are kept, and the trip becomes your personal copy.</li>
+          <li><b>Removed by the owner</b>: you also keep your own notes, photos and expenses.</li>
+          <li><b>Owner deletes the trip</b>: the shared itinerary and the owner's own journal are deleted from the cloud; <b>other members' notes and photos are not deleted</b>, and each member <b>keeps a snapshot of the itinerary as it was at deletion</b> (without the share code or the co-admin list). This means content the owner put in the shared itinerary stays with the members after the owner deletes the trip.</li>
+        </ul>
+        None of these actions deletes other members' notes or photos.</li>
+      <li><b>Trip join attempts</b>: kept until you delete your account, and deleted with it.</li>
     </ul>
 
     <h2>6. Data security</h2>
@@ -326,7 +340,8 @@
       <li>Ask us to correct your data</li>
       <li>Ask us to stop using your data, or to delete your account and all your cloud data</li>
     </ul>
-    <p>You can delete trips yourself in the app. When signed in, you can also delete your account yourself under "Profile Settings → Delete Account"; the trips, journals and photos you created in the cloud will be deleted along with it. You can also make a request using the contact details below, and we will handle it as soon as possible.</p>
+    <p>You can delete trips yourself in the app. When signed in, you can also delete your account yourself under "Profile Settings → Delete Account"; the trips you created, your journals and photos, and your trip join attempts in the cloud will be deleted along with it. You can also make a request using the contact details below, and we will handle it as soon as possible.</p>
+    <p><b>Exception</b>: if a trip you own <b>still has other members</b>, you need to deal with that trip <b>before you can delete your account</b> (for example, delete the trip first or remove the members), so your companions' itinerary doesn't disappear without warning. When a trip is deleted, members keep their own notes, photos and an itinerary snapshot. Members who already left or were removed also keep their notes, photos and an itinerary snapshot.</p>
 
     <h2>8. Children's privacy</h2>
     <p>The Service is not designed for children under 13, and we do not knowingly collect personal data from children.</p>

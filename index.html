@@ -27,7 +27,7 @@
       var lang = q || saved || (/^zh/i.test(nav) ? "zh" : "en");
       window.TG_LANG = lang;
       document.documentElement.lang = lang === "en" ? "en" : "zh-TW";
-      if (lang === "en") document.write('<script src="i18n/en.js?v=efc29b99"><\/script>');
+      if (lang === "en") document.write('<script src="i18n/en.js?v=dfeb4876"><\/script>');
     })();
   </script>
   <script>
@@ -2781,7 +2781,7 @@
                 </div>
               </div>
             </div></li>
-          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">04</span><div><b data-cms="landing.f04.t" data-cms-label="功能 04・標題">和旅伴一起編</b><span data-cms="landing.f04.d" data-cms-label="功能 04・說明">輸入 6 碼邀請碼就能加入。大家看同一份行程，私人筆記和照片各自保存。</span></div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
+          <li class="ld-feat"><button type="button" class="ld-feat-h" aria-expanded="false" onclick="toggleLandingFeature(this)"><span class="n">04</span><div><b data-cms="landing.f04.t" data-cms-label="功能 04・標題">和旅伴一起編</b><span data-cms="landing.f04.d" data-cms-label="功能 04・說明">輸入邀請碼就能加入。大家看同一份行程，私人筆記和照片各自保存。</span></div><span class="ld-feat-more" aria-hidden="true">看看</span></button>
             <div class="ld-demo" hidden>
               <div class="ldd-phone">
                 <div class="ldd-code"><small>旅伴邀請碼</small><b>K7Q2MX</b><em>傳給朋友，輸入就能加入</em></div>
@@ -3219,7 +3219,7 @@
       <section class="guide-panel" data-g="share">
         <h3>和旅伴一起編、分享路線圖</h3>
         <ol class="guide-steps">
-          <li><div><b>邀請旅伴</b><small>登入後，選單 →「管理旅行」→「發佈」，會得到一組 6 碼邀請碼，傳給旅伴。</small></div></li>
+          <li><div><b>邀請旅伴</b><small>登入後，選單 →「管理旅行」→「發佈」，會得到一組邀請碼，傳給旅伴。</small></div></li>
           <li><div><b>旅伴加入</b><small>旅伴登入後，在帳號視窗輸入邀請碼，就能看到同一份行程。私人筆記和照片不會共用。</small></div></li>
           <li><div><b>分享路線圖卡</b><small>交通行程的卡片按「分享」，會做成地鐵路線圖卡片，可以直接存圖或發限動。</small></div></li>
           <li><div><b>倒數和完成卡</b><small>出發前的倒數卡片、旅程結束的完成卡，也都可以分享。</small></div></li>
@@ -3611,9 +3611,9 @@
       <button class="pill-btn primary" style="width:100%; justify-content:center; padding:13px; margin-top:10px;" onclick="openNewTripSheet()">＋ 新增旅行分頁</button>
       <div class="form-card" style="margin-top:12px;">
         <div style="font-size:13.5px; font-weight:900; margin-bottom:6px;">加入旅伴的行程</div>
-        <div id="joinNeedLogin" style="font-size:12px; color:var(--sub); margin-bottom:8px;">旅伴給你 6 碼邀請碼？先登入就能加入。</div>
+        <div id="joinNeedLogin" style="font-size:12px; color:var(--sub); margin-bottom:8px;">旅伴給你邀請碼？先登入就能加入。</div>
         <div style="display:flex; gap:6px;">
-          <input type="text" class="form-input" id="joinShareCodeInput" placeholder="輸入 6 碼邀請碼" maxlength="6" style="font-family:var(--mono); text-transform:uppercase; letter-spacing:2px;" />
+          <input type="text" class="form-input" id="joinShareCodeInput" placeholder="輸入邀請碼（6 或 8 碼）" maxlength="8" style="font-family:var(--mono); text-transform:uppercase; letter-spacing:2px;" />
           <button type="button" class="pill-btn primary" onclick="joinTripByShareCode()">加入並合併</button>
         </div>
       </div>
@@ -4172,9 +4172,9 @@
 
       <!-- Option 2: Join Friend's Trip by Invite Code -->
       <div class="form-card" style="text-align:left;">
-        <div style="font-size:13px; font-weight:900; margin-bottom:6px;">輸入朋友的 6 碼邀請碼加入</div>
+        <div style="font-size:13px; font-weight:900; margin-bottom:6px;">輸入朋友的邀請碼加入</div>
         <div style="display:flex; gap:6px;">
-          <input type="text" class="form-input" id="onboardInviteCodeInput" placeholder="例如：A3B8K2" maxlength="6" style="font-family:var(--mono); text-transform:uppercase; letter-spacing:2px;" />
+          <input type="text" class="form-input" id="onboardInviteCodeInput" placeholder="例如：A3B8K2" maxlength="8" style="font-family:var(--mono); text-transform:uppercase; letter-spacing:2px;" />
           <button type="button" class="pill-btn primary" onclick="completeOnboardingJoinTrip()">加入行程</button>
         </div>
       </div>
@@ -7597,7 +7597,7 @@
             <button class="pill-btn ${t.id === appState.activeTripId ? "primary" : ""}" onclick="switchActiveTripFromModal('${t.id}')">切換</button>
           </div>
           <div style="display:flex; gap:6px; align-items:center; justify-content:space-between; font-size:12px; color:var(--sub); border-top:1px dashed var(--border); padding-top:6px;">
-            <span>邀請碼：${t.shareCode || "未發佈"}</span>
+            <span>${escapeHtml(tripCloudLabel(t))}</span>
             <div style="display:flex; gap:4px;">
               <button type="button" class="mini-btn share-highlight" onclick="switchActiveTripFromModal('${t.id}'); closeTripManager(); openTripAdminModal();">管理與發佈</button>
             </div>
@@ -7724,30 +7724,38 @@
         alert("至少需保留一個旅行專案分頁。");
         return;
       }
-      if (!confirm("確定要刪除此旅行專案嗎？")) return;
-      
       const tripToDelete = getActiveTrip();
+      const isCloud = !!(sbClient && currentCloudUser && tripToDelete.shareCode && !tripToDelete.cloudStatus);
+      const isOwner = isCloud && tripToDelete.ownerId === currentCloudUser.id;
+
+      if (isCloud && isOwner) {
+        // 擁有者：刪除共享旅程。旅伴的筆記、照片、消費紀錄保留在他們自己那邊
+        if (!confirm("確定要刪除這趟共享旅程嗎？\n旅伴的筆記、照片和消費紀錄會保留在他們自己那邊，但他們不會再收到行程更新。")) return;
+        const { error } = await sbClient.rpc("delete_trip", { p_trip_id: tripToDelete.id });
+        if (error) return alert("刪除失敗，旅程沒有刪除：" + error.message);
+        try { await removeTripPhotosFromCloud(tripToDelete.id); } catch (e) { console.warn("Delete own photos failed:", e); }
+      } else if (isCloud) {
+        // 旅伴：「退出旅程」與「從這台裝置移除」是兩件事，都不會刪除筆記、照片與消費紀錄
+        if (confirm("要退出這趟共享旅程嗎？\n退出後不再收到主行程的更新；你的筆記、照片、消費紀錄都會保留，這趟旅程也會留在你的清單裡，可以繼續編輯。\n\n按「確定」退出旅程；按「取消」看其他選項。")) {
+          const { error } = await sbClient.rpc("leave_trip", { p_trip_id: tripToDelete.id });
+          if (error) return alert("退出失敗：" + error.message);
+          tripToDelete.cloudStatus = "left";
+          saveAppState();
+          closeTripManager();
+          renderAll();
+          alert("已退出旅程。這趟旅程已變成你的個人副本，筆記與照片都還在。");
+          return;
+        }
+        if (!confirm("要從這台裝置移除這趟旅程嗎？\n只會從這台裝置的清單移除；雲端上的筆記和照片都會保留，你仍然是旅伴。")) return;
+      } else {
+        const note = tripToDelete.cloudStatus ? "\n只會從這台裝置移除；雲端上你的筆記與照片會保留。" : "";
+        if (!confirm("確定要刪除此旅行專案嗎？" + note)) return;
+      }
+
       appState.deletedTripIds = appState.deletedTripIds || [];
       appState.deletedTripIds.push(tripToDelete.id);
       dropSyncBase(tripToDelete.id);
-
-      if (sbClient && currentCloudUser && tripToDelete.shareCode) {
-        try {
-          if (tripToDelete.ownerId === currentCloudUser.id) {
-            // 擁有者：先刪所有人的手札（刪完行程後權限就查不到了），再刪行程
-            await sbClient.from("user_journals").delete().eq("trip_id", tripToDelete.id);
-            await sbClient.from("trips").delete().eq("id", tripToDelete.id);
-          } else {
-            // 旅伴：只退出（刪自己的手札），不動別人的行程
-            await sbClient.from("user_journals").delete().eq("trip_id", tripToDelete.id).eq("user_id", currentCloudUser.id);
-          }
-          await removeTripPhotosFromCloud(tripToDelete.id);
-        } catch (e) {
-          console.warn("Delete cloud trip failed:", e);
-        }
-      }
-
-      appState.trips = appState.trips.filter(t => t.id !== appState.activeTripId);
+      appState.trips = appState.trips.filter(t => t.id !== tripToDelete.id);
       appState.activeTripId = appState.trips[0].id;
       appState.activeDayIndex = 0;
       saveAppState();
@@ -11391,7 +11399,9 @@
         const trip = getActiveTrip();
         let ok = true;
         try {
-          if (trip && isUserTripAdmin(trip, currentCloudUser) && (trip.shareCode || tripsHaveContent([trip]))) {
+          if (trip && trip.cloudStatus) {
+            // 已退出、被移出、或擁有者已刪除共享：只保留本機個人副本，不再同步
+          } else if (trip && isUserTripAdmin(trip, currentCloudUser) && (trip.shareCode || tripsHaveContent([trip]))) {
             // 登入後，有內容的旅程都自動存到雲端（不用先按「發佈」），換手機、電腦都看得到
             ok = (await publishActiveTripToCloud(true)) !== false;
           } else if (trip && trip.shareCode) {
@@ -11514,17 +11524,39 @@ function initSupabaseClient() {
           error: null
         };
       }
-      return await sbClient.from("user_journals").select("user_id, user_email, updated_at").eq("trip_id", tripId);
+      return { data: [], error: rpc.error || { message: "無法讀取成員清單" } };
     }
 
     // 用邀請碼找行程：優先用資料庫函式 get_trip_by_share_code（不需要開放「所有人可讀全部行程」）
     async function fetchTripByShareCode(code) {
-      const rpc = await sbClient.rpc("get_trip_by_share_code", { p_code: code });
-      if (!rpc.error) {
-        const row = Array.isArray(rpc.data) ? rpc.data[0] : rpc.data;
-        return { data: row || null, error: row ? null : { message: "not found" } };
+      const messages = {
+        not_found: "找不到此邀請碼的行程，請確認拼寫是否正確。",
+        rate_limited: "輸入錯誤的次數太多，請過 10 分鐘後再試。",
+        removed: "你已被這趟旅程的擁有者移出，需要擁有者重新邀請才能加入。",
+        not_signed_in: "請先登入，才能用邀請碼加入旅伴的行程。"
+      };
+      const { data, error } = await sbClient.rpc("join_trip_by_share_code", { p_code: code });
+      if (error) {
+        // 資料庫尚未更新（還沒有新函式）時，退回舊函式
+        const old = await sbClient.rpc("get_trip_by_share_code", { p_code: code });
+        if (old.error) return { data: null, error: old.error };
+        const row = Array.isArray(old.data) ? old.data[0] : old.data;
+        return { data: row || null, error: row ? null : { message: messages.not_found } };
       }
-      return await sbClient.from("trips").select("*").eq("share_code", code).single();
+      const status = data && data.status;
+      if (status === "joined" && data.trip) return { data: data.trip, error: null };
+      return { data: null, error: { message: messages[status] || "加入失敗，請稍後再試。", status } };
+    }
+
+    // 旅程清單上顯示的雲端狀態；分享碼只有擁有者看得到
+    function tripCloudLabel(t) {
+      const uid = currentCloudUser ? currentCloudUser.id : appState.lastCloudUserId;
+      if (t.cloudStatus === "left") return "已退出（個人副本）";
+      if (t.cloudStatus === "removed") return "已被移出（個人副本）";
+      if (t.cloudStatus === "source_deleted") return "擁有者已刪除共享（個人副本）";
+      if (!t.shareCode) return "未發佈";
+      if (t.ownerId && uid && t.ownerId === uid) return "邀請碼：" + t.shareCode;
+      return "共享旅程（旅伴）";
     }
 
     // 共用行程中「我是旅伴（不是管理員）」：旅伴新增的行程無法發佈到共用行程，只能存在自己的手札
@@ -11923,6 +11955,8 @@ function initSupabaseClient() {
     }
     function buildCleanMasterTripPayload(trip) {
       const clone = JSON.parse(JSON.stringify(trip));
+      delete clone.shareCode;      // 分享碼只存在 trips.share_code 欄位，不重複放進共享行程
+      delete clone.cloudStatus;    // 本機狀態（已退出等），不上傳
       (clone.days || []).forEach(day => {
         day.items = (day.items || []).filter(item => !item.isPrivate);
         day.items.forEach(item => {
@@ -11973,9 +12007,12 @@ function initSupabaseClient() {
     }
 
     function generateSixCharShareCode() {
+      // 新分享碼：8 碼安全亂數（排除容易混淆的 0 O 1 I）；既有的 6 碼分享碼不受影響
       const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      const bytes = new Uint8Array(8);
+      crypto.getRandomValues(bytes);
       let code = "";
-      for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      for (let i = 0; i < 8; i++) code += chars[bytes[i] % 32];
       return code;
     }
 
@@ -12204,6 +12241,7 @@ function initSupabaseClient() {
     async function publishActiveTripToCloud(silent = false, tripArg = null) {
       if (!currentCloudUser) return silent ? undefined : alert("請先登入雲端帳號");
       const trip = tripArg || getActiveTrip();
+      if (trip && trip.cloudStatus) return silent ? undefined : alert("這是你的個人副本（已不在共享旅程中），不會再同步到雲端。");
       if (!isUserTripAdmin(trip, currentCloudUser)) {
         return silent ? undefined : alert("只有管理員或共同管理員可以修改共用主行程喔！");
       }
@@ -12245,13 +12283,16 @@ function initSupabaseClient() {
       saveAppState();
       renderCloudModalUI();
       if (silent) return !jErr;
-      if (!silent) alert(`已發佈到雲端！\n旅伴邀請碼：${trip.shareCode}\n同行友人輸入此邀請碼即可同步行程。`);
+      if (!silent) alert(trip.ownerId === currentCloudUser.id
+        ? `已發佈到雲端！\n旅伴邀請碼：${trip.shareCode}\n同行友人輸入此邀請碼即可同步行程。`
+        : "已更新共用行程！");
     }
 
     // Sync ONLY personal journal (notes, mood stamps, photos, extra expenses)
     async function syncMyJournalToCloud(silent = false) {
       if (!currentCloudUser) return alert("請先登入雲端帳號");
       const trip = getActiveTrip();
+      if (trip.cloudStatus) { if (!silent) alert("這是你的個人副本（已不在共享旅程中），不會再同步到雲端。"); return false; }
       if (!trip.shareCode) {
         return alert("此專案尚未發佈至雲端，請管理員先按「發佈共用行程」。");
       }
@@ -12274,12 +12315,12 @@ function initSupabaseClient() {
     async function joinTripByShareCode() {
       if (!currentCloudUser) { alert("請先登入，才能用邀請碼加入旅伴的行程。"); closeTripManager(); openCloudModal(); return; }
       const code = document.getElementById("joinShareCodeInput").value.trim().toUpperCase();
-      if (code.length < 4) return alert("請輸入 6 碼邀請碼");
+      if (code.length < 4) return alert("請輸入邀請碼（6 或 8 碼）");
 
       const { data: tripRow, error } = await fetchTripByShareCode(code);
 
       if (error || !tripRow) {
-        return alert("找不到此邀請碼的行程，請確認拼寫是否正確。");
+        return alert((error && error.message) || "找不到此邀請碼的行程，請確認拼寫是否正確。");
       }
 
       const { data: journalRow } = await sbClient
@@ -12371,6 +12412,7 @@ function initSupabaseClient() {
             if (!sameJson(remote, base.payload)) mergeCloudIntoLocalTrip(localTrip, base, remote);
             localTrip.ownerId = row.owner_id;
             localTrip.shareCode = row.share_code;
+            delete localTrip.cloudStatus;
             saveSyncBase(row.id, rowRev, remote);
             tripsToPush.push(localTrip);
             return;
@@ -12386,6 +12428,20 @@ function initSupabaseClient() {
 
           if (localIdx !== -1) appState.trips[localIdx] = merged;
           else appState.trips.push(merged);
+        });
+
+        // 已退出、被移出、或擁有者已刪除共享：保留個人副本，標示狀態並停止同步
+        (myJournals || []).forEach(j => {
+          if (allCloudMap.has(j.trip_id) || deletedIds.includes(j.trip_id)) return;
+          const status = j.removed_at ? "removed" : j.left_at ? "left" : j.source_deleted_at ? "source_deleted" : null;
+          if (!status) return;
+          const local = appState.trips.find(t => t.id === j.trip_id);
+          if (local) { local.cloudStatus = status; return; }
+          if (j.trip_snapshot && typeof j.trip_snapshot === "object") {
+            // 這台裝置沒有本機副本：用擁有者刪除時保存的快照＋自己的手札還原
+            const restored = sanitizeTripData(normalizeTrip(mergeMasterWithPersonalJournal(j.trip_snapshot, j.journal_data || null)));
+            if (restored) { restored.id = j.trip_id; restored.cloudStatus = status; appState.trips.push(restored); }
+          }
         });
 
         if (allCloudMap.size === 0 && !tripsHaveContent(appState.trips) && !localStorage.getItem("TABIGRAM_ONBOARDED_" + currentCloudUser.id)) {
@@ -12772,13 +12828,14 @@ function initSupabaseClient() {
       document.getElementById("adminActiveTripTitle").textContent = `目前專案：${trip.title}`;
       const codeBadge = document.getElementById("adminShareCodeBadge");
       const pubBtn = document.getElementById("adminPublishTripBtn");
-      if (trip.shareCode) {
+      const isOwnerMe = !!(currentCloudUser && trip.ownerId === currentCloudUser.id);
+      if (trip.shareCode && isOwnerMe) {
         codeBadge.style.display = "block";
         document.getElementById("adminShareCodeText").textContent = trip.shareCode;
-        fetchTripCompanions();
       } else {
         codeBadge.style.display = "none";
       }
+      if (trip.shareCode) fetchTripCompanions();
       if (!isUserTripAdmin(trip, currentCloudUser)) {
         pubBtn.innerHTML = ic("lock") + " 團員唯讀主行程";
         pubBtn.disabled = true;
@@ -12815,7 +12872,7 @@ function initSupabaseClient() {
         const safeUid = String(row.user_id || "").replace(/[^A-Za-z0-9_-]/g, "");
         const isOwner = (row.user_id === trip.ownerId);
         const isCoAdmin = trip.coAdmins.includes(row.user_id);
-        const emailText = escapeHtml(row.user_email || `旅人 #${i + 1}`);
+        const emailText = escapeHtml((row.journal_data && row.journal_data.userDisplayName) || row.user_email || `旅人 #${i + 1}`);
         const badge = isOwner ? `<span style="color:var(--ink);font-weight:800;">[管理員]</span>` : (isCoAdmin ? `<span style="color:#0284C7;font-weight:800;">[共同管理員]</span>` : "");
         const actions = (isMeOwner && !isOwner) ? `
           <div style="display:flex; gap:4px;">
@@ -12845,11 +12902,19 @@ function initSupabaseClient() {
     let tripAdminMemberRows = [];
     async function removeTripMember(targetUserId) {
       const memberRow = tripAdminMemberRows.find(r => r.user_id === targetUserId);
-      const label = (memberRow && memberRow.user_email) || "這位成員";
-      if (!confirm(`確定要將「${label}」從此旅程移除嗎？`)) return;
+      const label = (memberRow && ((memberRow.journal_data && memberRow.journal_data.userDisplayName) || memberRow.user_email)) || "這位成員";
+      if (!confirm(`確定要將「${label}」從此旅程移除嗎？\n對方的筆記、照片與消費紀錄會保留在他自己那邊，但不能再看到這趟旅程。\n移除後分享碼會自動更換，舊分享碼立即失效。`)) return;
       const trip = getActiveTrip();
-      await sbClient.from("user_journals").delete().eq("trip_id", trip.id).eq("user_id", targetUserId);
+      const { data, error } = await sbClient.rpc("remove_trip_member", { p_trip_id: trip.id, p_user_id: targetUserId });
+      if (error) return alert("移除失敗：" + error.message);
+      if (data && data.share_code) trip.shareCode = data.share_code;
+      if (Array.isArray(trip.coAdmins)) trip.coAdmins = trip.coAdmins.filter(id => id !== targetUserId);
+      saveAppState();
+      const codeText = document.getElementById("adminShareCodeText");
+      if (codeText) codeText.textContent = trip.shareCode;
+      alert(`已移除「${label}」。\n新的分享碼：${trip.shareCode}\n舊分享碼已失效，請把新分享碼傳給還要加入的人。`);
       renderTripAdminMembersList();
+      renderAll();
     }
 
     function closeOnboardingModal() { closeModalBackdrop("onboardingModal");
@@ -12859,7 +12924,7 @@ function initSupabaseClient() {
     async function completeOnboardingJoinTrip() {
       const codeInp = document.getElementById("onboardInviteCodeInput");
       const code = codeInp ? codeInp.value.trim().toUpperCase() : "";
-      if (code.length < 4) return alert("請輸入有效之 6 碼邀請碼");
+      if (code.length < 4) return alert("請輸入有效的邀請碼");
       
       closeOnboardingModal();
       openTripManager();
@@ -17304,6 +17369,14 @@ function initSupabaseClient() {
       const uid = currentCloudUser.id;
       showLogoLoader("正在刪除帳號…");
       try {
+        // 0. 先確認可以刪除：自己擁有、仍有其他旅伴的旅程會擋下來（不刪任何照片）
+        const blk = await sbClient.rpc("account_deletion_blockers");
+        if (!blk.error && Array.isArray(blk.data) && blk.data.length) {
+          hideLogoLoader();
+          return alert("還不能刪除帳號：你擁有的這些旅程還有其他旅伴。\n"
+            + blk.data.map(b => "・" + (b.title || "未命名旅程")).join("\n")
+            + "\n\n請先刪除這些旅程（旅伴的筆記與照片會保留在他們那邊），或等之後版本提供「移交給共同管理員」。帳號與照片都沒有被刪除。");
+        }
         // 1. 先刪自己上傳的照片（路徑：使用者ID/旅程ID/照片ID.jpg）
         const bucket = sbClient.storage.from(PHOTO_BUCKET);
         const { data: folders } = await bucket.list(uid, { limit: 1000 });

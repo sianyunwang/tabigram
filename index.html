@@ -1968,8 +1968,9 @@
     .transit-conn.tc-cancel .tc-route, .transit-conn.tc-cancel .tc-leg { opacity: .5; text-decoration: line-through; text-decoration-thickness: 1px; }
     .transit-conn.tc-cancel::before { background: repeating-linear-gradient(#B9B3A8 0 6px, transparent 6px 11px); }
     .transit-conn.now::before { box-shadow: 0 0 0 3px var(--accent-soft); }
-    .tg-notice { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; padding: 9px 12px; border-radius: 14px; background: #EDEBE6; color: var(--ink); font-size: 13px; font-weight: 700; line-height: 1.45; }
-    .tg-notice.warn { background: var(--accent); color: #fff; }
+    .tg-notice { display: flex; align-items: center; gap: 10px; margin: 10px 16px 0; padding: 9px 12px; border-radius: 14px; background: #EDEBE6; color: var(--ink); font-size: 13px; font-weight: 700; line-height: 1.45; }
+    /* 重要公告：所有主題都用國際橘，不跟著主題的強調色變 */
+    .tg-notice.warn, body[class] .tg-notice.warn, html[data-mode="dark"] body .tg-notice.warn { background: #FF4F00; color: #fff; }
     .tg-notice span { flex: 1; min-width: 0; }
     .tg-notice a { color: inherit; font-weight: 900; white-space: nowrap; }
     .tg-notice button { border: 0; background: none; color: inherit; font-size: 18px; line-height: 1; cursor: pointer; padding: 0 2px; opacity: .7; }
@@ -11314,7 +11315,8 @@
         el = document.createElement("div");
         el.id = "tgNotice";
         const header = document.getElementById("appTopHeader");
-        if (header && header.parentNode) header.parentNode.insertBefore(el, header); else document.body.prepend(el);
+        // 放在頂端列的「下面」：放在上面時，手機（加到主畫面）會跑到狀態列後面
+        if (header && header.parentNode) header.after(el); else document.body.prepend(el);
         track("notice", "view");
       }
       el.className = "tg-notice" + (n.level === "warn" ? " warn" : "");

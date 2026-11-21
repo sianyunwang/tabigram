@@ -176,6 +176,51 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 .sheet h1, .sheet .lede, .sheet blockquote { font-family: var(--tfont, var(--serif)); }
 .sheet .body p { font-family: var(--bfont, inherit); }
 .cut h2 { font-family: var(--tfont, var(--serif)); }
+
+/* ===================================================================
+   報紙版（look-news）：黑白報紙、網點照片、明體標題、網點底紋（2026-11，參考「到處跳舞在樹林」節目單）
+   和原本的網版套色版並行：後台「App 設定 → Zine」選預設，讀者也能在上方切換
+   =================================================================== */
+body.look-news { --paper: #F1EFE9; --ink: #121212; --sub: #4A4743; --line: rgba(18,18,18,.55); --accent: #121212; --tape: transparent;
+  background-image: none; background-color: var(--paper); }
+body.look-news::after { opacity: .28; }
+.look-news .appbar { background: color-mix(in srgb, var(--paper) 94%, transparent); border-bottom: 2px solid var(--ink); }
+/* 刊頭：上方一排小字＋粗細兩條線，明體大標 */
+.look-news .mast { padding-top: 6px; }
+.look-news .mast::before { background: radial-gradient(circle, #121212 0 34%, transparent 36%) 0 0 / 6px 6px; mix-blend-mode: multiply; opacity: .22; filter: none; left: auto; right: 2%; }
+.look-news .mast .kicker { display: flex; justify-content: space-between; gap: 10px; color: var(--ink); font: 900 12px var(--serif); letter-spacing: .08em; border-bottom: 4px double var(--ink); padding-bottom: 8px; }
+.look-news .mast .kicker::after { content: attr(data-date); }
+.look-news .riso { font-family: var(--serif); font-weight: 900; letter-spacing: .02em; font-size: clamp(40px, 11vw, 112px); margin: 12px 0 2px; }
+.look-news .riso .l1 { color: var(--ink); mix-blend-mode: normal; filter: url(#inkA); }
+.look-news .riso .l2, .look-news .riso .l3 { display: none; }
+.look-news .mast .tag { color: var(--ink); font-weight: 700; border-top: 1px solid var(--ink); border-bottom: 3px solid var(--ink); padding: 6px 0; margin-top: 8px; }
+.look-news .nav a, .look-news .nav button { border-radius: 0; border: 1.5px solid var(--ink); background: transparent; font-family: var(--serif); font-weight: 900; }
+.look-news .nav a.on, .look-news .nav button.on { background: var(--ink); color: var(--paper); }
+/* 卡片：不貼膠帶、不歪，像報紙的欄位；網點底紋 */
+.look-news .grid { gap: 0; border-top: 3px solid var(--ink); }
+.look-news .cut { transform: none !important; box-shadow: none; border-bottom: 1px solid var(--ink); background: radial-gradient(circle, rgba(18,18,18,.10) 0 30%, transparent 32%) 0 0 / 5px 5px, #F7F6F2; padding: 14px; }
+.look-news .cut::before, .look-news .cut::after { display: none; }
+.look-news .cut h2 { font-family: var(--serif); font-weight: 900; }
+.look-news .cut .feat { background: var(--ink); transform: none; }
+/* 照片：黑白、加粗網點 */
+.look-news .cut .img, .look-news .sheet .cover, .look-news .issue-head .cv, .look-news .sheet figure img { filter: grayscale(1) contrast(1.35) brightness(1.04); position: relative; }
+.look-news .cut .img::after, .look-news .sheet .cover::after, .look-news .issue-head .cv::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle, rgba(0,0,0,.35) 0 28%, transparent 31%) 0 0 / 4px 4px; mix-blend-mode: multiply; pointer-events: none; }
+.look-news .sheet { background: #F7F6F2; box-shadow: none; border: 2px solid var(--ink); }
+.look-news .sheet h1 { text-shadow: none; }
+.look-news .sheet .byline { border-top: 1px solid var(--ink); border-bottom: 3px double var(--ink); }
+.look-news .sheet figure::before { display: none; }
+.look-news .sheet blockquote { font-family: var(--serif); font-weight: 900; border-left: 0; border-top: 3px solid var(--ink); border-bottom: 1px solid var(--ink); background: radial-gradient(circle, rgba(18,18,18,.12) 0 30%, transparent 32%) 0 0 / 5px 5px; }
+@media (min-width: 760px) {
+  /* 寬螢幕：引言改成直排，像節目單的直式內文 */
+  .look-news .sheet blockquote { writing-mode: vertical-rl; max-height: 22em; margin-left: auto; margin-right: auto; padding: 18px 14px; }
+}
+.look-news .foot .stamp { background: radial-gradient(circle, #121212 0 40%, transparent 42%) 0 0 / 4px 4px; }
+.look-switch { display: flex; justify-content: center; align-items: center; gap: 4px; margin: 48px auto -36px; font: 600 11px var(--mono); letter-spacing: .12em; color: var(--sub); opacity: .75; }
+.look-switch span { margin-right: 6px; }
+.look-switch i { font-style: normal; opacity: .5; }
+.look-switch button { border: 0; background: none; padding: 2px 4px; font: inherit; color: inherit; cursor: pointer; letter-spacing: inherit; }
+.look-switch button.on { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.look-switch:hover { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .riso .l2, .riso .l3 { animation: none !important; } }
 @media (prefers-reduced-motion: reduce) {
   .riso .l2, .riso .l3, .cut.land, .sheet.turn-in, .sheet.turn-out { animation: none !important; }
@@ -188,6 +233,7 @@ body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-in
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="inkA" x="-4%" y="-12%" width="108%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="1" seed="11" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -4.2 0 0 0 3.25" result="m"/><feComposite in="d" in2="m" operator="in"/></filter><filter id="inkB" x="-4%" y="-12%" width="108%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.6" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="1" seed="23" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -4.2 0 0 0 3.25" result="m"/><feComposite in="d" in2="m" operator="in"/></filter><filter id="inkC" x="-4%" y="-12%" width="108%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="13" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G" result="d"/><feTurbulence type="fractalNoise" baseFrequency="1.7" numOctaves="1" seed="5" result="g"/><feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -4.2 0 0 0 3.25" result="m"/><feComposite in="d" in2="m" operator="in"/></filter></svg>
 <a class="appbar" id="appbar" href="../" aria-label="回到 TabigrAm 我的旅程"><span class="ring" aria-hidden="true"></span><b>TabigrAm</b><span class="go">回到我的旅程 →</span></a>
 <div class="wrap" id="app"></div>
+<script src="samples.js"></script>
 <script>
 // ===== 設定：和 TabigrAm 同一個 Supabase（公開金鑰，權限由資料庫規則控管）=====
 const SUPABASE_URL = "https://pjgjxvahhauqluassiuo.supabase.co";
@@ -212,25 +258,8 @@ const SAMPLE_PAPER = "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns
 <rect width='512' height='512' fill='#EFEBE2'/><rect width='512' height='512' filter='url(#g)'/><rect width='512' height='512' filter='url(#f)'/></svg>`);
 
 // ===== 範例（還沒有發布的期數、文章時顯示，讓版面先看得到）=====
-const SAMPLE_ISSUES = [
-  { id: "sample-2026-autumn", number: 2, name: "秋", title: "慢慢走的秋天", season: "autumn", year: 2026, starts_on: "2026-09-01", intro: "這一期只有三件事：一條街、一個好物、一個好地方。", cover: "../sample-memory-card.jpg", accent: "#C8552B" },
-  { id: "sample-2026-summer", number: 1, name: "夏", title: "出發前一晚", season: "summer", year: 2026, starts_on: "2026-06-01", intro: "", cover: "../sample-flight-card.jpg", accent: "#2F6FDB" },
-  { id: "sample-2025-autumn", number: 0, name: "秋・試刊號", title: "第一張地鐵票", season: "autumn", year: 2025, starts_on: "2025-09-01", intro: "", cover: "../sample-route-card.jpg", accent: "#3E7B4F" },
-];
-const SAMPLE = [
-  { id: "sample-kyoto", issue_id: "sample-2026-autumn", issue: "散步提案", title: "京都秋天，只走一條街", subtitle: "從出町柳走到下鴨神社的半日提案：一間咖啡店、一座神社、一條河。", author_name: "TabigrAm 編輯部", read_minutes: 1, featured: true, cover: "../sample-memory-card.jpg", tags: ["京都", "散步", "秋天"], style: { title_font: "kai", body_font: "serif" },
-    blocks: [
-      { type: "text", text: "早上九點的出町柳，鴨川兩條支流在這裡會合。先別急著拍照，沿著河堤往北走五分鐘，**風會比市區涼一點**。\n\n如果只有半天，不要排太多。一條街、一杯咖啡、一座森林裡的神社，就夠了。" },
-      { type: "image", src: "../sample-route-card.jpg", caption: "叡山電鉄從出町柳出發，兩節車廂的小電車。" },
-      { type: "tip", title: "旅行小物｜折疊水壺", text: "河邊沒有什麼販賣機，帶一個摺起來只有手掌大的水壺，裝滿再出門。" },
-      { type: "quote", text: "慢慢走，才會看到糺之森的光是一條一條落下來的。", by: "寫在下鴨神社前" },
-      { type: "place", title: "下鴨神社・糺之森", text: "世界遺產裡的原生林，參道兩旁的樹比你想像的還要高。", link: "https://maps.google.com/?q=下鴨神社" },
-      { type: "text", text: "回程可以搭叡山電鉄到一乘寺，再找一間書店躲雨。" },
-    ] },
-  { id: "sample-gear", issue_id: "sample-2026-autumn", issue: "旅行好物", title: "一個小布袋就夠了", subtitle: "秋天的城市散步，口袋裝不下的都放這裡。", author_name: "TabigrAm 編輯部", read_minutes: 1, cover: "../sample-stamp-card.jpg", tags: ["好物", "秋天"], blocks: [{ type: "text", text: "這是一篇範例文章。" }] },
-  { id: "sample-flight", issue_id: "sample-2026-summer", issue: "清單", title: "出發前一晚的行李清單", subtitle: "一張紙寫得下的東西，才是真的需要的東西。", author_name: "TabigrAm 編輯部", read_minutes: 1, cover: "../sample-flight-card.jpg", tags: ["行李", "清單"], blocks: [{ type: "text", text: "這是一篇範例文章。" }] },
-  { id: "sample-tokyo", issue_id: "sample-2025-autumn", issue: "城市切片", title: "東京，用一張地鐵票", subtitle: "從中目黑到淺草，銀座線轉日比谷線，一天的城市切片。", author_name: "TabigrAm 編輯部", read_minutes: 1, cover: "../sample-route-card.jpg", tags: ["東京", "地鐵", "秋天"], blocks: [{ type: "text", text: "這是一篇範例文章。在後台「Zine」新增文章、送審、發布之後，這裡就會換成真的內容。" }] },
-];
+const SAMPLE_ISSUES = window.TG_ZINE_SAMPLE_ISSUES || [];
+const SAMPLE = window.TG_ZINE_SAMPLE || [];
 
 let CONFIG = { name: "TabigrAm.zine", paper: "", paper_scale: 512, accent: "#FF4F00" };
 let ARTICLES = [], ISSUES = [], usingSample = false;
@@ -315,7 +344,15 @@ async function loadPreview(id) {
 }
 
 // ===== 紙張、主色：當期有自己的就用當期的 =====
+// 版本：後台設定的預設（CONFIG.look），讀者可以在上方切換（存在這台裝置）；網址 ?look=news／riso 也可以指定
+function currentLook() {
+  const q = params().get("look"); if (q === "news" || q === "riso") return q;
+  try { const v = localStorage.getItem("TG_ZINE_LOOK"); if (v === "news" || v === "riso") return v; } catch (e) {}
+  return CONFIG.look === "news" ? "news" : "riso";
+}
+function setLook(v) { try { localStorage.setItem("TG_ZINE_LOOK", v); } catch (e) {} route(); }
 function applyLook(issue) {
+  document.body.classList.toggle("look-news", currentLook() === "news");
   const paper = (issue && issue.paper) || CONFIG.paper;
   document.documentElement.style.setProperty("--paper-img", paper ? cssUrl(img(paper)) : cssUrl(SAMPLE_PAPER));
   document.documentElement.style.setProperty("--paper-size", `${Number((issue && issue.paper && issue.paper_scale) || CONFIG.paper_scale) || 512}px`);
@@ -364,10 +401,9 @@ function blockHtml(b, i) {
 function mastHtml() {
   const name = CONFIG.name || "TabigrAm.zine";
   return `<header class="mast">
-      <div class="kicker">A TINY TRAVEL ZINE</div>
+      <div class="kicker" data-date="${esc(today.replace(/-/g, "."))}">A TINY TRAVEL ZINE</div>
       <div class="riso" aria-label="${esc(name)}"><span class="l1">${esc(name)}</span><span class="l2" aria-hidden="true">${esc(name)}</span><span class="l3" aria-hidden="true">${esc(name)}</span></div>
       <div class="tag">一分鐘讀完的旅行小誌：一個提案、一件好物、一個好地方。</div>
-      ${usingSample ? `<div class="rule">範例內容 · SAMPLE</div>` : ""}
     </header>`;
 }
 function navHtml(on) {
@@ -466,7 +502,9 @@ function renderSaved() {
   $app.innerHTML = mastHtml() + navHtml("saved") + `<div class="page-h"><div class="kicker">SAVED</div><h2>已儲存</h2><p>${list.length ? `${list.length} 篇・${saveUser ? "已和你的 TabigrAm 帳號同步" : "存在這台裝置上（登入 TabigrAm 就能跨裝置同步）"}` : "還沒有儲存的文章。看到喜歡的，按右上角的書籤。"}</p></div>` + (list.length ? gridHtml(list) : "") + footHtml();
   wire();
 }
-const footHtml = () => `<div class="foot"><span class="stamp" aria-hidden="true"></span>由 <a href="../">TabigrAm</a> 出版 · <a href="../">回到我的旅程</a></div>`;
+// 印刷方式切換：放在頁尾、小小的，像紙張樣本的選項
+const lookSwitchHtml = () => `<div class="look-switch" role="group" aria-label="印刷方式"><span>印刷</span><button type="button" class="${currentLook() === "news" ? "on" : ""}" aria-pressed="${currentLook() === "news"}" onclick="setLook('news')">油墨</button><i aria-hidden="true">／</i><button type="button" class="${currentLook() !== "news" ? "on" : ""}" aria-pressed="${currentLook() !== "news"}" onclick="setLook('riso')">網版</button></div>`;
+const footHtml = () => lookSwitchHtml() + `<div class="foot"><span class="stamp" aria-hidden="true"></span>由 <a href="../">TabigrAm</a> 出版 · <a href="../">回到我的旅程</a></div>`;
 
 // ===== 文章 =====
 function articleHtml(a, preview) {

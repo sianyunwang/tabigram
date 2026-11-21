@@ -320,7 +320,7 @@ const BUILTIN_NAOBAO = {
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const urlOf = (bucket, path) => path ? (/^https?:\/\//.test(path) ? path : `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${String(path).split("/").map(encodeURIComponent).join("/")}`) : "";
+const urlOf = (bucket, path) => path ? (/^(https?:\/\/|\.\.\/|data:image\/)/.test(path) ? path : `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${String(path).split("/").map(encodeURIComponent).join("/")}`) : "";
 const publicUrl = path => urlOf("stickers", path);
 // 放進 style="…url('…')" 的網址：把引號、括號、角括號等編碼掉，避免有人改資料庫塞程式碼進來
 const cssUrl = u => `url('${String(u || "").replace(/[\s"'()<>&\\]/g, c => "%" + c.charCodeAt(0).toString(16).toUpperCase().padStart(2, "0"))}')`;
@@ -932,6 +932,44 @@ function appThemeCheckHtml(cs) {
   return `<div class="hint" style="display:grid; gap:4px;">${items.map(([l, r, min]) => `<div>${r >= min ? "✅" : "❌"} ${l}：<b>${r.toFixed(1)}:1</b>（要 ${min}:1 以上）</div>`).join("")}<div style="margin-top:4px; font-weight:800; color:${ok ? "var(--ok)" : "var(--danger)"};">${ok ? "可以送審／上架" : "對比不夠，還不能送審"}</div></div>`;
 }
 let crows = [];
+const contentFilter = {};
+// ===== 範例內容 → 匯入成草稿（Zine 文章、選物商品）=====
+// 範例放在 zine/samples.js、mise/samples.js，網站和後台共用；匯入後就是一般的草稿，可以改、上架或刪除
+const SAMPLE_SRC = { zine: { src: "../zine/samples.js", key: "TG_ZINE_SAMPLE" }, mise: { src: "../mise/samples.js", key: "TG_MISE_SAMPLE" } };
+function loadSamples(kind) {
+  const def = SAMPLE_SRC[kind];
+  if (window[def.key]) return Promise.resolve(window[def.key]);
+  return new Promise((res) => { const sc = document.createElement("script"); sc.src = def.src; sc.onload = () => res(window[def.key] || []); sc.onerror = () => res([]); document.head.appendChild(sc); });
+}
+function sampleRow(kind, x) {
+  if (kind === "zine") return { id: x.id, status: "draft", title: x.title || "", subtitle: x.subtitle || "", issue: x.issue || "", author_name: x.author_name || "", author_url: "",
+    tags: x.tags || [], cover: x.cover || "", blocks: x.blocks || [], read_minutes: x.read_minutes || 1, style: {}, issue_id: null, sort: 100 };
+  return { id: x.id, status: "draft", title: x.title || "", maker: x.maker || "", kind: x.kind || "goods", price_text: x.price_text || "", description: x.description || "", spec: x.spec || "",
+    book_author: x.book_author || "", publisher: x.publisher || "", pub_year: x.pub_year || "", condition: x.condition || "", shop_name: x.shop_name || "", shop_url: x.shop_url || "",
+    is_affiliate: !!x.is_affiliate, tags: x.tags || [], cover: x.cover || "", photo2: "", photo3: "", photo4: "", sort: 100 };
+}
+async function renderSampleBox(kind) {
+  const box = $("sampleBox"); if (!box) return;
+  const list = await loadSamples(kind), ct = CT[kind];
+  const have = new Set(crows.map(r => r.id));
+  const left = list.filter(x => !have.has(x.id));
+  box.innerHTML = `<section class="card section" style="margin-top:16px;"><div class="section-head"><h2>範例${esc(ct.name)}</h2><p>網站在還沒有上架內容時會顯示這些範例。匯入後會變成你的<b>草稿</b>，可以直接修改、換圖、上架或刪除。</p></div>
+    ${left.length ? left.map(x => `<div class="row-card" style="display:flex; gap:10px; align-items:center; padding:8px 0; border-top:1px dashed var(--line);">
+        <span class="thumb">${x.cover ? `<img src="${esc(urlOf("content", x.cover))}" alt="">` : ""}</span>
+        <div style="flex:1; min-width:0;"><b>${esc(x.title)}</b><div class="row-meta">${esc(x.author_name || x.maker || "")}</div></div>
+        <button class="btn soft sm" type="button" data-imp="${esc(x.id)}">匯入成草稿</button></div>`).join("")
+      + `<div style="margin-top:10px;"><button class="btn dark sm" type="button" id="impAll">全部匯入（${left.length} 個）</button></div>`
+      : `<p class="hint">範例都已經匯入了，在上面的清單裡（狀態「草稿」）。</p>`}
+    ${kind === "mise" ? `<p class="hint" style="margin-top:8px;">範例商品的販售連結是 example.com，上架前記得換成真的連結。</p>` : ""}</section>`;
+  const imp = async ids => {
+    const rows = left.filter(x => ids.includes(x.id)).map(x => sampleRow(kind, x));
+    const { error } = await T(sb.from(ct.table).insert(rows));
+    if (error) return toast("匯入失敗：" + error.message, 5000);
+    toast(`已匯入 ${rows.length} 個草稿`); renderContentList(kind);
+  };
+  box.querySelectorAll("[data-imp]").forEach(b => b.addEventListener("click", () => imp([b.dataset.imp])));
+  $("impAll")?.addEventListener("click", () => imp(left.map(x => x.id)));
+}
 async function renderContentList(kind) {
   const ct = CT[kind];
   if (!me.v3) { $("app").innerHTML = v3Message(ct.name); return; }
@@ -939,7 +977,12 @@ async function renderContentList(kind) {
   const { data, error } = await T(sb.from(ct.table).select("*").order("sort", { ascending: true }).order("created_at", { ascending: false }));
   if (error) { $("app").innerHTML = needV3(error) ? v3Message(ct.name) : `<section class="card center"><h1>讀不到${esc(ct.name)}</h1><p>${esc(error.message)}</p></section>`; return; }
   crows = (data || []).filter(r => (me.admin || r.owner_email === me.email) && (!ct.filter || ct.filter(r)));
-  const rows = crows.map((r, i) => {
+  // 篩選：狀態＋關鍵字（篩選中先不顯示排序箭頭，避免排錯位置）
+  const cf = contentFilter[kind] || (contentFilter[kind] = { status: "all", q: "" });
+  const filtering = cf.status !== "all" || !!cf.q;
+  const shown = crows.map((r, i) => [r, i]).filter(([r]) => (cf.status === "all" || r.status === cf.status)
+    && (!cf.q || [r.title, r.name, r.id, r.author_name, r.maker, r.artist].some(v => String(v || "").toLowerCase().includes(cf.q.toLowerCase()))));
+  const rows = shown.map(([r, i]) => {
     const th = ct.thumb(r);
     return `<article class="card row-card">
       <span class="thumb ${ct.contain ? "contain" : ""}">${th ? `<img src="${esc(urlOf("content", th))}" alt="" loading="lazy">` : ""}</span>
@@ -949,7 +992,7 @@ async function renderContentList(kind) {
         ${r.status === "rejected" && r.review_note ? `<div class="note-box">退回原因：${esc(r.review_note)}</div>` : ""}
       </div>
       <div class="pack-actions">
-        ${me.admin ? `<div class="order"><button class="icon-btn" type="button" data-move="${i}:-1" ${i === 0 ? "disabled" : ""} aria-label="往前">↑</button><button class="icon-btn" type="button" data-move="${i}:1" ${i === crows.length - 1 ? "disabled" : ""} aria-label="往後">↓</button></div>` : ""}
+        ${me.admin && !filtering ? `<div class="order"><button class="icon-btn" type="button" data-move="${i}:-1" ${i === 0 ? "disabled" : ""} aria-label="往前">↑</button><button class="icon-btn" type="button" data-move="${i}:1" ${i === crows.length - 1 ? "disabled" : ""} aria-label="往後">↓</button></div>` : ""}
         <button class="btn soft sm" type="button" data-gedit="${esc(r.id)}">${!me.admin && r.status === "published" ? "查看" : "編輯"}</button>
         ${ct.site ? `<a class="btn ghost sm" href="${ct.site}?id=${encodeURIComponent(r.id)}${r.status === "published" ? "" : "&preview=1"}" target="_blank" rel="noopener">預覽</a>` : ""}
         ${me.admin && r.status === "published" ? `<button class="btn ${r.featured ? "soft" : "ghost"} sm" type="button" data-gfeat="${esc(r.id)}">${r.featured ? "取消精選" : "★ 精選"}</button>` : ""}
@@ -962,7 +1005,13 @@ async function renderContentList(kind) {
     ${specCard(kind)}
     ${kind === "zine" && me.admin ? issuesSectionHtml() : ""}
     <div class="bar"><span class="kicker">${crows.length} 個 · ${crows.filter(r => r.status === "published").length} 個上架中${me.admin ? ` · ${crows.filter(r => r.status === "review").length} 個待審核` : ""}</span><button class="btn go" type="button" id="gNewBtn">＋ 新增${esc(ct.name)}</button></div>
-    <div class="list">${rows || `<section class="card center"><div class="kicker">還沒有 · EMPTY</div><h2 style="margin-top:6px;">還沒有${esc(ct.name)}</h2></section>`}</div>`;
+    <div class="fb-tools" style="margin:10px 0;">${[["all", "全部"], ["draft", "草稿"], ["review", "審核中"], ["published", "上架中"], ["rejected", "退回"]].map(([k, l]) => `<button type="button" class="chip ${cf.status === k ? "on" : ""}" data-cst="${k}">${l} <small>${k === "all" ? crows.length : crows.filter(r => r.status === k).length}</small></button>`).join("")}
+      <input id="cQ" value="${esc(cf.q)}" placeholder="搜尋標題、作者、代號" style="flex:1; min-width:160px; padding:6px 10px;"></div>
+    <div class="list">${rows || `<section class="card center"><div class="kicker">還沒有 · EMPTY</div><h2 style="margin-top:6px;">${filtering ? "沒有符合的項目" : `還沒有${esc(ct.name)}`}</h2></section>`}</div>
+    ${me.admin && SAMPLE_SRC[kind] ? `<div id="sampleBox"></div>` : ""}`;
+  document.querySelectorAll("[data-cst]").forEach(b => b.addEventListener("click", () => { cf.status = b.dataset.cst; renderContentList(kind); }));
+  $("cQ")?.addEventListener("change", e => { cf.q = e.target.value.trim(); renderContentList(kind); });
+  if (me.admin && SAMPLE_SRC[kind]) renderSampleBox(kind);
   if (kind === "zine") bindIssues();
   $("gNewBtn").addEventListener("click", () => openGEditor(kind, null));
   document.querySelectorAll("[data-gedit]").forEach(b => b.addEventListener("click", () => openGEditor(kind, b.dataset.gedit)));
@@ -1251,7 +1300,7 @@ async function saveG(status, note) {
     const { error } = d.isNew ? await T(sb.from(ct.table).insert(row)) : await T(sb.from(ct.table).update(row).eq("id", d.id));
     if (error) throw new Error("儲存失敗：" + error.message);
     // 換掉、刪掉的舊圖片順手從雲端清掉（別人的檔案刪不掉，不影響）
-    const old = (d.removed || []).filter(p => p && !/^https?:/.test(p));
+    const old = (d.removed || []).filter(p => p && !/^(https?:|\.\.\/|data:)/.test(p));
     if (old.length) await T(sb.storage.from("content").remove(old));
     toast({ published: "已上架", review: "已送出審核", rejected: "已退回給創作者", draft: "已存成草稿" }[next] || "已儲存");
     const kind = d.kind; gdraft = null;
@@ -1265,7 +1314,7 @@ async function deleteG() {
   if (!confirm(`確定要刪除「${d.title || d.name || d.id}」嗎？沒辦法復原。`)) return;
   const { error } = await T(sb.from(ct.table).delete().eq("id", d.id));
   if (error) return toast("刪除失敗：" + error.message, 5000);
-  const paths = [...ct.slots.map(s => d[s.key]), ...(d.blocks || []).map(b => b.src)].filter(p => p && !/^https?:/.test(p));
+  const paths = [...ct.slots.map(s => d[s.key]), ...(d.blocks || []).map(b => b.src)].filter(p => p && !/^(https?:|\.\.\/|data:)/.test(p));
   if (paths.length) await T(sb.storage.from("content").remove(paths));
   toast("已刪除"); const kind = d.kind; gdraft = null; renderContentList(kind);
 }
@@ -1753,6 +1802,7 @@ async function renderSettings() {
         <div class="field"><label>紙張顯示大小（px，數字越小紋理越細）</label><input id="zScale" type="number" min="128" max="2048" value="${esc(zine.paper_scale || 512)}"></div>
         <div class="field"><label>強調色</label><input id="zAccent" type="color" value="${esc(zine.accent || "#FF4F00")}"></div>
       </div>
+      <div class="field" style="margin-top:10px;"><label for="zLook">預設版本（讀者也可以在頁面上方切換）</label><select id="zLook"><option value="riso" ${zine.look !== "news" ? "selected" : ""}>網版套色版（彩色）</option><option value="news" ${zine.look === "news" ? "selected" : ""}>報紙版（黑白、網點照片）</option></select></div>
       <label class="check" style="border:0; padding:0; margin-top:10px;"><input type="checkbox" id="zSamples" ${zine.show_samples !== false ? "checked" : ""}><span><b>還沒有文章時，顯示範例內容</b>關掉後，沒有上架的文章時會顯示「第一期，正在印刷中」。有上架的文章時範例本來就不會出現。</span></label>
       <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;"><button class="btn dark sm" type="button" id="sZine">儲存 Zine 設定</button><a class="btn ghost sm" href="../zine/" target="_blank" rel="noopener">打開 Zine 頁面 ↗</a></div></section>
     <section class="card section"><div class="section-head"><h2>TabigrAm.mise 選物</h2><p>App 選單的「選物」入口在上面的「功能開關」打開</p></div>
@@ -1789,7 +1839,7 @@ async function renderSettings() {
     catch (e) { toast(e.message, 5000); }
   });
   $("sZine").addEventListener("click", async () => {
-    const v = { ...zine, name: $("zName").value.trim() || "TabigrAm.zine", paper_scale: Math.max(128, Math.min(2048, +$("zScale").value || 512)), accent: $("zAccent").value, show_samples: $("zSamples").checked };
+    const v = { ...zine, name: $("zName").value.trim() || "TabigrAm.zine", paper_scale: Math.max(128, Math.min(2048, +$("zScale").value || 512)), accent: $("zAccent").value, show_samples: $("zSamples").checked, look: $("zLook").value === "news" ? "news" : "riso" };
     if (paperFile) {
       const path = `zine/paper/${Date.now().toString(36)}.jpg`;
       const { error } = await T(sb.storage.from("content").upload(path, paperFile.blob, { contentType: "image/jpeg", cacheControl: "31536000" }), 60000);

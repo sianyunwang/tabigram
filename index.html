@@ -27,7 +27,7 @@
       var lang = q || saved || (/^zh/i.test(nav) ? "zh" : "en");
       window.TG_LANG = lang;
       document.documentElement.lang = lang === "en" ? "en" : "zh-TW";
-      if (lang === "en") document.write('<script src="i18n/en.js?v=2b1f95c9"><\/script>');
+      if (lang === "en") document.write('<script src="i18n/en.js?v=efc29b99"><\/script>');
     })();
   </script>
   <script>
@@ -2653,6 +2653,17 @@
     .tape-side { display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 4px 0; }
     .tape-side b { flex: none; font-size: 12px; } .tape-side span { flex: 1; color: var(--sub); }
     .tape-side.off span { opacity: .6; } .tape-side.sealed b::after { content: " 🔒"; }
+    .tape-early-btn { border: 0; background: none; color: var(--sub); font: inherit; font-size: 11.5px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 4px 2px; flex: none; opacity: .75; }
+    .tape-early-tag { font-style: normal; font-size: 10.5px; font-weight: 800; color: #B2452B; border: 1.5px solid currentColor; border-radius: 4px; padding: 0 4px; margin-left: 4px; transform: rotate(-3deg); display: inline-block; }
+    .tape-early { position: fixed; inset: 0; z-index: 2500; display: grid; place-items: center; padding: 16px; background: rgba(20,20,19,.55); }
+    .tape-early .te-box { width: min(360px, 100%); background: var(--bg); border-radius: 20px; padding: 20px 18px 14px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,.3); }
+    .tape-early .te-t { font-size: 17px; } .tape-early p { color: var(--sub); font-size: 13px; margin: 8px 0; }
+    .tape-early ul { text-align: left; font-size: 13px; line-height: 1.7; margin: 6px 0 14px; padding-left: 20px; }
+    .te-hold { position: relative; overflow: hidden; width: 100%; padding: 13px; border-radius: 999px; border: 1.5px solid var(--ink); background: var(--card); color: var(--ink); font: 800 14.5px var(--sans); cursor: pointer; touch-action: none; -webkit-touch-callout: none; user-select: none; }
+    .te-hold i { position: absolute; inset: 0; width: 0; background: color-mix(in srgb, #B2452B 22%, transparent); }
+    .te-hold.holding i { width: 100%; transition: width 3s linear; }
+    .te-hold span { position: relative; }
+    .te-no { border: 0; background: none; color: var(--sub); font: inherit; font-size: 13px; margin-top: 8px; padding: 8px; cursor: pointer; }
     .tape-how { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: var(--card2, #EBE9E4); font-size: 12.5px; line-height: 1.7; } .tape-how p { margin: 4px 0 0; color: var(--sub); }
 
     /* 入口頁副標、迷你卡帶 */
@@ -16005,7 +16016,9 @@ function initSupabaseClient() {
     async function loadTapes(force) {
       if (!sbClient || !currentCloudUser) { tapeRows = null; return null; }
       if (tapeRows && !force) return tapeRows;
-      const { data, error } = await sbClient.from("tapes").select("id,trip_id,trip_title,side,airport,label,cover_path,title_font,audio_ms,created_at,opened_at").order("created_at", { ascending: false });
+      const cols = "id,trip_id,trip_title,side,airport,label,cover_path,title_font,audio_ms,created_at,opened_at";
+      let { data, error } = await sbClient.from("tapes").select(cols + ",opened_early").order("created_at", { ascending: false });
+      if (error) ({ data, error } = await sbClient.from("tapes").select(cols).order("created_at", { ascending: false }));   // 還沒執行 V15
       tapeRows = error ? null : (data || []);
       return tapeRows;
     }
@@ -16472,7 +16485,7 @@ function initSupabaseClient() {
       ];
       const steps = side === "A" ? A : side === "B" ? B : [...A, ...B];
       return `<ol class="tape-flow">${steps.map(([t, d]) => `<li><b>${t}</b><span>${d}</span></li>`).join("")}</ol>
-        <div class="tape-warn">${ic("alert")}<span><b>封存後不能提早打開，也不能修改。</b>時間沒到、不在那座機場，就聽不到。轉機的機場不算。</span></div>`;
+        <div class="tape-warn">${ic("alert")}<span><b>封存後不能修改。</b>時間沒到、不在那座機場就聽不到；真的忍不住，可以在卡帶架長按「提前打開」，但標籤會一直留著「提前打開」。轉機的機場不算。</span></div>`;
     }
 
     // ---------- 錄音＋封面 ----------
@@ -16605,13 +16618,16 @@ function initSupabaseClient() {
       const { data } = await sbClient.storage.from("tape-media").createSignedUrl(path, 900);
       return data && data.signedUrl ? data.signedUrl : "";
     }
-    async function playTape(id, airport) {
+    async function playTape(id, airport, early) {
       if (!currentCloudUser) return openCloudModal();
       unlockTapeAudio();
-      showLogoLoader("取出卡帶…");
+      showLogoLoader(early ? "提前取出卡帶…" : "取出卡帶…");
       try {
-        const { data, error } = await sbClient.rpc("open_tape", { p_id: id, p_airport: airport || "" });
-        if (error) { hideLogoLoader(); return showToast(/not yet/.test(error.message) ? "還不能播放：要 30 天以後、回到同一座機場" : "播放失敗：" + error.message); }
+        const args = { p_id: id, p_airport: airport || "" };
+        if (early) args.p_early = true;   // 提前打開（V15）：伺服器會永久標記
+        const { data, error } = await sbClient.rpc("open_tape", args);
+        if (error) { hideLogoLoader(); return showToast(/not yet/.test(error.message) ? "還不能播放：要 30 天以後、回到同一座機場" : early && /open_tape|function/i.test(error.message) ? "提前打開還在準備中，請稍後再試" : "播放失敗：" + error.message); }
+        if (early) { track("tape_early"); showToast("這一面已經提前打開了，標籤會一直留著「提前打開」"); }
         let row = (tapeRows || []).find(r => r.id === id);
         if (!row) row = ((await loadTapes(true)) || []).find(r => r.id === id) || {};
         const [aUrl, cUrl] = await Promise.all([tapeSignedUrl(data.audio_path), tapeSignedUrl(row.cover_path)]);
@@ -16621,6 +16637,27 @@ function initSupabaseClient() {
         track("tape_play", row.side || "");
         tapeRows = null;
       } catch (e) { hideLogoLoader(); showToast("播放失敗，請稍後再試"); }
+    }
+    // ---- 提前打開：先看提醒，再長按 3 秒；打開後永久標記「提前打開」 ----
+    function openTapeEarly(id) {
+      const row = (tapeRows || []).find(r => r.id === id); if (!row) return;
+      document.getElementById("tapeEarly")?.remove();
+      const el = document.createElement("div");
+      el.id = "tapeEarly"; el.className = "tape-early"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true");
+      el.innerHTML = `<div class="te-box">
+          <b class="te-t">要提前打開 ${escapeHtml(TAPE_SIDE[row.side] || "")} 嗎？</b>
+          <p>這卷是寫給${row.side === "A" ? "這趟旅程最後落地時" : `30 天以後、回到 ${escapeHtml(row.airport)} 的你`}的。</p>
+          <ul><li>提前打開後，就<b>不能再封回去</b>。</li><li>標籤上會<b>一直留著「提前打開」</b>。</li><li>之後可以照常重播。</li></ul>
+          <button type="button" class="te-hold" id="teHold"><i></i><span>長按 3 秒打開</span></button>
+          <button type="button" class="te-no" onclick="document.getElementById('tapeEarly').remove()">再等等</button></div>`;
+      el.addEventListener("click", e => { if (e.target === el) el.remove(); });
+      document.body.appendChild(el);
+      const btn = el.querySelector("#teHold"); let t = null;
+      const start = e => { e.preventDefault(); btn.classList.add("holding"); try { navigator.vibrate && navigator.vibrate(10); } catch (er) {}
+        t = setTimeout(() => { btn.classList.remove("holding"); el.remove(); closeModalBackdrop("tapeShelfModal"); playTape(id, "", true); }, 3000); };
+      const stop = () => { clearTimeout(t); btn.classList.remove("holding"); };
+      btn.addEventListener("pointerdown", start); ["pointerup", "pointerleave", "pointercancel"].forEach(ev => btn.addEventListener(ev, stop));
+      btn.addEventListener("contextmenu", e => e.preventDefault());
     }
     async function playDemoTape() {
       unlockTapeAudio();
@@ -16644,8 +16681,8 @@ function initSupabaseClient() {
       const sideHtml = (tid, side, r) => {
         if (!r) return `<div class="tape-side off"><b>${TAPE_SIDE[side]}</b><span>還沒錄</span></div>`;
         if (r.pending) return `<div class="tape-side"><b>${TAPE_SIDE[side]}</b><span>在 ${escapeHtml(r.airport)} 可以錄</span><button type="button" class="mini-btn" onclick="closeModalBackdrop('tapeShelfModal'); openTapeWriter('${side}', '${escapeHtml(tid)}')">錄</button></div>`;
-        if (r.opened_at) return `<div class="tape-side"><b>${TAPE_SIDE[side]}</b><span>${escapeHtml(new Date(r.opened_at).toLocaleDateString())} 播放過</span><button type="button" class="mini-btn" onclick="closeModalBackdrop('tapeShelfModal'); playTape('${r.id}')">重播</button></div>`;
-        return `<div class="tape-side sealed"><b>${TAPE_SIDE[side]}</b><span>${side === "A" ? "這趟最後落地時播放" : `${escapeHtml(new Date(new Date(r.created_at).getTime() + 30 * 86400e3).toLocaleDateString())} 以後回到 ${escapeHtml(r.airport)} 播放`}</span></div>`;
+        if (r.opened_at) return `<div class="tape-side"><b>${TAPE_SIDE[side]}</b><span>${escapeHtml(new Date(r.opened_at).toLocaleDateString())} 播放過${r.opened_early ? ` <em class="tape-early-tag">提前打開</em>` : ""}</span><button type="button" class="mini-btn" onclick="closeModalBackdrop('tapeShelfModal'); playTape('${r.id}')">重播</button></div>`;
+        return `<div class="tape-side sealed"><b>${TAPE_SIDE[side]}</b><span>${side === "A" ? "這趟最後落地時播放" : `${escapeHtml(new Date(new Date(r.created_at).getTime() + 30 * 86400e3).toLocaleDateString())} 以後回到 ${escapeHtml(r.airport)} 播放`}</span><button type="button" class="tape-early-btn" onclick="openTapeEarly('${r.id}')">提前打開</button></div>`;
       };
       const entries = Object.entries(byTrip);
       box.innerHTML = (entries.map(([tid, t], i) => `<div class="tape-card"><canvas class="tape-case-thumb" id="tapeThumb${i}" width="300" height="196" aria-hidden="true"></canvas>
